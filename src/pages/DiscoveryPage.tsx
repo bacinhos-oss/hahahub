@@ -32,7 +32,7 @@ const DiscoveryPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout }) =
           <h1 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: 'clamp(3rem, 8vw, 6rem)', textTransform: 'uppercase', lineHeight: 0.9, marginBottom: '1rem' }}>
             KATALOG <span style={{ color: '#FFD600' }}>KOMEDIJ</span>
           </h1>
-          <p style={{ fontFamily: 'Space Mono', fontSize: '0.8rem', color: 'rgba(245,245,240,0.5)' }}>{shows.length} predstav v bazi</p>
+          <p style={{ fontFamily: 'Space Mono', fontSize: '0.8rem', color: 'rgba(245,245,240,0.5)' }}>{shows.length} shows in database</p>
         </div>
 
         {/* FILTERS */}
@@ -40,7 +40,7 @@ const DiscoveryPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout }) =
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Išči po naslovu, avtorju..."
+            placeholder="Search by title, author..."
             style={{ flex: 1, minWidth: '200px', background: '#161616', border: '3px solid rgba(245,245,240,0.2)', padding: '0.75rem 1rem', color: '#f5f5f0', fontFamily: 'Space Mono', fontSize: '0.8rem', outline: 'none' }}
           />
           <select
@@ -48,7 +48,7 @@ const DiscoveryPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout }) =
             onChange={e => setFilterGenre(e.target.value)}
             style={{ background: '#161616', border: '3px solid rgba(245,245,240,0.2)', padding: '0.75rem 1rem', color: '#f5f5f0', fontFamily: 'Barlow Condensed', fontWeight: 700, fontStyle: 'italic', fontSize: '0.9rem', textTransform: 'uppercase', cursor: 'pointer', outline: 'none' }}
           >
-            <option value="">Vsi žanri</option>
+            <option value="">All genres</option>
             {genres.map(g => <option key={g} value={g}>{g}</option>)}
           </select>
         </div>
@@ -56,10 +56,10 @@ const DiscoveryPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout }) =
         {!canSeeDetails && (
           <div style={{ background: '#FF0266', border: '4px solid #0a0a0a', padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
             <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1rem', textTransform: 'uppercase' }}>
-              🔒 Za popoln dostop potrebuješ Pro naročnino
+              🔒 Full access requires a Pro subscription
             </div>
             <button onClick={() => onNavigate('landing')} style={{ background: '#fff', color: '#FF0266', border: '3px solid #0a0a0a', padding: '0.5rem 1.5rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.9rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-              Kupi dostop →
+              Buy access →
             </button>
           </div>
         )}
@@ -68,7 +68,7 @@ const DiscoveryPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout }) =
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {filtered.length === 0 ? (
             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', color: 'rgba(245,245,240,0.2)', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '2rem', textTransform: 'uppercase' }}>
-              Ni zadetkov
+              No results
             </div>
           ) : filtered.map(show => (
             <div key={show.id} style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.15)', padding: '0', overflow: 'hidden', position: 'relative', transition: 'box-shadow 0.2s', cursor: canSeeDetails ? 'pointer' : 'default' }}

@@ -15,7 +15,7 @@ const SubscriptionPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, 
     return (
       <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <button onClick={() => onNavigate('login')} style={{ background: '#FFD600', color: '#0a0a0a', border: '4px solid #0a0a0a', padding: '1.25rem 3rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.25rem', textTransform: 'uppercase', cursor: 'pointer', boxShadow: '6px 6px 0 #FF0266' }}>
-          Prijavi se →
+          Sign in →
         </button>
       </div>
     )
@@ -52,7 +52,7 @@ const SubscriptionPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, 
             </div>
             {user.isPaid && user.subscriptionExpiry && (
               <div style={{ borderLeft: '2px solid rgba(245,245,240,0.1)', paddingLeft: '1.5rem' }}>
-                <div style={{ fontSize: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(245,245,240,0.4)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>Velja do</div>
+                <div style={{ fontSize: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(245,245,240,0.4)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>Valid until</div>
                 <div style={{ fontFamily: 'Space Mono', fontSize: '0.75rem', color: '#FFD600', marginTop: '0.25rem' }}>{user.subscriptionExpiry}</div>
               </div>
             )}
@@ -61,20 +61,20 @@ const SubscriptionPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, 
 
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
-          {statCard('Naložene predstave', myShows.length, '#FFD600')}
-          {statCard('Skupaj ogledov', myShows.reduce((a, s) => a + (s.viewsCount || 0), 0), '#00E5FF')}
-          {statCard('Skupaj lajkov', myShows.reduce((a, s) => a + (s.likesCount || 0), 0), '#FF0266')}
-          {statCard('Favoriti', user.favorites.length, '#f5f5f0')}
+          {statCard('Uploaded Shows', myShows.length, '#FFD600')}
+          {statCard('Total Views', myShows.reduce((a, s) => a + (s.viewsCount || 0), 0), '#00E5FF')}
+          {statCard('Total Likes', myShows.reduce((a, s) => a + (s.likesCount || 0), 0), '#FF0266')}
+          {statCard('Favorites', user.favorites.length, '#f5f5f0')}
         </div>
 
         {!user.isPaid && (
           <div style={{ background: '#FFD600', border: '6px solid #0a0a0a', padding: '2rem', marginBottom: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', boxShadow: '8px 8px 0 #FF0266' }}>
             <div>
-              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.75rem', color: '#0a0a0a', textTransform: 'uppercase' }}>Nadgradi na PRO</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: '0.75rem', color: '#0a0a0a' }}>€79/leto · Neomejen dostop · Upload predstav</div>
+              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.75rem', color: '#0a0a0a', textTransform: 'uppercase' }}>Upgrade to PRO</div>
+              <div style={{ fontFamily: 'Space Mono', fontSize: '0.75rem', color: '#0a0a0a' }}>€79/year · Unlimited access · Upload shows</div>
             </div>
             <button onClick={onPurchaseSuccess} style={{ background: '#0a0a0a', color: '#FFD600', border: '4px solid #0a0a0a', padding: '1rem 2rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.1rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-              Kupi PRO →
+              Buy PRO →
             </button>
           </div>
         )}
@@ -84,15 +84,15 @@ const SubscriptionPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
             <h2 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '2.5rem', textTransform: 'uppercase' }}>Moje <span style={{ color: '#FFD600' }}>Predstave</span></h2>
             <button onClick={() => onNavigate('upload')} style={{ background: '#00E5FF', color: '#0a0a0a', border: '3px solid #0a0a0a', padding: '0.5rem 1.25rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.9rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-              + Nova
+              + New
             </button>
           </div>
 
           {myShows.length === 0 ? (
             <div style={{ border: '4px dashed rgba(245,245,240,0.1)', padding: '4rem', textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', color: 'rgba(245,245,240,0.2)', textTransform: 'uppercase', marginBottom: '1rem' }}>Ni naloženih predstav</div>
+              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', color: 'rgba(245,245,240,0.2)', textTransform: 'uppercase', marginBottom: '1rem' }}>No shows uploaded yet</div>
               <button onClick={() => onNavigate('upload')} style={{ background: '#00E5FF', color: '#0a0a0a', border: '3px solid #0a0a0a', padding: '0.75rem 2rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-                Dodaj prvo →
+                Add first →
               </button>
             </div>
           ) : (

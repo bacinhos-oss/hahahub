@@ -60,7 +60,7 @@ const AdminPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, onDelet
         </h1>
 
         <div style={{ display: 'flex', borderBottom: '4px solid rgba(245,245,240,0.1)', marginBottom: '2rem' }}>
-          {tabBtn('stats', 'Statistika')}
+          {tabBtn('stats', 'Statistics')}
           {tabBtn('shows', `Predstave (${shows.length})`)}
           {tabBtn('users', 'Uporabniki')}
         </div>
@@ -68,10 +68,10 @@ const AdminPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, onDelet
         {tab === 'stats' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
             {[
-              { label: 'Skupaj predstav', value: shows.length, color: '#FFD600' },
-              { label: 'Skupaj ogledov', value: shows.reduce((a, s) => a + (s.viewsCount || 0), 0), color: '#00E5FF' },
-              { label: 'Skupaj lajkov', value: shows.reduce((a, s) => a + (s.likesCount || 0), 0), color: '#FF0266' },
-              { label: 'Uporabnikov', value: users.length, color: '#f5f5f0' },
+              { label: 'Total Shows', value: shows.length, color: '#FFD600' },
+              { label: 'Total Views', value: shows.reduce((a, s) => a + (s.viewsCount || 0), 0), color: '#00E5FF' },
+              { label: 'Total Likes', value: shows.reduce((a, s) => a + (s.likesCount || 0), 0), color: '#FF0266' },
+              { label: 'Users', value: users.length, color: '#f5f5f0' },
             ].map(stat => (
               <div key={stat.label} style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.1)', padding: '2rem' }}>
                 <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '3.5rem', color: stat.color, lineHeight: 1 }}>{stat.value}</div>
@@ -86,7 +86,7 @@ const AdminPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, onDelet
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#FF0266' }}>
-                  {['Naslov', 'Avtor', 'Producent', 'Žanr', 'Status', 'Akcija'].map(h => (
+                  {['Title', 'Author', 'Producer', 'Genre', 'Status', 'Action'].map(h => (
                     <th key={h} style={{ ...tdStyle, color: '#fff', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.85rem', textTransform: 'uppercase', textAlign: 'left' }}>{h}</th>
                   ))}
                 </tr>
@@ -102,8 +102,8 @@ const AdminPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, onDelet
                       <span style={{ background: '#00E5FF', color: '#0a0a0a', padding: '0.15rem 0.5rem', fontSize: '0.6rem', fontFamily: 'Barlow Condensed', fontWeight: 700, textTransform: 'uppercase' }}>{show.rightsStatus}</span>
                     </td>
                     <td style={tdStyle}>
-                      <button onClick={() => { if (confirm(`Izbriši "${show.title}"?`)) onDeleteShow(show.id) }} style={{ background: '#FF0266', color: '#fff', border: 'none', padding: '0.3rem 0.75rem', fontFamily: 'Barlow Condensed', fontWeight: 700, fontStyle: 'italic', fontSize: '0.75rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-                        Briši
+                      <button onClick={() => { if (confirm(`Delete "${show.title}"?`)) onDeleteShow(show.id) }} style={{ background: '#FF0266', color: '#fff', border: 'none', padding: '0.3rem 0.75rem', fontFamily: 'Barlow Condensed', fontWeight: 700, fontStyle: 'italic', fontSize: '0.75rem', textTransform: 'uppercase', cursor: 'pointer' }}>
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -116,12 +116,12 @@ const AdminPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, onDelet
         {tab === 'users' && (
           <div style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.1)', overflow: 'hidden' }}>
             {loadingUsers ? (
-              <div style={{ padding: '3rem', textAlign: 'center', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '2rem', color: '#FFD600' }}>NALAGAM...</div>
+              <div style={{ padding: '3rem', textAlign: 'center', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '2rem', color: '#FFD600' }}>LOADING...</div>
             ) : (
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#FFD600' }}>
-                    {['Ime', 'Status', 'Naročnina do', 'Uploads', 'Akcija'].map(h => (
+                    {['Name', 'Status', 'Subscription Until', 'Uploads', 'Action'].map(h => (
                       <th key={h} style={{ ...tdStyle, color: '#0a0a0a', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.85rem', textTransform: 'uppercase', textAlign: 'left' }}>{h}</th>
                     ))}
                   </tr>
@@ -139,7 +139,7 @@ const AdminPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, onDelet
                       <td style={tdStyle}>{u.uploaded_show_ids?.length || 0}</td>
                       <td style={tdStyle}>
                         <button onClick={() => togglePaid(u.id, u.is_paid)} style={{ background: u.is_paid ? '#FF0266' : '#00E5FF', color: u.is_paid ? '#fff' : '#0a0a0a', border: 'none', padding: '0.3rem 0.75rem', fontFamily: 'Barlow Condensed', fontWeight: 700, fontStyle: 'italic', fontSize: '0.75rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-                          {u.is_paid ? 'Prekliči PRO' : 'Dodeli PRO'}
+                          {u.is_paid ? 'Revoke PRO' : 'Grant PRO'}
                         </button>
                       </td>
                     </tr>

@@ -100,10 +100,10 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
         <div style={card}>
           <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '3rem', color: '#FF0266', marginBottom: '1rem' }}>CHECK EMAIL</div>
           <p style={{ fontFamily: 'Space Mono', fontSize: '0.85rem', lineHeight: 1.6, color: '#0a0a0a' }}>
-            Poslali smo ti potrditveni email na <strong>{email}</strong>.<br /><br />
-            Potrdi email in se nato prijavi.
+            We sent a confirmation email to <strong>{email}</strong>.<br /><br />
+            Confirm your email then sign in.
           </p>
-          <button onClick={() => setCheckEmail(false)} style={{ ...btn, marginTop: '2rem' }}>Nazaj na login</button>
+          <button onClick={() => setCheckEmail(false)} style={{ ...btn, marginTop: '2rem' }}>Back to login</button>
         </div>
       </div>
     )
@@ -112,7 +112,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
   return (
     <div style={box}>
       <div style={card}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Space Mono', fontSize: '0.7rem', color: '#999', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>← Nazaj</button>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Space Mono', fontSize: '0.7rem', color: '#999', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>← Back</button>
 
         <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '3rem', color: '#0a0a0a', marginBottom: '0.5rem' }}>HAHAHUB</div>
 
@@ -123,7 +123,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
               color: (isNew ? i === 1 : i === 0) ? '#FFD600' : '#0a0a0a', border: 'none', cursor: 'pointer',
               fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.9rem', textTransform: 'uppercase'
             }}>
-              {i === 0 ? 'Prijava' : 'Registracija'}
+              {i === 0 ? 'Sign In' : 'Register'}
             </button>
           ))}
         </div>
@@ -131,8 +131,8 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {isNew && (
             <div>
-              <label style={label}>Ime / Ime produkcije</label>
-              <input style={input} value={name} onChange={e => setName(e.target.value)} placeholder="NPR. COMEDY THEATER LJ" required />
+              <label style={label}>Name / Production Company</label>
+              <input style={input} value={name} onChange={e => setName(e.target.value)} placeholder="E.G. COMEDY THEATER NYC" required />
             </div>
           )}
           <div>
@@ -140,7 +140,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
             <input style={input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="COMEDY@PRODUCER.COM" required />
           </div>
           <div>
-            <label style={label}>Geslo</label>
+            <label style={label}>Password</label>
             <input style={input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
           </div>
 
@@ -151,7 +151,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
           )}
 
           <button type="submit" style={btn} disabled={loading}>
-            {loading ? 'NALAGAM...' : isNew ? 'USTVARI RAČUN' : 'VSTOPI V VAULT'}
+            {loading ? 'LOADING...' : isNew ? 'CREATE ACCOUNT' : 'ENTER THE VAULT'}
           </button>
         </form>
       </div>
