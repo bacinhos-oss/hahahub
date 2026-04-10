@@ -38,6 +38,14 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           >
             MY HUB
           </button>
+          {user?.role === 'admin' && (
+            <button 
+              onClick={() => onNavigate('admin')}
+              className={`text-xs font-black tracking-widest uppercase pb-1 border-b-4 transition-all ${activePage === 'admin' ? 'border-brand-pink text-brand-pink' : 'border-transparent text-brand-pink/60 hover:text-brand-pink'}`}
+            >
+              ADMIN
+            </button>
+          )}
         </nav>
       </div>
 
