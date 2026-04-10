@@ -8,9 +8,10 @@ interface Props {
   onSuccess: () => void
   onBack: () => void
   setCurrentUser: (user: User) => void
+  adminMode?: boolean
 }
 
-const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
+const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMode }) => {
   const [isNew, setIsNew] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,43 +24,51 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     try {
       if (isNew) {
-        // Register
         const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
         if (signUpError) throw signUpError
-
         if (data.user) {
-          // Create profile
           await supabase.from('profiles').insert([{
             id: data.user.id,
             name: name.toUpperCase(),
-            is_paid: false,
+            is_paid: email === ADMIN_EMAIL,
             favorites: [],
             uploaded_show_ids: []
           }])
-          setCheckEmail(true)
+          if (data.session) {
+            // Auto-confirmed
+            const isAdmin = email === ADMIN_EMAIL
+            setCurrentUser({
+              id: data.user.id, email,
+              name: name.toUpperCase(),
+              role: isAdmin ? 'admin' : 'Producer',
+              avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+              isPaid: isAdmin, isAdmin,
+              subscription: isAdmin ? { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
+              favorites: [], uploadedShowIds: [],
+            })
+            onSuccess()
+          } else {
+            setCheckEmail(true)
+          }
         }
       } else {
-        // Login
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
         if (signInError) throw signInError
-
         if (data.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', data.user.id)
-            .single()
-
+          const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
+          const isAdmin = email === ADMIN_EMAIL
           setCurrentUser({
-            id: data.user.id,
-            email,
+            id: data.user.id, email,
             name: profile?.name || email.split('@')[0].toUpperCase(),
-            role: email === ADMIN_EMAIL ? 'admin' : 'producer',
-            isPaid: profile?.is_paid || false,
-            subscriptionExpiry: profile?.subscription_expiry,
+            role: isAdmin ? 'admin' : 'Producer',
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+            isPaid: profile?.is_paid || isAdmin, isAdmin,
+            subscription: (profile?.is_paid || isAdmin) ? {
+              type: 'Annual', expiryDate: profile?.subscription_expiry || 'Dec 24, 2025',
+              status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads']
+            } : undefined,
             favorites: profile?.favorites || [],
             uploadedShowIds: profile?.uploaded_show_ids || [],
           })
@@ -67,91 +76,76 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser }) => {
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Napaka pri prijavi')
+      setError(err.message || 'Authentication error')
     }
     setLoading(false)
   }
 
-  const box: React.CSSProperties = {
-    minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem'
-  }
-  const card: React.CSSProperties = {
-    background: '#f5f5f0', border: '8px solid #0a0a0a', padding: '3rem', maxWidth: '420px', width: '100%',
-    boxShadow: '12px 12px 0px #FF0266'
-  }
-  const input: React.CSSProperties = {
-    width: '100%', background: '#e8e8e3', border: '4px solid #0a0a0a', padding: '1rem', color: '#0a0a0a',
-    fontFamily: 'Space Mono, monospace', fontWeight: 700, fontSize: '0.85rem', outline: 'none'
-  }
-  const label: React.CSSProperties = {
-    display: 'block', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em',
-    marginBottom: '0.5rem', color: '#666', fontFamily: 'Barlow Condensed, sans-serif'
-  }
-  const btn: React.CSSProperties = {
-    width: '100%', background: '#0a0a0a', color: '#FFD600', border: '4px solid #0a0a0a',
-    padding: '1rem', fontFamily: 'Barlow Condensed, sans-serif', fontWeight: 900, fontStyle: 'italic',
-    fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer',
-    boxShadow: '4px 4px 0 #FFD600', marginTop: '0.5rem'
-  }
-
   if (checkEmail) {
     return (
-      <div style={box}>
-        <div style={card}>
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '3rem', color: '#FF0266', marginBottom: '1rem' }}>CHECK EMAIL</div>
-          <p style={{ fontFamily: 'Space Mono', fontSize: '0.85rem', lineHeight: 1.6, color: '#0a0a0a' }}>
-            We sent a confirmation email to <strong>{email}</strong>.<br /><br />
-            Confirm your email then sign in.
+      <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black">
+        <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-neo-magenta text-black">
+          <div className="logo-text text-4xl uppercase mb-8 text-center">HAHAHUB</div>
+          <h2 className="text-3xl font-black uppercase italic mb-4 text-brand-pink">CHECK YOUR EMAIL</h2>
+          <p className="font-bold italic text-gray-600 mb-8">
+            We sent a confirmation link to <strong>{email}</strong>.<br /><br />
+            Click the link, then come back and sign in.
           </p>
-          <button onClick={() => setCheckEmail(false)} style={{ ...btn, marginTop: '2rem' }}>Back to login</button>
+          <button onClick={() => { setCheckEmail(false); setIsNew(false) }} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic">
+            Back to Sign In
+          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div style={box}>
-      <div style={card}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Space Mono', fontSize: '0.7rem', color: '#999', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>← Back</button>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black text-black">
+      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#FF0266]">
+        <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors mb-8 italic">← Back</button>
+        
+        <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
 
-        <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '3rem', color: '#0a0a0a', marginBottom: '0.5rem' }}>HAHAHUB</div>
+        {adminMode ? (
+          <div className="mb-8">
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.3em] italic">Admin Access</span>
+          </div>
+        ) : (
+          <div className="flex border-4 border-black mb-8 p-1">
+            {[false, true].map((val, i) => (
+              <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
+                {i === 0 ? 'Sign In' : 'Join Hub'}
+              </button>
+            ))}
+          </div>
+        )}
 
-        <div style={{ display: 'flex', border: '4px solid #0a0a0a', marginBottom: '2rem' }}>
-          {['login', 'register'].map((t, i) => (
-            <button key={t} onClick={() => setIsNew(i === 1)} style={{
-              flex: 1, padding: '0.75rem', background: (isNew ? i === 1 : i === 0) ? '#0a0a0a' : 'transparent',
-              color: (isNew ? i === 1 : i === 0) ? '#FFD600' : '#0a0a0a', border: 'none', cursor: 'pointer',
-              fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.9rem', textTransform: 'uppercase'
-            }}>
-              {i === 0 ? 'Sign In' : 'Register'}
-            </button>
-          ))}
-        </div>
+        <h2 className="text-black text-2xl font-black uppercase mb-8 italic">
+          {adminMode ? 'Control Center Access' : isNew ? 'Create your account' : 'Welcome back, legend'}
+        </h2>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {isNew && (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {isNew && !adminMode && (
             <div>
-              <label style={label}>Name / Production Company</label>
-              <input style={input} value={name} onChange={e => setName(e.target.value)} placeholder="E.G. COMEDY THEATER NYC" required />
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Name / Production Company</label>
+              <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-cyan transition-all outline-none" placeholder="E.G. COMEDY STAGE NYC" />
             </div>
           )}
           <div>
-            <label style={label}>Email</label>
-            <input style={input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="COMEDY@PRODUCER.COM" required />
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Email Address</label>
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-cyan transition-all outline-none" placeholder="COMEDY@PRODUCER.COM" />
           </div>
           <div>
-            <label style={label}>Password</label>
-            <input style={input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>
+            <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-pink transition-all outline-none" placeholder="••••••••" />
           </div>
 
           {error && (
-            <div style={{ background: '#FF0266', color: '#fff', padding: '0.75rem', fontFamily: 'Space Mono', fontSize: '0.75rem', fontWeight: 700 }}>
-              {error}
-            </div>
+            <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>
           )}
 
-          <button type="submit" style={btn} disabled={loading}>
-            {loading ? 'LOADING...' : isNew ? 'CREATE ACCOUNT' : 'ENTER THE VAULT'}
+          <button type="submit" disabled={loading} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic hover:bg-brand-pink transition-all">
+            {loading ? 'LOADING...' : adminMode ? 'ENTER HQ' : isNew ? 'CREATE ACCOUNT' : 'ENTER THE VAULT'}
           </button>
         </form>
       </div>

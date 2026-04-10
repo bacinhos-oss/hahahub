@@ -1,79 +1,74 @@
-import React from 'react'
-import { Page, User } from '../types'
 
-interface NavProps {
-  activePage: Page
-  user?: User | null
-  onNavigate: (page: Page) => void
-  onLogout?: () => void
+import React from 'react';
+import { Page } from '../types';
+
+interface NavigationProps {
+  activePage: Page;
+  onNavigate: (page: Page) => void;
+  onLogout?: () => void;
+  user?: { name: string; role: string; avatar: string; isPaid?: boolean };
 }
 
-const Navigation: React.FC<NavProps> = ({ activePage, user, onNavigate, onLogout }) => {
-  const s: React.CSSProperties = {
-    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-    background: '#0a0a0a', borderBottom: '4px solid #f5f5f0',
-    padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-  }
-  const navLink = (page: Page, label: string, color = '#f5f5f0') => (
-    <button
-      onClick={() => onNavigate(page)}
-      style={{
-        background: 'none', border: 'none', cursor: 'pointer',
-        fontFamily: 'Barlow Condensed, sans-serif', fontWeight: 900, fontStyle: 'italic',
-        fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase',
-        color: activePage === page ? color : 'rgba(245,245,240,0.5)',
-        borderBottom: activePage === page ? `3px solid ${color}` : '3px solid transparent',
-        paddingBottom: '2px', transition: 'all 0.2s'
-      }}
-    >
-      {label}
-    </button>
-  )
-
+const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogout, user }) => {
   return (
-    <header style={s}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
-        <button
-          onClick={() => onNavigate('landing')}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Barlow Condensed, sans-serif', fontWeight: 900, fontStyle: 'italic', fontSize: '2rem', color: '#FFD600', letterSpacing: '-0.02em' }}
+    <header className="fixed top-0 z-50 w-full bg-brand-black border-b-4 border-white px-8 py-5 flex items-center justify-between">
+      <div className="flex items-center gap-12">
+        <button 
+          onClick={() => onNavigate('landing')} 
+          className="logo-text text-3xl md:text-4xl uppercase tracking-tighter hover:scale-105 transition-transform"
         >
           HAHAHUB
         </button>
-        <nav style={{ display: 'flex', gap: '2rem' }}>
-          {navLink('discovery', 'Catalog', '#FFD600')}
-          {navLink('upload', 'Upload', '#00E5FF')}
-          {user?.role === 'admin' && navLink('admin', 'Admin', '#FF0266')}
+        <nav className="hidden lg:flex items-center gap-10 italic">
+          <button 
+            onClick={() => onNavigate('discovery')}
+            className={`text-xs font-black tracking-widest uppercase pb-1 border-b-4 transition-all ${activePage === 'discovery' ? 'border-brand-yellow text-brand-yellow' : 'border-transparent text-white/60 hover:text-white'}`}
+          >
+            CATALOG
+          </button>
+          <button 
+            onClick={() => onNavigate('about')}
+            className={`text-xs font-black tracking-widest uppercase pb-1 border-b-4 transition-all ${activePage === 'about' ? 'border-brand-pink text-brand-pink' : 'border-transparent text-white/60 hover:text-white'}`}
+          >
+            MISSION
+          </button>
+          <button 
+            onClick={() => onNavigate('subscription')}
+            className={`text-xs font-black tracking-widest uppercase pb-1 border-b-4 transition-all ${activePage === 'subscription' ? 'border-white text-white' : 'border-transparent text-white/60 hover:text-white'}`}
+          >
+            MY HUB
+          </button>
         </nav>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="flex items-center gap-6">
         {user ? (
-          <>
-            <button
-              onClick={() => onNavigate('subscription')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'right' }}
+          <div className="flex items-center gap-4 pl-4 border-l-2 border-white/10">
+            <button 
+                onClick={() => onNavigate('subscription')}
+                className="text-right hover:opacity-80 transition-opacity"
             >
-              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.85rem', color: '#f5f5f0' }}>{user.name}</div>
-              <div style={{ fontSize: '0.6rem', color: '#00E5FF', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>{user.isPaid ? 'PRO MEMBER' : 'FREE'}</div>
+              <p className="text-[11px] font-black tracking-[0.2em] text-white italic">{user.name}</p>
+              <p className="text-[9px] text-brand-cyan font-black tracking-widest uppercase">{user.isPaid ? 'PRO MEMBER' : 'USER'}</p>
             </button>
-            <button
+            <button 
               onClick={onLogout}
-              style={{ background: 'none', border: '2px solid rgba(245,245,240,0.2)', color: '#f5f5f0', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="ml-2 w-10 h-10 flex items-center justify-center border-2 border-white hover:bg-brand-pink transition-all"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>logout</span>
+              <span className="material-symbols-outlined text-sm">logout</span>
             </button>
-          </>
+          </div>
         ) : (
-          <button
+          <button 
             onClick={() => onNavigate('login')}
-            style={{ background: '#f5f5f0', color: '#0a0a0a', border: '3px solid #0a0a0a', padding: '0.5rem 1.5rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', boxShadow: '3px 3px 0 #FF0266' }}
+            className="bg-white text-black font-black px-8 py-2 text-sm uppercase border-2 border-black hover:bg-brand-yellow transition-all shadow-neo-magenta italic"
           >
-            Sign In
+            LOGIN
           </button>
         )}
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Navigation
+export default Navigation;

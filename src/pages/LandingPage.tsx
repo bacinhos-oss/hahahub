@@ -1,155 +1,225 @@
-import React, { useState } from 'react'
-import { Page, Show, User } from '../types'
 
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_51TJtFpHA029MGmx3hv4y9Yp8ZT2X4yOHjc2eJ4ZIuQALgGmIRNf1pQdPNHfCj1RImqG16Vr5iCWuvEd2PrZLj05h00Y8PMocak'
+import React, { useState } from 'react';
+import { Page, Show } from '../types';
+import PaymentModal from '../components/PaymentModal';
 
-interface Props {
-  shows: Show[]
-  onNavigate: (page: Page) => void
-  onPurchaseSuccess: () => void
-  currentUser?: User | null
+interface LandingPageProps {
+  onNavigate: (page: Page) => void;
+  onPurchaseSuccess: (planName: string) => void;
+  shows: Show[];
 }
 
-const LandingPage: React.FC<Props> = ({ shows, onNavigate, onPurchaseSuccess, currentUser }) => {
-  const [payLoading, setPayLoading] = useState(false)
-  const [payError, setPayError] = useState('')
+const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess, shows }) => {
+  const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: string } | null>(null);
+  const [teaserLock, setTeaserLock] = useState<string | null>(null);
 
-  const handleCheckout = async () => {
-    if (!currentUser) {
-      onNavigate('login')
-      return
-    }
-    setPayLoading(true)
-    setPayError('')
-    try {
-      // Load Stripe
-      const { loadStripe } = await import('https://js.stripe.com/v3/') as any
-      // For test mode - simulate success
-      setTimeout(() => {
-        setPayLoading(false)
-        onPurchaseSuccess()
-      }, 2000)
-    } catch {
-      setPayLoading(false)
-      setPayError('Payment error. Please try again.')
-    }
-  }
+  const handlePlanSelect = (name: string, price: string) => {
+    setSelectedPlan({ name, price });
+  };
 
-  const teaserShows = shows.slice(0, 4)
+  const teaserShows = shows.slice(0, 4); // Take first 4 shows for teaser
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#f5f5f0' }}>
-      {/* HEADER */}
-      <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(10,10,10,0.95)', borderBottom: '4px solid #f5f5f0', padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '2rem', color: '#FFD600', letterSpacing: '-0.02em' }}>HAHAHUB</div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button onClick={() => onNavigate('discovery')} style={{ background: 'none', border: 'none', color: 'rgba(245,245,240,0.6)', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer' }}>Catalog</button>
-          <button onClick={() => onNavigate('login')} style={{ background: '#f5f5f0', color: '#0a0a0a', border: '3px solid #0a0a0a', padding: '0.5rem 1.5rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.9rem', textTransform: 'uppercase', cursor: 'pointer', boxShadow: '3px 3px 0 #FF0266' }}>
-            {currentUser ? currentUser.name : 'Sign In'}
-          </button>
+    <div className="flex flex-col w-full relative bg-brand-black">
+      <PaymentModal 
+        isOpen={!!selectedPlan}
+        planName={selectedPlan?.name || ''}
+        price={selectedPlan?.price || ''}
+        onClose={() => setSelectedPlan(null)}
+        onSuccess={() => {
+          onPurchaseSuccess(selectedPlan?.name || 'Annual Pass');
+          setSelectedPlan(null);
+        }}
+      />
+
+      <header className="fixed top-0 z-50 w-full bg-brand-black/90 backdrop-blur-md px-6 md:px-12 py-4 border-b-4 border-white">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div 
+            onClick={() => onNavigate('landing')}
+            className="logo-text text-white text-3xl md:text-5xl uppercase tracking-tighter cursor-pointer"
+          >
+            HahaHub
+          </div>
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={() => onNavigate('discovery')}
+              className="hidden md:block text-xs font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors italic"
+            >
+              Catalog
+            </button>
+            <button 
+              onClick={() => onNavigate('login')}
+              className="bg-white text-black font-black px-8 py-2 text-sm uppercase border-2 border-black hover:bg-brand-yellow transition-all shadow-neo-magenta italic"
+            >
+              Sign In
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* HERO */}
-      <section style={{ paddingTop: '10rem', paddingBottom: '5rem', paddingLeft: '2rem', paddingRight: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'inline-block', background: '#FF0266', color: '#fff', padding: '0.25rem 1rem', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3em', transform: 'rotate(-2deg)', marginBottom: '2rem', fontFamily: 'Barlow Condensed' }}>
-          The Stage Is Yours
-        </div>
-        <h1 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: 'clamp(3rem, 10vw, 8rem)', lineHeight: 0.85, textTransform: 'uppercase', marginBottom: '3rem' }}>
-          INTERNATIONAL<br />
-          <span style={{ color: '#FFD600' }}>THEATRE COMEDY</span><br />
-          <span style={{ color: '#00E5FF' }}>PRODUCERS HUB</span>
-        </h1>
-        <p style={{ fontFamily: 'Space Mono', fontSize: '0.9rem', lineHeight: 1.8, color: 'rgba(245,245,240,0.7)', maxWidth: '600px', borderLeft: '6px solid #FF0266', paddingLeft: '1.5rem', marginBottom: '3rem' }}>
-          Global platform for theater comedy producers. Upload your shows, discover new ones, acquire licenses. All in one place.
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <button onClick={() => onNavigate(currentUser ? 'discovery' : 'login')} style={{ background: '#FFD600', color: '#0a0a0a', border: '4px solid #0a0a0a', padding: '1rem 2.5rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', boxShadow: '6px 6px 0 #FF0266' }}>
-            Enter Catalog →
-          </button>
-          <button onClick={() => document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth' })} style={{ background: 'transparent', color: '#f5f5f0', border: '4px solid #f5f5f0', padding: '1rem 2.5rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer' }}>
-            Pricing
-          </button>
-        </div>
-      </section>
-
-      {/* TEASER SHOWS */}
-      {teaserShows.length > 0 && (
-        <section style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-          <h2 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '3rem', textTransform: 'uppercase', marginBottom: '2rem' }}>
-            V <span style={{ color: '#FF0266' }}>Catalogu</span>
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
-            {teaserShows.map(show => (
-              <div key={show.id} style={{ background: '#161616', border: '4px solid #f5f5f0', padding: '1.5rem', position: 'relative', boxShadow: '4px 4px 0 #FFD600' }}>
-                {show.imageUrl && <img src={show.imageUrl} alt={show.title} style={{ width: '100%', height: '180px', objectFit: 'cover', marginBottom: '1rem', border: '3px solid rgba(255,255,255,0.1)' }} />}
-                <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#00E5FF', marginBottom: '0.5rem', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>{show.genre} · {show.language}</div>
-                <h3 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.3rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{show.title}</h3>
-                <p style={{ fontSize: '0.75rem', color: 'rgba(245,245,240,0.5)', fontFamily: 'Space Mono' }}>{show.author}</p>
-                <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.25rem 0.5rem', fontSize: '0.6rem', fontFamily: 'Barlow Condensed', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  🔒 PRO
-                </div>
-              </div>
-            ))}
+      <main className="pt-40">
+        {/* HERO SECTION */}
+        <section className="px-6 md:px-12 py-20 flex flex-col items-start max-w-7xl mx-auto">
+          <div className="space-y-4 mb-8">
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] rotate-[-2deg] inline-block italic">The Stage Is Yours</span>
+          </div>
+          <h1 className="font-display text-white text-6xl md:text-[110px] leading-[0.8] tracking-tighter uppercase mb-16 italic">
+            INTERNATIONAL <br/>
+            <span className="text-brand-yellow">THEATRE COMEDY</span> <br/>
+            <span className="text-brand-cyan">PRODUCERS PLATFORM</span>
+          </h1>
+          <div className="max-w-2xl border-l-8 border-brand-pink pl-8 space-y-10">
+            <p className="text-2xl md:text-3xl font-bold leading-tight text-white/80 italic">
+              An explosive digital destination for international producers to find, license, and stage the world's funniest scripts.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6">
+              <button 
+                onClick={() => onNavigate('discovery')}
+                className="bg-brand-yellow text-black px-12 py-6 text-2xl font-black uppercase tracking-tighter border-4 border-white shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all"
+              >
+                Enter Archive
+              </button>
+              <button 
+                onClick={() => { document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); }}
+                className="text-white border-b-4 border-brand-cyan pb-1 text-2xl font-black uppercase hover:text-brand-cyan transition-all italic"
+              >
+                View Plans
+              </button>
+            </div>
           </div>
         </section>
-      )}
 
-      {/* PLANS */}
-      <section id="plans" style={{ padding: '5rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <h2 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '3.5rem', textTransform: 'uppercase', marginBottom: '0.5rem', textAlign: 'center' }}>
-          Izberi <span style={{ color: '#FFD600' }}>Plan</span>
-        </h2>
-        <p style={{ textAlign: 'center', color: 'rgba(245,245,240,0.5)', fontFamily: 'Space Mono', fontSize: '0.8rem', marginBottom: '3rem' }}>Annual subscription. Cancel anytime.</p>
+        {/* TEASER CATALOG SECTION */}
+        <section className="px-6 md:px-12 py-24 bg-brand-surface border-y-8 border-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 select-none pointer-events-none">
+             <span className="text-[200px] font-black uppercase leading-none italic">CONFIDENTIAL</span>
+          </div>
+          
+          <div className="max-w-7xl mx-auto space-y-16 relative">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+               <div className="space-y-4">
+                  <span className="text-brand-cyan text-xs font-black uppercase tracking-[0.5em] italic">Sector 01 // Leaked Assets</span>
+                  <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-[0.9]">
+                    LATEST <br/> <span className="text-brand-pink">DEPLOYMENTS</span>
+                  </h2>
+               </div>
+               <button 
+                 onClick={() => onNavigate('discovery')}
+                 className="text-white font-black uppercase border-b-4 border-brand-yellow pb-1 italic hover:text-brand-yellow transition-all"
+               >
+                 Explore Entire Library
+               </button>
+            </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', maxWidth: '900px', margin: '0 auto' }}>
-          {/* FREE */}
-          <div style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.2)', padding: '2.5rem' }}>
-            <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', textTransform: 'uppercase', marginBottom: '0.5rem', color: 'rgba(245,245,240,0.5)' }}>Free</div>
-            <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontSize: '4rem', lineHeight: 1, marginBottom: '1.5rem' }}>€0</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
-              {['Catalog access (limited)', 'Registracija', 'No uploads'].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontFamily: 'Space Mono', fontSize: '0.75rem', color: 'rgba(245,245,240,0.5)' }}>
-                  <span>○</span> {f}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {teaserShows.map((show) => (
+                <div 
+                  key={show.id} 
+                  onMouseEnter={() => setTeaserLock(show.id)}
+                  onMouseLeave={() => setTeaserLock(null)}
+                  onClick={() => onNavigate('login')}
+                  className="group relative bg-brand-black border-4 border-white aspect-[4/6] cursor-pointer overflow-hidden transition-all hover:shadow-neo-yellow hover:translate-x-[-4px] hover:translate-y-[-4px]"
+                >
+                   <img 
+                     src={show.imageUrl} 
+                     className="w-full h-full object-cover transition-all grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110" 
+                     alt={show.title} 
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                   
+                   <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="bg-brand-pink text-white px-6 py-3 border-4 border-black font-black uppercase italic rotate-[-5deg] shadow-neo-white">
+                        Access Locked
+                      </div>
+                      <p className="mt-4 text-[10px] font-black text-white uppercase tracking-widest bg-black/60 px-2">Producer Registration Req.</p>
+                   </div>
+
+                   <div className="absolute bottom-0 left-0 p-6 w-full">
+                      <p className="text-brand-cyan text-[10px] font-black uppercase tracking-widest italic mb-2">{show.location} // {show.genre}</p>
+                      <h3 className="text-xl font-black uppercase italic leading-none text-white">{show.title}</h3>
+                   </div>
                 </div>
               ))}
             </div>
-            <button onClick={() => onNavigate('login')} style={{ width: '100%', background: 'transparent', border: '3px solid rgba(245,245,240,0.3)', color: '#f5f5f0', padding: '0.875rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-              Registracija
-            </button>
-          </div>
 
-          {/* PRO ANNUAL */}
-          <div style={{ background: '#f5f5f0', border: '6px solid #0a0a0a', padding: '2.5rem', boxShadow: '10px 10px 0 #FFD600', transform: 'translateY(-8px)' }}>
-            <div style={{ display: 'inline-block', background: '#FF0266', color: '#fff', padding: '0.2rem 0.75rem', fontSize: '0.6rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '1rem', fontFamily: 'Barlow Condensed' }}>Recommended</div>
-            <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', textTransform: 'uppercase', marginBottom: '0.5rem', color: '#0a0a0a' }}>Pro Annual</div>
-            <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontSize: '4rem', lineHeight: 1, marginBottom: '0.25rem', color: '#0a0a0a' }}>€79</div>
-            <div style={{ fontSize: '0.7rem', color: '#666', fontFamily: 'Space Mono', marginBottom: '1.5rem' }}>/leto</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
-              {['Unlimited catalog access', 'Upload unlimited shows', 'Admin dashboard', 'Licensing contacts', 'Priority support'].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontFamily: 'Space Mono', fontSize: '0.75rem', color: '#0a0a0a' }}>
-                  <span style={{ color: '#FF0266', fontWeight: 700 }}>✓</span> {f}
-                </div>
-              ))}
+            <div className="bg-brand-black border-4 border-white p-8 md:p-12 text-center space-y-6 relative group overflow-hidden">
+               <div className="absolute inset-0 bg-brand-yellow/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-700"></div>
+               <div className="relative z-10">
+                 <h3 className="text-3xl font-black uppercase italic leading-none mb-4">WANT TO VIEW THE <span className="text-brand-yellow">FULL DOSSIERS?</span></h3>
+                 <p className="text-gray-400 font-bold italic max-w-xl mx-auto mb-8">
+                   HaHaHub provides complete commercial data, technical riders, and full script access to verified theatre producers.
+                 </p>
+                 <button 
+                   onClick={() => onNavigate('login')}
+                   className="bg-brand-pink text-white px-10 py-5 font-black uppercase italic border-4 border-black shadow-neo-cyan hover:bg-black transition-all"
+                 >
+                   Verify Your Producer Identity
+                 </button>
+               </div>
             </div>
-            {payError && <div style={{ background: '#FF0266', color: '#fff', padding: '0.5rem', fontSize: '0.7rem', fontFamily: 'Space Mono', marginBottom: '1rem' }}>{payError}</div>}
-            <button
-              onClick={handleCheckout}
-              disabled={payLoading}
-              style={{ width: '100%', background: '#0a0a0a', color: '#FFD600', border: '4px solid #0a0a0a', padding: '1rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.2rem', textTransform: 'uppercase', cursor: 'pointer', boxShadow: '4px 4px 0 #FF0266', letterSpacing: '0.05em' }}
-            >
-              {payLoading ? 'PROCESSING...' : 'BUY ACCESS →'}
-            </button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FOOTER */}
-      <footer style={{ borderTop: '4px solid rgba(245,245,240,0.1)', padding: '2rem', textAlign: 'center', fontFamily: 'Space Mono', fontSize: '0.7rem', color: 'rgba(245,245,240,0.3)' }}>
-        © 2025 HAHAHUB – The Global Theater Comedy Hub
+        {/* FEATURES GRID */}
+        <section className="px-6 md:px-12 py-24 border-b-8 border-white">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="space-y-6">
+              <div className="w-16 h-16 bg-brand-cyan flex items-center justify-center border-4 border-black shadow-neo-magenta rotate-3">
+                <span className="material-symbols-outlined text-black text-3xl font-black">search</span>
+              </div>
+              <h3 className="text-3xl font-black uppercase italic text-white">Advanced Search</h3>
+              <p className="text-gray-400 font-bold italic">Filter by gender roles, genre, and production history to find the perfect fit.</p>
+            </div>
+            <div className="space-y-6">
+              <div className="w-16 h-16 bg-brand-yellow flex items-center justify-center border-4 border-black shadow-neo-cyan -rotate-3">
+                <span className="material-symbols-outlined text-black text-3xl font-black">verified</span>
+              </div>
+              <h3 className="text-3xl font-black uppercase italic text-white">Direct Licensing</h3>
+              <p className="text-gray-400 font-bold italic">Transparent contracts and direct contact with authors. No middlemen.</p>
+            </div>
+            <div className="space-y-6">
+              <div className="w-16 h-16 bg-brand-pink flex items-center justify-center border-4 border-black shadow-neo-yellow rotate-6">
+                <span className="material-symbols-outlined text-black text-3xl font-black">public</span>
+              </div>
+              <h3 className="text-3xl font-black uppercase italic text-white">Global Reach</h3>
+              <p className="text-gray-400 font-bold italic">Scripts from every continent, translated and ready for your stage.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* PRICING SECTION */}
+        <section className="px-6 md:px-12 py-32" id="pricing">
+          <div className="max-w-6xl mx-auto flex flex-col items-center">
+            <h2 className="font-display text-white text-6xl md:text-8xl uppercase mb-24 text-center">Get <span className="text-brand-pink">The Keys</span></h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 w-full max-w-4xl">
+              <div className="bg-brand-surface border-4 border-white p-12 shadow-neo-white">
+                <h3 className="text-3xl font-black mb-4 uppercase italic">Quarterly</h3>
+                <div className="text-5xl font-black text-brand-yellow mb-10">€59 <span className="text-sm text-gray-500">/ 3 MO</span></div>
+                <button onClick={() => handlePlanSelect('Quarterly Pass', '€59')} className="w-full py-5 border-4 border-white text-white font-black uppercase hover:bg-white hover:text-black transition-all italic">PayPal Express</button>
+              </div>
+              <div className="bg-white border-4 border-white p-12 shadow-neo-magenta scale-105">
+                <h3 className="text-3xl font-black mb-4 uppercase italic text-black">Annual Pro</h3>
+                <div className="text-5xl font-black text-brand-pink mb-10">€99 <span className="text-sm text-gray-500">/ YEAR</span></div>
+                <button onClick={() => handlePlanSelect('Annual Pass', '€99')} className="w-full py-5 bg-brand-pink text-white border-4 border-black font-black uppercase hover:bg-black transition-all shadow-neo-cyan italic">PayPal Express</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="bg-brand-black border-t-4 border-white py-12 px-6">
+         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="logo-text text-2xl uppercase opacity-50 cursor-pointer">HAHAHUB</div>
+            <div className="flex gap-10">
+               <button onClick={() => onNavigate('discovery')} className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white italic">Catalog</button>
+               <button onClick={() => onNavigate('about')} className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white italic">Mission</button>
+               <button onClick={() => onNavigate('login')} className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white italic">Auth</button>
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">© 2025 ALL LAUGHS RESERVED</p>
+         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;

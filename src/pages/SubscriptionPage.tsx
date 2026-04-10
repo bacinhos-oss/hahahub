@@ -1,120 +1,630 @@
-import React from 'react'
-import Navigation from '../components/Navigation'
-import { Page, User, Show } from '../types'
 
-interface Props {
-  user?: User | null
-  shows: Show[]
-  onNavigate: (page: Page) => void
-  onLogout: () => void
-  onPurchaseSuccess: () => void
+import React, { useState, useRef, useMemo } from 'react';
+import Navigation from '../components/Navigation';
+import ShareButton from '../components/ShareButton';
+import { Page, User, Show } from '../types';
+
+interface SubscriptionPageProps {
+  onNavigate: (page: Page) => void;
+  onLogout?: () => void;
+  user?: User;
+  onToggleFavorite: (id: string) => void;
+  onUpload: (show: Show) => void;
+  shows: Show[];
 }
 
-const SubscriptionPage: React.FC<Props> = ({ user, shows, onNavigate, onLogout, onPurchaseSuccess }) => {
+const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpload, shows }) => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'upload'>('overview');
+  
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [formData, setFormData] = useState({
+    title: '',
+    originalTitle: '',
+    author: '',
+    director: '',
+    directorNotes: '',
+    originalProductionSolutions: '',
+    producerName: user?.name || '', 
+    rightsHolder: '',
+    producerEmail: user?.name ? `${user.name.toLowerCase()}@hahahub.com` : '',
+    isDirectorMandatory: 'false',
+    creativeTeamAvailability: 'Optional',
+    genre: 'Comedy',
+    subgenre: '',
+    language: 'English',
+    location: '', 
+    maleRoles: '1',
+    femaleRoles: '1',
+    canMergeRoles: 'false',
+    duration: '90',
+    hasIntermission: 'true',
+    productionScale: 'Medium',
+    isTouringFriendly: 'true',
+    technicalComplexity: 'Medium',
+    costumeComplexity: 'Medium',
+    setComplexity: 'Medium',
+    adaptationFlexibility: 'Medium',
+    scalabilityNotes: '',
+    techStaffLighting: '1',
+    techStaffSound: '1',
+    techStaffPrompter: '0',
+    techStaffStagehands: '1',
+    techStaffOther: '',
+    premiereLocation: '',
+    premiereDate: '', 
+    performancesCount: '0', 
+    totalAudience: '0', 
+    buyoutLocations: '', 
+    licensedCountries: '',
+    riskProfile: 'Proven hit',
+    breakEvenPerformances: '40',
+    breakEvenThreshold: 'Medium',
+    translationsAvailable: '',
+    translationRightsIncluded: 'true',
+    isSponsorFriendly: 'true',
+    isGroupSalesFriendly: 'true',
+    rightsClearingSpeed: 'Medium',
+    exclusivityLevel: 'Exclusive',
+    licenseType: 'License',
+    licensingModel: 'Royalty-based',
+    royaltyRange: '8-10%',
+    advanceFee: '',
+    productionYear: new Date().getFullYear().toString(),
+    synopsis: '',
+    scriptExcerpt: '',
+    scriptScenario: '', 
+    audienceProfile: '',
+    awards: '',
+    boxOfficeIndicator: 'Emerging',
+    budgetRange: 'Medium'
+  });
+
+  // Calculate days remaining
+  const daysRemaining = useMemo(() => {
+    if (!user?.subscription?.expiryDate) return 0;
+    const expiry = new Date('2025-12-24'); // Mocking based on current string format
+    const today = new Date();
+    const diffTime = expiry.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }, [user]);
+
+  const subscriptionProgress = useMemo(() => {
+    const total = 365;
+    const remaining = Math.max(0, Math.min(total, daysRemaining));
+    return ((total - remaining) / total) * 100;
+  }, [daysRemaining]);
+
   if (!user) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <button onClick={() => onNavigate('login')} style={{ background: '#FFD600', color: '#0a0a0a', border: '4px solid #0a0a0a', padding: '1.25rem 3rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.25rem', textTransform: 'uppercase', cursor: 'pointer', boxShadow: '6px 6px 0 #FF0266' }}>
-          Sign in →
-        </button>
+      <div className="min-h-screen bg-brand-black flex items-center justify-center">
+        <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-12 py-5 font-black uppercase border-4 border-white shadow-neo-magenta italic">Login to View Hub</button>
       </div>
-    )
+    );
   }
 
-  const myShows = shows.filter(s => user.uploadedShowIds.includes(s.id))
+  const userUploads = shows.filter(s => user.uploadedShowIds?.includes(s.id));
 
-  const statCard = (label: string, value: string | number, color: string) => (
-    <div style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.1)', padding: '1.5rem' }}>
-      <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '2.5rem', color, lineHeight: 1, marginBottom: '0.25rem' }}>{value}</div>
-      <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(245,245,240,0.4)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>{label}</div>
-    </div>
-  )
+  const stats = [
+    { label: 'Scripts Uploaded', value: userUploads.length, icon: 'upload', color: 'brand-cyan' },
+    { label: 'Asset Scrapes', value: '1,240', icon: 'visibility', color: 'brand-yellow' },
+    { label: 'Inquiry Rate', value: '3.2%', icon: 'insights', color: 'brand-pink' },
+    { label: 'Active Favs', value: user.favorites.length, icon: 'favorite', color: 'white' },
+  ];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (validationErrors.length > 0) setValidationErrors([]);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLaunch = () => {
+    const errors: string[] = [];
+    if (!formData.title.trim()) errors.push('Production Title');
+    if (!formData.author.trim()) errors.push('Author/Playwright');
+    if (!formData.rightsHolder.trim()) errors.push('Copyright Holder');
+    if (!formData.location.trim()) errors.push('Origin Market');
+    if (!formData.synopsis.trim()) errors.push('Synopsis');
+    if (!formData.scriptScenario.trim()) errors.push('Script Scenario');
+    if (!imagePreview) errors.push('Poster Image');
+
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const newShow: Show = {
+      id: Math.random().toString(36).substr(2, 9),
+      ...formData,
+      maleRoles: parseInt(formData.maleRoles),
+      femaleRoles: parseInt(formData.femaleRoles),
+      duration: parseInt(formData.duration),
+      techStaffLighting: parseInt(formData.techStaffLighting),
+      techStaffSound: parseInt(formData.techStaffSound),
+      techStaffPrompter: parseInt(formData.techStaffPrompter),
+      techStaffStagehands: parseInt(formData.techStaffStagehands),
+      performancesCount: parseInt(formData.performancesCount),
+      totalAudience: parseInt(formData.totalAudience),
+      productionYear: parseInt(formData.productionYear),
+      breakEvenPerformances: parseInt(formData.breakEvenPerformances),
+      isDirectorMandatory: formData.isDirectorMandatory === 'true',
+      canMergeRoles: formData.canMergeRoles === 'true',
+      hasIntermission: formData.hasIntermission === 'true',
+      isTouringFriendly: formData.isTouringFriendly === 'true',
+      translationRightsIncluded: formData.translationRightsIncluded === 'true',
+      isSponsorFriendly: formData.isSponsorFriendly === 'true',
+      isGroupSalesFriendly: formData.isGroupSalesFriendly === 'true',
+      transparencyScore: 92,
+      likesCount: 0,
+      viewsCount: 0,
+      inquiriesCount: 0,
+      imageUrl: imagePreview || '',
+      productionPhotos: [],
+      rightsStatus: 'Available',
+      territoriesAvailable: 'Global',
+      programmingCompatibility: ['Commercial'],
+      stageType: 'Main Stage',
+      humorType: 'Universal',
+      boxOfficeIndicator: formData.boxOfficeIndicator as any,
+    } as Show;
+
+    onUpload(newShow);
+    setIsSuccess(true);
+    setTimeout(() => {
+      setIsSuccess(false);
+      setActiveTab('overview');
+      setFormData({ ...formData, title: '', synopsis: '', scriptScenario: '' });
+      setImagePreview(null);
+    }, 2500);
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#f5f5f0' }}>
-      <Navigation activePage="subscription" user={user} onNavigate={onNavigate} onLogout={onLogout} />
-
-      <main style={{ paddingTop: '6rem', padding: '6rem 2rem 4rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '3rem', gap: '2rem', flexWrap: 'wrap' }}>
-          <div>
-            <h1 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '5rem', textTransform: 'uppercase', lineHeight: 0.9, marginBottom: '0.5rem' }}>
-              MY <span style={{ color: '#FF0266' }}>HUB</span>
-            </h1>
-            <p style={{ fontFamily: 'Space Mono', fontSize: '0.75rem', color: 'rgba(245,245,240,0.4)' }}>{user.email}</p>
-          </div>
-
-          <div style={{ background: '#161616', border: '4px solid #f5f5f0', padding: '1.5rem 2rem', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.25rem', textTransform: 'uppercase' }}>{user.name}</div>
-              <div style={{ fontSize: '0.6rem', color: '#00E5FF', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: 'Barlow Condensed' }}>
-                {user.isPaid ? 'PRO MEMBER' : 'FREE'}
+    <div className="min-h-screen bg-brand-black flex flex-col">
+      <Navigation activePage="subscription" onNavigate={onNavigate} onLogout={onLogout} user={user} />
+      
+      <main className="flex-1 pt-32 pb-20 px-6 md:px-12 overflow-y-auto text-white">
+        <div className="max-w-7xl mx-auto space-y-12">
+          
+          <section className="flex flex-col md:flex-row items-end justify-between gap-10">
+            <div className="space-y-4">
+              <h1 className="text-7xl font-black uppercase italic tracking-tighter leading-none">
+                My <span className="text-brand-pink">Hub</span>
+              </h1>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <ShareButton title="My HAHAHUB Profile" text="Check out my comedy catalog!" url={window.location.href} />
+              <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan flex items-center gap-6">
+                <div>
+                  <p className="text-xl font-black uppercase italic leading-none">{user.name}</p>
+                  <p className="text-[10px] font-black text-brand-cyan uppercase tracking-widest mt-2">Verified Producer</p>
+                </div>
               </div>
             </div>
-            {user.isPaid && user.subscriptionExpiry && (
-              <div style={{ borderLeft: '2px solid rgba(245,245,240,0.1)', paddingLeft: '1.5rem' }}>
-                <div style={{ fontSize: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(245,245,240,0.4)', fontFamily: 'Barlow Condensed', fontWeight: 700 }}>Valid until</div>
-                <div style={{ fontFamily: 'Space Mono', fontSize: '0.75rem', color: '#FFD600', marginTop: '0.25rem' }}>{user.subscriptionExpiry}</div>
-              </div>
-            )}
-          </div>
-        </div>
+          </section>
 
-        {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
-          {statCard('Uploaded Shows', myShows.length, '#FFD600')}
-          {statCard('Total Views', myShows.reduce((a, s) => a + (s.viewsCount || 0), 0), '#00E5FF')}
-          {statCard('Total Likes', myShows.reduce((a, s) => a + (s.likesCount || 0), 0), '#FF0266')}
-          {statCard('Favorites', user.favorites.length, '#f5f5f0')}
-        </div>
-
-        {!user.isPaid && (
-          <div style={{ background: '#FFD600', border: '6px solid #0a0a0a', padding: '2rem', marginBottom: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', boxShadow: '8px 8px 0 #FF0266' }}>
-            <div>
-              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.75rem', color: '#0a0a0a', textTransform: 'uppercase' }}>Upgrade to PRO</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: '0.75rem', color: '#0a0a0a' }}>€79/year · Unlimited access · Upload shows</div>
-            </div>
-            <button onClick={onPurchaseSuccess} style={{ background: '#0a0a0a', color: '#FFD600', border: '4px solid #0a0a0a', padding: '1rem 2rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.1rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-              Buy PRO →
-            </button>
-          </div>
-        )}
-
-        {/* My shows */}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '2.5rem', textTransform: 'uppercase' }}>Moje <span style={{ color: '#FFD600' }}>Predstave</span></h2>
-            <button onClick={() => onNavigate('upload')} style={{ background: '#00E5FF', color: '#0a0a0a', border: '3px solid #0a0a0a', padding: '0.5rem 1.25rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '0.9rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-              + New
-            </button>
+          <div className="flex border-b-8 border-white">
+             <button 
+               onClick={() => setActiveTab('overview')}
+               className={`flex-1 md:flex-none px-12 py-5 text-xl font-black uppercase italic transition-all ${activeTab === 'overview' ? 'bg-white text-black' : 'bg-brand-black text-white/40 hover:text-white'}`}
+             >
+               Overview
+             </button>
+             <button 
+               onClick={() => setActiveTab('upload')}
+               className={`flex-1 md:flex-none px-12 py-5 text-xl font-black uppercase italic transition-all ${activeTab === 'upload' ? 'bg-brand-cyan text-black' : 'bg-brand-black text-white/40 hover:text-white'}`}
+             >
+               Deploy Asset
+             </button>
           </div>
 
-          {myShows.length === 0 ? (
-            <div style={{ border: '4px dashed rgba(245,245,240,0.1)', padding: '4rem', textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', color: 'rgba(245,245,240,0.2)', textTransform: 'uppercase', marginBottom: '1rem' }}>No shows uploaded yet</div>
-              <button onClick={() => onNavigate('upload')} style={{ background: '#00E5FF', color: '#0a0a0a', border: '3px solid #0a0a0a', padding: '0.75rem 2rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1rem', textTransform: 'uppercase', cursor: 'pointer' }}>
-                Add first →
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.25rem' }}>
-              {myShows.map(show => (
-                <div key={show.id} style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.1)', display: 'flex', gap: '1rem', padding: '1rem', alignItems: 'flex-start' }}>
-                  {show.imageUrl && <img src={show.imageUrl} alt={show.title} style={{ width: '70px', height: '90px', objectFit: 'cover', flexShrink: 0, border: '2px solid rgba(255,255,255,0.1)' }} />}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.1rem', textTransform: 'uppercase', marginBottom: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{show.title}</h3>
-                    <p style={{ fontFamily: 'Space Mono', fontSize: '0.65rem', color: 'rgba(245,245,240,0.4)', marginBottom: '0.75rem' }}>{show.author}</p>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <span style={{ background: '#00E5FF', color: '#0a0a0a', padding: '0.1rem 0.4rem', fontSize: '0.55rem', fontFamily: 'Barlow Condensed', fontWeight: 700, textTransform: 'uppercase' }}>{show.rightsStatus}</span>
+          {activeTab === 'overview' ? (
+            <div className="space-y-16 animate-in fade-in slide-in-from-bottom-4">
+              
+              {/* MEMBERSHIP STATUS WIDGET */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-8 bg-white text-black p-8 md:p-10 border-8 border-black shadow-neo-magenta">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
+                    <div>
+                      <h2 className="text-4xl font-black uppercase italic leading-none mb-2">Member Account</h2>
+                      <p className="font-bold text-gray-500 uppercase tracking-widest text-xs italic">Status: {user.subscription?.status} • {user.subscription?.type} Tier</p>
+                    </div>
+                    <div className="bg-brand-black text-white px-6 py-4 border-4 border-black rotate-[-2deg]">
+                      <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">Days to Lockdown</p>
+                      <p className="text-4xl font-black italic leading-none">{daysRemaining}</p>
                     </div>
                   </div>
+                  
+                  <div className="space-y-4">
+                    <div className="h-6 bg-gray-100 border-4 border-black relative overflow-hidden">
+                       <div 
+                         className="absolute top-0 left-0 h-full bg-brand-pink border-r-4 border-black transition-all duration-1000"
+                         style={{ width: `${subscriptionProgress}%` }}
+                       ></div>
+                    </div>
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest italic">
+                       <span>Activation Date</span>
+                       <span className="text-brand-pink">Expiring: {user.subscription?.expiryDate}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 pt-10 border-t-4 border-black/5">
+                    <div className="flex items-center gap-4">
+                       <span className="material-symbols-outlined text-4xl text-brand-pink">sync</span>
+                       <div>
+                          <p className="text-[10px] font-black uppercase italic">Auto-Renewal</p>
+                          <p className="text-sm font-bold">Enabled via PayPal Express</p>
+                       </div>
+                    </div>
+                    <button className="bg-black text-white py-3 px-6 font-black uppercase text-xs hover:bg-brand-cyan hover:text-black transition-all border-4 border-black">
+                       Manage Billing
+                    </button>
+                  </div>
                 </div>
-              ))}
+
+                <div className="lg:col-span-4 bg-brand-surface border-4 border-white p-8 shadow-neo-yellow flex flex-col justify-between">
+                   <div>
+                      <h3 className="text-2xl font-black uppercase italic text-brand-yellow mb-6">Vault Privileges</h3>
+                      <ul className="space-y-4">
+                         {user.subscription?.discounts.map((d, i) => (
+                           <li key={i} className="flex items-center gap-3 text-sm font-bold italic">
+                              <span className="material-symbols-outlined text-brand-cyan">verified</span>
+                              {d}
+                           </li>
+                         ))}
+                      </ul>
+                   </div>
+                   <button className="mt-8 w-full border-4 border-white py-4 text-xs font-black uppercase italic hover:bg-white hover:text-black transition-all">
+                      Upgrade My Tier
+                   </button>
+                </div>
+              </div>
+
+              {/* STATS OVERVIEW */}
+              <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+                {stats.map((stat, i) => (
+                  <div key={i} className="bg-brand-surface border-4 border-white p-8 shadow-neo-white">
+                    <span className={`material-symbols-outlined text-4xl text-${stat.color} mb-6 block`}>{stat.icon}</span>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1 italic">{stat.label}</p>
+                    <p className="text-4xl font-black uppercase italic tracking-tighter">{stat.value}</p>
+                  </div>
+                ))}
+              </section>
+
+              {/* ASSETS & RESOURCES */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                
+                {/* MY ASSETS LIST */}
+                <section className="lg:col-span-8 space-y-8">
+                  <div className="flex items-center gap-4">
+                     <h2 className="text-4xl font-black uppercase italic leading-none">My <span className="text-brand-yellow">Assets</span></h2>
+                     <div className="h-1 flex-1 bg-white/10"></div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {userUploads.length === 0 ? (
+                        <div className="col-span-2 py-20 border-4 border-dashed border-white/10 text-center">
+                          <p className="text-white/20 font-black uppercase italic">No active assets deployed.</p>
+                          <button onClick={() => setActiveTab('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Deploy First Asset</button>
+                        </div>
+                      ) : userUploads.map((show) => (
+                          <div key={show.id} className="bg-brand-surface border-4 border-white p-6 flex gap-6 group hover:shadow-neo-yellow transition-all">
+                              <div className="w-24 h-32 border-2 border-white/10 flex-shrink-0">
+                                  <img src={show.imageUrl} className="w-full h-full object-cover" alt={show.title} />
+                              </div>
+                              <div className="flex-1 flex flex-col justify-between">
+                                  <div>
+                                      <h3 className="text-xl font-black uppercase italic leading-none">{show.title}</h3>
+                                      <div className="mt-2 flex items-center gap-2">
+                                         <span className={`w-2 h-2 rounded-full ${show.rightsStatus === 'Available' ? 'bg-green-500' : 'bg-brand-yellow'}`}></span>
+                                         <p className="text-[9px] text-gray-500 font-bold uppercase italic">{show.rightsStatus}</p>
+                                      </div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                      <button className="flex-1 bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage</button>
+                                      <button className="px-3 bg-brand-black text-white py-2 border-2 border-white/20 hover:border-white transition-colors">
+                                         <span className="material-symbols-outlined text-xs">bar_chart</span>
+                                      </button>
+                                  </div>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+                </section>
+
+                {/* RESOURCE CENTER */}
+                <section className="lg:col-span-4 space-y-8">
+                  <div className="flex items-center gap-4">
+                     <h2 className="text-2xl font-black uppercase italic leading-none">Resource <span className="text-brand-cyan">Deck</span></h2>
+                     <div className="h-1 flex-1 bg-white/10"></div>
+                  </div>
+                  <div className="bg-brand-surface border-4 border-white divide-y-4 divide-white/10 shadow-neo-cyan">
+                     {[
+                       { t: 'Deal Memo Template', i: 'description', s: 'PDF' },
+                       { t: 'Royalty Report XLS', i: 'table_chart', s: 'XLS' },
+                       { t: 'Standard Comedy NDA', i: 'gavel', s: 'DOC' },
+                       { t: 'Box Office Tracker', i: 'trending_up', s: 'PDF' },
+                     ].map((item, idx) => (
+                       <div key={idx} className="p-4 flex items-center justify-between group hover:bg-brand-cyan/5 cursor-pointer transition-colors">
+                          <div className="flex items-center gap-4">
+                             <span className="material-symbols-outlined text-brand-cyan group-hover:scale-110 transition-transform">{item.i}</span>
+                             <p className="text-xs font-black uppercase italic tracking-wider">{item.t}</p>
+                          </div>
+                          <span className="text-[8px] font-black bg-white/10 px-2 py-1 italic">{item.s}</span>
+                       </div>
+                     ))}
+                  </div>
+                  <div className="p-6 bg-brand-pink/5 border-2 border-brand-pink/20 italic">
+                     <p className="text-[10px] font-black text-brand-pink uppercase tracking-widest mb-2">Producer Tip:</p>
+                     <p className="text-xs font-bold leading-relaxed opacity-70">Keeping your "Script Scenario" updated to v4 increases catalog visibility by 40%.</p>
+                  </div>
+                </section>
+              </div>
+            </div>
+          ) : (
+            <div className="animate-in fade-in slide-in-from-bottom-4 space-y-12 pb-20">
+               {isSuccess ? (
+                 <div className="bg-brand-cyan p-20 text-black text-center border-8 border-white shadow-neo-magenta">
+                   <span className="material-symbols-outlined text-8xl font-black mb-6">verified</span>
+                   <h2 className="text-6xl font-black uppercase italic mb-4">ASSET DEPLOYED</h2>
+                   <p className="text-xl font-bold italic uppercase opacity-70">Catalog entry successful. Returning to feed...</p>
+                 </div>
+               ) : (
+                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                    <div className="lg:col-span-8 space-y-16">
+                       
+                       <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
+                          <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4 leading-none">00. Rights & Identity</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Production Company *</label>
+                                <input name="producerName" value={formData.producerName} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold uppercase outline-none focus:border-brand-cyan" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Copyright Holder Name *</label>
+                                <input name="rightsHolder" value={formData.rightsHolder} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-brand-yellow font-bold uppercase outline-none focus:border-brand-yellow" placeholder="AUTHOR OR PUBLISHER NAME" />
+                             </div>
+                             <div className="col-span-2">
+                                <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Currently Licensed Countries</label>
+                                <input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold italic outline-none focus:border-brand-cyan" placeholder="E.G. SLOVENIA, UK, JAPAN..." />
+                             </div>
+                          </div>
+                       </section>
+
+                       <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
+                          <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10 border-b-4 border-white/10 pb-4 leading-none">01. Creative Engine</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                             <div className="col-span-2">
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Production Title *</label>
+                                <input name="title" value={formData.title} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-6 py-5 text-white font-bold uppercase text-2xl outline-none focus:border-brand-yellow" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Author / Playwright *</label>
+                                <input name="author" value={formData.author} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold outline-none" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Director</label>
+                                <input name="director" value={formData.director} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold outline-none" />
+                             </div>
+                             
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Main Genre *</label>
+                                <input name="genre" value={formData.genre} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black italic focus:border-brand-yellow outline-none uppercase" placeholder="E.G. COMEDY" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Subgenre / Style</label>
+                                <input name="subgenre" value={formData.subgenre} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black italic focus:border-brand-pink outline-none" placeholder="E.G. Political Farce" />
+                             </div>
+
+                             <div className="col-span-2">
+                                <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Synopsis *</label>
+                                <textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={4} className="w-full bg-brand-black border-2 border-white/10 p-5 text-white italic outline-none focus:border-brand-pink"></textarea>
+                             </div>
+                             <div className="col-span-2">
+                                <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Director's Vision Notes</label>
+                                <textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-5 text-white italic outline-none focus:border-brand-cyan" placeholder="Style, interpretation, staging direction..."></textarea>
+                             </div>
+                             <div className="col-span-2">
+                                <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Original Staging Solutions</label>
+                                <textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-5 text-white italic outline-none focus:border-brand-yellow" placeholder="Describe unique technical or creative staging requirements..."></textarea>
+                             </div>
+                          </div>
+                       </section>
+
+                       <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-yellow">
+                          <h3 className="text-3xl font-black uppercase italic text-brand-yellow mb-10 border-b-4 border-white/10 pb-4 leading-none">02. Cast & Tech</h3>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Male Cast</label>
+                                <input name="maleRoles" type="number" value={formData.maleRoles} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Female Cast</label>
+                                <input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Production Scale</label>
+                                <select name="productionScale" value={formData.productionScale} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                                   <option value="Small">Small</option>
+                                   <option value="Medium">Medium</option>
+                                   <option value="Large">Large</option>
+                                </select>
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Touring Friendly</label>
+                                <select name="isTouringFriendly" value={formData.isTouringFriendly} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                                   <option value="true">YES</option>
+                                   <option value="false">NO</option>
+                                </select>
+                             </div>
+
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Costume Complexity</label>
+                                <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                                   <option value="Low">Low</option>
+                                   <option value="Medium">Medium</option>
+                                   <option value="High">High</option>
+                                </select>
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Set Complexity</label>
+                                <select name="setComplexity" value={formData.setComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                                   <option value="Low">Low</option>
+                                   <option value="Medium">Medium</option>
+                                   <option value="High">High</option>
+                                </select>
+                             </div>
+                             
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Lighting Staff</label>
+                                <input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Sound Staff</label>
+                                <input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Stagehands</label>
+                                <input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-white mb-2 italic">Prompter</label>
+                                <input name="techStaffPrompter" type="number" value={formData.techStaffPrompter} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+
+                             <div className="col-span-2">
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Duration (Min) *</label>
+                                <input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div className="col-span-2">
+                                <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Origin Market *</label>
+                                <input name="location" value={formData.location} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold uppercase" placeholder="E.G. SLOVENIA, USA..." />
+                             </div>
+                          </div>
+                       </section>
+
+                       <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
+                          <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4 leading-none">03. Market Performance</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Premiere Date</label>
+                                <input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold uppercase outline-none focus:border-brand-yellow" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Total Performances</label>
+                                <input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Total Audience</label>
+                                <input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                             </div>
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Box Office Indicator</label>
+                                <select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                                   <option value="High">High</option>
+                                   <option value="Medium">Medium</option>
+                                   <option value="Emerging">Emerging</option>
+                                </select>
+                             </div>
+                          </div>
+                       </section>
+
+                       <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
+                          <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10 border-b-4 border-white/10 pb-4 leading-none">04. Script Preview</h3>
+                          <div className="space-y-8">
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic tracking-widest font-black uppercase">Public Preview Script Scenario (3 Pages) *</label>
+                                <textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={12} className="w-full bg-brand-black border-2 border-white/10 p-8 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" placeholder="Paste the first 3 pages here. This will be publicly visible."></textarea>
+                             </div>
+                          </div>
+                       </section>
+
+                       <div className="bg-brand-pink/10 border-4 border-brand-pink p-8 text-center shadow-neo-yellow animate-pulse">
+                          <span className="material-symbols-outlined text-brand-pink text-5xl mb-4">gavel</span>
+                          <p className="text-lg font-black uppercase italic tracking-widest text-white leading-tight">
+                            The producer or author must be the holder of the copyrights; otherwise, legal complications may arise!
+                          </p>
+                       </div>
+                    </div>
+
+                    <div className="lg:col-span-4 space-y-12">
+                       <section className="bg-white text-black p-10 shadow-neo-white sticky top-48">
+                          <h3 className="text-2xl font-black uppercase italic mb-8 border-b-4 border-black pb-4 leading-none text-brand-pink">Commercial Bible</h3>
+                          <div className="space-y-6">
+                             <div 
+                               onClick={() => fileInputRef.current?.click()} 
+                               className="w-full h-64 border-4 border-dashed border-black/20 flex flex-col items-center justify-center cursor-pointer hover:border-brand-pink overflow-hidden bg-gray-50 transition-all group"
+                             >
+                                {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/10 text-6xl group-hover:text-brand-pink">add_a_photo</span>}
+                                <p className="mt-2 text-[8px] font-black uppercase text-gray-400">Main Poster *</p>
+                             </div>
+                             <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+                             
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">License Type</label>
+                                <select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-2 font-black italic uppercase text-xs">
+                                   <option value="License">License</option>
+                                   <option value="Option">Option</option>
+                                   <option value="Co-production">Co-production</option>
+                                </select>
+                             </div>
+
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Licensing Model</label>
+                                <select name="licensingModel" value={formData.licensingModel} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-2 font-black italic uppercase text-xs">
+                                   <option value="Royalty-based">Royalty-based</option>
+                                   <option value="Flat fee">Flat fee</option>
+                                   <option value="Hybrid">Hybrid</option>
+                                </select>
+                             </div>
+
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Royalty Range</label>
+                                <input name="royaltyRange" value={formData.royaltyRange} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-2 font-black italic text-sm" placeholder="8-10%" />
+                             </div>
+
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Advance Fee</label>
+                                <input name="advanceFee" value={formData.advanceFee} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-2 font-black italic text-sm" placeholder="€0" />
+                             </div>
+
+                             <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Exclusivity Level</label>
+                                <select name="exclusivityLevel" value={formData.exclusivityLevel} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-2 font-black italic uppercase text-xs">
+                                   <option value="Exclusive">Exclusive</option>
+                                   <option value="Semi-exclusive">Semi-exclusive</option>
+                                   <option value="Non-exclusive">Non-exclusive</option>
+                                </select>
+                             </div>
+
+                             <button 
+                                onClick={handleLaunch} 
+                                className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl"
+                              >
+                                Deploy to Vault
+                              </button>
+                          </div>
+                       </section>
+                    </div>
+                 </div>
+               )}
             </div>
           )}
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default SubscriptionPage
+export default SubscriptionPage;

@@ -1,250 +1,416 @@
-import React, { useState } from 'react'
-import Navigation from '../components/Navigation'
-import { supabase } from '../lib/supabase'
-import { Page, User, Show } from '../types'
 
-interface Props {
-  user?: User | null
-  onNavigate: (page: Page) => void
-  onLogout: () => void
-  onUpload: (show: Partial<Show>) => Promise<void>
+import React, { useState, useRef } from 'react';
+import Navigation from '../components/Navigation';
+import { Page, User, Show } from '../types';
+import { supabase } from '../lib/supabase';
+
+interface UploadPageProps {
+  onNavigate: (page: Page) => void;
+  onLogout?: () => void;
+  user?: User;
+  onUpload: (show: Show) => void;
 }
 
-const UploadPage: React.FC<Props> = ({ user, onNavigate, onLogout, onUpload }) => {
-  const [form, setForm] = useState({
-    title: '', author: '', director: '', synopsis: '', genre: 'Comedy',
-    language: 'Slovenščina', location: '', duration: '90',
-    maleRoles: '1', femaleRoles: '1', rightsHolder: '',
-    licenseType: 'License', licensingModel: 'Royalty-based', royaltyRange: '8-10%',
-    rightsStatus: 'Available', productionYear: new Date().getFullYear().toString()
-  })
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string>('')
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [errors, setErrors] = useState<string[]>([])
+const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onUpload }) => {
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [formData, setFormData] = useState({
+    title: '',
+    originalTitle: '',
+    author: '',
+    director: '',
+    directorNotes: '',
+    originalProductionSolutions: '',
+    producerName: '', 
+    rightsHolder: '',
+    producerEmail: user?.name ? `${user.name.toLowerCase()}@hahahub.com` : '',
+    isDirectorMandatory: 'false',
+    creativeTeamAvailability: 'Optional',
+    genre: 'Comedy',
+    subgenre: '',
+    language: 'English',
+    location: '', 
+    maleRoles: '1',
+    femaleRoles: '1',
+    canMergeRoles: 'false',
+    duration: '90',
+    hasIntermission: 'true',
+    productionScale: 'Medium',
+    isTouringFriendly: 'true',
+    technicalComplexity: 'Medium',
+    costumeComplexity: 'Medium',
+    setComplexity: 'Medium',
+    adaptationFlexibility: 'Medium',
+    scalabilityNotes: '',
+    techStaffLighting: '1',
+    techStaffSound: '1',
+    techStaffPrompter: '0',
+    techStaffStagehands: '1',
+    techStaffOther: '',
+    premiereLocation: '',
+    buyoutLocations: '', 
+    licensedCountries: '',
+    riskProfile: 'Proven hit',
+    breakEvenPerformances: '40',
+    breakEvenThreshold: 'Medium',
+    translationsAvailable: '',
+    translationRightsIncluded: 'true',
+    isSponsorFriendly: 'true',
+    isGroupSalesFriendly: 'true',
+    rightsClearingSpeed: 'Medium',
+    exclusivityLevel: 'Exclusive',
+    licenseType: 'License',
+    licensingModel: 'Royalty-based',
+    royaltyRange: '8-10%',
+    advanceFee: '',
+    productionYear: new Date().getFullYear().toString(),
+    performancesCount: '0',
+    totalAudience: '0',
+    premiereDate: '',
+    synopsis: '',
+    scriptExcerpt: '',
+    scriptScenario: '', 
+    audienceProfile: '',
+    awards: '',
+    boxOfficeIndicator: 'Emerging',
+    budgetRange: 'Medium'
+  });
 
-  const handle = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm(p => ({ ...p, [e.target.name]: e.target.value }))
-  }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (validationErrors.length > 0) setValidationErrors([]);
+  };
 
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file)
-      const reader = new FileReader()
-      reader.onloadend = () => setImagePreview(reader.result as string)
-      reader.readAsDataURL(file)
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
-  const handleSubmit = async () => {
-    const errs: string[] = []
-    if (!form.title) errs.push('Naslov')
-    if (!form.author) errs.push('Avtor')
-    if (!form.synopsis) errs.push('Sinopsis')
-    if (!form.location) errs.push('Izvor')
-    if (!form.rightsHolder) errs.push('Imetnik pravic')
-    if (errs.length > 0) { setErrors(errs); return }
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-    setLoading(true)
-    setErrors([])
+  const handleLaunch = async () => {
+    const errors: string[] = [];
+    if (!formData.title.trim()) errors.push('Production Title');
+    if (!formData.author.trim()) errors.push('Author/Playwright');
+    if (!formData.rightsHolder.trim()) errors.push('Copyright Holder');
+    if (!formData.location.trim()) errors.push('Origin Market');
+    if (!formData.synopsis.trim()) errors.push('Synopsis');
+    if (!formData.scriptScenario.trim()) errors.push('Script Scenario');
+    if (!imagePreview) errors.push('Poster Visual');
 
-    try {
-      let imageUrl = ''
-      if (imageFile && user) {
-        const ext = imageFile.name.split('.').pop()
-        const path = `${user.id}/${Date.now()}.${ext}`
-        const { data: uploadData } = await supabase.storage.from('show-images').upload(path, imageFile)
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const newShow: Show = {
+      id: Math.random().toString(36).substr(2, 9),
+      ...formData,
+      maleRoles: parseInt(formData.maleRoles),
+      femaleRoles: parseInt(formData.femaleRoles),
+      duration: parseInt(formData.duration),
+      techStaffLighting: parseInt(formData.techStaffLighting),
+      techStaffSound: parseInt(formData.techStaffSound),
+      techStaffPrompter: parseInt(formData.techStaffPrompter),
+      techStaffStagehands: parseInt(formData.techStaffStagehands),
+      performancesCount: parseInt(formData.performancesCount),
+      totalAudience: parseInt(formData.totalAudience),
+      premiereDate: formData.premiereDate,
+      locationsPlayed: '',
+      boxOfficeIndicator: formData.boxOfficeIndicator as any,
+      awards: '',
+      audienceProfile: '',
+      productionYear: parseInt(formData.productionYear),
+      breakEvenPerformances: parseInt(formData.breakEvenPerformances),
+      isDirectorMandatory: formData.isDirectorMandatory === 'true',
+      canMergeRoles: formData.canMergeRoles === 'true',
+      hasIntermission: formData.hasIntermission === 'true',
+      isTouringFriendly: formData.isTouringFriendly === 'true',
+      translationRightsIncluded: formData.translationRightsIncluded === 'true',
+      isSponsorFriendly: formData.isSponsorFriendly === 'true',
+      isGroupSalesFriendly: formData.isGroupSalesFriendly === 'true',
+      transparencyScore: 92,
+      likesCount: 0,
+      viewsCount: 0,
+      inquiriesCount: 0,
+      imageUrl: imagePreview || '',
+      productionPhotos: [],
+      rightsStatus: 'Available',
+      territoriesAvailable: 'Global',
+      programmingCompatibility: ['Commercial'],
+      stageType: 'Main Stage',
+      humorType: 'Universal'
+    } as Show;
+
+    // Upload image to Supabase Storage if we have a file
+    if (imageFile) {
+      try {
+        const ext = imageFile.name.split('.').pop();
+        const path = `shows/${Date.now()}.${ext}`;
+        const { data: uploadData } = await supabase.storage.from('show-images').upload(path, imageFile);
         if (uploadData) {
-          const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path)
-          imageUrl = urlData.publicUrl
+          const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path);
+          newShow.imageUrl = urlData.publicUrl;
         }
+      } catch (e) {
+        // keep base64 preview if storage fails
       }
-
-      await onUpload({
-        title: form.title,
-        author: form.author,
-        director: form.director,
-        synopsis: form.synopsis,
-        genre: form.genre,
-        language: form.language,
-        location: form.location,
-        duration: parseInt(form.duration),
-        maleRoles: parseInt(form.maleRoles),
-        femaleRoles: parseInt(form.femaleRoles),
-        rightsHolder: form.rightsHolder,
-        licenseType: form.licenseType,
-        licensingModel: form.licensingModel,
-        royaltyRange: form.royaltyRange,
-        rightsStatus: form.rightsStatus,
-        productionYear: parseInt(form.productionYear),
-        imageUrl,
-        producerName: user?.name || '',
-        producerEmail: user?.email || '',
-        likesCount: 0,
-        viewsCount: 0,
-      })
-
-      setSuccess(true)
-      setTimeout(() => { setSuccess(false); onNavigate('subscription') }, 2500)
-    } catch (err) {
-      setErrors(['Save error. Please try again.'])
     }
-    setLoading(false)
-  }
 
-  const inp: React.CSSProperties = { width: '100%', background: '#0a0a0a', border: '2px solid rgba(245,245,240,0.15)', padding: '0.875rem 1rem', color: '#f5f5f0', fontFamily: 'Space Mono', fontSize: '0.8rem', outline: 'none' }
-  const lbl: React.CSSProperties = { display: 'block', fontSize: '0.6rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.4rem', color: 'rgba(245,245,240,0.5)', fontFamily: 'Barlow Condensed' }
-
-  if (success) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ background: '#00E5FF', border: '8px solid #0a0a0a', padding: '4rem', textAlign: 'center', boxShadow: '12px 12px 0 #FF0266' }}>
-          <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '5rem', color: '#0a0a0a', textTransform: 'uppercase' }}>DEPLOYED!</div>
-          <p style={{ fontFamily: 'Space Mono', fontSize: '0.85rem', color: '#0a0a0a', marginTop: '1rem' }}>Show is in the catalog. Redirecting...</p>
-        </div>
-      </div>
-    )
-  }
+    onUpload(newShow);
+    setIsSuccess(true);
+    setTimeout(() => {
+      setIsSuccess(false);
+      onNavigate('discovery');
+    }, 3000);
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#f5f5f0' }}>
-      <Navigation activePage="upload" user={user} onNavigate={onNavigate} onLogout={onLogout} />
+    <div className="flex flex-col min-h-screen bg-brand-black overflow-y-auto text-white">
+      <Navigation onNavigate={onNavigate} onLogout={onLogout} activePage="upload" user={user} />
+      
+      <main className="pt-40 pb-24 px-8">
+        <div className="max-w-6xl mx-auto space-y-16">
+          <header className="mb-20">
+            <h1 className="text-7xl md:text-[140px] font-black uppercase italic leading-[0.8] tracking-tighter">
+              DEPLOY <span className="text-brand-pink">ASSET</span>
+            </h1>
+            <p className="text-white/40 italic uppercase text-xs mt-8 tracking-[0.5em]">Global Listing Registry / Pro Version 3.2</p>
+          </header>
 
-      <main style={{ paddingTop: '6rem', padding: '6rem 2rem 4rem', maxWidth: '1000px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '4rem', textTransform: 'uppercase', marginBottom: '3rem', lineHeight: 0.9 }}>
-          DEPLOY <span style={{ color: '#00E5FF' }}>PREDSTAVO</span>
-        </h1>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            <div className="lg:col-span-8 space-y-20">
+               
+               <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
+                  <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4">00. Rights & Identity</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Production Company *</label>
+                        <input name="producerName" value={formData.producerName} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold uppercase focus:border-brand-cyan outline-none" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Copyright Holder Name *</label>
+                        <input name="rightsHolder" value={formData.rightsHolder} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-brand-yellow font-bold uppercase focus:border-brand-yellow outline-none" />
+                     </div>
+                  </div>
+               </section>
 
-        {errors.length > 0 && (
-          <div style={{ background: '#FF0266', padding: '1rem 1.5rem', marginBottom: '2rem', fontFamily: 'Space Mono', fontSize: '0.8rem' }}>
-            Missing required fields: {errors.join(', ')}
-          </div>
-        )}
+               <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
+                  <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10 border-b-4 border-white/10 pb-4">01. Creative Engine</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                     <div className="col-span-2">
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Production Title *</label>
+                        <input name="title" value={formData.title} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-6 py-5 text-white font-bold uppercase text-2xl focus:border-brand-yellow outline-none" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Author / Playwright *</label>
+                        <input name="author" value={formData.author} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold outline-none" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Main Genre *</label>
+                        <input name="genre" value={formData.genre} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black italic focus:border-brand-yellow outline-none uppercase" />
+                     </div>
+                     <div className="col-span-2">
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Synopsis *</label>
+                        <textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={5} className="w-full bg-brand-black border-2 border-white/10 p-6 text-white text-xl italic leading-relaxed outline-none focus:border-brand-pink"></textarea>
+                     </div>
+                     <div className="col-span-2">
+                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Director's Vision Notes</label>
+                        <textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-5 text-white italic outline-none focus:border-brand-pink" placeholder="Style, interpretation, staging direction..."></textarea>
+                     </div>
+                     <div className="col-span-2">
+                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Original Staging Solutions</label>
+                        <textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-5 text-white italic outline-none focus:border-brand-yellow" placeholder="Describe unique technical or creative staging requirements..."></textarea>
+                     </div>
+                  </div>
+               </section>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '3rem', alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Section 1 */}
-            <div style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.1)', padding: '2rem' }}>
-              <h3 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', textTransform: 'uppercase', color: '#00E5FF', marginBottom: '1.5rem', borderBottom: '2px solid rgba(245,245,240,0.1)', paddingBottom: '0.75rem' }}>01. Identiteta</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div style={{ gridColumn: '1/-1' }}>
-                  <label style={lbl}>Production Title *</label>
-                  <input name="title" value={form.title} onChange={handle} style={{ ...inp, fontSize: '1.1rem', fontFamily: 'Barlow Condensed', fontWeight: 900 }} placeholder="E.G. THE CHRISTMAS COMEDY" />
-                </div>
-                <div>
-                  <label style={lbl}>Author *</label>
-                  <input name="author" value={form.author} onChange={handle} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Director</label>
-                  <input name="director" value={form.director} onChange={handle} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Rights Holder *</label>
-                  <input name="rightsHolder" value={form.rightsHolder} onChange={handle} style={{ ...inp, color: '#FFD600' }} />
-                </div>
-                <div>
-                  <label style={lbl}>Origin Market *</label>
-                  <input name="location" value={form.location} onChange={handle} style={inp} placeholder="E.G. USA, UK..." />
-                </div>
-                <div style={{ gridColumn: '1/-1' }}>
-                  <label style={lbl}>Synopsis *</label>
-                  <textarea name="synopsis" value={form.synopsis} onChange={handle} rows={4} style={{ ...inp, resize: 'vertical' }} />
-                </div>
-              </div>
+               <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-yellow">
+                  <h3 className="text-3xl font-black uppercase italic text-brand-yellow mb-10 border-b-4 border-white/10 pb-4">02. Cast & Tech</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Male Cast</label>
+                        <input name="maleRoles" type="number" value={formData.maleRoles} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Female Cast</label>
+                        <input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Production Scale</label>
+                        <select name="productionScale" value={formData.productionScale} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                           <option value="Small">Small</option>
+                           <option value="Medium">Medium</option>
+                           <option value="Large">Large</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Touring Friendly</label>
+                        <select name="isTouringFriendly" value={formData.isTouringFriendly} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                           <option value="true">YES</option>
+                           <option value="false">NO</option>
+                        </select>
+                     </div>
+                     
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Costume Complexity</label>
+                        <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                           <option value="Low">Low</option>
+                           <option value="Medium">Medium</option>
+                           <option value="High">High</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Set Complexity</label>
+                        <select name="setComplexity" value={formData.setComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                           <option value="Low">Low</option>
+                           <option value="Medium">Medium</option>
+                           <option value="High">High</option>
+                        </select>
+                     </div>
+                     
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Lighting Staff</label>
+                        <input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Sound Staff</label>
+                        <input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Stagehands</label>
+                        <input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-white mb-2 italic">Prompter</label>
+                        <input name="techStaffPrompter" type="number" value={formData.techStaffPrompter} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+
+                     <div className="col-span-2">
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Duration (Min) *</label>
+                        <input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div className="col-span-2">
+                        <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Origin Market *</label>
+                        <input name="location" value={formData.location} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold uppercase" placeholder="E.G. SLOVENIA, USA..." />
+                     </div>
+                  </div>
+               </section>
+
+               <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
+                  <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4">03. Market Performance</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Premiere Date</label>
+                        <input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold uppercase outline-none focus:border-brand-yellow" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Total Performances</label>
+                        <input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Total Audience</label>
+                        <input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Box Office Indicator</label>
+                        <select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
+                           <option value="High">High</option>
+                           <option value="Medium">Medium</option>
+                           <option value="Emerging">Emerging</option>
+                        </select>
+                     </div>
+                  </div>
+               </section>
+
+               <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
+                  <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10 border-b-4 border-white/10 pb-4">04. Script Preview</h3>
+                  <div className="col-span-2">
+                     <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic tracking-widest font-black uppercase">Public Preview Script Scenario (3 Pages) *</label>
+                     <textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={15} className="w-full bg-brand-black border-2 border-white/10 p-8 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow"></textarea>
+                  </div>
+               </section>
+
+               <div className="bg-brand-pink/10 border-4 border-brand-pink p-8 text-center shadow-neo-yellow">
+                  <span className="material-symbols-outlined text-brand-pink text-5xl mb-4">gavel</span>
+                  <p className="text-lg font-black uppercase italic tracking-widest text-white leading-tight">
+                    The producer or author must be the holder of the copyrights; otherwise, legal complications may arise!
+                  </p>
+               </div>
             </div>
 
-            {/* Section 2 */}
-            <div style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.1)', padding: '2rem' }}>
-              <h3 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', textTransform: 'uppercase', color: '#FFD600', marginBottom: '1.5rem', borderBottom: '2px solid rgba(245,245,240,0.1)', paddingBottom: '0.75rem' }}>02. Produkcija</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={lbl}>Genre</label>
-                  <input name="genre" value={form.genre} onChange={handle} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Language</label>
-                  <input name="language" value={form.language} onChange={handle} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Duration (min)</label>
-                  <input name="duration" type="number" value={form.duration} onChange={handle} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Male Roles</label>
-                  <input name="maleRoles" type="number" value={form.maleRoles} onChange={handle} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Female Roles</label>
-                  <input name="femaleRoles" type="number" value={form.femaleRoles} onChange={handle} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Production Year</label>
-                  <input name="productionYear" type="number" value={form.productionYear} onChange={handle} style={inp} />
-                </div>
-              </div>
+            <div className="lg:col-span-4 space-y-12">
+               <section className="bg-white text-black p-10 shadow-neo-white sticky top-32">
+                  <h3 className="text-2xl font-black uppercase italic mb-10 border-b-4 border-black pb-4 leading-none text-brand-pink">Commercial Bible</h3>
+                  <div className="space-y-8">
+                     <div 
+                       onClick={() => fileInputRef.current?.click()} 
+                       className="w-full h-64 border-4 border-dashed border-black/20 flex flex-col items-center justify-center cursor-pointer hover:border-brand-pink overflow-hidden bg-gray-50 group"
+                     >
+                        {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/10 text-6xl group-hover:text-brand-pink">add_a_photo</span>}
+                        <p className="mt-2 text-[8px] font-black uppercase text-gray-400">Poster Visual *</p>
+                     </div>
+                     <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">License Type</label>
+                        <select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-xs font-black uppercase italic">
+                           <option value="License">License</option>
+                           <option value="Option">Option</option>
+                           <option value="Co-production">Co-production</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Licensing Model</label>
+                        <select name="licensingModel" value={formData.licensingModel} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-xs font-black uppercase italic">
+                           <option value="Royalty-based">Royalty-based</option>
+                           <option value="Flat fee">Flat fee</option>
+                           <option value="Hybrid">Hybrid</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Royalty Range</label>
+                        <input name="royaltyRange" value={formData.royaltyRange} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-sm font-black italic" placeholder="8-10%" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Advance Fee</label>
+                        <input name="advanceFee" value={formData.advanceFee} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-sm font-black italic" placeholder="€0" />
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Exclusivity Level</label>
+                        <select name="exclusivityLevel" value={formData.exclusivityLevel} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-xs font-black uppercase italic">
+                           <option value="Exclusive">Exclusive</option>
+                           <option value="Semi-exclusive">Semi-exclusive</option>
+                           <option value="Non-exclusive">Non-exclusive</option>
+                        </select>
+                     </div>
+                  </div>
+
+                  <div className="mt-12 pt-8 border-t-4 border-black">
+                     <button 
+                        onClick={handleLaunch} 
+                        className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl"
+                      >
+                        Deploy Asset
+                      </button>
+                  </div>
+               </section>
             </div>
-
-            {/* Section 3 */}
-            <div style={{ background: '#161616', border: '4px solid rgba(245,245,240,0.1)', padding: '2rem' }}>
-              <h3 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.5rem', textTransform: 'uppercase', color: '#FF0266', marginBottom: '1.5rem', borderBottom: '2px solid rgba(245,245,240,0.1)', paddingBottom: '0.75rem' }}>03. Licence</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={lbl}>License Type</label>
-                  <select name="licenseType" value={form.licenseType} onChange={handle} style={{ ...inp, cursor: 'pointer' }}>
-                    <option>License</option><option>Option</option><option>Co-production</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={lbl}>Licensing Model</label>
-                  <select name="licensingModel" value={form.licensingModel} onChange={handle} style={{ ...inp, cursor: 'pointer' }}>
-                    <option>Royalty-based</option><option>Flat fee</option><option>Hybrid</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={lbl}>Royalty Range</label>
-                  <input name="royaltyRange" value={form.royaltyRange} onChange={handle} style={inp} placeholder="8-10%" />
-                </div>
-                <div>
-                  <label style={lbl}>Rights Status</label>
-                  <select name="rightsStatus" value={form.rightsStatus} onChange={handle} style={{ ...inp, cursor: 'pointer' }}>
-                    <option>Available</option><option>Licensed</option><option>Co-production Only</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* SIDEBAR */}
-          <div style={{ background: '#f5f5f0', border: '4px solid #0a0a0a', padding: '1.5rem', boxShadow: '8px 8px 0 #FFD600', position: 'sticky', top: '6rem' }}>
-            <h3 style={{ fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.25rem', textTransform: 'uppercase', color: '#FF0266', marginBottom: '1.5rem', borderBottom: '3px solid #0a0a0a', paddingBottom: '0.75rem' }}>Poster</h3>
-
-            <div onClick={() => document.getElementById('img-upload')?.click()} style={{ width: '100%', height: '220px', border: '4px dashed rgba(10,10,10,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginBottom: '1.5rem', overflow: 'hidden', background: '#e8e8e3' }}>
-              {imagePreview ? (
-                <img src={imagePreview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="preview" />
-              ) : (
-                <div style={{ textAlign: 'center', color: 'rgba(10,10,10,0.3)' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📸</div>
-                  <div style={{ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Click to upload</div>
-                </div>
-              )}
-            </div>
-            <input id="img-upload" type="file" accept="image/*" onChange={handleImage} style={{ display: 'none' }} />
-
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              style={{ width: '100%', background: '#FF0266', color: '#fff', border: '4px solid #0a0a0a', padding: '1.25rem', fontFamily: 'Barlow Condensed', fontWeight: 900, fontStyle: 'italic', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', boxShadow: '4px 4px 0 #0a0a0a' }}
-            >
-              {loading ? 'UPLOADING...' : 'DEPLOY →'}
-            </button>
           </div>
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default UploadPage
+export default UploadPage;
