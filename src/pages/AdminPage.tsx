@@ -101,11 +101,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     };
 
     setInvites(prev => [newInvite, ...prev]);
-    triggerMailLog(
-      `Access Provisioned: ${newName}`,
-      `E-mail dispatched to: ${newEmail}\n\n"${newNote}"\n\n[AUTOMATED CREDENTIALS]\nUsername: ${username}\nPassword: ${password}\nDuration: ${selectedDuration}`
-    );
-    setNewName(''); setNewEmail('');
+    // Send real email via Supabase Edge Function
+    try {
+      await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU" },
+        body: JSON.stringify({ email: newEmail, name: newName, password, note: newNote, duration: selectedDuration })
+      });
+      triggerMailLog(`Email Sent to ${newName}`, `Real email dispatched to: ${newEmail}\n\nEmail: ${newEmail}\nPassword: ${password}\nDuration: ${selectedDuration}`);
+    } catch (e) {
+      triggerMailLog(`Access Provisioned: ${newName}`, `Credentials:\nEmail: ${newEmail}\nPassword: ${password}\nDuration: ${selectedDuration}`);
+    }
     setNewNote('Welcome to the Vault. Your credentials for the HAHAHUB Producer Tier are enclosed below.');
   };
 
