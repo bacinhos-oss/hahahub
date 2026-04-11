@@ -208,12 +208,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     <div className="min-h-screen bg-brand-black flex flex-col">
       <Navigation activePage="subscription" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       
-      <main className="flex-1 pt-32 pb-20 px-6 md:px-12 overflow-y-auto text-white">
+      <main className="flex-1 pt-24 md:pt-32 pb-20 px-4 md:px-12 overflow-y-auto text-white">
         <div className="max-w-7xl mx-auto space-y-12">
           
           <section className="flex flex-col md:flex-row items-end justify-between gap-10">
             <div className="space-y-4">
-              <h1 className="text-7xl font-black uppercase italic tracking-tighter leading-none">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
                 My <span className="text-brand-pink">Hub</span>
               </h1>
             </div>

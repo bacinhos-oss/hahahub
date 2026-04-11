@@ -804,7 +804,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
         <div className="max-w-7xl mx-auto space-y-16">
           <section className="space-y-10 text-white">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-              <h1 className="text-6xl md:text-[140px] font-black uppercase leading-[0.8] tracking-tighter italic group">
+              <h1 className="text-4xl sm:text-6xl md:text-9xl font-black uppercase leading-[0.8] tracking-tighter italic group">
                 Comedy <span className="text-brand-yellow">Vault</span>
               </h1>
               <div className="flex items-center gap-4 bg-brand-surface border-2 border-white/20 p-4 shadow-neo-cyan">

@@ -57,13 +57,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         </div>
       </header>
 
-      <main className="pt-40">
+      <main className="pt-24 md:pt-40">
         {/* HERO SECTION */}
-        <section className="px-6 md:px-12 py-20 flex flex-col items-start max-w-7xl mx-auto">
+        <section className="px-4 md:px-12 py-10 md:py-20 flex flex-col items-start max-w-7xl mx-auto">
           <div className="space-y-4 mb-8">
             <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] rotate-[-2deg] inline-block italic">The Stage Is Yours</span>
           </div>
-          <h1 className="font-display text-white text-6xl md:text-[110px] leading-[0.8] tracking-tighter uppercase mb-16 italic">
+          <h1 className="font-display text-white text-4xl sm:text-6xl md:text-8xl lg:text-[100px] leading-[0.85] tracking-tighter uppercase mb-8 md:mb-16 italic">
             INTERNATIONAL <br/>
             <span className="text-brand-yellow">THEATRE COMEDY</span> <br/>
             <span className="text-brand-cyan">PRODUCERS PLATFORM</span>

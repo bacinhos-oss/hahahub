@@ -14,13 +14,13 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
     <div className="min-h-screen bg-brand-black flex flex-col">
       <Navigation activePage="about" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       
-      <main className="flex-1 pt-40 pb-20 px-6 md:px-12 overflow-y-auto">
+      <main className="flex-1 pt-24 md:pt-40 pb-20 px-4 md:px-12 overflow-y-auto">
         <div className="max-w-6xl mx-auto space-y-24">
           
           {/* Manifesto Section */}
           <section className="space-y-6">
             <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] rotate-[-2deg] inline-block italic">Manifesto v3.1</span>
-            <h1 className="text-7xl md:text-[140px] font-black uppercase italic tracking-tighter text-brand-yellow leading-none">
+            <h1 className="text-4xl sm:text-6xl md:text-[100px] font-black uppercase italic tracking-tighter text-brand-yellow leading-none">
               OUR <br/> <span className="text-white">MISSION.</span>
             </h1>
           </section>
