@@ -203,7 +203,8 @@ const App: React.FC = () => {
   const handlePurchaseSuccess = async (planName: string) => {
     const expiry = new Date()
     expiry.setFullYear(expiry.getFullYear() + 1)
-    const expiryStr = `Dec 24, ${expiry.getFullYear()}`
+    // Store as ISO date string for reliable parsing
+    const expiryStr = expiry.toISOString().split('T')[0]
     if (currentUser?.id) {
       await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiryStr }).eq('id', currentUser.id)
     }

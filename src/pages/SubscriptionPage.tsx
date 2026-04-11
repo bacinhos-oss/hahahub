@@ -83,13 +83,26 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     budgetRange: 'Medium'
   });
 
-  // Calculate days remaining
+  // Calculate days remaining - parse any date format
   const daysRemaining = useMemo(() => {
-    if (!user?.subscription?.expiryDate) return 0;
-    const expiry = new Date(user.subscription.expiryDate);
-    const today = new Date();
-    const diffTime = expiry.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (!user?.subscription?.expiryDate) return 365;
+    try {
+      const dateStr = user.subscription.expiryDate;
+      // Try direct parse first
+      let expiry = new Date(dateStr);
+      // If invalid, try to parse "Dec 24, 2026" format
+      if (isNaN(expiry.getTime())) {
+        const months: {[key: string]: number} = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        const parts = dateStr.match(/([A-Za-z]+)\s+(\d+),?\s+(\d+)/);
+        if (parts) {
+          expiry = new Date(parseInt(parts[3]), months[parts[1]] ?? 11, parseInt(parts[2]));
+        }
+      }
+      if (isNaN(expiry.getTime())) return 365;
+      const today = new Date();
+      const diffTime = expiry.getTime() - today.getTime();
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    } catch { return 365; }
   }, [user]);
 
   const subscriptionProgress = useMemo(() => {
