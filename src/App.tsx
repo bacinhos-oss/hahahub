@@ -8,6 +8,7 @@ import UploadPage from './pages/UploadPage'
 import SubscriptionPage from './pages/SubscriptionPage'
 import AboutPage from './pages/AboutPage'
 import LoginPage from './pages/LoginPage'
+import PrivacyPage from './pages/PrivacyPage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
@@ -247,6 +248,8 @@ const App: React.FC = () => {
       case 'login':
       case 'user-login':
         return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
+      case 'privacy':
+        return <PrivacyPage onNavigate={handleNavigate} onLogout={handleLogout} user={currentUser || undefined} />
       default:
         return <LandingPage onNavigate={handleNavigate} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
     }

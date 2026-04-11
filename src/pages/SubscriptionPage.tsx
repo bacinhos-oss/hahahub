@@ -86,7 +86,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   // Calculate days remaining
   const daysRemaining = useMemo(() => {
     if (!user?.subscription?.expiryDate) return 0;
-    const expiry = new Date('2025-12-24'); // Mocking based on current string format
+    const expiry = new Date(user.subscription.expiryDate);
     const today = new Date();
     const diffTime = expiry.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));

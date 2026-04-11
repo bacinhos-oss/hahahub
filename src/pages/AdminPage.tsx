@@ -70,14 +70,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     setTimeout(() => setMailLog(null), 8000);
   };
 
-  const generateCredentials = (email: string) => {
-  const password = 'HH_' + Math.random().toString(36).substr(2, 8).toUpperCase();
-  return { username: email, password };
-};
+  const generateCredentials = (name: string) => {
+    const slug = name.toUpperCase().replace(/\s+/g, '_');
+    const randomId = Math.floor(1000 + Math.random() * 9000);
+    const username = `${slug}_PRO_${randomId}`;
+    const password = 'HH_' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    return { username, password };
+  };
 
   const sendInvite = async () => {
     if (!newName || !newEmail) { alert("Please enter Name and Email."); return; }
-    const { username, password } = generateCredentials(newEmail);
+    const { username, password } = generateCredentials(newName);
 
     const { data } = await supabase.from('invitations').insert([{
       recipient: newName,

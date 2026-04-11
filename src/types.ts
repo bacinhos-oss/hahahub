@@ -1,4 +1,4 @@
-export type Page = 'landing' | 'discovery' | 'upload' | 'admin' | 'login' | 'user-login' | 'subscription' | 'about';
+export type Page = 'landing' | 'discovery' | 'upload' | 'admin' | 'login' | 'user-login' | 'subscription' | 'about' | 'privacy';
 export type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
 export interface SubscriptionInfo {
   type: 'Free' | 'Quarterly' | 'Annual';
