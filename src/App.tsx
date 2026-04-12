@@ -9,6 +9,7 @@ import SubscriptionPage from './pages/SubscriptionPage'
 import AboutPage from './pages/AboutPage'
 import LoginPage from './pages/LoginPage'
 import PrivacyPage from './pages/PrivacyPage'
+import CookieBanner from './components/CookieBanner'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
@@ -256,7 +257,12 @@ const App: React.FC = () => {
     }
   }
 
-  return <div className="min-h-screen">{renderPage()}</div>
+  return (
+    <div className="min-h-screen">
+      {renderPage()}
+      <CookieBanner />
+    </div>
+  )
 }
 
 export default App

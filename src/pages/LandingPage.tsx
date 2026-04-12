@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import Footer from '../components/Footer';
 import { Page, Show } from '../types';
 import PaymentModal from '../components/PaymentModal';
 
@@ -207,17 +208,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         </section>
       </main>
 
-      <footer className="bg-brand-black border-t-4 border-white py-12 px-6">
-         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="logo-text text-2xl uppercase opacity-50 cursor-pointer">HAHAHUB</div>
-            <div className="flex gap-10">
-               <button onClick={() => onNavigate('discovery')} className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white italic">Catalog</button>
-               <button onClick={() => onNavigate('about')} className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white italic">Mission</button>
-               <button onClick={() => onNavigate('login')} className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white italic">Auth</button>
-            </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">© 2025 ALL LAUGHS RESERVED</p>
-         </div>
-      </footer>
+      <Footer onNavigate={onNavigate} />
     </div>
   );
 };

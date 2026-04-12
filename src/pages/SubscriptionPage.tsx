@@ -83,25 +83,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     budgetRange: 'Medium'
   });
 
-  // Calculate days remaining - parse any date format
+  // Calculate days remaining from ISO date stored in Supabase
   const daysRemaining = useMemo(() => {
     if (!user?.subscription?.expiryDate) return 365;
     try {
-      const dateStr = user.subscription.expiryDate;
-      // Try direct parse first
-      let expiry = new Date(dateStr);
-      // If invalid, try to parse "Dec 24, 2026" format
-      if (isNaN(expiry.getTime())) {
-        const months: {[key: string]: number} = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-        const parts = dateStr.match(/([A-Za-z]+)\s+(\d+),?\s+(\d+)/);
-        if (parts) {
-          expiry = new Date(parseInt(parts[3]), months[parts[1]] ?? 11, parseInt(parts[2]));
-        }
-      }
+      const expiry = new Date(user.subscription.expiryDate);
       if (isNaN(expiry.getTime())) return 365;
       const today = new Date();
-      const diffTime = expiry.getTime() - today.getTime();
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diff = expiry.getTime() - today.getTime();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      return Math.max(0, days);
     } catch { return 365; }
   }, [user]);
 
@@ -281,9 +272,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <p className="text-sm font-bold">Enabled via PayPal Express</p>
                        </div>
                     </div>
-                    <button className="bg-black text-white py-3 px-6 font-black uppercase text-xs hover:bg-brand-cyan hover:text-black transition-all border-4 border-black">
+                    <a href="mailto:info@hahahub.art?subject=Billing%20Request" className="bg-black text-white py-3 px-6 font-black uppercase text-xs hover:bg-brand-cyan hover:text-black transition-all border-4 border-black text-center">
                        Manage Billing
-                    </button>
+                    </a>
                   </div>
                 </div>
 
@@ -299,9 +290,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                          ))}
                       </ul>
                    </div>
-                   <button className="mt-8 w-full border-4 border-white py-4 text-xs font-black uppercase italic hover:bg-white hover:text-black transition-all">
+                   <a href="mailto:info@hahahub.art?subject=Upgrade%20My%20Tier" className="mt-8 w-full border-4 border-white py-4 text-xs font-black uppercase italic hover:bg-white hover:text-black transition-all block text-center">
                       Upgrade My Tier
-                   </button>
+                   </a>
                 </div>
               </div>
 
@@ -364,18 +355,18 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                   <div className="bg-brand-surface border-4 border-white divide-y-4 divide-white/10 shadow-neo-cyan">
                      {[
-                       { t: 'Deal Memo Template', i: 'description', s: 'PDF' },
-                       { t: 'Royalty Report XLS', i: 'table_chart', s: 'XLS' },
-                       { t: 'Standard Comedy NDA', i: 'gavel', s: 'DOC' },
-                       { t: 'Box Office Tracker', i: 'trending_up', s: 'PDF' },
+                       { t: 'Deal Memo Template', i: 'description', s: 'PDF', href: 'mailto:info@hahahub.art?subject=Deal Memo Template Request' },
+                       { t: 'Royalty Report Template', i: 'table_chart', s: 'XLS', href: 'mailto:info@hahahub.art?subject=Royalty Report Template Request' },
+                       { t: 'Standard Comedy NDA', i: 'gavel', s: 'DOC', href: 'mailto:info@hahahub.art?subject=NDA Template Request' },
+                       { t: 'Box Office Tracker', i: 'trending_up', s: 'PDF', href: 'mailto:info@hahahub.art?subject=Box Office Tracker Request' },
                      ].map((item, idx) => (
-                       <div key={idx} className="p-4 flex items-center justify-between group hover:bg-brand-cyan/5 cursor-pointer transition-colors">
+                       <a key={idx} href={item.href} className="p-4 flex items-center justify-between group hover:bg-brand-cyan/5 cursor-pointer transition-colors">
                           <div className="flex items-center gap-4">
                              <span className="material-symbols-outlined text-brand-cyan group-hover:scale-110 transition-transform">{item.i}</span>
                              <p className="text-xs font-black uppercase italic tracking-wider">{item.t}</p>
                           </div>
                           <span className="text-[8px] font-black bg-white/10 px-2 py-1 italic">{item.s}</span>
-                       </div>
+                       </a>
                      ))}
                   </div>
                   <div className="p-6 bg-brand-pink/5 border-2 border-brand-pink/20 italic">
