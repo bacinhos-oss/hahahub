@@ -22,7 +22,14 @@ const App: React.FC = () => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check for password recovery in URL hash
+   const hash = window.location.hash
+   if (hash.includes('type=recovery')) {
+     setCurrentPage('reset-password')
+     setLoading(false)
+     return
+}
+supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) loadProfile(session.user.id, session.user.email!)
       else setLoading(false)
     })
