@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import Navigation from '../components/Navigation';
 import { Page, User, Show } from '../types';
@@ -16,7 +15,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState({
     title: '',
     originalTitle: '',
@@ -24,7 +23,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     director: '',
     directorNotes: '',
     originalProductionSolutions: '',
-    producerName: '', 
+    producerName: '',
     rightsHolder: '',
     producerEmail: user?.name ? `${user.name.toLowerCase()}@hahahub.com` : '',
     isDirectorMandatory: 'false',
@@ -32,7 +31,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     genre: 'Comedy',
     subgenre: '',
     language: 'English',
-    location: '', 
+    location: '',
     maleRoles: '1',
     femaleRoles: '1',
     canMergeRoles: 'false',
@@ -51,7 +50,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     techStaffStagehands: '1',
     techStaffOther: '',
     premiereLocation: '',
-    buyoutLocations: '', 
+    buyoutLocations: '',
     licensedCountries: '',
     riskProfile: 'Proven hit',
     breakEvenPerformances: '40',
@@ -72,7 +71,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     premiereDate: '',
     synopsis: '',
     scriptExcerpt: '',
-    scriptScenario: '', 
+    scriptScenario: '',
     audienceProfile: '',
     awards: '',
     boxOfficeIndicator: 'Emerging',
@@ -167,6 +166,58 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       }
     }
 
+    // Save to Supabase database
+    const { error } = await supabase.from('shows').insert([{
+      id: newShow.id,
+      title: newShow.title,
+      original_title: newShow.originalTitle,
+      author: newShow.author,
+      director: newShow.director,
+      director_notes: newShow.directorNotes,
+      original_production_solutions: newShow.originalProductionSolutions,
+      producer_name: newShow.producerName,
+      producer_email: newShow.producerEmail,
+      rights_holder: newShow.rightsHolder,
+      genre: newShow.genre,
+      subgenre: newShow.subgenre,
+      language: newShow.language,
+      location: newShow.location,
+      male_roles: newShow.maleRoles,
+      female_roles: newShow.femaleRoles,
+      duration: newShow.duration,
+      synopsis: newShow.synopsis,
+      script_excerpt: newShow.scriptExcerpt,
+      script_scenario: newShow.scriptScenario,
+      image_url: newShow.imageUrl,
+      premiere_date: newShow.premiereDate,
+      production_scale: newShow.productionScale,
+      production_year: newShow.productionYear,
+      license_type: newShow.licenseType,
+      licensing_model: newShow.licensingModel,
+      royalty_range: newShow.royaltyRange,
+      advance_fee: newShow.advanceFee,
+      exclusivity_level: newShow.exclusivityLevel,
+      is_touring_friendly: newShow.isTouringFriendly,
+      performances_count: newShow.performancesCount,
+      total_audience: newShow.totalAudience,
+      likes_count: 0,
+      views_count: 0,
+      inquiries_count: 0,
+      user_id: user?.id
+    }]);
+
+    if (error) {
+      alert('Error uploading: ' + error.message);
+      return;
+    }
+
+    // Update user's uploaded shows
+    if (user?.id) {
+      await supabase.from('profiles').update({
+        uploaded_show_ids: [...(user.uploadedShowIds || []), newShow.id]
+      }).eq('id', user.id);
+    }
+
     onUpload(newShow);
     setIsSuccess(true);
     setTimeout(() => {
@@ -178,7 +229,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   return (
     <div className="flex flex-col min-h-screen bg-brand-black overflow-y-auto text-white">
       <Navigation onNavigate={onNavigate} onLogout={onLogout} activePage="upload" user={user} />
-      
+
       <main className="pt-40 pb-24 px-8">
         <div className="max-w-6xl mx-auto space-y-16">
           <header className="mb-20">
@@ -190,7 +241,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
             <div className="lg:col-span-8 space-y-20">
-               
+
                <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
                   <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4">00. Rights & Identity</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -261,7 +312,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                            <option value="false">NO</option>
                         </select>
                      </div>
-                     
+
                      <div>
                         <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Costume Complexity</label>
                         <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
@@ -278,7 +329,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                            <option value="High">High</option>
                         </select>
                      </div>
-                     
+
                      <div>
                         <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Lighting Staff</label>
                         <input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
@@ -353,8 +404,8 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                <section className="bg-white text-black p-10 shadow-neo-white sticky top-32">
                   <h3 className="text-2xl font-black uppercase italic mb-10 border-b-4 border-black pb-4 leading-none text-brand-pink">Commercial Bible</h3>
                   <div className="space-y-8">
-                     <div 
-                       onClick={() => fileInputRef.current?.click()} 
+                     <div
+                       onClick={() => fileInputRef.current?.click()}
                        className="w-full h-64 border-4 border-dashed border-black/20 flex flex-col items-center justify-center cursor-pointer hover:border-brand-pink overflow-hidden bg-gray-50 group"
                      >
                         {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/10 text-6xl group-hover:text-brand-pink">add_a_photo</span>}
@@ -397,8 +448,8 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   </div>
 
                   <div className="mt-12 pt-8 border-t-4 border-black">
-                     <button 
-                        onClick={handleLaunch} 
+                     <button
+                        onClick={handleLaunch}
                         className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl"
                       >
                         Deploy Asset
