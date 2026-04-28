@@ -335,15 +335,51 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                                          <p className="text-[9px] text-gray-500 font-bold uppercase italic">{show.rightsStatus}</p>
                                       </div>
                                   </div>
-                                  <div className="flex gap-2">
-                                      <button className="flex-1 bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage</button>
+                                                                   <div className="flex gap-2">
+                                      <button 
+                                        onClick={() => {
+                                          setFormData({
+                                            ...formData,
+                                            title: show.title || '',
+                                            author: show.author || '',
+                                            director: show.director || '',
+                                            producerName: show.producerName || '',
+                                            rightsHolder: show.rightsHolder || '',
+                                            genre: show.genre || '',
+                                            subgenre: show.subgenre || '',
+                                            language: show.language || '',
+                                            location: show.location || '',
+                                            maleRoles: String(show.maleRoles || '1'),
+                                            femaleRoles: String(show.femaleRoles || '1'),
+                                            duration: String(show.duration || '90'),
+                                            productionScale: show.productionScale || 'Medium',
+                                            isTouringFriendly: show.isTouringFriendly ? 'true' : 'false',
+                                            synopsis: show.synopsis || '',
+                                            scriptScenario: show.scriptScenario || '',
+                                            premiereDate: show.premiereDate || '',
+                                            performancesCount: String(show.performancesCount || '0'),
+                                            totalAudience: String(show.totalAudience || '0'),
+                                            licenseType: show.licenseType || 'License',
+                                            licensingModel: show.licensingModel || 'Royalty-based',
+                                            royaltyRange: show.royaltyRange || '',
+                                            advanceFee: show.advanceFee || '',
+                                            exclusivityLevel: show.exclusivityLevel || 'Exclusive',
+                                            boxOfficeIndicator: show.boxOfficeIndicator || 'Emerging',
+                                            directorNotes: show.directorNotes || '',
+                                            originalProductionSolutions: show.originalProductionSolutions || '',
+                                            licensedCountries: show.licensedCountries || '',
+                                          });
+                                          setImagePreview(show.imageUrl || null);
+                                          setActiveTab('upload');
+                                        }}
+                                        className="flex-1 bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]"
+                                      >
+                                        Manage
+                                      </button>
                                       <button className="px-3 bg-brand-black text-white py-2 border-2 border-white/20 hover:border-white transition-colors">
                                          <span className="material-symbols-outlined text-xs">bar_chart</span>
                                       </button>
-                                  </div>
-                              </div>
-                          </div>
-                      ))}
+                                  </div>                      ))}
                   </div>
                 </section>
 
