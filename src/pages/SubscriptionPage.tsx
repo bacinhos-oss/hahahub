@@ -17,6 +17,54 @@ interface SubscriptionPageProps {
 const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpload, shows, onDeleteShow }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'upload'>('overview');
   const [manageShow, setManageShow] = useState<Show | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Show>>({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  const openManage = (show: Show) => {
+    setManageShow(show);
+    setEditForm({ ...show });
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSave = async () => {
+    if (!manageShow) return;
+    setIsSaving(true);
+    try {
+      const { supabase } = await import('../lib/supabase');
+      await supabase.from('shows').update({
+        title: editForm.title,
+        author: editForm.author,
+        director: editForm.director,
+        synopsis: editForm.synopsis,
+        genre: editForm.genre,
+        language: editForm.language,
+        location: editForm.location,
+        duration: editForm.duration,
+        male_roles: editForm.maleRoles,
+        female_roles: editForm.femaleRoles,
+        producer_name: editForm.producerName,
+        producer_email: editForm.producerEmail,
+        rights_holder: editForm.rightsHolder,
+        premiere_date: editForm.premiereDate,
+        production_year: editForm.productionYear,
+        license_type: editForm.licenseType,
+        licensing_model: editForm.licensingModel,
+        exclusivity_level: editForm.exclusivityLevel,
+        royalty_range: editForm.royaltyRange,
+        advance_fee: editForm.advanceFee,
+        production_scale: editForm.productionScale,
+        script_scenario: editForm.scriptScenario,
+      }).eq('id', manageShow.id);
+      setManageShow(null);
+      window.location.reload();
+    } catch (err) {
+      alert('Error saving: ' + err);
+    }
+    setIsSaving(false);
+  };
   
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -202,9 +250,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
       {/* MANAGE MODAL */}
       {manageShow && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setManageShow(null)}></div>
-          <div className="relative bg-brand-surface border-8 border-white w-full max-w-2xl p-10 shadow-neo-cyan">
+          <div className="relative bg-brand-surface border-8 border-white w-full max-w-3xl max-h-[90vh] overflow-y-auto p-10 shadow-neo-cyan">
             <button onClick={() => setManageShow(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink">
               <span className="material-symbols-outlined text-4xl">close</span>
             </button>
@@ -213,30 +261,74 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 <img src={manageShow.imageUrl} className="w-32 h-40 object-cover border-4 border-white flex-shrink-0" />
               )}
               <div>
-                <span className="text-[10px] font-black uppercase text-brand-cyan italic">Production Asset</span>
-                <h2 className="text-4xl font-black uppercase italic leading-none mt-1">{manageShow.title}</h2>
-                <p className="text-white/40 italic mt-2">{manageShow.location} · {manageShow.genre} · {manageShow.duration} min</p>
-                <p className="text-white/40 italic text-sm mt-1">By {manageShow.author}</p>
+                <span className="text-[10px] font-black uppercase text-brand-cyan italic">Edit Production Asset</span>
+                <h2 className="text-3xl font-black uppercase italic leading-none mt-1">{manageShow.title}</h2>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-black/40 border border-white/10 p-4">
-                <p className="text-[9px] font-black uppercase text-gray-500 italic">Rights Status</p>
-                <p className="font-black uppercase italic text-brand-yellow">{manageShow.rightsStatus}</p>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {[
+                { label: 'Production Title', name: 'title', value: editForm.title || '' },
+                { label: 'Author / Playwright', name: 'author', value: editForm.author || '' },
+                { label: 'Director', name: 'director', value: editForm.director || '' },
+                { label: 'Genre', name: 'genre', value: editForm.genre || '' },
+                { label: 'Language', name: 'language', value: editForm.language || '' },
+                { label: 'Origin Market', name: 'location', value: editForm.location || '' },
+                { label: 'Duration (min)', name: 'duration', value: String(editForm.duration || '') },
+                { label: 'Male Roles', name: 'maleRoles', value: String(editForm.maleRoles || '') },
+                { label: 'Female Roles', name: 'femaleRoles', value: String(editForm.femaleRoles || '') },
+                { label: 'Production Company', name: 'producerName', value: editForm.producerName || '' },
+                { label: 'Producer Email', name: 'producerEmail', value: editForm.producerEmail || '' },
+                { label: 'Copyright Holder', name: 'rightsHolder', value: editForm.rightsHolder || '' },
+                { label: 'Premiere Date', name: 'premiereDate', value: editForm.premiereDate || '' },
+                { label: 'Production Year', name: 'productionYear', value: String(editForm.productionYear || '') },
+                { label: 'License Type', name: 'licenseType', value: editForm.licenseType || '' },
+                { label: 'Licensing Model', name: 'licensingModel', value: editForm.licensingModel || '' },
+                { label: 'Exclusivity Level', name: 'exclusivityLevel', value: editForm.exclusivityLevel || '' },
+                { label: 'Royalty Range', name: 'royaltyRange', value: editForm.royaltyRange || '' },
+                { label: 'Advance Fee', name: 'advanceFee', value: editForm.advanceFee || '' },
+                { label: 'Production Scale', name: 'productionScale', value: editForm.productionScale || '' },
+              ].map(field => (
+                <div key={field.name} className="bg-black/40 border border-white/10 p-3">
+                  <label className="text-[9px] font-black uppercase text-gray-500 italic block mb-1">{field.label}</label>
+                  <input
+                    name={field.name}
+                    value={field.value}
+                    onChange={handleEditChange}
+                    className="w-full bg-transparent text-white font-bold text-sm outline-none border-b border-white/20 focus:border-brand-cyan pb-1"
+                  />
+                </div>
+              ))}
+              <div className="col-span-2 bg-black/40 border border-white/10 p-3">
+                <label className="text-[9px] font-black uppercase text-gray-500 italic block mb-1">Synopsis</label>
+                <textarea
+                  name="synopsis"
+                  value={editForm.synopsis || ''}
+                  onChange={handleEditChange}
+                  rows={3}
+                  className="w-full bg-transparent text-white italic text-sm outline-none border-b border-white/20 focus:border-brand-cyan"
+                />
               </div>
-              <div className="bg-black/40 border border-white/10 p-4">
-                <p className="text-[9px] font-black uppercase text-gray-500 italic">License Type</p>
-                <p className="font-black uppercase italic">{manageShow.licenseType}</p>
-              </div>
-              <div className="bg-black/40 border border-white/10 p-4">
-                <p className="text-[9px] font-black uppercase text-gray-500 italic">Producer Email</p>
-                <p className="font-black italic text-brand-cyan text-sm">{manageShow.producerEmail}</p>
-              </div>
-              <div className="bg-black/40 border border-white/10 p-4">
-                <p className="text-[9px] font-black uppercase text-gray-500 italic">Inquiries</p>
-                <p className="font-black uppercase italic text-brand-pink">{manageShow.inquiriesCount}</p>
+              <div className="col-span-2 bg-black/40 border border-white/10 p-3">
+                <label className="text-[9px] font-black uppercase text-gray-500 italic block mb-1">Script Scenario</label>
+                <textarea
+                  name="scriptScenario"
+                  value={editForm.scriptScenario || ''}
+                  onChange={handleEditChange}
+                  rows={5}
+                  className="w-full bg-transparent text-white font-mono text-sm outline-none border-b border-white/20 focus:border-brand-cyan"
+                />
               </div>
             </div>
+
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="w-full bg-brand-cyan text-black py-4 font-black uppercase italic border-4 border-black shadow-neo-yellow hover:bg-brand-yellow transition-all mb-4 disabled:opacity-50"
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </button>
+
             <div className="border-t-4 border-white/10 pt-6">
               <p className="text-[10px] font-black uppercase text-gray-500 italic mb-4">Danger Zone</p>
               <button
@@ -394,7 +486,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                                       </div>
                                   </div>
                                   <div className="flex gap-2">
-                                      <button onClick={() => setManageShow(show)} className="flex-1 bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage</button>
+                                      <button onClick={() => openManage(show)} className="flex-1 bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage</button>
                                       <button className="px-3 bg-brand-black text-white py-2 border-2 border-white/20 hover:border-white transition-colors">
                                          <span className="material-symbols-outlined text-xs">bar_chart</span>
                                       </button>

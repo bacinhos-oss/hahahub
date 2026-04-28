@@ -120,6 +120,36 @@ const App: React.FC = () => {
   }
 
 
+
+  const handleToggleFavorite = async (showId: string) => {
+    if (!currentUser) return
+    const isFav = currentUser.favorites.includes(showId)
+    const newFavs = isFav 
+      ? currentUser.favorites.filter((id: string) => id !== showId)
+      : [...currentUser.favorites, showId]
+    setCurrentUser({ ...currentUser, favorites: newFavs })
+    setShows(prev => prev.map(s => s.id === showId 
+      ? { ...s, likesCount: isFav ? Math.max(0, s.likesCount - 1) : s.likesCount + 1 }
+      : s
+    ))
+    if (currentUser.id) {
+      await supabase.from('profiles').update({ favorites: newFavs }).eq('id', currentUser.id)
+      await supabase.from('shows').update({ 
+        likes_count: isFav ? Math.max(0, (shows.find(s => s.id === showId)?.likesCount || 1) - 1) : (shows.find(s => s.id === showId)?.likesCount || 0) + 1
+      }).eq('id', showId)
+    }
+  }
+
+  const handleUpdateStats = async (showId: string, type: 'view' | 'inquiry') => {
+    if (!showId) return
+    setShows(prev => prev.map(s => s.id === showId
+      ? { ...s, viewsCount: type === 'view' ? s.viewsCount + 1 : s.viewsCount, inquiriesCount: type === 'inquiry' ? s.inquiriesCount + 1 : s.inquiriesCount }
+      : s
+    ))
+    if (type === 'view') await supabase.from('shows').update({ views_count: (shows.find(s => s.id === showId)?.viewsCount || 0) + 1 }).eq('id', showId)
+    if (type === 'inquiry') await supabase.from('shows').update({ inquiries_count: (shows.find(s => s.id === showId)?.inquiriesCount || 0) + 1 }).eq('id', showId)
+  }
+
   const handleDeleteShow = async (id: string) => {
     await supabase.from('shows').delete().eq('id', id);
     setShows(prev => prev.filter(s => s.id !== id));
@@ -176,7 +206,7 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
-      case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onToggleFavorite={() => {}} onUpdateStats={() => {}} shows={shows} />
+      case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onUpload={handleUpload} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} shows={shows} onDeleteShow={() => {}} />
       case 'login': return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
