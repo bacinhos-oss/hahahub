@@ -22,7 +22,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   const [isResetMode, setIsResetMode] = useState(false)
   const [resetSent, setResetSent] = useState(false)
 
-  // Check if we're in recovery mode from Supabase redirect
   useEffect(() => {
     const hash = window.location.hash.substring(1)
     const params = new URLSearchParams(hash)
@@ -81,6 +80,9 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             uploaded_show_ids: []
           }])
           if (data.session) {
+            // Shrani sejo
+            localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(data.session));
+            
             const isAdmin = email === ADMIN_EMAIL
             setCurrentUser({
               id: data.user.id, email,
@@ -100,6 +102,9 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
         if (signInError) throw signInError
         if (data.user) {
+          // Shrani sejo
+          localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(data.session));
+          
           const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
           const isAdmin = email === ADMIN_EMAIL
           setCurrentUser({
@@ -132,7 +137,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     setError('')
   }
 
-  // RESET PASSWORD MODE (from Supabase recovery link)
   if (isResetMode) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black text-black">
@@ -157,7 +161,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     )
   }
 
-  // CHECK EMAIL SCREEN (after sign up)
   if (checkEmail) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black">
@@ -176,7 +179,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     )
   }
 
-  // FORGOT PASSWORD SENT SCREEN
   if (resetSent) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black">
@@ -195,12 +197,11 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     )
   }
 
-  // MAIN LOGIN / SIGNUP SCREEN
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black text-black">
       <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#FF0266]">
         <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors mb-8 italic">← Back</button>
-
+       
         <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
 
         {adminMode ? (
