@@ -121,6 +121,13 @@ const App: React.FC = () => {
 
 
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setCurrentUser(null)
+    setIsAdminAuthenticated(false)
+    setCurrentPage('landing')
+  }
+
   const handleToggleFavorite = async (showId: string) => {
     if (!currentUser) return
     const isFav = currentUser.favorites.includes(showId)
@@ -207,10 +214,10 @@ const App: React.FC = () => {
     switch (currentPage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
-      case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onUpload={handleUpload} />
-      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} shows={shows} onDeleteShow={() => {}} />
+      case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
+      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={() => {}} />
       case 'login': return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-      case 'subscription': return <SubscriptionPage onDeleteShow={handleDeleteShow} onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onToggleFavorite={() => {}} shows={shows} onUpload={handleUpload} />
+      case 'subscription': return <SubscriptionPage onDeleteShow={handleDeleteShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={() => {}} shows={shows} onUpload={handleUpload} />
       default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
     }
   }
