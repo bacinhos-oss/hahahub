@@ -1,3 +1,4 @@
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import React, { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import { Page, User, Show } from './types'
@@ -25,10 +26,17 @@ const App: React.FC = () => {
       if (session?.user) loadProfile(session.user.id, session.user.email!)
       else setLoading(false)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session?.user) loadProfile(session.user.id, session.user.email!)
-      else { setCurrentUser(null); setLoading(false) }
-    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setCurrentPage('reset-password')
+        setLoading(false)
+      } else if (session?.user) {
+        loadProfile(session.user.id, session.user.email!)
+      } else {
+        setCurrentUser(null);
+        setLoading(false)
+      }
+    })    })
     loadShows()
     return () => subscription.unsubscribe()
   }, [])
@@ -250,6 +258,8 @@ const App: React.FC = () => {
       case 'login':
       case 'user-login':
         return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
+      case 'reset-password':
+  return <ResetPasswordPage onSuccess={() => setCurrentPage('login')} />
       case 'privacy':
         return <PrivacyPage onNavigate={handleNavigate} onLogout={handleLogout} user={currentUser || undefined} />
       default:
