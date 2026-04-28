@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { User } from '../types'
 
@@ -19,6 +19,50 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [checkEmail, setCheckEmail] = useState(false)
+  const [isResetMode, setIsResetMode] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
+
+  // Check if we're in recovery mode from Supabase redirect
+  useEffect(() => {
+    const hash = window.location.hash.substring(1)
+    const params = new URLSearchParams(hash)
+    if (params.get('type') === 'recovery') {
+      setIsResetMode(true)
+    }
+  }, [])
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address first.')
+      return
+    }
+    setError('')
+    setLoading(true)
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://www.hahahub.art/login'
+    })
+    if (resetError) {
+      setError(resetError.message)
+    } else {
+      setResetSent(true)
+    }
+    setLoading(false)
+  }
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    const { error: updateError } = await supabase.auth.updateUser({ password })
+    if (updateError) {
+      setError(updateError.message)
+    } else {
+      setError('Password updated! You can now sign in.')
+      setIsResetMode(false)
+      setPassword('')
+    }
+    setLoading(false)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +81,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             uploaded_show_ids: []
           }])
           if (data.session) {
-            // Auto-confirmed
             const isAdmin = email === ADMIN_EMAIL
             setCurrentUser({
               id: data.user.id, email,
@@ -81,6 +124,40 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     setLoading(false)
   }
 
+  const handleBackToSignIn = () => {
+    setCheckEmail(false)
+    setIsResetMode(false)
+    setResetSent(false)
+    setIsNew(false)
+    setError('')
+  }
+
+  // RESET PASSWORD MODE (from Supabase recovery link)
+  if (isResetMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black text-black">
+        <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#03DAC6]">
+          <button onClick={handleBackToSignIn} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors mb-8 italic">← Back</button>
+          <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
+          <h2 className="text-black text-2xl font-black uppercase mb-8 italic">Set New Password</h2>
+          <form onSubmit={handleUpdatePassword} className="space-y-6">
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">New Password</label>
+              <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-cyan transition-all outline-none" placeholder="••••••••" />
+            </div>
+            {error && (
+              <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>
+            )}
+            <button type="submit" disabled={loading} className="w-full bg-black text-brand-cyan font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic hover:bg-brand-cyan hover:text-black transition-all">
+              {loading ? 'SAVING...' : 'UPDATE PASSWORD'}
+            </button>
+          </form>
+        </div>
+      </div>
+    )
+  }
+
+  // CHECK EMAIL SCREEN (after sign up)
   if (checkEmail) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black">
@@ -91,7 +168,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             We sent a confirmation link to <strong>{email}</strong>.<br /><br />
             Click the link, then come back and sign in.
           </p>
-          <button onClick={() => { setCheckEmail(false); setIsNew(false) }} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic">
+          <button onClick={handleBackToSignIn} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic">
             Back to Sign In
           </button>
         </div>
@@ -99,11 +176,31 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     )
   }
 
+  // FORGOT PASSWORD SENT SCREEN
+  if (resetSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black">
+        <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-neo-cyan text-black">
+          <div className="logo-text text-4xl uppercase mb-8 text-center">HAHAHUB</div>
+          <h2 className="text-3xl font-black uppercase italic mb-4 text-brand-cyan">CHECK YOUR EMAIL</h2>
+          <p className="font-bold italic text-gray-600 mb-8">
+            We sent a password reset link to <strong>{email}</strong>.<br /><br />
+            Click the link to set a new password.
+          </p>
+          <button onClick={handleBackToSignIn} className="w-full bg-black text-brand-cyan font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic">
+            Back to Sign In
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // MAIN LOGIN / SIGNUP SCREEN
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black text-black">
       <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#FF0266]">
         <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors mb-8 italic">← Back</button>
-        
+
         <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
 
         {adminMode ? (
@@ -135,10 +232,18 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Email Address</label>
             <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-cyan transition-all outline-none" placeholder="COMEDY@PRODUCER.COM" />
           </div>
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>
-            <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-pink transition-all outline-none" placeholder="••••••••" />
-          </div>
+          {!isNew && !adminMode && (
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>
+              <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-pink transition-all outline-none" placeholder="••••••••" />
+            </div>
+          )}
+          {isNew && (
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>
+              <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 text-black font-bold focus:ring-0 focus:border-brand-pink transition-all outline-none" placeholder="••••••••" />
+            </div>
+          )}
 
           {error && (
             <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>
@@ -148,6 +253,15 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             {loading ? 'LOADING...' : adminMode ? 'ENTER HQ' : isNew ? 'CREATE ACCOUNT' : 'ENTER THE VAULT'}
           </button>
         </form>
+
+        {!isNew && !adminMode && (
+          <button
+            onClick={handleForgotPassword}
+            className="mt-6 w-full text-center text-gray-500 text-xs font-black uppercase tracking-widest hover:text-brand-pink transition-colors italic"
+          >
+            Forgot password?
+          </button>
+        )}
       </div>
     </div>
   )
