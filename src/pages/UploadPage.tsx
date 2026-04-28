@@ -26,40 +26,17 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     producerName: '',
     rightsHolder: '',
     producerEmail: user?.name ? `${user.name.toLowerCase()}@hahahub.com` : '',
-    isDirectorMandatory: 'false',
-    creativeTeamAvailability: 'Optional',
     genre: 'Comedy',
     subgenre: '',
     language: 'English',
     location: '',
     maleRoles: '1',
     femaleRoles: '1',
-    canMergeRoles: 'false',
     duration: '90',
-    hasIntermission: 'true',
     productionScale: 'Medium',
     isTouringFriendly: 'true',
-    technicalComplexity: 'Medium',
-    costumeComplexity: 'Medium',
-    setComplexity: 'Medium',
-    adaptationFlexibility: 'Medium',
-    scalabilityNotes: '',
-    techStaffLighting: '1',
-    techStaffSound: '1',
-    techStaffPrompter: '0',
-    techStaffStagehands: '1',
-    techStaffOther: '',
     premiereLocation: '',
-    buyoutLocations: '',
     licensedCountries: '',
-    riskProfile: 'Proven hit',
-    breakEvenPerformances: '40',
-    breakEvenThreshold: 'Medium',
-    translationsAvailable: '',
-    translationRightsIncluded: 'true',
-    isSponsorFriendly: 'true',
-    isGroupSalesFriendly: 'true',
-    rightsClearingSpeed: 'Medium',
     exclusivityLevel: 'Exclusive',
     licenseType: 'License',
     licensingModel: 'Royalty-based',
@@ -72,10 +49,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     synopsis: '',
     scriptExcerpt: '',
     scriptScenario: '',
-    audienceProfile: '',
-    awards: '',
-    boxOfficeIndicator: 'Emerging',
-    budgetRange: 'Medium'
+    boxOfficeIndicator: 'Emerging'
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -113,45 +87,22 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     }
 
     const newShow: Show = {
-      id: Math.random().toString(36).substr(2, 9),
       ...formData,
       maleRoles: parseInt(formData.maleRoles),
       femaleRoles: parseInt(formData.femaleRoles),
       duration: parseInt(formData.duration),
-      techStaffLighting: parseInt(formData.techStaffLighting),
-      techStaffSound: parseInt(formData.techStaffSound),
-      techStaffPrompter: parseInt(formData.techStaffPrompter),
-      techStaffStagehands: parseInt(formData.techStaffStagehands),
       performancesCount: parseInt(formData.performancesCount),
       totalAudience: parseInt(formData.totalAudience),
       premiereDate: formData.premiereDate,
-      locationsPlayed: '',
-      boxOfficeIndicator: formData.boxOfficeIndicator as any,
-      awards: '',
-      audienceProfile: '',
       productionYear: parseInt(formData.productionYear),
-      breakEvenPerformances: parseInt(formData.breakEvenPerformances),
-      isDirectorMandatory: formData.isDirectorMandatory === 'true',
-      canMergeRoles: formData.canMergeRoles === 'true',
-      hasIntermission: formData.hasIntermission === 'true',
       isTouringFriendly: formData.isTouringFriendly === 'true',
-      translationRightsIncluded: formData.translationRightsIncluded === 'true',
-      isSponsorFriendly: formData.isSponsorFriendly === 'true',
-      isGroupSalesFriendly: formData.isGroupSalesFriendly === 'true',
-      transparencyScore: 92,
       likesCount: 0,
       viewsCount: 0,
       inquiriesCount: 0,
       imageUrl: imagePreview || '',
-      productionPhotos: [],
-      rightsStatus: 'Available',
-      territoriesAvailable: 'Global',
-      programmingCompatibility: ['Commercial'],
-      stageType: 'Main Stage',
-      humorType: 'Universal'
     } as Show;
 
-    // Upload image to Supabase Storage if we have a file
+    // Upload image to Supabase Storage
     if (imageFile) {
       try {
         const ext = imageFile.name.split('.').pop();
@@ -166,7 +117,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       }
     }
 
-   
     onUpload(newShow);
     setIsSuccess(true);
     setTimeout(() => {
@@ -185,14 +135,13 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
             <h1 className="text-7xl md:text-[140px] font-black uppercase italic leading-[0.8] tracking-tighter">
               DEPLOY <span className="text-brand-pink">ASSET</span>
             </h1>
-            <p className="text-white/40 italic uppercase text-xs mt-8 tracking-[0.5em]">Global Listing Registry / Pro Version 3.2</p>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
             <div className="lg:col-span-8 space-y-20">
                
                <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
-                  <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4">00. Rights & Identity</h3>
+                  <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10">00. Rights & Identity</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                      <div>
                         <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Production Company *</label>
@@ -206,7 +155,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                </section>
 
                <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
-                  <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10 border-b-4 border-white/10 pb-4">01. Creative Engine</h3>
+                  <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10">01. Creative Engine</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                      <div className="col-span-2">
                         <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Production Title *</label>
@@ -224,19 +173,11 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                         <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Synopsis *</label>
                         <textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={5} className="w-full bg-brand-black border-2 border-white/10 p-6 text-white text-xl italic leading-relaxed outline-none focus:border-brand-pink"></textarea>
                      </div>
-                     <div className="col-span-2">
-                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Director's Vision Notes</label>
-                        <textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-5 text-white italic outline-none focus:border-brand-pink" placeholder="Style, interpretation, staging direction..."></textarea>
-                     </div>
-                     <div className="col-span-2">
-                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Original Staging Solutions</label>
-                        <textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-5 text-white italic outline-none focus:border-brand-yellow" placeholder="Describe unique technical or creative staging requirements..."></textarea>
-                     </div>
                   </div>
                </section>
 
                <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-yellow">
-                  <h3 className="text-3xl font-black uppercase italic text-brand-yellow mb-10 border-b-4 border-white/10 pb-4">02. Cast & Tech</h3>
+                  <h3 className="text-3xl font-black uppercase italic text-brand-yellow mb-10">02. Cast & Tech</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
                      <div>
                         <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Male Cast</label>
@@ -246,56 +187,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                         <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Female Cast</label>
                         <input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
                      </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Production Scale</label>
-                        <select name="productionScale" value={formData.productionScale} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
-                           <option value="Small">Small</option>
-                           <option value="Medium">Medium</option>
-                           <option value="Large">Large</option>
-                        </select>
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Touring Friendly</label>
-                        <select name="isTouringFriendly" value={formData.isTouringFriendly} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
-                           <option value="true">YES</option>
-                           <option value="false">NO</option>
-                        </select>
-                     </div>
-                     
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Costume Complexity</label>
-                        <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
-                           <option value="Low">Low</option>
-                           <option value="Medium">Medium</option>
-                           <option value="High">High</option>
-                        </select>
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Set Complexity</label>
-                        <select name="setComplexity" value={formData.setComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
-                           <option value="Low">Low</option>
-                           <option value="Medium">Medium</option>
-                           <option value="High">High</option>
-                        </select>
-                     </div>
-                     
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Lighting Staff</label>
-                        <input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Sound Staff</label>
-                        <input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Stagehands</label>
-                        <input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-white mb-2 italic">Prompter</label>
-                        <input name="techStaffPrompter" type="number" value={formData.techStaffPrompter} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
-                     </div>
-
                      <div className="col-span-2">
                         <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 italic">Duration (Min) *</label>
                         <input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
@@ -307,51 +198,18 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   </div>
                </section>
 
-               <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
-                  <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4">03. Market Performance</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Premiere Date</label>
-                        <input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold uppercase outline-none focus:border-brand-yellow" />
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Total Performances</label>
-                        <input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Total Audience</label>
-                        <input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Box Office Indicator</label>
-                        <select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
-                           <option value="High">High</option>
-                           <option value="Medium">Medium</option>
-                           <option value="Emerging">Emerging</option>
-                        </select>
-                     </div>
-                  </div>
-               </section>
-
                <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
-                  <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10 border-b-4 border-white/10 pb-4">04. Script Preview</h3>
+                  <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10">04. Script Preview</h3>
                   <div className="col-span-2">
-                     <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic tracking-widest font-black uppercase">Public Preview Script Scenario (3 Pages) *</label>
+                     <label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Public Preview Script Scenario *</label>
                      <textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={15} className="w-full bg-brand-black border-2 border-white/10 p-8 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow"></textarea>
                   </div>
                </section>
-
-               <div className="bg-brand-pink/10 border-4 border-brand-pink p-8 text-center shadow-neo-yellow">
-                  <span className="material-symbols-outlined text-brand-pink text-5xl mb-4">gavel</span>
-                  <p className="text-lg font-black uppercase italic tracking-widest text-white leading-tight">
-                    The producer or author must be the holder of the copyrights; otherwise, legal complications may arise!
-                  </p>
-               </div>
             </div>
 
             <div className="lg:col-span-4 space-y-12">
                <section className="bg-white text-black p-10 shadow-neo-white sticky top-32">
-                  <h3 className="text-2xl font-black uppercase italic mb-10 border-b-4 border-black pb-4 leading-none text-brand-pink">Commercial Bible</h3>
+                  <h3 className="text-2xl font-black uppercase italic mb-10 border-b-4 border-black pb-4 text-brand-pink">Commercial Bible</h3>
                   <div className="space-y-8">
                      <div
                        onClick={() => fileInputRef.current?.click()}
@@ -369,22 +227,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                            <option value="Option">Option</option>
                            <option value="Co-production">Co-production</option>
                         </select>
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Licensing Model</label>
-                        <select name="licensingModel" value={formData.licensingModel} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-xs font-black uppercase italic">
-                           <option value="Royalty-based">Royalty-based</option>
-                           <option value="Flat fee">Flat fee</option>
-                           <option value="Hybrid">Hybrid</option>
-                        </select>
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Royalty Range</label>
-                        <input name="royaltyRange" value={formData.royaltyRange} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-sm font-black italic" placeholder="8-10%" />
-                     </div>
-                     <div>
-                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Advance Fee</label>
-                        <input name="advanceFee" value={formData.advanceFee} onChange={handleInputChange} className="w-full bg-gray-100 border-2 border-black px-4 py-3 text-sm font-black italic" placeholder="€0" />
                      </div>
                      <div>
                         <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 italic">Exclusivity Level</label>

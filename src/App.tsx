@@ -168,7 +168,6 @@ const App: React.FC = () => {
 
   const handleUpload = async (newShow: Show) => {
     const dbShow: any = {
-      id: newShow.id,
       user_id: currentUser?.id,
       title: newShow.title,
       author: newShow.author,
