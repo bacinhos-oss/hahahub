@@ -21,14 +21,13 @@ const App: React.FC = () => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
 
   useEffect(() => {
-    // Check for password recovery in URL hash
-   const hash = window.location.hash
-   if (hash.includes('type=recovery')) {
-     setCurrentPage('reset-password')
-     setLoading(false)
-     return
-}
-supabase.auth.getSession().then(({ data: { session } }) => {
+    const hash = window.location.hash
+    if (hash.includes('type=recovery')) {
+      setCurrentPage('reset-password')
+      setLoading(false)
+      return
+    }
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) loadProfile(session.user.id, session.user.email!)
       else setLoading(false)
     })
@@ -218,7 +217,6 @@ supabase.auth.getSession().then(({ data: { session } }) => {
   const handlePurchaseSuccess = async (planName: string) => {
     const expiry = new Date()
     expiry.setFullYear(expiry.getFullYear() + 1)
-    // Store as ISO date string for reliable parsing
     const expiryStr = expiry.toISOString().split('T')[0]
     if (currentUser?.id) {
       await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiryStr }).eq('id', currentUser.id)
@@ -264,8 +262,9 @@ supabase.auth.getSession().then(({ data: { session } }) => {
       case 'login':
       case 'user-login':
         return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-      
-     case 'privacy':
+      case 'reset-password':
+        return <LoginPage onSuccess={() => setCurrentPage('login')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
+      case 'privacy':
         return <PrivacyPage onNavigate={handleNavigate} onLogout={handleLogout} user={currentUser || undefined} />
       default:
         return <LandingPage onNavigate={handleNavigate} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />

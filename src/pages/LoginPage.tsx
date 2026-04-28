@@ -11,7 +11,7 @@ interface Props {
   adminMode?: boolean
 }
 
-const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMode }) => {
+const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMode = false }) => {
   const [isNew, setIsNew] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -80,9 +80,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             uploaded_show_ids: []
           }])
           if (data.session) {
-            // Shrani sejo
-            localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(data.session));
-            
             const isAdmin = email === ADMIN_EMAIL
             setCurrentUser({
               id: data.user.id, email,
@@ -102,9 +99,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
         if (signInError) throw signInError
         if (data.user) {
-          // Shrani sejo
-          localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(data.session));
-          
           const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
           const isAdmin = email === ADMIN_EMAIL
           setCurrentUser({
