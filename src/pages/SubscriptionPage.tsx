@@ -198,7 +198,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   };
 
   return (
-    <>
+    <React.Fragment>
 
       {/* MANAGE MODAL */}
       {manageShow && (
@@ -686,7 +686,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         </div>
       </main>
     </div>
-    </>
+    </React.Fragment>
   );
 };
 
