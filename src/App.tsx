@@ -23,7 +23,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const hash = window.location.hash
     if (hash.includes('type=recovery')) {
-      setCurrentPage('reset-password')
+      setCurrentPage('login')
       setLoading(false)
       return
     }
@@ -33,7 +33,7 @@ const App: React.FC = () => {
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
-        setCurrentPage('reset-password')
+        setCurrentPage('login')
         setLoading(false)
       } else if (session?.user) {
         loadProfile(session.user.id, session.user.email!)
@@ -69,8 +69,11 @@ const App: React.FC = () => {
       }
       setCurrentUser(user)
       if (isAdmin) setIsAdminAuthenticated(true)
-    } catch { setCurrentUser(null) }
-    setLoading(false)
+      setLoading(false)
+    } catch { 
+      setCurrentUser(null)
+      setLoading(false)
+    }
   }
 
   const loadShows = async () => {
@@ -139,11 +142,17 @@ const App: React.FC = () => {
   }
 
   const handleNavigate = (page: Page) => {
+    if (page === 'landing') {
+      setCurrentPage('landing')
+      return
+    }
     if ((page === 'upload' || page === 'subscription') && !currentUser) {
-      setCurrentPage('login'); return
+      setCurrentPage('login')
+      return
     }
     if (page === 'admin' && !isAdminAuthenticated) {
-      setCurrentPage('admin'); return
+      setCurrentPage('login')
+      return
     }
     setCurrentPage(page)
   }
@@ -182,20 +191,26 @@ const App: React.FC = () => {
   }
 
   const handleUpload = async (newShow: Show) => {
-    const dbShow = {
-      title: newShow.title, author: newShow.author, director: newShow.director,
-      synopsis: newShow.synopsis, genre: newShow.genre, language: newShow.language,
-      location: newShow.location, duration: newShow.duration,
-      male_roles: newShow.maleRoles, female_roles: newShow.femaleRoles,
-      image_url: newShow.imageUrl, producer_name: newShow.producerName,
-      producer_email: newShow.producerEmail, rights_holder: newShow.rightsHolder,
-      license_type: newShow.licenseType, licensing_model: newShow.licensingModel,
-      royalty_range: newShow.royaltyRange, rights_status: newShow.rightsStatus,
-      production_year: newShow.productionYear, likes_count: 0, views_count: 0, inquiries_count: 0,
-      script_scenario: newShow.scriptScenario, director_notes: newShow.directorNotes,
-      box_office_indicator: newShow.boxOfficeIndicator, budget_range: newShow.budgetRange,
-      humor_type: newShow.humorType, user_id: currentUser?.id,
-      transparency_score: newShow.transparencyScore,
+    const dbShow: any = {
+      title: newShow.title,
+      author: newShow.author,
+      synopsis: newShow.synopsis,
+      image_url: newShow.imageUrl,
+      genre: newShow.genre,
+      language: newShow.language,
+      location: newShow.location,
+      duration: newShow.duration,
+      male_roles: newShow.maleRoles,
+      female_roles: newShow.femaleRoles,
+      producer_name: newShow.producerName,
+      rights_holder: newShow.rightsHolder,
+      license_type: newShow.licenseType,
+      production_year: newShow.productionYear,
+      script_scenario: newShow.scriptScenario,
+      user_id: currentUser?.id,
+      likes_count: 0,
+      views_count: 0,
+      inquiries_count: 0
     }
     const { data } = await supabase.from('shows').insert([dbShow]).select().single()
     if (data) {

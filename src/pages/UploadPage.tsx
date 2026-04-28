@@ -166,45 +166,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       }
     }
 
-    // Save to Supabase database (basic fields only)
-    const { error } = await supabase.from('shows').insert([{
-      id: newShow.id,
-      user_id: user?.id,
-      title: newShow.title,
-      author: newShow.author,
-      director: newShow.director,
-      synopsis: newShow.synopsis,
-      image_url: newShow.imageUrl,
-      genre: newShow.genre,
-      language: newShow.language,
-      location: newShow.location,
-      duration: newShow.duration,
-      male_roles: newShow.maleRoles,
-      female_roles: newShow.femaleRoles,
-      producer_name: newShow.producerName,
-      producer_email: newShow.producerEmail,
-      rights_holder: newShow.rightsHolder,
-      premiere_date: newShow.premiereDate,
-      production_year: newShow.productionYear,
-      license_type: newShow.licenseType,
-      script_scenario: newShow.scriptScenario,
-      likes_count: 0,
-      views_count: 0,
-      inquiries_count: 0
-    }]);
-
-    if (error) {
-      alert('Error uploading: ' + error.message);
-      return;
-    }
-
-    // Update user's uploaded shows
-    if (user?.id) {
-      await supabase.from('profiles').update({
-        uploaded_show_ids: [...(user.uploadedShowIds || []), newShow.id]
-      }).eq('id', user.id);
-    }
-
+   
     onUpload(newShow);
     setIsSuccess(true);
     setTimeout(() => {
