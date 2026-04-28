@@ -1,4 +1,3 @@
-import ResetPasswordPage from './pages/ResetPasswordPage'
 import React, { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import { Page, User, Show } from './types'
@@ -265,9 +264,8 @@ supabase.auth.getSession().then(({ data: { session } }) => {
       case 'login':
       case 'user-login':
         return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-      case 'reset-password':
-  return <ResetPasswordPage onSuccess={() => setCurrentPage('login')} />
-      case 'privacy':
+      
+     case 'privacy':
         return <PrivacyPage onNavigate={handleNavigate} onLogout={handleLogout} user={currentUser || undefined} />
       default:
         return <LandingPage onNavigate={handleNavigate} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
