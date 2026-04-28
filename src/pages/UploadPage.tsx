@@ -15,7 +15,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+ 
   const [formData, setFormData] = useState({
     title: '',
     originalTitle: '',
@@ -166,44 +166,31 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       }
     }
 
-    // Save to Supabase database
+    // Save to Supabase database (basic fields only)
     const { error } = await supabase.from('shows').insert([{
       id: newShow.id,
+      user_id: user?.id,
       title: newShow.title,
-      original_title: newShow.originalTitle,
       author: newShow.author,
       director: newShow.director,
-      director_notes: newShow.directorNotes,
-      original_production_solutions: newShow.originalProductionSolutions,
+      synopsis: newShow.synopsis,
+      image_url: newShow.imageUrl,
+      genre: newShow.genre,
+      language: newShow.language,
+      location: newShow.location,
+      duration: newShow.duration,
+      male_roles: newShow.maleRoles,
+      female_roles: newShow.femaleRoles,
       producer_name: newShow.producerName,
       producer_email: newShow.producerEmail,
       rights_holder: newShow.rightsHolder,
-      genre: newShow.genre,
-      subgenre: newShow.subgenre,
-      language: newShow.language,
-      location: newShow.location,
-      male_roles: newShow.maleRoles,
-      female_roles: newShow.femaleRoles,
-      duration: newShow.duration,
-      synopsis: newShow.synopsis,
-      script_excerpt: newShow.scriptExcerpt,
-      script_scenario: newShow.scriptScenario,
-      image_url: newShow.imageUrl,
       premiere_date: newShow.premiereDate,
-      production_scale: newShow.productionScale,
       production_year: newShow.productionYear,
       license_type: newShow.licenseType,
-      licensing_model: newShow.licensingModel,
-      royalty_range: newShow.royaltyRange,
-      advance_fee: newShow.advanceFee,
-      exclusivity_level: newShow.exclusivityLevel,
-      is_touring_friendly: newShow.isTouringFriendly,
-      performances_count: newShow.performancesCount,
-      total_audience: newShow.totalAudience,
+      script_scenario: newShow.scriptScenario,
       likes_count: 0,
       views_count: 0,
-      inquiries_count: 0,
-      user_id: user?.id
+      inquiries_count: 0
     }]);
 
     if (error) {
@@ -229,7 +216,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   return (
     <div className="flex flex-col min-h-screen bg-brand-black overflow-y-auto text-white">
       <Navigation onNavigate={onNavigate} onLogout={onLogout} activePage="upload" user={user} />
-
+     
       <main className="pt-40 pb-24 px-8">
         <div className="max-w-6xl mx-auto space-y-16">
           <header className="mb-20">
@@ -241,7 +228,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
             <div className="lg:col-span-8 space-y-20">
-
+               
                <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
                   <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10 border-b-4 border-white/10 pb-4">00. Rights & Identity</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -312,7 +299,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                            <option value="false">NO</option>
                         </select>
                      </div>
-
+                     
                      <div>
                         <label className="block text-[10px] font-black uppercase text-brand-pink mb-2 italic">Costume Complexity</label>
                         <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic">
@@ -329,7 +316,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                            <option value="High">High</option>
                         </select>
                      </div>
-
+                     
                      <div>
                         <label className="block text-[10px] font-black uppercase text-brand-cyan mb-2 italic">Lighting Staff</label>
                         <input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xl" />
