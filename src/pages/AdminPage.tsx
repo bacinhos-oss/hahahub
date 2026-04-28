@@ -74,7 +74,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     const slug = name.toUpperCase().replace(/\s+/g, '_');
     const randomId = Math.floor(1000 + Math.random() * 9000);
     const username = `${slug}_PRO_${randomId}`;
-    const password = 'HH_' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    const password = 'Hh_' + Math.random().toString(36).substr(2, 8);
     return { username, password };
   };
 
