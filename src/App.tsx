@@ -36,7 +36,7 @@ const App: React.FC = () => {
         setCurrentUser(null);
         setLoading(false)
       }
-    })    })
+    })    
     loadShows()
     return () => subscription.unsubscribe()
   }, [])
