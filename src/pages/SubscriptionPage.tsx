@@ -110,7 +110,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     );
   }
 
-  const userUploads = shows.filter(s => user.uploadedShowIds?.includes(s.id));
+  const userUploads = shows.filter(s => s.user_id === user.id || user.uploadedShowIds?.includes(s.id));
 
   const stats = [
     { label: 'Scripts Uploaded', value: userUploads.length, icon: 'upload', color: 'brand-cyan' },
