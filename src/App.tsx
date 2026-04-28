@@ -28,17 +28,22 @@ const App: React.FC = () => {
       return
     }
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) loadProfile(session.user.id, session.user.email!)
-      else setLoading(false)
+      if (session?.user) {
+        localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
+        loadProfile(session.user.id, session.user.email!)
+      } else {
+        setLoading(false)
+      }
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
         setCurrentPage('login')
         setLoading(false)
       } else if (session?.user) {
+        localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
         loadProfile(session.user.id, session.user.email!)
       } else {
-        setCurrentUser(null);
+        setCurrentUser(null)
         setLoading(false)
       }
     })    
@@ -142,13 +147,11 @@ const App: React.FC = () => {
   }
 
   const handleNavigate = (page: Page) => {
-    if (page === 'landing') {
-      setCurrentPage('landing')
-      return
-    }
-    if ((page === 'upload' || page === 'subscription') && !currentUser) {
-      setCurrentPage('login')
-      return
+    if (page === 'upload' || page === 'subscription') {
+      if (!currentUser) {
+        setCurrentPage('login')
+        return
+      }
     }
     if (page === 'admin' && !isAdminAuthenticated) {
       setCurrentPage('login')
@@ -163,6 +166,7 @@ const App: React.FC = () => {
   }
 
   const handleLogout = async () => {
+    localStorage.removeItem('sb-jnilgukmyfukazwduuig-auth-token')
     await supabase.auth.signOut()
     setCurrentUser(null)
     setIsAdminAuthenticated(false)
@@ -194,6 +198,7 @@ const App: React.FC = () => {
     const dbShow: any = {
       title: newShow.title,
       author: newShow.author,
+      director: newShow.director,
       synopsis: newShow.synopsis,
       image_url: newShow.imageUrl,
       genre: newShow.genre,
@@ -212,7 +217,11 @@ const App: React.FC = () => {
       views_count: 0,
       inquiries_count: 0
     }
-    const { data } = await supabase.from('shows').insert([dbShow]).select().single()
+    const { data, error } = await supabase.from('shows').insert([dbShow]).select().single()
+    if (error) {
+      alert('Error saving show: ' + error.message)
+      return
+    }
     if (data) {
       const mapped = { ...newShow, id: data.id }
       setShows(prev => [mapped, ...prev])
@@ -275,10 +284,7 @@ const App: React.FC = () => {
           ? <AdminPage onNavigate={handleNavigate} onLogout={handleLogout} shows={shows} onDeleteShow={handleDeleteShow} />
           : <LoginPage onSuccess={() => { setIsAdminAuthenticated(true); setCurrentPage('admin') }} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} adminMode />
       case 'login':
-      case 'user-login':
-        return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-      case 'reset-password':
-        return <LoginPage onSuccess={() => setCurrentPage('login')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
+        return <LoginPage onSuccess={() => { handleLogin(currentUser!); setCurrentPage('discovery') }} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
       case 'privacy':
         return <PrivacyPage onNavigate={handleNavigate} onLogout={handleLogout} user={currentUser || undefined} />
       default:
