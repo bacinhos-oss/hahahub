@@ -62,37 +62,30 @@ const App: React.FC = () => {
     }
   }
 
-  const loadShows = async () => {
-    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
-    if (data) {
-      const mapped = data.map((s: any) => ({
-        ...s,
-        id: s.id,
-        title: s.title || '',
-        author: s.author || '',
-        director: s.director || '',
-        synopsis: s.synopsis || '',
-        imageUrl: s.image_url || '',
-        genre: s.genre || '',
-        language: s.language || '',
-        location: s.location || '',
-        duration: s.duration || 90,
-        maleRoles: s.male_roles || 1,
-        femaleRoles: s.female_roles || 1,
-        producerName: s.producer_name || '',
-        producerEmail: s.producer_email || '',
-        rightsHolder: s.rights_holder || '',
-        premiereDate: s.premiere_date || '',
-        productionYear: s.production_year || new Date().getFullYear(),
-        licenseType: s.license_type || 'License',
-        scriptScenario: s.script_scenario || '',
-        likesCount: s.likes_count || 0,
-        viewsCount: s.views_count || 0,
-        inquiriesCount: s.inquiries_count || 0,
-      }))
-      setShows(mapped)
+    const loadShows = async () => {
+    if (!currentUser?.id) {
+      const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
+      if (data) mapAndSetShows(data)
+      return
     }
+    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false }).eq('user_id', currentUser.id)
+    if (data) mapAndSetShows(data)
   }
+
+  const mapAndSetShows = (data: any[]) => {
+    const mapped = data.map((s: any) => ({
+      ...s, id: s.id, title: s.title || '', author: s.author || '', director: s.director || '',
+      synopsis: s.synopsis || '', imageUrl: s.image_url || '', genre: s.genre || '',
+      language: s.language || '', location: s.location || '', duration: s.duration || 90,
+      maleRoles: s.male_roles || 1, femaleRoles: s.female_roles || 1,
+      producerName: s.producer_name || '', producerEmail: s.producer_email || '',
+      rightsHolder: s.rights_holder || '', premiereDate: s.premiere_date || '',
+      productionYear: s.production_year || new Date().getFullYear(), licenseType: s.license_type || 'License',
+      scriptScenario: s.script_scenario || '', likesCount: s.likes_count || 0,
+      viewsCount: s.views_count || 0, inquiriesCount: s.inquiries_count || 0,
+    }))
+    setShows(mapped)
+  }  }
 
   const handleUpload = async (newShow: Show) => {
     const { data, error } = await supabase.from('shows').insert([{
@@ -149,7 +142,8 @@ const App: React.FC = () => {
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onUpload={handleUpload} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} shows={shows} onDeleteShow={() => {}} />
       case 'login': return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-      default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
+            case 'subscription': return <SubscriptionPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onToggleFavorite={() => {}} onUpdateStats={() => {}} shows={shows} onUpload={handleUpload} />
+default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
     }
   }
 
