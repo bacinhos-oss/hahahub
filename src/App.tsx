@@ -63,12 +63,7 @@ const App: React.FC = () => {
   }
 
     const loadShows = async () => {
-    if (!currentUser?.id) {
-      const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
-      if (data) mapAndSetShows(data)
-      return
-    }
-    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false }).eq('user_id', currentUser.id)
+    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
     if (data) mapAndSetShows(data)
   }
 
@@ -85,7 +80,8 @@ const App: React.FC = () => {
       viewsCount: s.views_count || 0, inquiriesCount: s.inquiries_count || 0,
     }))
     setShows(mapped)
-  }  }
+  }
+
 
   const handleDeleteShow = async (id: string) => {
     await supabase.from('shows').delete().eq('id', id);
