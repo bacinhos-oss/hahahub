@@ -11,10 +11,12 @@ interface SubscriptionPageProps {
   onToggleFavorite: (id: string) => void;
   onUpload: (show: Show) => void;
   shows: Show[];
+  onDeleteShow: (id: string) => void;
 }
 
-const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpload, shows }) => {
+const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpload, shows, onDeleteShow }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'upload'>('overview');
+  const [manageShow, setManageShow] = useState<Show | null>(null);
   
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -196,6 +198,62 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   };
 
   return (
+    <>
+
+      {/* MANAGE MODAL */}
+      {manageShow && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setManageShow(null)}></div>
+          <div className="relative bg-brand-surface border-8 border-white w-full max-w-2xl p-10 shadow-neo-cyan">
+            <button onClick={() => setManageShow(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink">
+              <span className="material-symbols-outlined text-4xl">close</span>
+            </button>
+            <div className="flex gap-6 mb-8">
+              {manageShow.imageUrl && (
+                <img src={manageShow.imageUrl} className="w-32 h-40 object-cover border-4 border-white flex-shrink-0" />
+              )}
+              <div>
+                <span className="text-[10px] font-black uppercase text-brand-cyan italic">Production Asset</span>
+                <h2 className="text-4xl font-black uppercase italic leading-none mt-1">{manageShow.title}</h2>
+                <p className="text-white/40 italic mt-2">{manageShow.location} · {manageShow.genre} · {manageShow.duration} min</p>
+                <p className="text-white/40 italic text-sm mt-1">By {manageShow.author}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="bg-black/40 border border-white/10 p-4">
+                <p className="text-[9px] font-black uppercase text-gray-500 italic">Rights Status</p>
+                <p className="font-black uppercase italic text-brand-yellow">{manageShow.rightsStatus}</p>
+              </div>
+              <div className="bg-black/40 border border-white/10 p-4">
+                <p className="text-[9px] font-black uppercase text-gray-500 italic">License Type</p>
+                <p className="font-black uppercase italic">{manageShow.licenseType}</p>
+              </div>
+              <div className="bg-black/40 border border-white/10 p-4">
+                <p className="text-[9px] font-black uppercase text-gray-500 italic">Producer Email</p>
+                <p className="font-black italic text-brand-cyan text-sm">{manageShow.producerEmail}</p>
+              </div>
+              <div className="bg-black/40 border border-white/10 p-4">
+                <p className="text-[9px] font-black uppercase text-gray-500 italic">Inquiries</p>
+                <p className="font-black uppercase italic text-brand-pink">{manageShow.inquiriesCount}</p>
+              </div>
+            </div>
+            <div className="border-t-4 border-white/10 pt-6">
+              <p className="text-[10px] font-black uppercase text-gray-500 italic mb-4">Danger Zone</p>
+              <button
+                onClick={() => {
+                  if (confirm('Are you sure you want to delete this show?')) {
+                    onDeleteShow(manageShow.id);
+                    setManageShow(null);
+                  }
+                }}
+                className="w-full bg-red-600 text-white py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-red-800 transition-all"
+              >
+                Delete This Asset Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     <div className="min-h-screen bg-brand-black flex flex-col">
       <Navigation activePage="subscription" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       
@@ -336,7 +394,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                                       </div>
                                   </div>
                                   <div className="flex gap-2">
-                                      <button className="flex-1 bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage</button>
+                                      <button onClick={() => setManageShow(show)} className="flex-1 bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage</button>
                                       <button className="px-3 bg-brand-black text-white py-2 border-2 border-white/20 hover:border-white transition-colors">
                                          <span className="material-symbols-outlined text-xs">bar_chart</span>
                                       </button>
@@ -628,6 +686,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         </div>
       </main>
     </div>
+    </>
   );
 };
 

@@ -87,6 +87,11 @@ const App: React.FC = () => {
     setShows(mapped)
   }  }
 
+  const handleDeleteShow = async (id: string) => {
+    await supabase.from('shows').delete().eq('id', id);
+    setShows(prev => prev.filter(s => s.id !== id));
+  };
+
   const handleUpload = async (newShow: Show) => {
     const { data, error } = await supabase.from('shows').insert([{
       title: newShow.title,
@@ -142,7 +147,7 @@ const App: React.FC = () => {
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onUpload={handleUpload} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} shows={shows} onDeleteShow={() => {}} />
       case 'login': return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-            case 'subscription': return <SubscriptionPage onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onToggleFavorite={() => {}} onUpdateStats={() => {}} shows={shows} onUpload={handleUpload} />
+            case 'subscription': return <SubscriptionPage onDeleteShow={handleDeleteShow} onNavigate={(p) => setCurrentPage(p)} onLogout={() => {}} user={currentUser || undefined} onToggleFavorite={() => {}} onUpdateStats={() => {}} shows={shows} onUpload={handleUpload} />
 default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
     }
   }
