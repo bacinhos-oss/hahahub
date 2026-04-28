@@ -128,7 +128,7 @@ const App: React.FC = () => {
     setCurrentPage('landing')
   }
 
-  const handleLogout = async () => { await import("./lib/supabase").then(({supabase}) => supabase.auth.signOut()); setCurrentUser(null); setCurrentPage("landing"); };nn  const handleToggleFavorite = async (showId: string) => {
+  const handleToggleFavorite = async (showId: string) => {
     if (!currentUser) return
     const isFav = currentUser.favorites.includes(showId)
     const newFavs = isFav 
