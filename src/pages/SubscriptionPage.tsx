@@ -59,7 +59,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         script_scenario: editForm.scriptScenario,
       }).eq('id', manageShow.id);
       setManageShow(null);
-      window.location.reload();
     } catch (err) {
       alert('Error saving: ' + err);
     }
