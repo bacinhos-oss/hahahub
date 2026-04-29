@@ -19,6 +19,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [manageShow, setManageShow] = useState<Show | null>(null);
   const [editForm, setEditForm] = useState<Partial<Show>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const openManage = (show: Show) => {
     setManageShow(show);
@@ -59,7 +60,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         script_scenario: editForm.scriptScenario,
       }).eq('id', manageShow.id);
       if (error) throw new Error(error.message);
-      setManageShow(null);
+      setSaveSuccess(true);
+      setTimeout(() => { setSaveSuccess(false); setManageShow(null); }, 1500);
     } catch (err) {
       alert('Error saving: ' + err);
     }
@@ -326,7 +328,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               disabled={isSaving}
               className="w-full bg-brand-cyan text-black py-4 font-black uppercase italic border-4 border-black shadow-neo-yellow hover:bg-brand-yellow transition-all mb-4 disabled:opacity-50"
             >
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isSaving ? 'Saving...' : saveSuccess ? '✓ Saved!' : 'Save Changes'}
             </button>
 
             <div className="border-t-4 border-white/10 pt-6">

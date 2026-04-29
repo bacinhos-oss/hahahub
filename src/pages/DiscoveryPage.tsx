@@ -486,9 +486,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           </button>
           
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white sticky top-0 h-auto lg:h-[90vh] bg-brand-black overflow-hidden z-10">
-                <div className="w-full h-full relative">
-                  <img src={selectedShow.imageUrl} className="w-full h-full object-cover" alt={selectedShow.title} />
+            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white lg:sticky lg:top-0 lg:h-[90vh] bg-brand-black overflow-hidden z-10">
+                <div className="w-full relative" style={{maxHeight: '300px'}}>
+                  <img src={selectedShow.imageUrl} className="w-full object-cover" style={{maxHeight: '300px'}} alt={selectedShow.title} />
                   <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
                     <div className="px-4 py-2 text-[10px] font-black uppercase italic border-2 border-black shadow-[4px_4px_0px_white] bg-brand-yellow text-black">
                       {selectedShow.riskProfile}
