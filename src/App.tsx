@@ -1,3 +1,8 @@
+import AppRouter from './router/AppRouter'
+
+export default function App() {
+  return <AppRouter />
+}
 import React, { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import { Page, User, Show } from './types'
@@ -27,14 +32,14 @@ const App: React.FC = () => {
       setLoading(false)
       return
     }
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
-        loadProfile(session.user.id, session.user.email!)
-      } else {
-        setLoading(false)
-      }
-    })
+ supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session?.user) {
+    localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
+    loadProfile(session.user.id, session.user.email!)
+  } else {
+    setLoading(false)
+  }
+})
     loadShows()
     return () => {}
   }, [])
