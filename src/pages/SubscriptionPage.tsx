@@ -34,7 +34,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     setIsSaving(true);
     try {
       const { supabase } = await import('../lib/supabase');
-      await supabase.from('shows').update({
+      const { error } = await supabase.from('shows').update({
         title: editForm.title,
         author: editForm.author,
         director: editForm.director,
@@ -42,14 +42,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         genre: editForm.genre,
         language: editForm.language,
         location: editForm.location,
-        duration: editForm.duration,
-        male_roles: editForm.maleRoles,
-        female_roles: editForm.femaleRoles,
+        duration: Number(editForm.duration),
+        male_roles: Number(editForm.maleRoles),
+        female_roles: Number(editForm.femaleRoles),
         producer_name: editForm.producerName,
         producer_email: editForm.producerEmail,
         rights_holder: editForm.rightsHolder,
         premiere_date: editForm.premiereDate,
-        production_year: editForm.productionYear,
+        production_year: Number(editForm.productionYear),
         license_type: editForm.licenseType,
         licensing_model: editForm.licensingModel,
         exclusivity_level: editForm.exclusivityLevel,
@@ -58,6 +58,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         production_scale: editForm.productionScale,
         script_scenario: editForm.scriptScenario,
       }).eq('id', manageShow.id);
+      if (error) throw new Error(error.message);
       setManageShow(null);
     } catch (err) {
       alert('Error saving: ' + err);
