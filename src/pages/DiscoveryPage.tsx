@@ -486,9 +486,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           </button>
           
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10" style={{maxHeight: '40vh'}}>
-                <div className="w-full h-full relative">
-                  <img src={selectedShow.imageUrl} className="w-full h-full object-cover" alt={selectedShow.title} />
+            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10">
+                <div className="w-full relative" style={{height: '40vh'}}>
+                  <img src={selectedShow.imageUrl} className="w-full object-cover" style={{height: '40vh', objectFit: 'cover'}} alt={selectedShow.title} />
                   <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
                     <div className="px-4 py-2 text-[10px] font-black uppercase italic border-2 border-black shadow-[4px_4px_0px_white] bg-brand-yellow text-black">
                       {selectedShow.riskProfile}
@@ -779,7 +779,20 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </div>
 
               <button 
-                onClick={() => {
+                onClick={async () => {
+                  try {
+                    await fetch('https://api.resend.com/emails', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY || ''}` },
+                      body: JSON.stringify({
+                        from: 'HAHAHUB Platform <noreply@hahahub.com>',
+                        to: [selectedShow?.producerEmail || 'hello@hahahub.com'],
+                        reply_to: inquiryEmail,
+                        subject: `[HAHAHUB] Rights Inquiry: ${selectedShow?.title}`,
+                        html: `<div style="font-family:monospace;background:#0a0a0a;color:#fff;padding:40px"><h1 style="color:#ff2d78">RIGHTS INQUIRY</h1><p><b>Show:</b> ${selectedShow?.title}</p><p><b>From:</b> ${inquiryName}</p><p><b>Email:</b> ${inquiryEmail}</p><p><b>Message:</b><br/><em>${inquiryMessage}</em></p></div>`,
+                      }),
+                    });
+                  } catch {}
                   setInquirySuccess(true);
                   onUpdateStats(selectedShowId || '', 'inquiry');
                 }}

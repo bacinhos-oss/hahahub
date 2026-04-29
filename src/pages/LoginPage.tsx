@@ -72,22 +72,33 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
         if (signUpError) throw signUpError
         if (data.user) {
+          const isAdmin = email === ADMIN_EMAIL
+          // Preveri invitation
+          const { data: invite } = await supabase
+            .from('invitations')
+            .select('*')
+            .eq('email', email)
+            .eq('status', 'pending')
+            .single()
+          const isPaid = isAdmin || !!invite
+          if (invite) {
+            await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
+          }
           await supabase.from('profiles').insert([{
             id: data.user.id,
             name: name.toUpperCase(),
-            is_paid: email === ADMIN_EMAIL,
+            is_paid: isPaid,
             favorites: [],
             uploaded_show_ids: []
           }])
           if (data.session) {
-            const isAdmin = email === ADMIN_EMAIL
             setCurrentUser({
               id: data.user.id, email,
               name: name.toUpperCase(),
               role: isAdmin ? 'admin' : 'Producer',
               avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-              isPaid: isAdmin, isAdmin,
-              subscription: isAdmin ? { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
+              isPaid, isAdmin,
+              subscription: isPaid ? { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
               favorites: [], uploadedShowIds: [],
             })
             onSuccess()

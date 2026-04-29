@@ -32,7 +32,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
       <div className="flex items-center justify-between">
         {/* LOGO */}
         <button
-          onClick={() => { onNavigate('landing'); setMenuOpen(false); }}
+          onClick={() => { onNavigate(user ? 'discovery' : 'landing'); setMenuOpen(false); }}
           className="logo-text text-2xl md:text-4xl uppercase tracking-tighter hover:scale-105 transition-transform"
         >
           HAHAHUB
