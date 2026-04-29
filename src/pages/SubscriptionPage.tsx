@@ -1,4 +1,5 @@
 
+import { supabase } from '../lib/supabase';
 import React, { useState, useRef, useMemo } from 'react';
 import Navigation from '../components/Navigation';
 import ShareButton from '../components/ShareButton';
@@ -30,11 +31,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSave = async () => {
+    const handleSave = async () => {
     if (!manageShow) return;
     setIsSaving(true);
     try {
-      const { supabase } = await import('../lib/supabase');
       const { error } = await supabase.from('shows').update({
         title: editForm.title,
         author: editForm.author,
@@ -60,8 +60,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         script_scenario: editForm.scriptScenario,
       }).eq('id', manageShow.id);
       if (error) throw new Error(error.message);
-      setSaveSuccess(true);
-      setTimeout(() => { setSaveSuccess(false); setManageShow(null); }, 1500);
+            setSaveSuccess(true);
+      setTimeout(() => { 
+        setSaveSuccess(false); 
+        setManageShow(null);
+        window.location.reload();
+      }, 1500);
     } catch (err) {
       alert('Error saving: ' + err);
     }
@@ -237,13 +241,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       boxOfficeIndicator: formData.boxOfficeIndicator as any,
     } as Show;
 
-    onUpload(newShow);
+        onUpload(newShow);
     setIsSuccess(true);
     setTimeout(() => {
       setIsSuccess(false);
       setActiveTab('overview');
       setFormData({ ...formData, title: '', synopsis: '', scriptScenario: '' });
       setImagePreview(null);
+      window.location.reload();
     }, 2500);
   };
 
