@@ -1,8 +1,3 @@
-import AppRouter from './router/AppRouter'
-
-export default function App() {
-  return <AppRouter />
-}
 import React, { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import { Page, User, Show } from './types'
@@ -32,14 +27,28 @@ const App: React.FC = () => {
       setLoading(false)
       return
     }
- supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session?.user) {
-    localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
-    loadProfile(session.user.id, session.user.email!)
-  } else {
-    setLoading(false)
-  }
-})
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
+        loadProfile(session.user.id, session.user.email!)
+      } else {
+        const savedSession = localStorage.getItem('sb-jnilgukmyfukazwduuig-auth-token')
+        if (savedSession) {
+          try {
+            const parsed = JSON.parse(savedSession)
+            if (parsed?.user) {
+              loadProfile(parsed.user.id, parsed.user.email || parsed.user.email)
+            } else {
+              setLoading(false)
+            }
+          } catch {
+            setLoading(false)
+          }
+        } else {
+          setLoading(false)
+        }
+      }
+    })
     loadShows()
     return () => {}
   }, [])
@@ -67,7 +76,7 @@ const App: React.FC = () => {
     }
   }
 
-    const loadShows = async () => {
+  const loadShows = async () => {
     const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
     if (data) mapAndSetShows(data)
   }
@@ -124,9 +133,12 @@ const App: React.FC = () => {
     setShows(mapped)
   }
 
-
+  const handleUpdateShow = (updatedShow: Show) => {
+    setShows(prev => prev.map(s => s.id === updatedShow.id ? updatedShow : s))
+  }
 
   const handleLogout = async () => {
+    localStorage.removeItem('sb-jnilgukmyfukazwduuig-auth-token')
     await supabase.auth.signOut()
     setCurrentUser(null)
     setIsAdminAuthenticated(false)
@@ -220,9 +232,9 @@ const App: React.FC = () => {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
-      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={() => {}} />
+      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={handleDeleteShow} />
       case 'login': return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-      case 'subscription': return <SubscriptionPage onDeleteShow={handleDeleteShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} shows={shows} onUpload={handleUpload} />
+      case 'subscription': return <SubscriptionPage onDeleteShow={handleDeleteShow} onUpdateShow={handleUpdateShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} shows={shows} onUpload={handleUpload} />
       case 'about': return <AboutPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'privacy': return <PrivacyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
@@ -238,4 +250,3 @@ const App: React.FC = () => {
 }
 
 export default App
-// force rebuild Wed Apr 29 00:34:39 CEST 2026
