@@ -1,4 +1,3 @@
-export type Page = 'landing' | 'discovery' | 'reset-password' | 'upload' | 'admin' | 'login' | 'user-login' | 'subscription' | 'about' | 'privacy';
 export type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
 export interface SubscriptionInfo {
   type: 'Free' | 'Quarterly' | 'Annual';
@@ -12,7 +11,7 @@ export interface Invitation {
   generatedUsername: string; generatedPassword: string;
 }
 export interface Show {
-  id: string; title: string; originalTitle?: string; englishTitle?: string;
+  id: string; title: string; oƒΩriginalTitle?: string; englishTitle?: string;
   author: string; director: string; directorNotes?: string; originalProductionSolutions?: string;
   isDirectorMandatory: boolean; creativeTeamAvailability: 'Required' | 'Optional' | 'Not required';
   genre: string; subgenre?: string; language: string; maleRoles: number; femaleRoles: number;
