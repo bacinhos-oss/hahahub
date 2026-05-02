@@ -76,9 +76,10 @@ const App: React.FC = () => {
   }
 
   const loadShows = async () => {
-    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
-    if (data) mapAndSetShows(data)
-  }
+    const handleDeleteShow = async (id: string) => {
+  await supabase.from('shows').delete().eq('id', id);
+  setShows(prev => prev.filter(s => s.id !== id));
+};
 
   const mapAndSetShows = (data: any[]) => {
     const mapped = data.map((s: any) => ({
