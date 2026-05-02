@@ -21,7 +21,36 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [editForm, setEditForm] = useState<Partial<Show>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [realStats, setRealStats] = useState({
+  totalViews: 0,
+  totalInquiries: 0,
+  totalLikes: 0,
+})
+  useEffect(() => {
+  if (user?.id) {
+    loadMyRealStats()
+  }
+}, [user])
+
+const loadMyRealStats = async () => {
+  // Pridobi vse show-e od tega uporabnika
+  const { data: myShows } = await supabase
+    .from('shows')
+    .select('views_count, inquiries_count, likes_count')
+    .eq('user_id', user?.id)
   
+  if (myShows && myShows.length > 0) {
+    const totalViews = myShows.reduce((sum, s) => sum + (s.views_count || 0), 0)
+    const totalInquiries = myShows.reduce((sum, s) => sum + (s.inquiries_count || 0), 0)
+    const totalLikes = myShows.reduce((sum, s) => sum + (s.likes_count || 0), 0)
+    
+    setRealStats({
+      totalViews,
+      totalInquiries,
+      totalLikes,
+    })
+  }
+}
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -77,12 +106,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
   const userUploads = shows.filter((s: Show) => (s as any).user_id === user.id || user.uploadedShowIds?.includes(s.id));
 
-  const stats = [
-    { label: 'Scripts Uploaded', value: userUploads.length, icon: 'upload', color: 'brand-cyan' },
-    { label: 'Asset Scrapes', value: '1,240', icon: 'visibility', color: 'brand-yellow' },
-    { label: 'Inquiry Rate', value: '3.2%', icon: 'insights', color: 'brand-pink' },
-    { label: 'Active Favs', value: user.favorites.length, icon: 'favorite', color: 'white' },
-  ];
+ const stats = [
+  { label: 'Scripts Uploaded', value: userUploads.length, icon: 'upload', color: 'brand-cyan' },
+  { label: 'Asset Scrapes', value: realStats.totalViews.toLocaleString(), icon: 'visibility', color: 'brand-yellow' },
+  { label: 'Inquiry Rate', value: realStats.totalInquiries > 0 ? `${((realStats.totalInquiries / (realStats.totalViews || 1)) * 100).toFixed(1)}%` : '0%', icon: 'insights', color: 'brand-pink' },
+  { label: 'Active Favs', value: realStats.totalLikes.toLocaleString(), icon: 'favorite', color: 'white' },
+];
 
   const openManage = (show: Show) => {
     setManageShow(show);
