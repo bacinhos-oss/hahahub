@@ -4,7 +4,6 @@ import { Page, User, Show } from './types'
 import LandingPage from './pages/LandingPage'
 import DiscoveryPage from './pages/DiscoveryPage'
 import AdminPage from './pages/AdminPage'
-import UploadPage from './pages/UploadPage'
 import SubscriptionPage from './pages/SubscriptionPage'
 import AboutPage from './pages/AboutPage'
 import LoginPage from './pages/LoginPage'
@@ -174,12 +173,12 @@ const App: React.FC = () => {
     if (type === 'inquiry') await supabase.from('shows').update({ inquiries_count: (shows.find(s => s.id === showId)?.inquiriesCount || 0) + 1 }).eq('id', showId)
   }
 
-  const handleDeleteShow = async (id: string) => {
+ 
     await supabase.from('shows').delete().eq('id', id);
     setShows(prev => prev.filter(s => s.id !== id));
   };
 
-  const handleUpload = async (newShow: Show) => {
+ 
     const { data, error } = await supabase.from('shows').insert([{
       title: newShow.title,
       author: newShow.author,
@@ -231,7 +230,6 @@ const App: React.FC = () => {
     switch (currentPage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
-      case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={handleDeleteShow} />
       case 'login': return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
       case 'subscription': return <SubscriptionPage onDeleteShow={handleDeleteShow} onUpdateShow={handleUpdateShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} shows={shows} onUpload={handleUpload} />
