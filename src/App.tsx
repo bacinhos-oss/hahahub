@@ -64,7 +64,6 @@ const App: React.FC = () => {
         isPaid: data?.is_paid || isAdmin, isAdmin,
         subscription: data?.is_paid || isAdmin ? { type: 'Annual', expiryDate: data?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
         favorites: data?.favorites || [],
-        uploadedShowIds: data?.uploaded_show_ids || [],
       }
       setCurrentUser(user)
       if (isAdmin) setIsAdminAuthenticated(true)
@@ -76,10 +75,9 @@ const App: React.FC = () => {
   }
 
   const loadShows = async () => {
-    const handleDeleteShow = async (id: string) => {
-  await supabase.from('shows').delete().eq('id', id);
-  setShows(prev => prev.filter(s => s.id !== id));
-};
+    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
+    if (data) mapAndSetShows(data)
+  }
 
   const mapAndSetShows = (data: any[]) => {
     const mapped = data.map((s: any) => ({
@@ -174,51 +172,6 @@ const App: React.FC = () => {
     if (type === 'inquiry') await supabase.from('shows').update({ inquiries_count: (shows.find(s => s.id === showId)?.inquiriesCount || 0) + 1 }).eq('id', showId)
   }
 
- 
-    await supabase.from('shows').delete().eq('id', id);
-    setShows(prev => prev.filter(s => s.id !== id));
-  };
-
- 
-    const { data, error } = await supabase.from('shows').insert([{
-      title: newShow.title,
-      author: newShow.author,
-      director: newShow.director,
-      synopsis: newShow.synopsis,
-      image_url: newShow.imageUrl,
-      genre: newShow.genre,
-      language: newShow.language,
-      location: newShow.location,
-      duration: newShow.duration,
-      male_roles: newShow.maleRoles,
-      female_roles: newShow.femaleRoles,
-      producer_name: newShow.producerName,
-      producer_email: newShow.producerEmail,
-      rights_holder: newShow.rightsHolder,
-      premiere_date: newShow.premiereDate,
-      production_year: newShow.productionYear,
-      license_type: newShow.licenseType,
-      script_scenario: newShow.scriptScenario,
-      user_id: currentUser?.id,
-      likes_count: 0,
-      views_count: 0,
-      inquiries_count: 0
-    }]).select().single()
-
-    if (error) {
-      alert('Error saving show: ' + error.message)
-      return
-    }
-    if (data) {
-      setShows(prev => [{ ...newShow, id: data.id }, ...prev])
-      if (currentUser?.id) {
-        const newIds = [...(currentUser.uploadedShowIds || []), data.id]
-        await supabase.from('profiles').update({ uploaded_show_ids: newIds }).eq('id', currentUser.id)
-        setCurrentUser(prev => prev ? { ...prev, uploadedShowIds: newIds } : null)
-      }
-    }
-  }
-
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -231,9 +184,9 @@ const App: React.FC = () => {
     switch (currentPage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
-      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={handleDeleteShow} />
+      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
       case 'login': return <LoginPage onSuccess={() => setCurrentPage('discovery')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
-      case 'subscription': return <SubscriptionPage onDeleteShow={handleDeleteShow} onUpdateShow={handleUpdateShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} shows={shows} onUpload={handleUpload} />
+      case 'subscription': return <SubscriptionPage onUpdateShow={handleUpdateShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} shows={shows} />
       case 'about': return <AboutPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'privacy': return <PrivacyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
