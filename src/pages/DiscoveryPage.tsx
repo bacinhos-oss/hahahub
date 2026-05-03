@@ -868,6 +868,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           setInquiryName(user?.name || '');
                           setInquiryEmail(user?.email || '');
                           setInquiryMessage('');
+                          setInquirySuccess(false);
                           setIsInquiryOpen(true);
                         }}
                         className="bg-brand-yellow text-black px-16 py-8 font-black uppercase border-4 border-black shadow-[8px_8px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic tracking-[0.4em] text-2xl"
