@@ -98,7 +98,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       try {
         const ext = imageFile.name.split('.').pop();
         const path = `shows/${Date.now()}.${ext}`;
-        const { data: uploadData } = await supabase.storage.from('show-images').upload(path, imageFile);
+        const { data: uploadData } = await supabase.storage.from('show-images').upload(path, imageFile, { cacheControl: '31536000', upsert: false });
         if (uploadData) {
           const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path);
           finalImageUrl = urlData.publicUrl;
@@ -113,7 +113,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
         try {
           const ext = pf.name.split('.').pop();
           const path = `shows/photo_${Date.now()}_${i}.${ext}`;
-          const { data: pd } = await supabase.storage.from('show-images').upload(path, pf);
+          const { data: pd } = await supabase.storage.from('show-images').upload(path, pf, { cacheControl: '31536000', upsert: false });
           if (pd) { const { data: pu } = supabase.storage.from('show-images').getPublicUrl(path); uploadedPhotos.push(pu.publicUrl); }
         } catch { if (pp) uploadedPhotos.push(pp); }
       } else if (pp) { uploadedPhotos.push(pp); }

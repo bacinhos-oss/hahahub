@@ -50,7 +50,15 @@ const App: React.FC = () => {
       }
     })
     loadShows()
-    return () => {}
+
+    const channel = supabase
+      .channel('shows-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'shows' }, () => {
+        loadShows()
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [])
 
   const loadProfile = async (userId: string, email: string) => {
