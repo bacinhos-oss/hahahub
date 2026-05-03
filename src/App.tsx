@@ -182,8 +182,54 @@ const App: React.FC = () => {
     )
   }
 
-  const handleUpload = (newShow: Show) => {
-    setShows(prev => [newShow, ...prev])
+  const handleUpload = async (newShow: Show) => {
+    const { data, error } = await supabase.from('shows').insert([{
+      title: newShow.title, author: newShow.author, director: newShow.director,
+      director_notes: newShow.directorNotes, original_production_solutions: newShow.originalProductionSolutions,
+      synopsis: newShow.synopsis, image_url: newShow.imageUrl,
+      genre: newShow.genre, subgenre: newShow.subgenre, language: newShow.language,
+      location: newShow.location, duration: newShow.duration,
+      male_roles: newShow.maleRoles, female_roles: newShow.femaleRoles,
+      can_merge_roles: newShow.canMergeRoles, has_intermission: newShow.hasIntermission,
+      is_director_mandatory: newShow.isDirectorMandatory,
+      creative_team_availability: newShow.creativeTeamAvailability,
+      production_scale: newShow.productionScale, is_touring_friendly: newShow.isTouringFriendly,
+      technical_complexity: newShow.technicalComplexity, costume_complexity: newShow.costumeComplexity,
+      set_complexity: newShow.setComplexity, adaptation_flexibility: newShow.adaptationFlexibility,
+      scalability_notes: newShow.scalabilityNotes, stage_type: newShow.stageType,
+      tech_staff_lighting: newShow.techStaffLighting, tech_staff_sound: newShow.techStaffSound,
+      tech_staff_prompter: newShow.techStaffPrompter, tech_staff_stagehands: newShow.techStaffStagehands,
+      tech_staff_other: newShow.techStaffOther,
+      premiere_date: newShow.premiereDate, premiere_location: newShow.premiereLocation,
+      production_year: newShow.productionYear, performances_count: newShow.performancesCount,
+      total_audience: newShow.totalAudience, locations_played: newShow.locationsPlayed,
+      buyout_locations: newShow.buyoutLocations, box_office_indicator: newShow.boxOfficeIndicator,
+      awards: newShow.awards, audience_profile: newShow.audienceProfile,
+      producer_name: newShow.producerName, producer_email: newShow.producerEmail,
+      rights_holder: newShow.rightsHolder, rights_status: newShow.rightsStatus,
+      territories_available: newShow.territoriesAvailable, licensed_countries: newShow.licensedCountries,
+      license_type: newShow.licenseType, licensing_model: newShow.licensingModel,
+      exclusivity_level: newShow.exclusivityLevel, royalty_range: newShow.royaltyRange,
+      advance_fee: newShow.advanceFee, rights_clearing_speed: newShow.rightsClearingSpeed,
+      decision_maker_type: newShow.decisionMakerType, risk_profile: newShow.riskProfile,
+      break_even_threshold: newShow.breakEvenThreshold, break_even_performances: newShow.breakEvenPerformances,
+      budget_range: newShow.budgetRange, humor_type: newShow.humorType,
+      translations_available: newShow.translationsAvailable,
+      translation_rights_included: newShow.translationRightsIncluded,
+      is_sponsor_friendly: newShow.isSponsorFriendly, is_group_sales_friendly: newShow.isGroupSalesFriendly,
+      exit_scenarios: newShow.exitScenarios,
+      originating_producer_track_record: newShow.originatingProducerTrackRecord,
+      territory_conflicts: newShow.territoryConflicts, media_conflicts: newShow.mediaConflicts,
+      international_success_notes: newShow.internationalSuccessNotes,
+      script_scenario: newShow.scriptScenario,
+      programming_compatibility: newShow.programmingCompatibility,
+      transparency_score: newShow.transparencyScore,
+      likes_count: 0, views_count: 0, inquiries_count: 0,
+      production_photos: newShow.productionPhotos, is_produced: true,
+      user_id: currentUser?.id,
+    }]).select().single()
+    if (data) setShows(prev => [{ ...newShow, id: data.id }, ...prev])
+    else setShows(prev => [newShow, ...prev])
   }
 
   const renderPage = () => {

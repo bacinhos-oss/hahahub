@@ -262,6 +262,14 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div className="col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
                   <div className="col-span-2"><label className={lbl}>Original Staging Solutions</label><textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={2} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-yellow"></textarea></div>
                   <div className="col-span-2"><label className={lbl}>International Success Notes</label><textarea name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} rows={2} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
+
+                  <div className="col-span-2 bg-brand-black border-4 border-brand-yellow p-6 space-y-4">
+                    <div>
+                      <label className="block text-[10px] font-black uppercase text-brand-yellow mb-1 italic tracking-widest">Script Scenario — 3 Pages in English *</label>
+                      <p className="text-[9px] text-gray-500 italic mb-4">Public preview visible to all producers. Paste the first 3 pages of the script in English.</p>
+                      <textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={18} className="w-full bg-black border-2 border-white/10 p-6 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow"></textarea>
+                    </div>
+                  </div>
                 </div>
               </section>
 

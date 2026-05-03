@@ -115,7 +115,7 @@ See? Even the birds are confused. This is the ultimate comedy of errors. Or the 
 
 (Blackout)`,
     imageUrl: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?auto=format&fit=crop&q=80&w=400&h=600',
-    productionPhotos: []
+    productionPhotos: [], is_produced: true
   },
   { 
     id: '2', 
@@ -187,7 +187,7 @@ See? Even the birds are confused. This is the ultimate comedy of errors. Or the 
     inquiriesCount: 4, 
     synopsis: 'A scientist accidentally splits himself into two versions: one extremely rude and one extremely polite. They must share a studio apartment while trying to win back their ex-fiancée.', 
     imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400&h=600',
-    productionPhotos: []
+    productionPhotos: [], is_produced: true
   },
   { 
     id: '3', 
@@ -260,7 +260,7 @@ See? Even the birds are confused. This is the ultimate comedy of errors. Or the 
     inquiriesCount: 28, 
     synopsis: 'A haunted house comedy where the ghost is a failed playwright who won’t let the new residents sleep until they finish his unproduced 500-page masterpiece.', 
     imageUrl: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=400&h=600',
-    productionPhotos: []
+    productionPhotos: [], is_produced: true
   },
   { 
     id: '4', 
@@ -333,7 +333,7 @@ See? Even the birds are confused. This is the ultimate comedy of errors. Or the 
     inquiriesCount: 9, 
     synopsis: 'A funeral home specializing in failed tech companies holds a "burial" for a social media app for pets. But the CEO won\'t let it die without one last pivot.', 
     imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=400&h=600',
-    productionPhotos: []
+    productionPhotos: [], is_produced: true
   },
   { 
     id: '5', 
@@ -406,7 +406,7 @@ See? Even the birds are confused. This is the ultimate comedy of errors. Or the 
     inquiriesCount: 12, 
     synopsis: 'Two washed-up actors try to perform a comedy during a city-wide power outage. As the audience waits in the dark, they realize the real comedy is their failing friendship.', 
     imageUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=400&h=600',
-    productionPhotos: []
+    productionPhotos: [], is_produced: true
   }
 ];
 
