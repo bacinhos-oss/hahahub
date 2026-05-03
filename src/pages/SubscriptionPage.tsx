@@ -14,6 +14,245 @@ interface SubscriptionPageProps {
   onUpdateShow: (show: Show) => void;
 }
 
+const CONTRACT_TEMPLATES = [
+  {
+    title: 'Standard Licensing Agreement', tag: 'Essential', icon: 'description', color: 'brand-cyan',
+    desc: 'Basic template for granting performance rights to a foreign producer. Covers territory, duration, royalties and exclusivity.',
+    content: `THEATRICAL LICENSING AGREEMENT
+
+This Agreement is entered into as of [DATE] between:
+
+LICENSOR: [Name/Company], hereinafter "Rights Holder"
+Address: [Address], [Country] | Email: [Email]
+
+LICENSEE: [Name/Company], hereinafter "Producer"  
+Address: [Address], [Country] | Email: [Email]
+
+1. GRANT OF RIGHTS
+The Rights Holder grants the Producer a license to produce and perform "[SHOW TITLE]" under:
+Territory: [Country/Region] | Language: [Language]
+Duration: [START DATE] to [END DATE] | Max Performances: [NUMBER]
+
+2. FINANCIAL TERMS
+Royalty: [X]% of gross box office per performance
+Minimum Guarantee: EUR [AMOUNT] per performance
+Advance Payment: EUR [AMOUNT] (non-refundable, due upon signing)
+Payment: Within 30 days after each performance
+
+3. ARTISTIC REQUIREMENTS
+- Present the Work substantially as written
+- No material changes without written consent
+- Credit original author and production company in all materials
+- Submit all marketing materials for approval prior to publication
+
+4. CREDITS
+All programs, posters, and advertising must include:
+"[SHOW TITLE] is presented by arrangement with [RIGHTS HOLDER NAME]"
+"Originally produced by [ORIGINAL PRODUCTION COMPANY]"
+
+5. TERMINATION
+Either party may terminate with 30 days written notice for material breach uncured within 14 days.
+
+6. GOVERNING LAW: Laws of [COUNTRY]
+
+Rights Holder: _________________________ Date: _________
+Producer: _________________________ Date: _________`
+  },
+  {
+    title: 'Option Agreement', tag: 'First Step', icon: 'timer', color: 'brand-pink',
+    desc: 'Grants a producer exclusive rights to negotiate a full license within a set period — standard first step in any deal.',
+    content: `THEATRICAL OPTION AGREEMENT
+
+This Option Agreement is made as of [DATE] between:
+RIGHTS HOLDER: [Name/Company]
+PRODUCER: [Name/Company]
+WORK: "[SHOW TITLE]" written by [AUTHOR]
+
+1. OPTION GRANT
+For EUR [OPTION FEE] (receipt acknowledged), Rights Holder grants Producer an exclusive option to negotiate and execute a full Licensing Agreement.
+
+2. OPTION PERIOD
+Valid for [NUMBER] months from signing.
+Extension: [NUMBER] additional months upon payment of EUR [EXTENSION FEE].
+
+3. OPTION FEE
+EUR [AMOUNT] — non-refundable, applicable toward advance if full license executed.
+
+4. PRODUCER'S RIGHTS DURING OPTION
+- Develop production plans and approach venues
+- Apply for grants and funding
+- Announce production as "in development"
+
+5. EXCLUSIVITY
+Rights Holder will not grant any other producer rights in [TERRITORY] during the option period.
+
+6. EXPIRATION
+If not exercised within the option period, all rights revert to Rights Holder.
+
+Rights Holder: _________________________ Date: _________
+Producer: _________________________ Date: _________`
+  },
+  {
+    title: 'Co-Production Agreement', tag: 'Popular', icon: 'handshake', color: 'brand-yellow',
+    desc: 'Framework for joint productions between two or more producers across different territories.',
+    content: `CO-PRODUCTION AGREEMENT
+
+This Agreement is entered into as of [DATE] between:
+CO-PRODUCER A: [Name/Company], [Country]
+CO-PRODUCER B: [Name/Company], [Country]
+PRODUCTION: "[SHOW TITLE]"
+
+1. FINANCIAL CONTRIBUTIONS
+Co-Producer A: [X]% = EUR [AMOUNT]
+Co-Producer B: [X]% = EUR [AMOUNT]
+Total Budget: EUR [TOTAL AMOUNT]
+
+2. REVENUE SHARING (after all production costs)
+Co-Producer A: [X]% | Co-Producer B: [X]%
+
+3. CREATIVE RESPONSIBILITIES
+Co-Producer A: [e.g., artistic direction, casting, script]
+Co-Producer B: [e.g., venue, local marketing, technical]
+
+4. TERRITORIES
+Co-Producer A: [TERRITORY A] | Co-Producer B: [TERRITORY B]
+Joint decisions required for all other territories.
+
+5. CREDITS
+All materials: "A co-production by [COMPANY A] and [COMPANY B]"
+Equal and simultaneous billing.
+
+6. DECISION MAKING
+Major decisions require written consent of both parties.
+
+7. DISPUTE RESOLUTION
+Good faith negotiation → Mediation → ICC Arbitration.
+
+Co-Producer A: _________________________ Date: _________
+Co-Producer B: _________________________ Date: _________`
+  },
+  {
+    title: 'Translation Rights Agreement', tag: 'Useful', icon: 'translate', color: 'brand-cyan',
+    desc: 'Covers the rights to translate and adapt a script into another language for local production.',
+    content: `TRANSLATION RIGHTS AGREEMENT
+
+Made as of [DATE] between:
+RIGHTS HOLDER: [Name/Company]
+PRODUCER: [Name/Company]
+ORIGINAL WORK: "[ORIGINAL TITLE]" by [AUTHOR] in [ORIGINAL LANGUAGE]
+
+1. GRANT OF RIGHTS
+Rights Holder grants Producer the right to commission and use a [TARGET LANGUAGE] translation for theatrical production in [TERRITORY].
+
+2. TRANSLATION
+Translator: [NAME] (approved by Rights Holder)
+Translator fee: EUR [AMOUNT]
+
+3. OWNERSHIP
+Translation jointly owned by both parties.
+Neither may use it without the other's written consent.
+
+4. FINANCIAL TERMS
+Translation royalty: [X]% of gross box office
+Translator royalty: [X]% (included or additional)
+
+5. QUALITY APPROVAL
+Rights Holder may review and approve final translation before production.
+
+6. CREDITS
+"[ORIGINAL TITLE] by [ORIGINAL AUTHOR]"
+"[TARGET LANGUAGE] translation by [TRANSLATOR NAME]"
+
+7. REVERSION
+If not produced within [NUMBER] months, translation rights revert to Rights Holder.
+
+Rights Holder: _________________________ Date: _________
+Producer: _________________________ Date: _________`
+  },
+  {
+    title: 'Touring Rights Agreement', tag: 'Useful', icon: 'tour', color: 'brand-yellow',
+    desc: 'Specific terms for productions that will tour across multiple venues or territories.',
+    content: `TOURING RIGHTS AGREEMENT
+
+Made as of [DATE] between:
+RIGHTS HOLDER: [Name/Company]
+TOURING PRODUCER: [Name/Company]
+WORK: "[SHOW TITLE]"
+
+1. APPROVED TOUR VENUES
+1. [VENUE/CITY], [COUNTRY] — [FROM] to [TO]
+2. [VENUE/CITY], [COUNTRY] — [FROM] to [TO]
+3. [VENUE/CITY], [COUNTRY] — [FROM] to [TO]
+Additional venues require written approval.
+
+2. FINANCIAL TERMS
+Royalty: [X]% of gross box office per venue
+Minimum per venue: EUR [AMOUNT]
+Settlement: Within 14 days after final performance at each venue.
+
+3. PRODUCTION STANDARDS
+- Maintain artistic standards of the approved production
+- No principal cast substitution without written approval
+
+4. INSURANCE
+Comprehensive general liability: min EUR [AMOUNT] per occurrence.
+Rights Holder named as additional insured.
+
+5. REPORTING
+Box office reports due within 7 days of final performance at each venue.
+
+Rights Holder: _________________________ Date: _________
+Touring Producer: _________________________ Date: _________`
+  },
+  {
+    title: 'Letter of Intent (LOI)', tag: 'First Step', icon: 'mail', color: 'brand-pink',
+    desc: 'Non-binding document to initiate formal negotiations — signals serious interest before full contract.',
+    content: `LETTER OF INTENT
+
+[DATE]
+
+To: [RIGHTS HOLDER NAME]
+From: [PRODUCER NAME / COMPANY]
+Re: Expression of Interest — "[SHOW TITLE]"
+
+Dear [RIGHTS HOLDER NAME],
+
+[PRODUCER COMPANY] ("Producer") expresses formal interest in licensing "[SHOW TITLE]" by [AUTHOR].
+
+PROPOSED TERMS:
+Territory: [COUNTRY/REGION] | Language: [LANGUAGE]
+Planned Premiere: [APPROXIMATE DATE]
+Estimated Performances: [NUMBER]
+Proposed Venue: [VENUE]
+
+Financial Proposal:
+- Royalty: [X]% of gross box office
+- Advance: EUR [AMOUNT]
+- Minimum guarantee: EUR [AMOUNT] per performance
+
+Producer Background:
+[BRIEF DESCRIPTION OF COMPANY AND TRACK RECORD]
+
+NON-BINDING NATURE:
+This LOI is a non-binding expression of intent. Neither party is legally obligated until a formal agreement is signed.
+
+NEXT STEPS: We propose a call on [DATE] to discuss terms.
+
+Sincerely,
+[PRODUCER NAME] | [TITLE] | [COMPANY] | [EMAIL] | [PHONE]`
+  },
+]
+
+const downloadContract = (title: string, content: string) => {
+  const element = document.createElement('a')
+  const file = new Blob([content], { type: 'text/plain' })
+  element.href = URL.createObjectURL(file)
+  element.download = title.replace(/[^a-z0-9]/gi, '_') + '_HAHAHUB_Template.txt'
+  document.body.appendChild(element)
+  element.click()
+  document.body.removeChild(element)
+}
+
 const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-bold text-sm outline-none focus:border-brand-cyan";
 const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
 const lbl = "block text-[9px] font-black uppercase text-gray-500 mb-1 italic";
@@ -297,6 +536,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         <main className="flex-1 pt-24 md:pt-32 pb-20 px-4 md:px-12 text-white">
           <div className="max-w-7xl mx-auto space-y-12">
 
+            {/* HEADER */}
             <section className="flex flex-col md:flex-row items-end justify-between gap-10">
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">My <span className="text-brand-pink">Hub</span></h1>
               <div className="flex items-center gap-6">
@@ -308,93 +548,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </section>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-8 bg-white text-black p-8 border-8 border-black shadow-neo-magenta">
-                <div className="flex justify-between items-start mb-8 gap-6">
-                  <div>
-                    <h2 className="text-4xl font-black uppercase italic leading-none mb-2">My Subscription</h2>
-                    <p className="font-bold text-gray-500 uppercase tracking-widest text-xs italic">{user.subscription?.type} Plan • {user.subscription?.status}</p>
-                  </div>
-                  <div className={`px-6 py-4 border-4 border-black rotate-[-2deg] ${daysRemaining <= 30 ? 'bg-brand-pink text-white' : 'bg-brand-black text-white'}`}>
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">Days Left</p>
-                    <p className="text-4xl font-black italic">{daysRemaining}</p>
-                  </div>
-                </div>
-
-                {daysRemaining <= 7 && (
-                  <div className="bg-brand-pink text-white p-4 border-4 border-black mb-6 flex items-center gap-4">
-                    <span className="material-symbols-outlined text-3xl">warning</span>
-                    <div>
-                      <p className="font-black uppercase text-sm">Access expiring soon!</p>
-                      <p className="text-xs font-bold opacity-80">Your access expires on {user.subscription?.expiryDate}. Renew to keep your assets live.</p>
-                    </div>
-                  </div>
-                )}
-
-                {daysRemaining === 0 && (
-                  <div className="bg-black text-brand-yellow p-4 border-4 border-brand-yellow mb-6 flex items-center gap-4">
-                    <span className="material-symbols-outlined text-3xl text-brand-yellow">lock</span>
-                    <div>
-                      <p className="font-black uppercase text-sm">Access Expired</p>
-                      <p className="text-xs font-bold opacity-80">Renew your subscription to restore full access.</p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="h-5 bg-gray-100 border-4 border-black relative overflow-hidden mb-3">
-                  <div className={`absolute top-0 left-0 h-full border-r-4 border-black transition-all ${daysRemaining <= 30 ? 'bg-brand-pink' : 'bg-brand-cyan'}`} style={{ width: subscriptionProgress + '%' }}></div>
-                </div>
-                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest italic mb-8">
-                  <span>Start</span>
-                  <span className={daysRemaining <= 30 ? 'text-brand-pink' : 'text-gray-400'}>Expires: {user.subscription?.expiryDate}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 pt-6 border-t-4 border-black/10">
-                  <a href="mailto:info@hahahub.art?subject=Renew%20Subscription" className="bg-brand-pink text-white py-4 px-6 font-black uppercase text-xs hover:bg-black transition-all border-4 border-black text-center">
-                    Renew Subscription
-                  </a>
-                  <a href="mailto:info@hahahub.art?subject=Billing%20Question" className="bg-transparent text-black py-4 px-6 font-black uppercase text-xs hover:bg-black hover:text-white transition-all border-4 border-black text-center">
-                    Contact Support
-                  </a>
-                </div>
-              </div>
-
-              <div className="lg:col-span-4 bg-brand-surface border-4 border-white p-8 shadow-neo-yellow flex flex-col justify-between">
-                <div>
-                  <h3 className="text-2xl font-black uppercase italic text-brand-yellow mb-2">What's Included</h3>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-6">Annual Pass Benefits</p>
-                  <ul className="space-y-4">
-                    {[
-                      { icon: 'search', text: 'Full catalog access' },
-                      { icon: 'upload', text: 'Unlimited asset uploads' },
-                      { icon: 'analytics', text: 'Performance analytics' },
-                      { icon: 'mail', text: 'Direct inquiry system' },
-                      { icon: 'groups', text: 'VIP networking events' },
-                      { icon: 'picture_as_pdf', text: 'Unlimited PDF downloads' },
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm font-bold italic">
-                        <span className="material-symbols-outlined text-brand-cyan text-lg">{item.icon}</span>
-                        {item.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <a href="mailto:info@hahahub.art?subject=Upgrade" className="mt-8 w-full bg-brand-yellow text-black py-4 text-xs font-black uppercase italic border-4 border-black hover:bg-white transition-all block text-center">
-                  Questions? Contact Us
-                </a>
-              </div>
-            </div>
-
-            <section className="grid grid-cols-2 xl:grid-cols-4 gap-8">
-              {stats.map((stat, i) => (
-                <div key={i} className="bg-brand-surface border-4 border-white p-8 shadow-neo-white">
-                  <span className={'material-symbols-outlined text-4xl mb-6 block text-' + stat.color}>{stat.icon}</span>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1 italic">{stat.label}</p>
-                  <p className="text-4xl font-black uppercase italic">{stat.value}</p>
-                </div>
-              ))}
-            </section>
-
+            {/* 1. MY ASSETS — most important */}
             <section className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-yellow">Assets</span></h2>
@@ -426,6 +580,91 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       </div>
                       <button onClick={() => openManage(show)} className="mt-4 w-full bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage / Edit</button>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* 2. STATS */}
+            <section className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+              {stats.map((stat, i) => (
+                <div key={i} className="bg-brand-surface border-4 border-white p-8 shadow-neo-white">
+                  <span className={'material-symbols-outlined text-4xl mb-6 block text-' + stat.color}>{stat.icon}</span>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1 italic">{stat.label}</p>
+                  <p className="text-4xl font-black uppercase italic">{stat.value}</p>
+                </div>
+              ))}
+            </section>
+
+            {/* 3. SUBSCRIPTION */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-8 bg-white text-black p-8 border-8 border-black shadow-neo-magenta">
+                <div className="flex justify-between items-start mb-8 gap-6">
+                  <div>
+                    <h2 className="text-4xl font-black uppercase italic leading-none mb-2">Member Account</h2>
+                    <p className="font-bold text-gray-500 uppercase tracking-widest text-xs italic">Status: {user.subscription?.status} • {user.subscription?.type} Tier</p>
+                  </div>
+                  <div className="bg-brand-black text-white px-6 py-4 border-4 border-black rotate-[-2deg]">
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">Days Remaining</p>
+                    <p className="text-4xl font-black italic">{daysRemaining}</p>
+                  </div>
+                </div>
+                <div className="h-6 bg-gray-100 border-4 border-black relative overflow-hidden mb-4">
+                  <div className="absolute top-0 left-0 h-full bg-brand-pink border-r-4 border-black transition-all" style={{ width: subscriptionProgress + '%' }}></div>
+                </div>
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest italic mb-8">
+                  <span>Activation</span>
+                  <span className="text-brand-pink">Expiring: {user.subscription?.expiryDate}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-6 pt-8 border-t-4 border-black/10">
+                  <div className="flex items-center gap-4">
+                    <span className="material-symbols-outlined text-3xl text-brand-pink">sync</span>
+                    <div>
+                      <p className="text-[10px] font-black uppercase italic">Auto-Renewal</p>
+                      <p className="text-sm font-bold">Enabled via PayPal Express</p>
+                    </div>
+                  </div>
+                  <a href="mailto:info@hahahub.art?subject=Billing%20Request" className="bg-black text-white py-3 px-6 font-black uppercase text-xs hover:bg-brand-cyan hover:text-black transition-all border-4 border-black text-center">Manage Billing</a>
+                </div>
+              </div>
+              <div className="lg:col-span-4 bg-brand-surface border-4 border-white p-8 shadow-neo-yellow flex flex-col justify-between">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-yellow mb-6">Vault Privileges</h3>
+                  <ul className="space-y-4">
+                    {user.subscription?.discounts.map((d, i) => (
+                      <li key={i} className="flex items-center gap-3 text-sm font-bold italic">
+                        <span className="material-symbols-outlined text-brand-cyan">verified</span>{d}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <a href="mailto:info@hahahub.art?subject=Upgrade" className="mt-8 w-full border-4 border-white py-4 text-xs font-black uppercase italic hover:bg-white hover:text-black transition-all block text-center">Upgrade My Tier</a>
+              </div>
+            </div>
+
+            {/* 4. CONTRACT TEMPLATES */}
+            <section className="space-y-6">
+              <div>
+                <h2 className="text-4xl font-black uppercase italic">Contract <span className="text-brand-cyan">Templates</span></h2>
+                <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-2 italic">International rights agreement templates — download, fill in, and use</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {CONTRACT_TEMPLATES.map((doc, i) => (
+                  <div key={i} className="bg-brand-surface border-4 border-white p-6 flex flex-col justify-between hover:shadow-neo-yellow transition-all">
+                    <div>
+                      <div className="flex items-start justify-between mb-4">
+                        <span className={`material-symbols-outlined text-4xl text-${doc.color}`}>{doc.icon}</span>
+                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 border-2 border-${doc.color} text-${doc.color}`}>{doc.tag}</span>
+                      </div>
+                      <h3 className="text-lg font-black uppercase italic leading-tight mb-3">{doc.title}</h3>
+                      <p className="text-xs text-white/50 font-bold leading-relaxed">{doc.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => downloadContract(doc.title, doc.content)}
+                      className="mt-6 w-full py-3 text-[10px] font-black uppercase italic border-4 border-white text-center hover:bg-white hover:text-black transition-all"
+                    >
+                      ↓ Download Template
+                    </button>
                   </div>
                 ))}
               </div>
