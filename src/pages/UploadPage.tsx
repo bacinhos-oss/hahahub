@@ -50,7 +50,21 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     synopsis: '', scriptScenario: '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([null, null, null]);
+  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null, null, null]);
+  const photoRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+
+  const handlePhotoChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const newFiles = [...photoFiles]; newFiles[index] = file; setPhotoFiles(newFiles);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newPreviews = [...photoPreviews]; newPreviews[index] = reader.result as string; setPhotoPreviews(newPreviews);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (validationErrors.length > 0) setValidationErrors([]);
@@ -86,6 +100,24 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           finalImageUrl = urlData.publicUrl;
         }
       } catch {}
+    }
+
+    // Upload production photos
+    const uploadedPhotos: string[] = [];
+    for (let i = 0; i < photoFiles.length; i++) {
+      const pf = photoFiles[i];
+      const pp = photoPreviews[i];
+      if (pf) {
+        try {
+          const ext = pf.name.split('.').pop();
+          const path = `shows/photo_${Date.now()}_${i}.${ext}`;
+          const { data: pd } = await supabase.storage.from('show-images').upload(path, pf);
+          if (pd) {
+            const { data: pu } = supabase.storage.from('show-images').getPublicUrl(path);
+            uploadedPhotos.push(pu.publicUrl);
+          }
+        } catch { if (pp) uploadedPhotos.push(pp); }
+      } else if (pp) { uploadedPhotos.push(pp); }
     }
 
     const newShow: Show = {
@@ -145,7 +177,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       scriptScenario: formData.scriptScenario,
       programmingCompatibility: ['Commercial'],
       transparencyScore: 80, likesCount: 0, viewsCount: 0, inquiriesCount: 0,
-      productionPhotos: [], is_produced: true,
+      productionPhotos: uploadedPhotos, is_produced: true,
     } as Show;
 
     onUpload(newShow);
@@ -411,6 +443,18 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <p className="mt-2 text-[8px] font-black uppercase text-gray-400">Click to upload</p>
                 </div>
                 <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black uppercase text-gray-400 italic border-t-4 border-black pt-6">Production Photos (max 3)</p>
+                  {[0, 1, 2].map(i => (
+                    <div key={i}>
+                      <div onClick={() => photoRefs[i].current?.click()} className="w-full h-24 border-2 border-dashed border-black/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-gray-50">
+                        {photoPreviews[i] ? <img src={photoPreviews[i]!} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/20 text-3xl">add_photo_alternate</span>}
+                      </div>
+                      <input type="file" ref={photoRefs[i]} onChange={handlePhotoChange(i)} className="hidden" accept="image/*" />
+                    </div>
+                  ))}
+                </div>
                 <div className="pt-4 border-t-4 border-black">
                   <button onClick={handleLaunch} className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl">
                     Deploy Asset

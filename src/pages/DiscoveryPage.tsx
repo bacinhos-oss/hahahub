@@ -410,7 +410,59 @@ See? Even the birds are confused. This is the ultimate comedy of errors. Or the 
   }
 ];
 
-interface DiscoveryPageProps {
+const RoyaltyCalculator: React.FC<{ show: Show }> = ({ show }) => {
+  const [ticketPrice, setTicketPrice] = useState(25);
+  const [seats, setSeats] = useState(200);
+  const [occupancy, setOccupancy] = useState(75);
+  const [performances, setPerformances] = useState(20);
+
+  const royaltyPct = parseFloat((show.royaltyRange || '8').replace('%','').split('-')[0]) || 8;
+  const gbo = ticketPrice * seats * (occupancy / 100) * performances;
+  const royalty = gbo * (royaltyPct / 100);
+  const advance = parseFloat((show.advanceFee || '0').replace(/[€,]/g, '')) || 0;
+  const net = royalty - advance;
+
+  const fmt = (n: number) => '€' + Math.round(n).toLocaleString();
+
+  return (
+    <div className="bg-black border-4 border-brand-cyan p-8 space-y-6 shadow-neo-cyan">
+      <div className="flex items-center justify-between">
+        <h4 className="text-lg font-black uppercase italic text-brand-cyan">Royalty Calculator</h4>
+        <span className="text-[10px] font-black uppercase text-brand-cyan/60 italic">Based on {royaltyPct}% GBO</span>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {[
+          { label: 'Ticket Price (€)', name: 'ticket', value: ticketPrice, min: 5, max: 200, set: setTicketPrice },
+          { label: 'Seats', name: 'seats', value: seats, min: 50, max: 2000, set: setSeats },
+          { label: 'Occupancy (%)', name: 'occ', value: occupancy, min: 10, max: 100, set: setOccupancy },
+          { label: 'Performances', name: 'perf', value: performances, min: 1, max: 500, set: setPerformances },
+        ].map(f => (
+          <div key={f.name} className="space-y-2">
+            <label className="text-[9px] font-black uppercase text-gray-400 italic">{f.label}</label>
+            <input type="range" min={f.min} max={f.max} value={f.value} onChange={e => f.set(Number(e.target.value))} className="w-full accent-brand-cyan" />
+            <p className="text-brand-cyan font-black text-lg">{f.value}</p>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-4 border-t-2 border-brand-cyan/20 pt-6">
+        <div className="text-center">
+          <p className="text-[9px] font-black uppercase text-gray-500 italic mb-1">Gross Box Office</p>
+          <p className="text-2xl font-black text-white">{fmt(gbo)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] font-black uppercase text-gray-500 italic mb-1">Royalty ({royaltyPct}%)</p>
+          <p className="text-2xl font-black text-brand-cyan">{fmt(royalty)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] font-black uppercase text-gray-500 italic mb-1">Net (after advance)</p>
+          <p className={'text-2xl font-black ' + (net >= 0 ? 'text-brand-yellow' : 'text-brand-pink')}>{fmt(net)}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
   onNavigate: (page: Page) => void;
   onLogout?: () => void;
   user?: User;
@@ -531,7 +583,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 00. RIGHTS & IDENTITY */}
                   <section className="space-y-8">
                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">00. RIGHTS & IDENTITY</h4>
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
                            <p className="text-[9px] font-black uppercase text-brand-cyan mb-1 tracking-widest italic">Producer / Company</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
@@ -541,9 +593,29 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-lg font-black uppercase italic">{selectedShow.rightsHolder}</p>
                         </div>
                         <div className="bg-brand-surface border-4 border-white p-6">
-                           <p className="text-[9px] font-black uppercase text-brand-pink mb-1 tracking-widest italic">License Territories</p>
-                           <p className="text-xs font-black uppercase italic text-white/60">{selectedShow.licensedCountries || "Global (Unrestricted)"}</p>
+                           <p className="text-[9px] font-black uppercase text-brand-pink mb-1 tracking-widest italic">Rights Status</p>
+                           <p className="text-lg font-black uppercase italic">{selectedShow.rightsStatus}</p>
                         </div>
+                        <div className="bg-brand-surface border-2 border-white/20 p-6">
+                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Territories Available</p>
+                           <p className="text-sm font-black uppercase italic">{selectedShow.territoriesAvailable || 'Global'}</p>
+                        </div>
+                        <div className="bg-brand-surface border-2 border-white/20 p-6">
+                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Licensed Countries</p>
+                           <p className="text-sm font-black uppercase italic">{selectedShow.licensedCountries || '—'}</p>
+                        </div>
+                        <div className="bg-brand-surface border-2 border-white/20 p-6">
+                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Rights Clearing Speed</p>
+                           <p className="text-sm font-black uppercase italic">{selectedShow.rightsClearingSpeed}</p>
+                        </div>
+                        {selectedShow.territoryConflicts && <div className="bg-brand-surface border-2 border-white/20 p-6">
+                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Territory Conflicts</p>
+                           <p className="text-sm font-black italic">{selectedShow.territoryConflicts}</p>
+                        </div>}
+                        {selectedShow.mediaConflicts && <div className="bg-brand-surface border-2 border-white/20 p-6">
+                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Media Conflicts</p>
+                           <p className="text-sm font-black italic">{selectedShow.mediaConflicts}</p>
+                        </div>}
                      </div>
                   </section>
 
@@ -551,67 +623,92 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">01. CREATIVE ENGINE</h4>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                      <div className="space-y-8">
-                        <div className="space-y-4">
-                           <div className="flex gap-4">
-                             <div className="flex-1 border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
-                                <p className="text-[8px] font-black uppercase text-brand-pink italic">Playwright</p>
-                                <p className="text-xl font-black italic">{selectedShow.author}</p>
-                             </div>
-                             <div className="flex-1 border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                                <p className="text-[8px] font-black uppercase text-brand-cyan italic">Director</p>
-                                <p className="text-xl font-black italic uppercase">{selectedShow.director || "TBD"}</p>
-                             </div>
-                           </div>
-                           <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                              <p className="text-[8px] font-black uppercase text-brand-yellow italic">Style / Subgenre</p>
-                              <p className="text-lg font-black italic text-brand-yellow/80">{selectedShow.subgenre || "N/A"}</p>
-                           </div>
+                      <div className="space-y-6">
+                        <div className="flex gap-4">
+                          <div className="flex-1 border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
+                             <p className="text-[8px] font-black uppercase text-brand-pink italic">Playwright</p>
+                             <p className="text-xl font-black italic">{selectedShow.author || '—'}</p>
+                          </div>
+                          <div className="flex-1 border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                             <p className="text-[8px] font-black uppercase text-brand-cyan italic">Director</p>
+                             <p className="text-xl font-black italic uppercase">{selectedShow.director || 'TBD'}</p>
+                          </div>
                         </div>
-                        <div>
-                           <p className="text-[9px] font-black uppercase text-gray-500 mb-2 italic">Cast Profile</p>
-                           <div className="grid grid-cols-2 gap-4">
-                              <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
-                                 <span className="text-xs font-black uppercase italic text-brand-yellow">Male</span>
-                                 <span className="text-2xl font-black">{selectedShow.maleRoles}</span>
-                              </div>
-                              <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
-                                 <span className="text-xs font-black uppercase italic text-brand-pink">Female</span>
-                                 <span className="text-2xl font-black">{selectedShow.femaleRoles}</span>
-                              </div>
-                           </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
+                             <p className="text-[8px] font-black uppercase text-brand-yellow italic">Subgenre</p>
+                             <p className="text-sm font-black italic">{selectedShow.subgenre || 'N/A'}</p>
+                          </div>
+                          <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
+                             <p className="text-[8px] font-black uppercase text-gray-500 italic">Humor Type</p>
+                             <p className="text-sm font-black italic">{selectedShow.humorType}</p>
+                          </div>
+                          <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
+                             <p className="text-[8px] font-black uppercase text-gray-500 italic">Director Mandatory</p>
+                             <p className="text-sm font-black italic">{selectedShow.isDirectorMandatory ? 'YES' : 'NO'}</p>
+                          </div>
+                          <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
+                             <p className="text-[8px] font-black uppercase text-gray-500 italic">Creative Team</p>
+                             <p className="text-sm font-black italic">{selectedShow.creativeTeamAvailability}</p>
+                          </div>
                         </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
+                             <span className="text-xs font-black uppercase italic text-brand-yellow">Male Roles</span>
+                             <span className="text-2xl font-black">{selectedShow.maleRoles}</span>
+                          </div>
+                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
+                             <span className="text-xs font-black uppercase italic text-brand-pink">Female Roles</span>
+                             <span className="text-2xl font-black">{selectedShow.femaleRoles}</span>
+                          </div>
+                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center col-span-2">
+                             <span className="text-xs font-black uppercase italic text-brand-cyan">Can Merge Roles</span>
+                             <span className="text-sm font-black">{selectedShow.canMergeRoles ? 'YES' : 'NO'}</span>
+                          </div>
+                        </div>
+                        {selectedShow.translationsAvailable && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                           <p className="text-[8px] font-black uppercase text-brand-cyan italic">Translations Available</p>
+                           <p className="text-sm font-black italic">{selectedShow.translationsAvailable}</p>
+                        </div>}
+                        {selectedShow.internationalSuccessNotes && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
+                           <p className="text-[8px] font-black uppercase text-brand-yellow italic">International Success</p>
+                           <p className="text-sm italic text-gray-300">{selectedShow.internationalSuccessNotes}</p>
+                        </div>}
                       </div>
                       <div className="bg-brand-surface border-4 border-white p-8 space-y-6 shadow-neo-magenta">
                          <div className="border-b-2 border-white/10 pb-4">
                             <p className="text-[10px] font-black uppercase text-brand-pink italic mb-2">Director's Vision Notes</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.directorNotes || "Standard staging permitted."}</p>
+                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.directorNotes || 'Standard staging permitted.'}</p>
                          </div>
                          <div>
                             <p className="text-[10px] font-black uppercase text-brand-cyan italic mb-2">Original Staging Solutions</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.originalProductionSolutions || "No exclusive technical hardware required."}</p>
+                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.originalProductionSolutions || 'No exclusive technical hardware required.'}</p>
                          </div>
+                         {selectedShow.scalabilityNotes && <div>
+                            <p className="text-[10px] font-black uppercase text-brand-yellow italic mb-2">Scalability Notes</p>
+                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.scalabilityNotes}</p>
+                         </div>}
                       </div>
                     </div>
                   </section>
 
-                  {/* 02. TECHNICAL STACK & SCALE - UPDATED GRAPHICS */}
+                  {/* 02. TECHNICAL STACK */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. TECHNICAL STACK & PRODUCTION SCALE</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                        <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-cyan">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting Staff</p>
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
                           <p className="text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
                        </div>
                        <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-magenta">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Sound Staff</p>
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Sound</p>
                           <p className="text-2xl font-black text-brand-pink">{selectedShow.techStaffSound}</p>
                        </div>
                        <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-yellow">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Stagehands</p>
                           <p className="text-2xl font-black text-brand-yellow">{selectedShow.techStaffStagehands}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-white">
+                       <div className="bg-brand-surface border-4 border-white p-6 text-center">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Prompter</p>
                           <p className="text-2xl font-black text-white">{selectedShow.techStaffPrompter}</p>
                        </div>
@@ -624,72 +721,133 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           <p className="text-xl font-black uppercase italic text-brand-pink">{selectedShow.isTouringFriendly ? 'YES' : 'NO'}</p>
                        </div>
                     </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                       <div className="bg-black/30 border border-white/10 p-4 text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Technical</p>
+                          <p className="text-sm font-black uppercase">{selectedShow.technicalComplexity}</p>
+                       </div>
+                       <div className="bg-black/30 border border-white/10 p-4 text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Costumes</p>
+                          <p className="text-sm font-black uppercase">{selectedShow.costumeComplexity}</p>
+                       </div>
+                       <div className="bg-black/30 border border-white/10 p-4 text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Set</p>
+                          <p className="text-sm font-black uppercase">{selectedShow.setComplexity}</p>
+                       </div>
+                       <div className="bg-black/30 border border-white/10 p-4 text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Adaptation</p>
+                          <p className="text-sm font-black uppercase">{selectedShow.adaptationFlexibility}</p>
+                       </div>
+                    </div>
+                    {selectedShow.techStaffOther && <p className="text-xs text-gray-400 italic">Additional: {selectedShow.techStaffOther}</p>}
                   </section>
 
                   {/* 03. MARKET PERFORMANCE */}
                   <section className="space-y-8">
-                    <div className="flex items-center gap-6">
-                       <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic whitespace-nowrap">03. MARKET PERFORMANCE</h4>
-                       <div className="h-1 flex-1 bg-white/10"></div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">03. MARKET PERFORMANCE</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div>
-                              <p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere Date</p>
-                              <p className="text-lg font-black text-brand-yellow">{selectedShow.premiereDate || "N/A"}</p>
-                           </div>
+                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'N/A'}</p></div>
                            <span className="material-symbols-outlined text-brand-yellow">calendar_today</span>
                         </div>
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div>
-                              <p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p>
-                              <p className="text-lg font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p>
-                           </div>
+                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p><p className="text-base font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p></div>
                            <span className="material-symbols-outlined text-brand-cyan">theater_comedy</span>
                         </div>
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div>
-                              <p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p>
-                              <p className="text-lg font-black text-brand-pink">{(selectedShow.totalAudience || 0).toLocaleString()}</p>
-                           </div>
+                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p><p className="text-base font-black text-brand-pink">{(selectedShow.totalAudience || 0).toLocaleString()}</p></div>
                            <span className="material-symbols-outlined text-brand-pink">groups</span>
                         </div>
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div>
-                              <p className="text-[8px] font-black text-gray-500 uppercase italic">Box Office</p>
-                              <p className="text-lg font-black text-white">{selectedShow.boxOfficeIndicator}</p>
-                           </div>
+                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Box Office</p><p className="text-base font-black">{selectedShow.boxOfficeIndicator}</p></div>
                            <span className="material-symbols-outlined text-white/40">trending_up</span>
                         </div>
+                        <div className="bg-brand-surface border-2 border-white/10 p-6">
+                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Risk Profile</p>
+                           <p className="text-sm font-black uppercase text-brand-yellow">{selectedShow.riskProfile}</p>
+                        </div>
+                        <div className="bg-brand-surface border-2 border-white/10 p-6">
+                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Break Even</p>
+                           <p className="text-sm font-black uppercase">{selectedShow.breakEvenPerformances} shows</p>
+                        </div>
+                        <div className="bg-brand-surface border-2 border-white/10 p-6">
+                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Sponsor Friendly</p>
+                           <p className="text-sm font-black uppercase">{selectedShow.isSponsorFriendly ? 'YES' : 'NO'}</p>
+                        </div>
+                        <div className="bg-brand-surface border-2 border-white/10 p-6">
+                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Group Sales</p>
+                           <p className="text-sm font-black uppercase">{selectedShow.isGroupSalesFriendly ? 'YES' : 'NO'}</p>
+                        </div>
                     </div>
+                    {selectedShow.awards && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
+                       <p className="text-[8px] font-black uppercase text-brand-yellow italic">Awards</p>
+                       <p className="text-sm font-black italic">{selectedShow.awards}</p>
+                    </div>}
+                    {selectedShow.audienceProfile && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                       <p className="text-[8px] font-black uppercase text-brand-cyan italic">Audience Profile</p>
+                       <p className="text-sm italic text-gray-300">{selectedShow.audienceProfile}</p>
+                    </div>}
+                    {selectedShow.locationsPlayed && <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                       <p className="text-[8px] font-black uppercase text-gray-500 italic">Locations Played</p>
+                       <p className="text-sm italic text-gray-300">{selectedShow.locationsPlayed}</p>
+                    </div>}
                   </section>
 
-                  {/* 04. COMMERCIAL BIBLE - REMOVED FINANCIAL PROJECTIONS AS PER REQUEST */}
+                  {/* 04. COMMERCIAL BIBLE */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">04. COMMERCIAL BIBLE & CLEARANCE</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                        <div className="bg-brand-surface border-4 border-white p-6">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
-                          <p className="text-lg font-black uppercase italic">{selectedShow.licenseType}</p>
+                          <p className="text-base font-black uppercase italic">{selectedShow.licenseType}</p>
                        </div>
                        <div className="bg-brand-surface border-4 border-white p-6">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Model</p>
-                          <p className="text-lg font-black uppercase italic">{selectedShow.licensingModel}</p>
+                          <p className="text-base font-black uppercase italic">{selectedShow.licensingModel}</p>
                        </div>
                        <div className="bg-brand-surface border-4 border-white p-6">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Royalties</p>
-                          <p className="text-lg font-black uppercase italic">{selectedShow.royaltyRange || "Standard"}</p>
+                          <p className="text-base font-black uppercase italic">{selectedShow.royaltyRange || 'Standard'}</p>
                        </div>
                        <div className="bg-brand-surface border-4 border-white p-6">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Advance Fee</p>
-                          <p className="text-lg font-black uppercase italic text-brand-yellow">{selectedShow.advanceFee || "€0"}</p>
+                          <p className="text-base font-black uppercase italic text-brand-yellow">{selectedShow.advanceFee || '€0'}</p>
                        </div>
                        <div className="bg-brand-surface border-4 border-white p-6">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Exclusivity</p>
-                          <p className="text-lg font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
+                          <p className="text-base font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
                        </div>
+                       <div className="bg-brand-surface border-2 border-white/20 p-6">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Decision Maker</p>
+                          <p className="text-sm font-black uppercase">{selectedShow.decisionMakerType}</p>
+                       </div>
+                       <div className="bg-brand-surface border-2 border-white/20 p-6">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Translation Rights</p>
+                          <p className="text-sm font-black uppercase">{selectedShow.translationRightsIncluded ? 'INCLUDED' : 'SEPARATE'}</p>
+                       </div>
+                       {selectedShow.exitScenarios && <div className="col-span-2 bg-brand-surface border-2 border-white/20 p-6">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Exit Scenarios</p>
+                          <p className="text-sm italic text-gray-300">{selectedShow.exitScenarios}</p>
+                       </div>}
                     </div>
+
+                    {/* ROYALTY CALCULATOR */}
+                    <RoyaltyCalculator show={selectedShow} />
                   </section>
+
+                  {/* PRODUCTION PHOTOS */}
+                  {selectedShow.productionPhotos && selectedShow.productionPhotos.length > 0 && (
+                    <section className="space-y-6">
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">Production Photos</h4>
+                      <div className="grid grid-cols-3 gap-4">
+                        {selectedShow.productionPhotos.slice(0, 3).map((photo, i) => (
+                          <div key={i} className="aspect-video border-4 border-white overflow-hidden">
+                            <img src={photo} alt={`Production photo ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
                   {/* CTA SECTION */}
                   <div className="bg-brand-surface border-8 border-brand-cyan p-12 text-center space-y-10 shadow-neo-magenta">
