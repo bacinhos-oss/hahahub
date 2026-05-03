@@ -14,6 +14,10 @@ interface SubscriptionPageProps {
   onUpdateShow: (show: Show) => void;
 }
 
+const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-bold text-sm outline-none focus:border-brand-cyan";
+const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
+const lbl = "block text-[9px] font-black uppercase text-gray-500 mb-1 italic";
+
 const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, shows, onDeleteShow, onUpdateShow }) => {
   const [manageShow, setManageShow] = useState<Show | null>(null);
   const [editForm, setEditForm] = useState<Partial<Show>>({});
@@ -21,15 +25,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
 
-  useEffect(() => {
-    if (user?.id) loadMyRealStats();
-  }, [user]);
+  useEffect(() => { if (user?.id) loadMyRealStats(); }, [user]);
 
   const loadMyRealStats = async () => {
-    const { data: myShows } = await supabase
-      .from('shows')
-      .select('views_count, inquiries_count, likes_count')
-      .eq('user_id', user?.id);
+    const { data: myShows } = await supabase.from('shows').select('views_count, inquiries_count, likes_count').eq('user_id', user?.id);
     if (myShows && myShows.length > 0) {
       setRealStats({
         totalViews: myShows.reduce((sum, s) => sum + (s.views_count || 0), 0),
@@ -43,14 +42,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     if (!user?.subscription?.expiryDate) return 365;
     const expiry = new Date(user.subscription.expiryDate);
     if (isNaN(expiry.getTime())) return 365;
-    const diff = expiry.getTime() - new Date().getTime();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    return Math.max(0, Math.ceil((expiry.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
   }, [user]);
 
   const subscriptionProgress = useMemo(() => {
     const total = 365;
-    const remaining = Math.max(0, Math.min(total, daysRemaining));
-    return ((total - remaining) / total) * 100;
+    return ((total - Math.min(total, daysRemaining)) / total) * 100;
   }, [daysRemaining]);
 
   if (!user) {
@@ -73,7 +70,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const openManage = (show: Show) => { setManageShow(show); setEditForm({ ...show }); };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setEditForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
@@ -82,18 +80,47 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     try {
       const { error } = await supabase.from('shows').update({
         title: editForm.title, author: editForm.author, director: editForm.director,
-        synopsis: editForm.synopsis, genre: editForm.genre, language: editForm.language,
-        location: editForm.location, duration: Number(editForm.duration),
-        male_roles: Number(editForm.maleRoles), female_roles: Number(editForm.femaleRoles),
-        producer_name: editForm.producerName, rights_holder: editForm.rightsHolder,
-        premiere_date: editForm.premiereDate, license_type: editForm.licenseType,
-        licensing_model: editForm.licensingModel, exclusivity_level: editForm.exclusivityLevel,
-        royalty_range: editForm.royaltyRange, advance_fee: editForm.advanceFee,
-        production_scale: editForm.productionScale, script_scenario: editForm.scriptScenario,
+        director_notes: editForm.directorNotes, original_production_solutions: editForm.originalProductionSolutions,
+        synopsis: editForm.synopsis, genre: editForm.genre, subgenre: editForm.subgenre,
+        language: editForm.language, location: editForm.location,
+        duration: Number(editForm.duration), male_roles: Number(editForm.maleRoles),
+        female_roles: Number(editForm.femaleRoles), can_merge_roles: editForm.canMergeRoles,
+        has_intermission: editForm.hasIntermission, is_director_mandatory: editForm.isDirectorMandatory,
+        creative_team_availability: editForm.creativeTeamAvailability,
+        production_scale: editForm.productionScale, is_touring_friendly: editForm.isTouringFriendly,
+        technical_complexity: editForm.technicalComplexity, costume_complexity: editForm.costumeComplexity,
+        set_complexity: editForm.setComplexity, adaptation_flexibility: editForm.adaptationFlexibility,
+        scalability_notes: editForm.scalabilityNotes, stage_type: editForm.stageType,
+        tech_staff_lighting: Number(editForm.techStaffLighting), tech_staff_sound: Number(editForm.techStaffSound),
+        tech_staff_prompter: Number(editForm.techStaffPrompter), tech_staff_stagehands: Number(editForm.techStaffStagehands),
+        tech_staff_other: editForm.techStaffOther,
+        premiere_date: editForm.premiereDate, premiere_location: editForm.premiereLocation,
+        production_year: Number(editForm.productionYear), performances_count: Number(editForm.performancesCount),
+        total_audience: Number(editForm.totalAudience), locations_played: editForm.locationsPlayed,
+        buyout_locations: editForm.buyoutLocations, box_office_indicator: editForm.boxOfficeIndicator,
+        awards: editForm.awards, audience_profile: editForm.audienceProfile,
+        producer_name: editForm.producerName, producer_email: editForm.producerEmail,
+        rights_holder: editForm.rightsHolder, rights_status: editForm.rightsStatus,
+        territories_available: editForm.territoriesAvailable, licensed_countries: editForm.licensedCountries,
+        license_type: editForm.licenseType, licensing_model: editForm.licensingModel,
+        exclusivity_level: editForm.exclusivityLevel, royalty_range: editForm.royaltyRange,
+        advance_fee: editForm.advanceFee, rights_clearing_speed: editForm.rightsClearingSpeed,
+        decision_maker_type: editForm.decisionMakerType, risk_profile: editForm.riskProfile,
+        break_even_threshold: editForm.breakEvenThreshold, break_even_performances: Number(editForm.breakEvenPerformances),
+        budget_range: editForm.budgetRange, humor_type: editForm.humorType,
+        translations_available: editForm.translationsAvailable,
+        translation_rights_included: editForm.translationRightsIncluded,
+        is_sponsor_friendly: editForm.isSponsorFriendly, is_group_sales_friendly: editForm.isGroupSalesFriendly,
+        exit_scenarios: editForm.exitScenarios, originating_producer_track_record: editForm.originatingProducerTrackRecord,
+        territory_conflicts: editForm.territoryConflicts, media_conflicts: editForm.mediaConflicts,
+        international_success_notes: editForm.internationalSuccessNotes,
+        script_scenario: editForm.scriptScenario,
+        is_produced: true,
       }).eq('id', manageShow.id);
+
       if (error) { alert('Error: ' + error.message); }
       else {
-        onUpdateShow({ ...manageShow, ...editForm, duration: Number(editForm.duration) || manageShow.duration, maleRoles: Number(editForm.maleRoles) || manageShow.maleRoles, femaleRoles: Number(editForm.femaleRoles) || manageShow.femaleRoles } as Show);
+        onUpdateShow({ ...manageShow, ...editForm } as Show);
         setSaveSuccess(true);
         setTimeout(() => { setSaveSuccess(false); setManageShow(null); }, 1500);
       }
@@ -101,34 +128,166 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     setIsSaving(false);
   };
 
+  const F = (name: string, label: string, type = 'text', placeholder = '') => (
+    <div>
+      <label className={lbl}>{label}</label>
+      <input name={name} type={type} value={(editForm as any)[name] || ''} onChange={handleEditChange} className={inp} placeholder={placeholder} />
+    </div>
+  );
+
+  const S = (name: string, label: string, options: string[]) => (
+    <div>
+      <label className={lbl}>{label}</label>
+      <select name={name} value={(editForm as any)[name] || ''} onChange={handleEditChange} className={sel}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
+
+  const T = (name: string, label: string, rows = 3) => (
+    <div className="col-span-2">
+      <label className={lbl}>{label}</label>
+      <textarea name={name} value={(editForm as any)[name] || ''} onChange={handleEditChange} rows={rows} className="w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-cyan" />
+    </div>
+  );
+
   return (
     <React.Fragment>
       {manageShow && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setManageShow(null)}></div>
-          <div className="relative bg-brand-surface border-8 border-white w-full max-w-3xl max-h-[90vh] overflow-y-auto p-10 shadow-neo-cyan">
-            <button onClick={() => setManageShow(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink">
+        <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 overflow-y-auto">
+          <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={() => setManageShow(null)}></div>
+          <div className="relative bg-brand-black border-8 border-white w-full max-w-5xl my-8 p-8 shadow-neo-cyan text-white">
+            <button onClick={() => setManageShow(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink z-10">
               <span className="material-symbols-outlined text-4xl">close</span>
             </button>
-            <h2 className="text-3xl font-black uppercase italic mb-6">Edit Production</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {['title','author','director','genre','language','location','duration','maleRoles','femaleRoles','producerName','rightsHolder','premiereDate','licenseType','licensingModel','exclusivityLevel','royaltyRange','advanceFee','productionScale'].map(field => (
-                <div key={field} className="bg-black/40 border border-white/10 p-3">
-                  <label className="text-[9px] font-black uppercase text-gray-500 italic block mb-1">{field}</label>
-                  <input name={field} value={(editForm as any)[field] || ''} onChange={handleEditChange} className="w-full bg-transparent text-white font-bold text-sm outline-none border-b border-white/20 focus:border-brand-cyan pb-1" />
+
+            <h2 className="text-4xl font-black uppercase italic mb-2">Edit Production</h2>
+            <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-10">{manageShow.title}</p>
+
+            <div className="space-y-10">
+
+              {/* 00. RIGHTS */}
+              <section className="border-4 border-white/20 p-6">
+                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-6">00. Rights & Identity</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {F('producerName', 'Production Company')}
+                  {F('producerEmail', 'Producer Email')}
+                  {F('rightsHolder', 'Copyright Holder')}
+                  {S('rightsStatus', 'Rights Status', ['Available','Co-production Only','Licensed'])}
+                  {F('territoriesAvailable', 'Territories Available')}
+                  {F('licensedCountries', 'Licensed Countries')}
+                  {F('territoryConflicts', 'Territory Conflicts')}
+                  {F('mediaConflicts', 'Media Conflicts')}
                 </div>
-              ))}
-              <div className="col-span-2 bg-black/40 border border-white/10 p-3">
-                <label className="text-[9px] font-black uppercase text-gray-500 italic block mb-1">Synopsis</label>
-                <textarea name="synopsis" value={editForm.synopsis || ''} onChange={handleEditChange} rows={3} className="w-full bg-transparent text-white italic text-sm outline-none border-b border-white/20 focus:border-brand-cyan" />
-              </div>
+              </section>
+
+              {/* 01. CREATIVE */}
+              <section className="border-4 border-white/20 p-6">
+                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-6">01. Creative Engine</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="col-span-2 md:col-span-4">
+                    <label className={lbl}>Production Title</label>
+                    <input name="title" value={(editForm as any).title || ''} onChange={handleEditChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl outline-none focus:border-brand-yellow" />
+                  </div>
+                  {F('author', 'Author / Playwright')}
+                  {F('director', 'Director')}
+                  {F('genre', 'Genre')}
+                  {F('subgenre', 'Subgenre')}
+                  {F('language', 'Language')}
+                  {F('location', 'Origin Market')}
+                  {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
+                  {F('translationsAvailable', 'Translations Available')}
+                  {T('synopsis', 'Synopsis', 4)}
+                  {T('directorNotes', "Director's Notes", 3)}
+                  {T('originalProductionSolutions', 'Original Staging Solutions', 2)}
+                  {T('internationalSuccessNotes', 'International Success Notes', 2)}
+                  <div className="col-span-2 bg-brand-black border-4 border-brand-yellow p-4">
+                    <label className="block text-[9px] font-black uppercase text-brand-yellow mb-1 italic">Script Scenario — 3 Pages in English</label>
+                    <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={15} className="w-full bg-black border-2 border-white/10 p-4 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
+                  </div>
+                </div>
+              </section>
+
+              {/* 02. PRODUCTION */}
+              <section className="border-4 border-white/20 p-6">
+                <h3 className="text-lg font-black uppercase italic text-brand-yellow mb-6">02. Production & Cast</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {F('maleRoles', 'Male Roles', 'number')}
+                  {F('femaleRoles', 'Female Roles', 'number')}
+                  {F('duration', 'Duration (min)', 'number')}
+                  {F('productionYear', 'Production Year', 'number')}
+                  {S('canMergeRoles', 'Can Merge Roles', ['false','true'])}
+                  {S('hasIntermission', 'Intermission', ['false','true'])}
+                  {S('productionScale', 'Scale', ['Small','Medium','Large'])}
+                  {S('stageType', 'Stage Type', ['Main Stage','Black Box','Arena','Open Air'])}
+                  {S('isTouringFriendly', 'Touring Friendly', ['true','false'])}
+                  {S('technicalComplexity', 'Technical', ['Low','Medium','High'])}
+                  {S('costumeComplexity', 'Costumes', ['Low','Medium','High'])}
+                  {S('setComplexity', 'Set', ['Low','Medium','High'])}
+                  {S('adaptationFlexibility', 'Adaptation', ['Low','Medium','High'])}
+                  {S('isDirectorMandatory', 'Director Mandatory', ['false','true'])}
+                  {S('creativeTeamAvailability', 'Creative Team', ['Optional','Required','Not required'])}
+                  {S('budgetRange', 'Budget Range', ['Low','Medium','High'])}
+                  <div className="col-span-2 md:col-span-4">
+                    <label className={lbl}>Scalability Notes</label>
+                    <input name="scalabilityNotes" value={(editForm as any).scalabilityNotes || ''} onChange={handleEditChange} className={inp} />
+                  </div>
+                  {F('techStaffLighting', 'Lighting', 'number')}
+                  {F('techStaffSound', 'Sound', 'number')}
+                  {F('techStaffPrompter', 'Prompter', 'number')}
+                  {F('techStaffStagehands', 'Stagehands', 'number')}
+                  <div className="col-span-2 md:col-span-4">{F('techStaffOther', 'Other Tech Staff')}</div>
+                </div>
+              </section>
+
+              {/* 03. MARKET */}
+              <section className="border-4 border-white/20 p-6">
+                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-6">03. Market Performance</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {F('premiereDate', 'Premiere Date', 'date')}
+                  {F('premiereLocation', 'Premiere Location')}
+                  {F('performancesCount', 'Total Performances', 'number')}
+                  {F('totalAudience', 'Total Audience', 'number')}
+                  {F('locationsPlayed', 'Locations Played')}
+                  {F('buyoutLocations', 'Buyout Locations')}
+                  {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
+                  {S('riskProfile', 'Risk Profile', ['Proven hit','Moderate risk','Experimental'])}
+                  {S('breakEvenThreshold', 'Break Even Threshold', ['Low','Medium','High'])}
+                  {F('breakEvenPerformances', 'Break Even Performances', 'number')}
+                  {F('awards', 'Awards')}
+                  {F('audienceProfile', 'Audience Profile')}
+                  {F('originatingProducerTrackRecord', 'Producer Track Record')}
+                  {F('exitScenarios', 'Exit Scenarios')}
+                </div>
+              </section>
+
+              {/* 04. COMMERCIAL */}
+              <section className="border-4 border-white/20 p-6">
+                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-6">04. Commercial Bible</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {S('licenseType', 'License Type', ['License','Option','Co-production'])}
+                  {S('licensingModel', 'Licensing Model', ['Royalty-based','Flat fee','Hybrid'])}
+                  {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
+                  {S('rightsClearingSpeed', 'Clearing Speed', ['Fast','Medium','Slow'])}
+                  {S('decisionMakerType', 'Decision Maker', ['Single','Committee'])}
+                  {F('royaltyRange', 'Royalty Range')}
+                  {F('advanceFee', 'Advance Fee')}
+                  {S('isSponsorFriendly', 'Sponsor Friendly', ['true','false'])}
+                  {S('isGroupSalesFriendly', 'Group Sales', ['true','false'])}
+                  {S('translationRightsIncluded', 'Translation Rights', ['true','false'])}
+                </div>
+              </section>
+
             </div>
-            <button onClick={handleSave} disabled={isSaving} className="w-full bg-brand-cyan text-black py-4 font-black uppercase italic border-4 border-black mt-6 mb-4 disabled:opacity-50">
-              {isSaving ? 'Saving...' : saveSuccess ? 'Saved!' : 'Save Changes'}
-            </button>
-            <button onClick={() => { if (confirm('Delete this show?')) { onDeleteShow(manageShow.id); setManageShow(null); } }} className="w-full bg-red-600 text-white py-4 font-black uppercase italic border-4 border-black">
-              Delete This Asset Permanently
-            </button>
+
+            <div className="mt-10 space-y-4">
+              <button onClick={handleSave} disabled={isSaving} className="w-full bg-brand-cyan text-black py-5 font-black uppercase italic border-4 border-black shadow-neo-yellow hover:bg-brand-yellow transition-all disabled:opacity-50 text-xl">
+                {isSaving ? 'Saving...' : saveSuccess ? '✓ Saved!' : 'Save All Changes'}
+              </button>
+              <button onClick={() => { if (confirm('Delete this show permanently?')) { onDeleteShow(manageShow.id); setManageShow(null); } }} className="w-full bg-red-600 text-white py-4 font-black uppercase italic border-4 border-black">
+                Delete This Asset Permanently
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -233,7 +392,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs text-brand-yellow">mail</span>{show.inquiriesCount}</span>
                         </div>
                       </div>
-                      <button onClick={() => openManage(show)} className="mt-4 w-full bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage</button>
+                      <button onClick={() => openManage(show)} className="mt-4 w-full bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage / Edit</button>
                     </div>
                   </div>
                 ))}
