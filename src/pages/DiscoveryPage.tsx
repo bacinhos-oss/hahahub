@@ -953,6 +953,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         to: inquiryShow?.producerEmail || 'info@hahahub.art',
                         replyTo: inquiryEmail,
                         showTitle: inquiryShow?.title,
+                        showId: inquiryShow?.id,
+                        producerId: inquiryShow?.userId || inquiryShow?.user_id,
                         fromName: inquiryName,
                         fromEmail: inquiryEmail,
                         message: inquiryMessage,
