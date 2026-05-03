@@ -43,6 +43,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           {navBtn('discovery', 'CATALOG', 'brand-yellow')}
           {navBtn('about', 'MISSION', 'brand-pink')}
           {navBtn('subscription', 'MY HUB', 'white')}
+          {user && navBtn('upload', 'UPLOAD', 'brand-cyan')}
           {isAdmin && navBtn('admin', 'ADMIN', 'brand-pink')}
         </nav>
 
@@ -97,6 +98,11 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             <button onClick={() => { onNavigate('subscription'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">
               MY HUB
             </button>
+            {user && (
+              <button onClick={() => { onNavigate('upload'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-cyan/70 hover:text-brand-cyan transition-colors">
+                UPLOAD
+              </button>
+            )}
             {isAdmin && (
               <button onClick={() => { onNavigate('admin'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-pink/70 hover:text-brand-pink transition-colors">
                 ADMIN

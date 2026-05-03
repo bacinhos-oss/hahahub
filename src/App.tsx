@@ -8,6 +8,7 @@ import SubscriptionPage from './pages/SubscriptionPage'
 import AboutPage from './pages/AboutPage'
 import LoginPage from './pages/LoginPage'
 import PrivacyPage from './pages/PrivacyPage'
+import UploadPage from './pages/UploadPage'
 import CookieBanner from './components/CookieBanner'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
@@ -181,6 +182,10 @@ const App: React.FC = () => {
     )
   }
 
+  const handleUpload = (newShow: Show) => {
+    setShows(prev => [newShow, ...prev])
+  }
+
   const renderPage = () => {
     switch (currentPage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
@@ -190,6 +195,7 @@ const App: React.FC = () => {
       case 'subscription': return <SubscriptionPage onUpdateShow={handleUpdateShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} shows={shows} />
       case 'about': return <AboutPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'privacy': return <PrivacyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
+      case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
       default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={() => {}} shows={shows} />
     }
   }
