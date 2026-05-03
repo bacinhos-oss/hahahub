@@ -175,12 +175,22 @@ const App: React.FC = () => {
 
   const handleUpdateStats = async (showId: string, type: 'view' | 'inquiry') => {
     if (!showId) return
-    setShows(prev => prev.map(s => s.id === showId
-      ? { ...s, viewsCount: type === 'view' ? s.viewsCount + 1 : s.viewsCount, inquiriesCount: type === 'inquiry' ? s.inquiriesCount + 1 : s.inquiriesCount }
-      : s
-    ))
-    if (type === 'view') await supabase.from('shows').update({ views_count: (shows.find(s => s.id === showId)?.viewsCount || 0) + 1 }).eq('id', showId)
-    if (type === 'inquiry') await supabase.from('shows').update({ inquiries_count: (shows.find(s => s.id === showId)?.inquiriesCount || 0) + 1 }).eq('id', showId)
+    setShows(prev => prev.map(s => {
+      if (s.id !== showId) return s
+      return {
+        ...s,
+        viewsCount: type === 'view' ? s.viewsCount + 1 : s.viewsCount,
+        inquiriesCount: type === 'inquiry' ? s.inquiriesCount + 1 : s.inquiriesCount,
+      }
+    }))
+    if (type === 'view') {
+      const { data } = await supabase.from('shows').select('views_count').eq('id', showId).maybeSingle()
+      await supabase.from('shows').update({ views_count: (data?.views_count || 0) + 1 }).eq('id', showId)
+    }
+    if (type === 'inquiry') {
+      const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()
+      await supabase.from('shows').update({ inquiries_count: (data?.inquiries_count || 0) + 1 }).eq('id', showId)
+    }
   }
 
   if (loading) {

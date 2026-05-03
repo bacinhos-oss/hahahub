@@ -622,7 +622,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     </div>
                     <div className="flex flex-col gap-2 md:items-end justify-between">
                       <p className="text-[8px] text-white/30 font-bold uppercase">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                      <a href={"mailto:" + inq.from_email + "?subject=Re: Rights Inquiry - " + inq.show_title} className="bg-brand-yellow text-black text-[9px] font-black uppercase px-4 py-2 border-2 border-black hover:bg-white transition-all italic">Reply</a>
+                      <a href={"mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: Rights Inquiry - " + inq.show_title)} className="bg-brand-yellow text-black text-[9px] font-black uppercase px-4 py-2 border-2 border-black hover:bg-white transition-all italic">Reply</a>
                     </div>
                   </div>
                 ))}
