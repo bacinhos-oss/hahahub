@@ -36,11 +36,28 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
 
   useEffect(() => {
     if (regStep !== 'payment') return
-    if (paypalLoaded.current) { renderPayPal(); return; }
-    const script = document.createElement('script')
-    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`
-    script.onload = () => { paypalLoaded.current = true; renderPayPal() }
-    document.body.appendChild(script)
+    const loadPayPal = () => {
+      if (paypalLoaded.current) { 
+        setTimeout(() => renderPayPal(), 100)
+        return 
+      }
+      // Check if already loaded
+      if ((window as any).paypal) {
+        paypalLoaded.current = true
+        setTimeout(() => renderPayPal(), 100)
+        return
+      }
+      const existing = document.querySelector('script[src*="paypal.com/sdk"]')
+      if (existing) {
+        existing.addEventListener('load', () => { paypalLoaded.current = true; renderPayPal() })
+        return
+      }
+      const script = document.createElement('script')
+      script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`
+      script.onload = () => { paypalLoaded.current = true; setTimeout(() => renderPayPal(), 100) }
+      document.body.appendChild(script)
+    }
+    loadPayPal()
   }, [regStep])
 
   const renderPayPal = () => {
