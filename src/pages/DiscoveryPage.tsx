@@ -472,6 +472,7 @@ interface DiscoveryPageProps {
 
 const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpdateStats, shows }) => {
   const [selectedShowId, setSelectedShowId] = useState<string | null>(null);
+  const [inquiryShowId, setInquiryShowId] = useState<string | null>(null);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [inquirySuccess, setInquirySuccess] = useState(false);
   const [inquiryName, setInquiryName] = useState('');
@@ -486,6 +487,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [searchQuery, setSearchQuery] = useState('');
 
   const selectedShow = useMemo(() => shows.find(s => s.id === selectedShowId) || null, [shows, selectedShowId]);
+  const inquiryShow = useMemo(() => shows.find(s => s.id === inquiryShowId) || null, [shows, inquiryShowId]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -721,22 +723,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                        </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                       <div className="bg-black/30 border border-white/10 p-4 text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Technical</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.technicalComplexity}</p>
-                       </div>
-                       <div className="bg-black/30 border border-white/10 p-4 text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Costumes</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.costumeComplexity}</p>
-                       </div>
-                       <div className="bg-black/30 border border-white/10 p-4 text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Set</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.setComplexity}</p>
-                       </div>
-                       <div className="bg-black/30 border border-white/10 p-4 text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Adaptation</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.adaptationFlexibility}</p>
-                       </div>
+                       {[
+                         { label: 'Technical', value: selectedShow.technicalComplexity },
+                         { label: 'Costumes', value: selectedShow.costumeComplexity },
+                         { label: 'Set', value: selectedShow.setComplexity },
+                         { label: 'Adaptation', value: selectedShow.adaptationFlexibility },
+                       ].map((item, i) => (
+                         <div key={i} className="bg-black/30 border border-white/10 p-4 text-center overflow-hidden">
+                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">{item.label}</p>
+                           <p className={`font-black uppercase text-[10px] leading-tight break-words ${item.value === 'High' ? 'text-brand-pink' : item.value === 'Low' ? 'text-brand-cyan' : 'text-white'}`}>{item.value}</p>
+                         </div>
+                       ))}
                     </div>
                     {selectedShow.techStaffOther && <p className="text-xs text-gray-400 italic">Additional: {selectedShow.techStaffOther}</p>}
                   </section>
@@ -866,6 +863,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       </div>
                       <button 
                         onClick={() => {
+                          setInquiryShowId(selectedShowId);
                           setSelectedShowId(null);
                           setInquiryName(user?.name || '');
                           setInquiryEmail(user?.email || '');
@@ -903,8 +901,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <span className="material-symbols-outlined text-black text-6xl font-black">send</span>
               </div>
               <div className="space-y-4">
-                <h2 className="text-4xl font-black uppercase italic text-white">Signal Transmitted!</h2>
+                <h2 className="text-4xl font-black uppercase italic text-white">You Tickled<br/>the Laugh! 🎭</h2>
                 <p className="text-brand-cyan font-bold uppercase tracking-[0.2em] text-sm italic">The producer has been notified of your interest.</p>
+                <p className="text-white/40 text-xs font-bold italic">Expect a reply within 2-5 business days.</p>
               </div>
               <button 
                 onClick={() => {
@@ -920,7 +919,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             <div className="space-y-10 text-white">
               <div className="space-y-2">
                 <h3 className="text-4xl font-black uppercase italic tracking-tighter">Initiate Rights Inquiry</h3>
-                <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic">Asset: {selectedShow?.title}</p>
+                <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic">Asset: {inquiryShow?.title}</p>
               </div>
 
               <div className="space-y-8">
@@ -943,20 +942,24 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <button 
                 onClick={async () => {
                   try {
-                    await fetch('https://api.resend.com/emails', {
+                    await fetch('https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-inquiry', {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY || ''}` },
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU',
+                      },
                       body: JSON.stringify({
-                        from: 'HAHAHUB Platform <noreply@hahahub.com>',
-                        to: [selectedShow?.producerEmail || 'hello@hahahub.com'],
-                        reply_to: inquiryEmail,
-                        subject: `[HAHAHUB] Rights Inquiry: ${selectedShow?.title}`,
-                        html: `<div style="font-family:monospace;background:#0a0a0a;color:#fff;padding:40px"><h1 style="color:#ff2d78">RIGHTS INQUIRY</h1><p><b>Show:</b> ${selectedShow?.title}</p><p><b>From:</b> ${inquiryName}</p><p><b>Email:</b> ${inquiryEmail}</p><p><b>Message:</b><br/><em>${inquiryMessage}</em></p></div>`,
+                        to: inquiryShow?.producerEmail || 'info@hahahub.art',
+                        replyTo: inquiryEmail,
+                        showTitle: inquiryShow?.title,
+                        fromName: inquiryName,
+                        fromEmail: inquiryEmail,
+                        message: inquiryMessage,
                       }),
                     });
                   } catch {}
                   setInquirySuccess(true);
-                  onUpdateStats(selectedShowId || '', 'inquiry');
+                  onUpdateStats(inquiryShowId || '', 'inquiry');
                 }}
                 className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-yellow hover:bg-black transition-all italic tracking-[0.2em] text-xl"
               >
