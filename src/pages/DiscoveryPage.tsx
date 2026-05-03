@@ -461,8 +461,7 @@ const RoyaltyCalculator: React.FC<{ show: Show }> = ({ show }) => {
     </div>
   );
 };
-
-
+interface DiscoveryPageProps {
   onNavigate: (page: Page) => void;
   onLogout?: () => void;
   user?: User;
