@@ -76,6 +76,11 @@ const App: React.FC = () => {
       }
       setCurrentUser(user)
       if (isAdmin) setIsAdminAuthenticated(true)
+      // Navigate to correct page on session restore
+      const isProtectedPage = window.location.pathname !== '/'
+      if (user.isPaid || isAdmin) {
+        setCurrentPage('discovery')
+      }
       setLoading(false)
     } catch { 
       setCurrentUser(null)
@@ -246,9 +251,10 @@ const App: React.FC = () => {
     else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
   }
 
-  // Guard unpaid users from protected pages
+  // Guard unpaid users from protected pages - only after loading is done
   React.useEffect(() => {
-    if (!loading && currentUser && !currentUser.isPaid && !currentUser.isAdmin) {
+    if (loading) return // wait for auth to complete
+    if (currentUser && !currentUser.isPaid && !currentUser.isAdmin) {
       if (currentPage === 'discovery' || currentPage === 'upload') {
         setCurrentPage('landing')
       }
