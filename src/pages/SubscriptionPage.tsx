@@ -601,44 +601,75 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               <div className="lg:col-span-8 bg-white text-black p-8 border-8 border-black shadow-neo-magenta">
                 <div className="flex justify-between items-start mb-8 gap-6">
                   <div>
-                    <h2 className="text-4xl font-black uppercase italic leading-none mb-2">Member Account</h2>
-                    <p className="font-bold text-gray-500 uppercase tracking-widest text-xs italic">Status: {user.subscription?.status} • {user.subscription?.type} Tier</p>
+                    <h2 className="text-4xl font-black uppercase italic leading-none mb-2">My Subscription</h2>
+                    <p className="font-bold text-gray-500 uppercase tracking-widest text-xs italic">{user.subscription?.type} Plan • {user.subscription?.status}</p>
                   </div>
-                  <div className="bg-brand-black text-white px-6 py-4 border-4 border-black rotate-[-2deg]">
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">Days Remaining</p>
+                  <div className={`px-6 py-4 border-4 border-black rotate-[-2deg] ${daysRemaining <= 30 ? 'bg-brand-pink text-white' : 'bg-brand-black text-white'}`}>
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">Days Left</p>
                     <p className="text-4xl font-black italic">{daysRemaining}</p>
                   </div>
                 </div>
-                <div className="h-6 bg-gray-100 border-4 border-black relative overflow-hidden mb-4">
-                  <div className="absolute top-0 left-0 h-full bg-brand-pink border-r-4 border-black transition-all" style={{ width: subscriptionProgress + '%' }}></div>
-                </div>
-                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest italic mb-8">
-                  <span>Activation</span>
-                  <span className="text-brand-pink">Expiring: {user.subscription?.expiryDate}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-6 pt-8 border-t-4 border-black/10">
-                  <div className="flex items-center gap-4">
-                    <span className="material-symbols-outlined text-3xl text-brand-pink">sync</span>
+
+                {daysRemaining <= 7 && daysRemaining > 0 && (
+                  <div className="bg-brand-pink text-white p-4 border-4 border-black mb-6 flex items-center gap-4">
+                    <span className="material-symbols-outlined text-3xl">warning</span>
                     <div>
-                      <p className="text-[10px] font-black uppercase italic">Auto-Renewal</p>
-                      <p className="text-sm font-bold">Enabled via PayPal Express</p>
+                      <p className="font-black uppercase text-sm">Access expiring soon!</p>
+                      <p className="text-xs font-bold opacity-80">Expires on {user.subscription?.expiryDate}. Renew to keep your assets live.</p>
                     </div>
                   </div>
-                  <a href="mailto:info@hahahub.art?subject=Billing%20Request" className="bg-black text-white py-3 px-6 font-black uppercase text-xs hover:bg-brand-cyan hover:text-black transition-all border-4 border-black text-center">Manage Billing</a>
+                )}
+
+                {daysRemaining === 0 && (
+                  <div className="bg-black text-brand-yellow p-4 border-4 border-brand-yellow mb-6 flex items-center gap-4">
+                    <span className="material-symbols-outlined text-3xl text-brand-yellow">lock</span>
+                    <div>
+                      <p className="font-black uppercase text-sm">Access Expired</p>
+                      <p className="text-xs font-bold opacity-80">Renew your subscription to restore full access.</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="h-5 bg-gray-100 border-4 border-black relative overflow-hidden mb-3">
+                  <div className={`absolute top-0 left-0 h-full border-r-4 border-black transition-all ${daysRemaining <= 30 ? 'bg-brand-pink' : 'bg-brand-cyan'}`} style={{ width: subscriptionProgress + '%' }}></div>
+                </div>
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest italic mb-8">
+                  <span>Start</span>
+                  <span className={daysRemaining <= 30 ? 'text-brand-pink' : 'text-gray-400'}>Expires: {user.subscription?.expiryDate}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 pt-6 border-t-4 border-black/10">
+                  <a href="mailto:info@hahahub.art?subject=Renew%20Subscription" className="bg-brand-pink text-white py-4 px-6 font-black uppercase text-xs hover:bg-black transition-all border-4 border-black text-center">
+                    Renew Subscription
+                  </a>
+                  <a href="mailto:info@hahahub.art?subject=Billing%20Question" className="bg-transparent text-black py-4 px-6 font-black uppercase text-xs hover:bg-black hover:text-white transition-all border-4 border-black text-center">
+                    Contact Support
+                  </a>
                 </div>
               </div>
+
               <div className="lg:col-span-4 bg-brand-surface border-4 border-white p-8 shadow-neo-yellow flex flex-col justify-between">
                 <div>
-                  <h3 className="text-2xl font-black uppercase italic text-brand-yellow mb-6">Vault Privileges</h3>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-yellow mb-2">What's Included</h3>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-6">Annual Pass Benefits</p>
                   <ul className="space-y-4">
-                    {user.subscription?.discounts.map((d, i) => (
+                    {[
+                      { icon: 'search', text: 'Full catalog access' },
+                      { icon: 'upload', text: 'Unlimited asset uploads' },
+                      { icon: 'analytics', text: 'Performance analytics' },
+                      { icon: 'mail', text: 'Direct inquiry system' },
+                      { icon: 'groups', text: 'VIP networking events' },
+                      { icon: 'picture_as_pdf', text: 'Unlimited PDF downloads' },
+                    ].map((item, i) => (
                       <li key={i} className="flex items-center gap-3 text-sm font-bold italic">
-                        <span className="material-symbols-outlined text-brand-cyan">verified</span>{d}
+                        <span className="material-symbols-outlined text-brand-cyan text-lg">{item.icon}</span>
+                        {item.text}
                       </li>
                     ))}
                   </ul>
                 </div>
-                <a href="mailto:info@hahahub.art?subject=Upgrade" className="mt-8 w-full border-4 border-white py-4 text-xs font-black uppercase italic hover:bg-white hover:text-black transition-all block text-center">Upgrade My Tier</a>
+                <a href="mailto:info@hahahub.art?subject=Question" className="mt-8 w-full bg-brand-yellow text-black py-4 text-xs font-black uppercase italic border-4 border-black hover:bg-white transition-all block text-center">
+                  Questions? Contact Us
+                </a>
               </div>
             </div>
 
