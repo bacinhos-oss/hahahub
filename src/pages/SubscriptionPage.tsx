@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import ShareButton from '../components/ShareButton';
 import { supabase } from '../lib/supabase';
