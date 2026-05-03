@@ -259,7 +259,7 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
-      case 'discovery': if (currentUser && !currentUser.isPaid && !currentUser.isAdmin) { setTimeout(() => setCurrentPage('landing'), 0); return null; } if (!currentUser) return null; return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
+      case 'discovery': if (currentUser && !currentUser.isPaid && !currentUser.isAdmin) { setTimeout(() => setCurrentPage('landing'), 0); return null; } if (!currentUser) return <div style={{minHeight:'100vh',background:'#050505',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{fontFamily:'Bowlby One SC,cursive',fontSize:'3rem',color:'#FFDE03'}}>HAHAHUB</div></div>; return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
       case 'login': return <LoginPage 
         onSuccess={(isPaid: boolean) => setCurrentPage(isPaid ? 'discovery' : 'landing')} 

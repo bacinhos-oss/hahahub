@@ -76,7 +76,10 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     }
     setCurrentUser(user)
     setRegStep('success')
-    setTimeout(() => onSuccess(true), 3000)
+    // Wait for success screen then navigate - user is already set so discovery guard will pass
+    setTimeout(() => {
+      onSuccess(true)
+    }, 3500)
   }
 
   const handleForgotPassword = async () => {
@@ -254,7 +257,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
               <span className="text-lg">🎭</span>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Step 1 of 2</p>
-                <p className="text-xs font-black uppercase">Create Account → Plačilo PayPal</p>
+                <p className="text-xs font-black uppercase">Create Account → PayPal Payment</p>
               </div>
             </div>
           </div>
