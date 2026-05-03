@@ -176,7 +176,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <span className="material-symbols-outlined text-black text-3xl font-black">verified</span>
               </div>
               <h3 className="text-3xl font-black uppercase italic text-white">Direct Licensing</h3>
-              <p className="text-gray-400 font-bold italic">Transparent contracts and direct contact with authors. No middlemen.</p>
+              <p className="text-gray-400 font-bold italic">Transparent contracts and direct contact with rights holders. No middlemen.</p>
             </div>
             <div className="space-y-6">
               <div className="w-16 h-16 bg-brand-pink flex items-center justify-center border-4 border-black shadow-neo-yellow rotate-6">

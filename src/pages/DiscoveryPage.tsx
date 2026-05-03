@@ -446,6 +446,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
   const filteredShows = useMemo(() => {
     let result = shows.filter(show => {
+      if (!show.is_produced) return false;
       const totalCast = (show.maleRoles || 0) + (show.femaleRoles || 0);
       const matchesGenre = filterGenre === 'All' || show.genre === filterGenre || show.subgenre === filterGenre;
       const matchesCountry = filterCountry === 'All' || show.location === filterCountry;
@@ -454,8 +455,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                          (filterCast === 'Solo/Duo' && totalCast <= 2) ||
                          (filterCast === 'Small (3-5)' && totalCast >= 3 && totalCast <= 5) ||
                          (filterCast === 'Large (6+)' && totalCast >= 6);
-      const matchesSearch = show.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            show.author.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = show.title.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesGenre && matchesCountry && matchesRisk && matchesCast && matchesSearch;
     });
 
@@ -688,17 +688,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>
                   </section>
 
-                  {/* SCRIPT PREVIEW - HIGH CONTRAST */}
-                  <section className="space-y-4 bg-white p-10 border-8 border-black shadow-neo-yellow">
-                     <div className="flex justify-between items-center border-b-4 border-black pb-4 mb-8">
-                        <h4 className="text-2xl font-black uppercase italic text-black">SCRIPT SCENARIO EXCERPT (3 PAGES)</h4>
-                        <span className="bg-black text-white px-3 py-1 text-[10px] font-black uppercase italic">PUBLIC PREVIEW</span>
-                     </div>
-                     <div className="bg-white text-black font-mono text-base whitespace-pre-wrap leading-relaxed max-h-[600px] overflow-y-auto pr-6 italic font-bold">
-                        {selectedShow.scriptScenario || "No public script preview available for this asset."}
-                     </div>
-                  </section>
-
                   {/* CTA SECTION */}
                   <div className="bg-brand-surface border-8 border-brand-cyan p-12 text-center space-y-10 shadow-neo-magenta">
                       <div className="space-y-2">
@@ -870,7 +859,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </div>
                 <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-white/40 italic">Search</label>
-                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="TITLE / AUTHOR..." className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-white italic" />
+                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="SEARCH TITLE..." className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-white italic" />
                 </div>
             </div>
           </section>
