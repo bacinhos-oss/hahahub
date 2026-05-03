@@ -193,7 +193,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         <h2 className="text-2xl font-black uppercase italic mb-2 text-black">Unlock the Vault</h2>
         <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-6">Annual Pass — €99</p>
         <div className="bg-gray-100 border-4 border-black p-4 mb-8 text-black">
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Registriran kot</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Registering as</p>
           <p className="font-black uppercase">{name}</p>
           <p className="text-xs text-gray-500">{email}</p>
         </div>
@@ -218,8 +218,8 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         </div>
         <h2 className="text-4xl font-black uppercase italic mb-3 text-black leading-tight">Tickle<br/>the Laugh!</h2>
         <p className="font-black text-brand-pink uppercase tracking-[0.2em] text-sm mb-4">Premium Access Active</p>
-        <p className="text-gray-600 font-bold text-sm mb-2">Dobrodošel, <strong className="text-black">{name.toUpperCase()}</strong>!</p>
-        <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Vstopam v vault...</p>
+        <p className="text-gray-600 font-bold text-sm mb-2">Welcome, <strong className="text-black">{name.toUpperCase()}</strong>!</p>
+        <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Entering the vault...</p>
         <div className="flex justify-center gap-1 mt-6">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="w-2 h-2 bg-brand-cyan animate-bounce" style={{ animationDelay: `${i * 0.15}s` }}></div>
@@ -254,36 +254,36 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
               <span className="text-lg">🎭</span>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Step 1 of 2</p>
-                <p className="text-xs font-black uppercase">Ustvari račun → Plačilo PayPal</p>
+                <p className="text-xs font-black uppercase">Create Account → Plačilo PayPal</p>
               </div>
             </div>
           </div>
         )}
 
         <h2 className="text-black text-2xl font-black uppercase mb-8 italic">
-          {adminMode ? 'Control Center Access' : isNew ? 'Ustvari račun' : 'Welcome back, legend'}
+          {adminMode ? 'Control Center Access' : isNew ? 'Create Account' : 'Welcome back, legend'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {isNew && !adminMode && (
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Ime / Produkcijsko podjetje</label>
-              <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="npr. COMEDY STAGE NYC" />
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Name / Production Company</label>
+              <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="E.G. COMEDY STAGE NYC" />
             </div>
           )}
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Email naslov</label>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Email Address</label>
             <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="COMEDY@PRODUCER.COM" />
           </div>
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Geslo</label>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>
             <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-pink transition-all" placeholder="••••••••" />
           </div>
 
           {error && <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>}
 
           <button type="submit" disabled={loading} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic hover:bg-brand-pink transition-all">
-            {loading ? 'LOADING...' : adminMode ? 'ENTER HQ' : isNew ? 'NAPREJ → PLAČILO' : 'ENTER THE VAULT'}
+            {loading ? 'LOADING...' : adminMode ? 'ENTER HQ' : isNew ? 'NEXT → PAYMENT' : 'ENTER THE VAULT'}
           </button>
         </form>
 
