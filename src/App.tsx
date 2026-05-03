@@ -228,9 +228,9 @@ const App: React.FC = () => {
       likes_count: 0, views_count: 0, inquiries_count: 0,
       production_photos: newShow.productionPhotos, is_produced: true,
       user_id: currentUser?.id,
-    }]).select().single()
+    }]).select().maybeSingle()
     if (data) setShows(prev => [{ ...newShow, id: data.id, user_id: currentUser?.id } as any, ...prev])
-    else setShows(prev => [{ ...newShow, user_id: currentUser?.id } as any, ...prev])
+    else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
   }
 
   const renderPage = () => {
