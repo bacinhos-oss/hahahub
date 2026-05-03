@@ -42,19 +42,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         {/* HERO */}
         <section className="px-6 md:px-12 py-20 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-8">Producer-to-Producer Platform</span>
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-8">The Global Comedy Rights Ecosystem</span>
             <h1 className="font-display text-white text-5xl sm:text-7xl md:text-9xl leading-[0.85] tracking-tighter uppercase mb-8 italic">
-              THE GLOBAL<br/>
-              <span className="text-brand-yellow">COMEDY</span><br/>
-              <span className="text-brand-cyan">RIGHTS</span><br/>
-              EXCHANGE.
+              INTERNATIONAL<br/>
+              <span className="text-brand-yellow">THEATRE COMEDY</span><br/>
+              <span className="text-brand-cyan">PRODUCERS</span><br/>
+              PLATFORM.
             </h1>
             <p className="text-xl md:text-2xl font-bold text-white/60 italic max-w-2xl mb-12 leading-relaxed">
-              Browse, license, and stage the world's best theatrical comedy productions. Direct from rights holders. No middlemen.
+              The global ecosystem for comedy rights. Browse, license, and stage the world's funniest productions. Direct. No middlemen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-12 py-6 text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
-                Join the Hub — €99/yr
+                🎭 Tickle the Laugh — Join →
               </button>
               <button onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })} className="text-white border-b-4 border-white/30 pb-1 text-xl font-black uppercase hover:border-brand-cyan hover:text-brand-cyan transition-all italic">
                 How it works ↓
@@ -122,7 +122,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         {/* HOW IT WORKS */}
         <section className="px-6 md:px-12 py-24 border-b-4 border-white/10" id="how">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-5xl md:text-7xl font-black uppercase italic text-white mb-16">How It <span className="text-brand-cyan">Works</span></h2>
+            <h2 className="text-5xl md:text-7xl font-black uppercase italic text-white mb-4">How It <span className="text-brand-cyan">Works</span></h2>
+            <p className="text-white/40 font-bold italic text-lg mb-16">Join the ecosystem of 100+ producers worldwide.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 { step: '01', icon: 'search', color: 'brand-cyan', title: 'Browse', desc: 'Explore 50+ international comedy productions. Filter by genre, territory, cast size, and budget.' },
@@ -201,7 +202,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   onClick={() => onNavigate('login')}
                   className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-xl hover:bg-brand-pink hover:text-white transition-all shadow-[6px_6px_0px_#FF0266] italic"
                 >
-                  Join the Hub →
+                  Enter the Ecosystem →
                 </button>
                 <p className="text-gray-400 text-xs font-bold italic mt-4 text-center">Secure payment via PayPal</p>
               </div>
