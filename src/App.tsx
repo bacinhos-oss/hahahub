@@ -237,6 +237,11 @@ const App: React.FC = () => {
       production_photos: newShow.productionPhotos, is_produced: true,
       user_id: currentUser?.id,
     }]).select().maybeSingle()
+    if (error) {
+      console.error('UPLOAD ERROR:', error)
+      alert('Upload error: ' + error.message)
+      return
+    }
     if (data) setShows(prev => [{ ...newShow, id: data.id, user_id: currentUser?.id } as any, ...prev])
     else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
   }
