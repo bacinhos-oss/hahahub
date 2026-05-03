@@ -1,5 +1,6 @@
+import React, { useState, useEffect, useRef } from 'react';
 
-import React, { useState, useEffect } from 'react';
+const PAYPAL_CLIENT_ID = 'AWTdSJP21yPSFId7J2fucaypo0J5G1EEb93kwYuptegD_LY2g7G8lxC0ioNL4AeZhBEuEuFODiIbGQIX';
 
 interface PaymentModalProps {
   planName: string;
@@ -9,21 +10,56 @@ interface PaymentModalProps {
   onSuccess: () => void;
 }
 
+const PLAN_AMOUNTS: Record<string, string> = {
+  'Quarterly Pass': '59.00',
+  'Annual Pass': '99.00',
+};
+
 const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, onClose, onSuccess }) => {
-  const [step, setStep] = useState<'confirm' | 'processing' | 'success'>('confirm');
+  const [step, setStep] = useState<'confirm' | 'paying' | 'success' | 'error'>('confirm');
+  const [errorMsg, setErrorMsg] = useState('');
+  const paypalRef = useRef<HTMLDivElement>(null);
+  const scriptLoaded = useRef(false);
 
   useEffect(() => {
-    if (!isOpen) setStep('confirm');
+    if (!isOpen) { setStep('confirm'); setErrorMsg(''); }
   }, [isOpen]);
 
-  const handlePay = () => {
-    setStep('processing');
-    setTimeout(() => {
-      setStep('success');
-      setTimeout(() => {
-        onSuccess();
-      }, 2000);
-    }, 2500);
+  useEffect(() => {
+    if (!isOpen || step !== 'paying') return;
+    if (scriptLoaded.current) { renderButtons(); return; }
+
+    const script = document.createElement('script');
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`;
+    script.onload = () => { scriptLoaded.current = true; renderButtons(); };
+    script.onerror = () => setErrorMsg('Failed to load PayPal. Check your connection.');
+    document.body.appendChild(script);
+  }, [isOpen, step]);
+
+  const renderButtons = () => {
+    if (!paypalRef.current || !(window as any).paypal) return;
+    paypalRef.current.innerHTML = '';
+    const amount = PLAN_AMOUNTS[planName] || '99.00';
+
+    (window as any).paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
+      createOrder: (_data: any, actions: any) => {
+        return actions.order.create({
+          purchase_units: [{ amount: { value: amount, currency_code: 'EUR' }, description: `HAHAHUB ${planName}` }]
+        });
+      },
+      onApprove: async (_data: any, actions: any) => {
+        await actions.order.capture();
+        setStep('success');
+        setTimeout(() => onSuccess(), 2000);
+      },
+      onError: (err: any) => {
+        console.error('PayPal error:', err);
+        setErrorMsg('Payment failed. Please try again.');
+        setStep('confirm');
+      },
+      onCancel: () => { setStep('confirm'); }
+    }).render(paypalRef.current);
   };
 
   if (!isOpen) return null;
@@ -52,11 +88,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
                 <span className="text-3xl font-black">{price}</span>
               </div>
             </div>
+            {errorMsg && (
+              <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider mb-6">{errorMsg}</div>
+            )}
             <p className="text-sm font-medium mb-8 leading-relaxed">
               Unlock the global comedy grid. Your premium credentials will be active as soon as the signal is confirmed.
             </p>
-            <button 
-              onClick={handlePay}
+            <button
+              onClick={() => setStep('paying')}
               className="w-full bg-[#ffc439] hover:bg-[#f4bb33] text-black font-black py-5 uppercase text-lg border-4 border-black shadow-[4px_4px_0px_black] transition-all flex items-center justify-center gap-3"
             >
               Pay with PayPal
@@ -64,21 +103,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
           </div>
         )}
 
-        {step === 'processing' && (
-          <div className="text-black text-center py-10 space-y-8">
-            <div className="relative w-20 h-20 mx-auto">
-              <div className="absolute inset-0 border-8 border-brand-yellow/20 rounded-full"></div>
-              <div className="absolute inset-0 border-8 border-brand-yellow border-t-transparent rounded-full animate-spin"></div>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-3xl font-black uppercase leading-none">Establishing Connection</h2>
-              <p className="font-bold text-gray-500 uppercase tracking-widest text-[10px] italic">Synching vault permissions with PayPal...</p>
-              <div className="flex justify-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="w-2 h-2 bg-brand-cyan animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}></div>
-                ))}
+        {step === 'paying' && (
+          <div className="text-black">
+            <h2 className="text-2xl font-black uppercase italic mb-2">Complete Payment</h2>
+            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-8">{planName} — {price}</p>
+            <div ref={paypalRef} className="min-h-[150px]">
+              <div className="flex items-center justify-center py-10">
+                <div className="w-10 h-10 border-4 border-brand-yellow border-t-transparent rounded-full animate-spin"></div>
               </div>
             </div>
+            <button onClick={() => setStep('confirm')} className="mt-4 text-xs text-gray-400 hover:text-black font-black uppercase tracking-widest transition-colors">
+              ← Back
+            </button>
           </div>
         )}
 
