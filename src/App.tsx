@@ -252,7 +252,7 @@ const App: React.FC = () => {
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
       case 'login': return <LoginPage 
-        onSuccess={(isPaid: boolean) => setCurrentPage(isPaid ? 'discovery' : 'landing')} 
+        onSuccess={(isPaid: boolean) => setCurrentPage(isPaid ? 'discovery' : 'subscription')} 
         onBack={() => setCurrentPage('landing')} 
         setCurrentUser={setCurrentUser} 
       />

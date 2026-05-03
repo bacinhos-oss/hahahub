@@ -91,20 +91,16 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             favorites: [],
             uploaded_show_ids: []
           }])
-          if (data.session) {
-            setCurrentUser({
-              id: data.user.id, email,
-              name: name.toUpperCase(),
-              role: isAdmin ? 'admin' : 'Producer',
-              avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-              isPaid, isAdmin,
-              subscription: isPaid ? { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
-              favorites: [], uploadedShowIds: [],
-            })
-            onSuccess(isPaid)
-          } else {
-            setCheckEmail(true)
-          }
+          setCurrentUser({
+            id: data.user.id, email,
+            name: name.toUpperCase(),
+            role: isAdmin ? 'admin' : 'Producer',
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+            isPaid, isAdmin,
+            subscription: isPaid ? { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
+            favorites: [], uploadedShowIds: [],
+          })
+          onSuccess(isPaid)
         }
       } else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
