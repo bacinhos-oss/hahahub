@@ -263,8 +263,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
+  const [inquiries, setInquiries] = useState<any[]>([]);
 
-  useEffect(() => { if (user?.id) loadMyRealStats(); }, [user]);
+  useEffect(() => { if (user?.id) { loadMyRealStats(); loadInquiries(); } }, [user]);
 
   const loadMyRealStats = async () => {
     const { data: myShows } = await supabase.from('shows').select('views_count, inquiries_count, likes_count').eq('user_id', user?.id);
@@ -275,6 +276,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         totalLikes: myShows.reduce((sum, s) => sum + (s.likes_count || 0), 0),
       });
     }
+  };
+
+  const loadInquiries = async () => {
+    const { data } = await supabase
+      .from('inquiries')
+      .select('*')
+      .eq('producer_id', user?.id)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (data) setInquiries(data);
   };
 
   const daysRemaining = useMemo(() => {
@@ -594,7 +605,31 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </section>
 
-            {/* 2. STATS */}
+            {/* 2. INQUIRIES */}
+            {inquiries.length > 0 && (
+              <section className="space-y-4">
+                <div className="flex items-center gap-4 mb-6">
+                  <h2 className="text-xs font-black uppercase tracking-widest text-white/40 italic">Incoming Signals</h2>
+                  <span className="bg-brand-cyan text-black text-[9px] font-black px-2 py-1 uppercase animate-pulse">{inquiries.length} NEW</span>
+                </div>
+                {inquiries.map((inq) => (
+                  <div key={inq.id} className="bg-brand-surface border-4 border-brand-cyan p-6 flex flex-col md:flex-row gap-4 justify-between">
+                    <div className="flex-1">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
+                      <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
+                      <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
+                      {inq.message && <p className="text-sm text-white/70 mt-3 italic border-l-4 border-brand-yellow pl-3">{inq.message}</p>}
+                    </div>
+                    <div className="flex flex-col gap-2 md:items-end justify-between">
+                      <p className="text-[8px] text-white/30 font-bold uppercase">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                      <a href={"mailto:" + inq.from_email + "?subject=Re: Rights Inquiry - " + inq.show_title} className="bg-brand-yellow text-black text-[9px] font-black uppercase px-4 py-2 border-2 border-black hover:bg-white transition-all italic">Reply</a>
+                    </div>
+                  </div>
+                ))}
+              </section>
+            )}
+
+            {/* 3. STATS */}
             <section className="grid grid-cols-2 xl:grid-cols-4 gap-8">
               {stats.map((stat, i) => (
                 <div key={i} className="bg-brand-surface border-4 border-white p-8 shadow-neo-white">
