@@ -65,7 +65,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     const expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
       .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiry }).eq('id', pendingUser.id)
-    setCurrentUser({
+    const user: User = {
       id: pendingUser.id, email: pendingUser.email,
       name: name.toUpperCase(),
       role: 'Producer',
@@ -73,7 +73,8 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
       isPaid: true, isAdmin: false,
       subscription: { type: 'Annual', expiryDate: expiry, status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] },
       favorites: [], uploadedShowIds: [],
-    })
+    }
+    setCurrentUser(user)
     setRegStep('success')
     setTimeout(() => onSuccess(true), 3000)
   }

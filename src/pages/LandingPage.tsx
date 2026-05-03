@@ -192,13 +192,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         <section className="px-6 md:px-12 py-32" id="pricing">
           <div className="max-w-6xl mx-auto flex flex-col items-center">
             <h2 className="font-display text-white text-6xl md:text-8xl uppercase mb-24 text-center">Get <span className="text-brand-pink">The Keys</span></h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 w-full max-w-4xl">
-              <div className="bg-brand-surface border-4 border-white p-12 shadow-neo-white">
-                <h3 className="text-3xl font-black mb-4 uppercase italic">Quarterly</h3>
-                <div className="text-5xl font-black text-brand-yellow mb-10">€59 <span className="text-sm text-gray-500">/ 3 MO</span></div>
-                <button onClick={() => handlePlanSelect('Quarterly Pass', '€59')} className="w-full py-5 border-4 border-white text-white font-black uppercase hover:bg-white hover:text-black transition-all italic">PayPal Express</button>
-              </div>
-              <div className="bg-white border-4 border-white p-12 shadow-neo-magenta scale-105">
+            <div className="w-full max-w-md mx-auto">
+              <div className="bg-white border-4 border-white p-12 shadow-neo-magenta">
                 <h3 className="text-3xl font-black mb-4 uppercase italic text-black">Annual Pro</h3>
                 <div className="text-5xl font-black text-brand-pink mb-10">€99 <span className="text-sm text-gray-500">/ YEAR</span></div>
                 <button onClick={() => handlePlanSelect('Annual Pass', '€99')} className="w-full py-5 bg-brand-pink text-white border-4 border-black font-black uppercase hover:bg-black transition-all shadow-neo-cyan italic">PayPal Express</button>
