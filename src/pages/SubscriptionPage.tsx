@@ -561,12 +561,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     <button onClick={() => onNavigate('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Deploy First Asset</button>
                   </div>
                 ) : userUploads.map((show) => (
-                  <div key={show.id} className="bg-brand-surface border-4 border-white p-6 flex gap-6 hover:shadow-neo-yellow transition-all">
+                  <div key={show.id} className={"bg-brand-surface border-4 p-6 flex gap-6 hover:shadow-neo-yellow transition-all " + (show.inquiriesCount > 0 ? "border-brand-cyan shadow-neo-cyan" : "border-white")}>
                     <div className="w-24 h-32 border-2 border-white/10 flex-shrink-0">
                       <img src={show.imageUrl} className="w-full h-full object-cover" alt={show.title} />
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
+                        {show.inquiriesCount > 0 && (
+                          <span className="inline-block bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-1 mb-1 animate-pulse">🎭 NEW INQUIRY</span>
+                        )}
                         <h3 className="text-xl font-black uppercase italic leading-none">{show.title}</h3>
                         <div className="mt-2 flex items-center gap-2">
                           <span className={'w-2 h-2 rounded-full ' + (show.rightsStatus === 'Available' ? 'bg-green-500' : 'bg-brand-yellow')}></span>
@@ -575,7 +578,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         <div className="mt-3 flex gap-4 text-[9px] font-black uppercase text-white/40">
                           <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs text-brand-cyan">visibility</span>{show.viewsCount}</span>
                           <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs text-brand-pink">favorite</span>{show.likesCount}</span>
-                          <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs text-brand-yellow">mail</span>{show.inquiriesCount}</span>
+                          <span className="flex items-center gap-1 relative">
+                            {show.inquiriesCount > 0 && (
+                              <span className="absolute -top-1 -right-2 w-2 h-2 bg-brand-cyan rounded-full animate-ping"></span>
+                            )}
+                            <span className="material-symbols-outlined text-xs text-brand-yellow">mail</span>
+                            <span className={show.inquiriesCount > 0 ? "text-brand-cyan font-black" : ""}>{show.inquiriesCount}</span>
+                          </span>
                         </div>
                       </div>
                       <button onClick={() => openManage(show)} className="mt-4 w-full bg-brand-pink text-white py-2 text-[9px] font-black uppercase italic border-2 border-black shadow-[2px_2px_0px_white]">Manage / Edit</button>
