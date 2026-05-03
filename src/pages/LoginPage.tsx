@@ -79,7 +79,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             .select('*')
             .eq('email', email)
             .eq('status', 'pending')
-            .single()
+            .maybeSingle()
           const isPaid = isAdmin || !!invite
           if (invite) {
             await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
@@ -110,7 +110,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
         if (signInError) throw signInError
         if (data.user) {
-          const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single()
+          const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
           const isAdmin = email === ADMIN_EMAIL
           setCurrentUser({
             id: data.user.id, email,
