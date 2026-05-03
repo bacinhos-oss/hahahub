@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import Navigation from '../components/Navigation';
 import ShareButton from '../components/ShareButton';
 import { supabase } from '../lib/supabase';
@@ -310,20 +310,13 @@ const loadMyRealStats = async () => {
           <div className="flex border-b-8 border-white">
              <button 
                onClick={() => setActiveTab('overview')}
-               className={`flex-1 md:flex-none px-12 py-5 text-xl font-black uppercase italic transition-all ${activeTab === 'overview' ? 'bg-white text-black' : 'bg-brand-black text-white/40 hover:text-white'}`}
+               className="flex-1 md:flex-none px-12 py-5 text-xl font-black uppercase italic transition-all bg-white text-black"
              >
                Overview
              </button>
-             <button 
-               onClick={() => setActiveTab('upload')}
-               className={`flex-1 md:flex-none px-12 py-5 text-xl font-black uppercase italic transition-all ${activeTab === 'upload' ? 'bg-brand-cyan text-black' : 'bg-brand-black text-white/40 hover:text-white'}`}
-             >
-               Deploy Asset
-             </button>
           </div>
 
-          {activeTab === 'overview' ? (
-            <div className="space-y-16 animate-in fade-in slide-in-from-bottom-4">
+          <div className="space-y-16 animate-in fade-in slide-in-from-bottom-4">
               
               {/* MEMBERSHIP STATUS WIDGET */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -408,7 +401,7 @@ const loadMyRealStats = async () => {
                       {userUploads.length === 0 ? (
                         <div className="col-span-2 py-20 border-4 border-dashed border-white/10 text-center">
                           <p className="text-white/20 font-black uppercase italic">No active assets deployed.</p>
-                          <button onClick={() => setActiveTab('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Deploy First Asset</button>
+                          <button onClick={() => onNavigate('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Deploy First Asset</button>
                         </div>
                       ) : userUploads.map((show) => (
                           <div key={show.id} className="bg-brand-surface border-4 border-white p-6 flex gap-6 group hover:shadow-neo-yellow transition-all">
@@ -464,16 +457,14 @@ const loadMyRealStats = async () => {
                 </section>
               </div>
             </div>
-          ) : (
-            <div className="animate-in fade-in slide-in-from-bottom-4 space-y-12 pb-20">
-               {isSuccess ? (
-                 <div className="bg-brand-cyan p-20 text-black text-center border-8 border-white shadow-neo-magenta">
-                   <span className="material-symbols-outlined text-8xl font-black mb-6">verified</span>
-                   <h2 className="text-6xl font-black uppercase italic mb-4">ASSET DEPLOYED</h2>
-                   <p className="text-xl font-bold italic uppercase opacity-70">Catalog entry successful. Returning to feed...</p>
-                 </div>
-               ) : (
-                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+        </div>
+      </main>
+    </div>
+    </React.Fragment>
+  );
+};
+
+export default SubscriptionPage;
                     <div className="lg:col-span-8 space-y-16">
                                              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
                           <h3 className="text-3xl font-black uppercase italic text-brand-cyan mb-10">00. Rights & Identity</h3>
@@ -522,25 +513,6 @@ const loadMyRealStats = async () => {
                              <div><label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic">Box Office Indicator</label><select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white text-xs font-black uppercase italic"><option value="High">High</option><option value="Medium">Medium</option><option value="Emerging">Emerging</option></select></div>
                           </div>
                        </section>
-                       <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
-                          <h3 className="text-3xl font-black uppercase italic text-brand-pink mb-10">04. Script Preview</h3>
-                          <div className="space-y-8">
-                             <div><label className="block text-[10px] font-black uppercase text-brand-yellow mb-2 italic tracking-widest font-black uppercase">Public Preview Script Scenario (3 Pages) *</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={12} className="w-full bg-brand-black border-2 border-white/10 p-8 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" placeholder="Paste the first 3 pages here. This will be publicly visible."></textarea></div>
-                          </div>
-                       </section>
-                       <div className="bg-white text-black p-10">
-                          <div onClick={() => fileInputRef.current?.click()} className="w-full h-64 border-4 border-dashed border-black/20 flex flex-col items-center justify-center cursor-pointer">
-                             {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <span className="text-6xl">+</span>}
-                             <p className="mt-2 text-[8px] font-black uppercase text-gray-400">Main Poster *</p>
-                          </div>
-                          <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
-                          <button onClick={handleLaunch} className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black mt-6">Deploy to Vault</button>
-                       </div>
-                    </div>
-                 </div>
-               )}
-            </div>
-          )}
         </div>
       </main>
     </div>

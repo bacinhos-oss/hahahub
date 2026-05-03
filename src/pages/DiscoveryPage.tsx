@@ -423,6 +423,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [selectedShowId, setSelectedShowId] = useState<string | null>(null);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [inquirySuccess, setInquirySuccess] = useState(false);
+  const [inquiryName, setInquiryName] = useState('');
+  const [inquiryEmail, setInquiryEmail] = useState('');
+  const [inquiryMessage, setInquiryMessage] = useState('');
   
   const [filterGenre, setFilterGenre] = useState('All');
   const [filterCountry, setFilterCountry] = useState('All');
@@ -697,6 +700,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       <button 
                         onClick={() => {
                           setSelectedShowId(null);
+                          setInquiryName(user?.name || '');
+                          setInquiryEmail(user?.email || '');
+                          setInquiryMessage('');
                           setIsInquiryOpen(true);
                         }}
                         className="bg-brand-yellow text-black px-16 py-8 font-black uppercase border-4 border-black shadow-[8px_8px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic tracking-[0.4em] text-2xl"
@@ -754,16 +760,16 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-gray-500 italic">Full Name</label>
-                    <input type="text" defaultValue={user?.name} className="w-full bg-brand-black border-2 border-white/20 p-4 text-white font-bold uppercase outline-none focus:border-brand-cyan" />
+                    <input type="text" value={inquiryName} onChange={e => setInquiryName(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 p-4 text-white font-bold uppercase outline-none focus:border-brand-cyan" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-gray-500 italic">Email Address</label>
-                    <input type="email" defaultValue={`${user?.name?.toLowerCase()}@producer.com`} className="w-full bg-brand-black border-2 border-white/20 p-4 text-white font-bold outline-none focus:border-brand-cyan" />
+                    <input type="email" value={inquiryEmail} onChange={e => setInquiryEmail(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 p-4 text-white font-bold outline-none focus:border-brand-cyan" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase text-gray-500 italic">Message / Production Pitch</label>
-                  <textarea rows={5} placeholder="Tell the rights holder about your planned production, venue, and dates..." className="w-full bg-brand-black border-2 border-white/20 p-6 text-white italic outline-none focus:border-brand-pink"></textarea>
+                  <textarea rows={5} value={inquiryMessage} onChange={e => setInquiryMessage(e.target.value)} placeholder="Tell the rights holder about your planned production, venue, and dates..." className="w-full bg-brand-black border-2 border-white/20 p-6 text-white italic outline-none focus:border-brand-pink"></textarea>
                 </div>
               </div>
 
