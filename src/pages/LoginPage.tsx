@@ -5,7 +5,7 @@ import { User } from '../types'
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
 interface Props {
-  onSuccess: () => void
+  onSuccess: (isPaid: boolean) => void
   onBack: () => void
   setCurrentUser: (user: User) => void
   adminMode?: boolean
@@ -101,7 +101,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
               subscription: isPaid ? { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
               favorites: [], uploadedShowIds: [],
             })
-            onSuccess()
+            onSuccess(isPaid)
           } else {
             setCheckEmail(true)
           }
@@ -125,7 +125,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             favorites: profile?.favorites || [],
             uploadedShowIds: profile?.uploaded_show_ids || [],
           })
-          onSuccess()
+          onSuccess(profile?.is_paid || isAdmin)
         }
       }
     } catch (err: any) {
