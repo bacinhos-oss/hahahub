@@ -55,7 +55,7 @@ const App: React.FC = () => {
 
   const loadProfile = async (userId: string, email: string) => {
     try {
-      const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
+      const { data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
       const isAdmin = email === ADMIN_EMAIL
       const user: User = {
         id: userId, email,
@@ -129,6 +129,7 @@ const App: React.FC = () => {
       transparencyScore: s.transparency_score || 80,
       productionPhotos: s.production_photos || [],
       is_produced: s.is_produced ?? true,
+      user_id: s.user_id || null,
     }))
     setShows(mapped)
   }
@@ -228,8 +229,8 @@ const App: React.FC = () => {
       production_photos: newShow.productionPhotos, is_produced: true,
       user_id: currentUser?.id,
     }]).select().single()
-    if (data) setShows(prev => [{ ...newShow, id: data.id }, ...prev])
-    else setShows(prev => [newShow, ...prev])
+    if (data) setShows(prev => [{ ...newShow, id: data.id, user_id: currentUser?.id } as any, ...prev])
+    else setShows(prev => [{ ...newShow, user_id: currentUser?.id } as any, ...prev])
   }
 
   const renderPage = () => {
