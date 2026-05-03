@@ -288,6 +288,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     if (data) setInquiries(data);
   };
 
+  const markAsRead = async (inquiryId: string) => {
+    await supabase.from('inquiries').update({ is_read: true }).eq('id', inquiryId);
+    setInquiries(prev => prev.map(inq => inq.id === inquiryId ? { ...inq, is_read: true } : inq));
+  };
+
   const daysRemaining = useMemo(() => {
     if (!user?.subscription?.expiryDate) return 365;
     const expiry = new Date(user.subscription.expiryDate);
@@ -572,13 +577,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     <button onClick={() => onNavigate('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Deploy First Asset</button>
                   </div>
                 ) : userUploads.map((show) => (
-                  <div key={show.id} className={"bg-brand-surface border-4 p-6 flex gap-6 hover:shadow-neo-yellow transition-all " + (show.inquiriesCount > 0 ? "border-brand-cyan shadow-neo-cyan" : "border-white")}>
+                  <div key={show.id} className={"bg-brand-surface border-4 p-6 flex gap-6 hover:shadow-neo-yellow transition-all " + (show.inquiriesCount > 0 && inquiries.some(inq => inq.show_id === show.id && !inq.is_read) ? "border-brand-cyan shadow-neo-cyan animate-pulse" : show.inquiriesCount > 0 ? "border-brand-cyan" : "border-white")}>
                     <div className="w-24 h-32 border-2 border-white/10 flex-shrink-0">
                       <img src={show.imageUrl} className="w-full h-full object-cover" alt={show.title} />
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
-                        {show.inquiriesCount > 0 && (
+                        {inquiries.some(inq => inq.show_id === show.id && !inq.is_read) && (
                           <span className="inline-block bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-1 mb-1 animate-pulse">🎭 NEW INQUIRY</span>
                         )}
                         <h3 className="text-xl font-black uppercase italic leading-none">{show.title}</h3>
@@ -613,7 +618,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <span className="bg-brand-cyan text-black text-[9px] font-black px-2 py-1 uppercase animate-pulse">{inquiries.length} NEW</span>
                 </div>
                 {inquiries.map((inq) => (
-                  <div key={inq.id} className="bg-brand-surface border-4 border-brand-cyan p-6 flex flex-col md:flex-row gap-4 justify-between">
+                  <div key={inq.id} className={"bg-brand-surface border-4 p-6 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan")}>
                     <div className="flex-1">
                       <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
                       <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
@@ -622,7 +627,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     </div>
                     <div className="flex flex-col gap-2 md:items-end justify-between">
                       <p className="text-[8px] text-white/30 font-bold uppercase">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                      <a href={"mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: Rights Inquiry - " + inq.show_title)} className="bg-brand-yellow text-black text-[9px] font-black uppercase px-4 py-2 border-2 border-black hover:bg-white transition-all italic">Reply</a>
+                      <button
+                        onClick={() => {
+                          markAsRead(inq.id);
+                          window.open("mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title));
+                        }}
+                        className={"text-[9px] font-black uppercase px-4 py-2 border-2 border-black transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20" : "bg-brand-yellow text-black hover:bg-white")}
+                      >
+                        {inq.is_read ? "TICKLED BACK ✓" : "TICKLE BACK 🎭"}
+                      </button>
                     </div>
                   </div>
                 ))}
