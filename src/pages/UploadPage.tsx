@@ -14,6 +14,25 @@ const inp = "w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white
 const sel = "w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
 const lbl = "block text-[10px] font-black uppercase text-gray-500 mb-2 italic";
 
+const compressImage = (file: File, maxWidth: number, quality: number): Promise<File> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => {
+        resolve(new File([blob!], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+      }, 'image/jpeg', quality);
+    };
+    img.src = url;
+  });
+};
+
 const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onUpload }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -96,9 +115,9 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     let finalImageUrl = imagePreview || '';
     if (imageFile) {
       try {
-        const ext = imageFile.name.split('.').pop();
-        const path = `shows/${Date.now()}.${ext}`;
-        const { data: uploadData } = await supabase.storage.from('show-images').upload(path, imageFile, { cacheControl: '31536000', upsert: false });
+        const compressed = await compressImage(imageFile, 800, 0.75);
+        const path = `shows/${Date.now()}.jpg`;
+        const { data: uploadData } = await supabase.storage.from('show-images').upload(path, compressed, { cacheControl: '31536000', upsert: false });
         if (uploadData) {
           const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path);
           finalImageUrl = urlData.publicUrl;
@@ -111,9 +130,9 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       const pf = photoFiles[i]; const pp = photoPreviews[i];
       if (pf) {
         try {
-          const ext = pf.name.split('.').pop();
-          const path = `shows/photo_${Date.now()}_${i}.${ext}`;
-          const { data: pd } = await supabase.storage.from('show-images').upload(path, pf, { cacheControl: '31536000', upsert: false });
+          const compressedPhoto = await compressImage(pf, 600, 0.7);
+          const path = `shows/photo_${Date.now()}_${i}.jpg`;
+          const { data: pd } = await supabase.storage.from('show-images').upload(path, compressedPhoto, { cacheControl: '31536000', upsert: false });
           if (pd) { const { data: pu } = supabase.storage.from('show-images').getPublicUrl(path); uploadedPhotos.push(pu.publicUrl); }
         } catch { if (pp) uploadedPhotos.push(pp); }
       } else if (pp) { uploadedPhotos.push(pp); }
