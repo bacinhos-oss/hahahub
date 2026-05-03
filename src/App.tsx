@@ -76,11 +76,6 @@ const App: React.FC = () => {
       }
       setCurrentUser(user)
       if (isAdmin) setIsAdminAuthenticated(true)
-      // Navigate to correct page on session restore
-      const isProtectedPage = window.location.pathname !== '/'
-      if (user.isPaid || isAdmin) {
-        setCurrentPage('discovery')
-      }
       setLoading(false)
     } catch { 
       setCurrentUser(null)
@@ -251,15 +246,7 @@ const App: React.FC = () => {
     else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
   }
 
-  // Guard unpaid users from protected pages - only after loading is done
-  React.useEffect(() => {
-    if (loading) return // wait for auth to complete
-    if (currentUser && !currentUser.isPaid && !currentUser.isAdmin) {
-      if (currentPage === 'discovery' || currentPage === 'upload') {
-        setCurrentPage('landing')
-      }
-    }
-  }, [currentUser, currentPage, loading])
+
 
   const handlePurchaseSuccess = async (planName: string) => {
     if (!currentUser) return
@@ -272,7 +259,15 @@ const App: React.FC = () => {
   }
 
   const renderPage = () => {
-    switch (currentPage) {
+    // After loading, redirect paid users from landing to discovery
+    const effectivePage = (() => {
+      if (currentPage === 'landing' && currentUser?.isPaid) return 'discovery'
+      if (currentPage === 'landing' && currentUser?.isAdmin) return 'discovery'
+      if ((currentPage === 'discovery' || currentPage === 'upload') && currentUser && !currentUser.isPaid && !currentUser.isAdmin) return 'landing'
+      return currentPage
+    })()
+
+    switch (effectivePage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
