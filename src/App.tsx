@@ -246,6 +246,15 @@ const App: React.FC = () => {
     else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
   }
 
+  // Guard unpaid users from protected pages
+  React.useEffect(() => {
+    if (!loading && currentUser && !currentUser.isPaid && !currentUser.isAdmin) {
+      if (currentPage === 'discovery' || currentPage === 'upload') {
+        setCurrentPage('landing')
+      }
+    }
+  }, [currentUser, currentPage, loading])
+
   const handlePurchaseSuccess = async (planName: string) => {
     if (!currentUser) return
     const expiry = planName.includes('Annual') 
@@ -259,7 +268,7 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
-      case 'discovery': if (currentUser && !currentUser.isPaid && !currentUser.isAdmin) { setTimeout(() => setCurrentPage('landing'), 0); return null; } if (!currentUser) return <div style={{minHeight:'100vh',background:'#050505',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{fontFamily:'Bowlby One SC,cursive',fontSize:'3rem',color:'#FFDE03'}}>HAHAHUB</div></div>; return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
+      case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
       case 'login': return <LoginPage 
         onSuccess={(isPaid: boolean) => setCurrentPage(isPaid ? 'discovery' : 'landing')} 
@@ -269,7 +278,7 @@ const App: React.FC = () => {
       case 'subscription': return <SubscriptionPage onUpdateShow={handleUpdateShow} onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} shows={shows} onDeleteShow={(id) => setShows(prev => prev.filter(s => s.id !== id))} />
       case 'about': return <AboutPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'privacy': return <PrivacyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
-      case 'upload': if (currentUser && !currentUser.isPaid && !currentUser.isAdmin) { setTimeout(() => setCurrentPage('landing'), 0); return null; } if (!currentUser) return null; return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
+      case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
       default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
     }
   }
