@@ -20,6 +20,12 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoRef0 = useRef<HTMLInputElement>(null);
+  const photoRef1 = useRef<HTMLInputElement>(null);
+  const photoRef2 = useRef<HTMLInputElement>(null);
+  const photoRefs = [photoRef0, photoRef1, photoRef2];
+  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null, null, null]);
+  const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([null, null, null]);
 
   const [formData, setFormData] = useState({
     title: '', author: '', director: '', directorNotes: '', originalProductionSolutions: '',
@@ -50,21 +56,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     synopsis: '', scriptScenario: '',
   });
 
-  const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([null, null, null]);
-  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null, null, null]);
-  const photoRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
-
-  const handlePhotoChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const newFiles = [...photoFiles]; newFiles[index] = file; setPhotoFiles(newFiles);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const newPreviews = [...photoPreviews]; newPreviews[index] = reader.result as string; setPhotoPreviews(newPreviews);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (validationErrors.length > 0) setValidationErrors([]);
@@ -76,6 +68,18 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePhotoChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const newFiles = [...photoFiles]; newFiles[index] = file; setPhotoFiles(newFiles);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newPreviews = [...photoPreviews]; newPreviews[index] = reader.result as string; setPhotoPreviews(newPreviews);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -102,20 +106,15 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       } catch {}
     }
 
-    // Upload production photos
     const uploadedPhotos: string[] = [];
-    for (let i = 0; i < photoFiles.length; i++) {
-      const pf = photoFiles[i];
-      const pp = photoPreviews[i];
+    for (let i = 0; i < 3; i++) {
+      const pf = photoFiles[i]; const pp = photoPreviews[i];
       if (pf) {
         try {
           const ext = pf.name.split('.').pop();
           const path = `shows/photo_${Date.now()}_${i}.${ext}`;
           const { data: pd } = await supabase.storage.from('show-images').upload(path, pf);
-          if (pd) {
-            const { data: pu } = supabase.storage.from('show-images').getPublicUrl(path);
-            uploadedPhotos.push(pu.publicUrl);
-          }
+          if (pd) { const { data: pu } = supabase.storage.from('show-images').getPublicUrl(path); uploadedPhotos.push(pu.publicUrl); }
         } catch { if (pp) uploadedPhotos.push(pp); }
       } else if (pp) { uploadedPhotos.push(pp); }
     }
@@ -202,7 +201,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       <Navigation onNavigate={onNavigate} onLogout={onLogout} activePage="upload" user={user} />
       <main className="pt-40 pb-24 px-8">
         <div className="max-w-6xl mx-auto space-y-16">
-
           <header>
             <h1 className="text-7xl md:text-[120px] font-black uppercase italic leading-[0.8] tracking-tighter">
               DEPLOY <span className="text-brand-pink">ASSET</span>
@@ -234,7 +232,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                     </select>
                   </div>
                   <div><label className={lbl}>Territories Available</label><input name="territoriesAvailable" value={formData.territoriesAvailable} onChange={handleInputChange} className={inp} placeholder="Global, Europe..." /></div>
-                  <div><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} placeholder="Already licensed in..." /></div>
+                  <div><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Territory Conflicts</label><input name="territoryConflicts" value={formData.territoryConflicts} onChange={handleInputChange} className={inp} placeholder="None" /></div>
                   <div><label className={lbl}>Media Conflicts</label><input name="mediaConflicts" value={formData.mediaConflicts} onChange={handleInputChange} className={inp} placeholder="Streaming, film rights..." /></div>
                 </div>
@@ -338,7 +336,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   </div>
                   <div className="col-span-2 md:col-span-4"><label className={lbl}>Scalability Notes</label><input name="scalabilityNotes" value={formData.scalabilityNotes} onChange={handleInputChange} className={inp} placeholder="Can scale down to 3 actors..." /></div>
                 </div>
-
                 <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-6">
                   <div><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Sound Staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
@@ -424,9 +421,9 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       </select>
                     </div>
                   </div>
-                  <div><label className={lbl}>Translation Rights Included</label>
+                  <div><label className={lbl}>Translation Rights</label>
                     <select name="translationRightsIncluded" value={formData.translationRightsIncluded} onChange={handleInputChange} className={sel}>
-                      <option value="true">Yes</option><option value="false">No</option>
+                      <option value="true">Included</option><option value="false">Separate</option>
                     </select>
                   </div>
                 </div>
@@ -437,24 +434,29 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
             {/* SIDEBAR */}
             <div className="lg:col-span-4">
               <div className="bg-white text-black p-10 shadow-neo-white sticky top-32 space-y-8">
-                <h3 className="text-2xl font-black uppercase italic border-b-4 border-black pb-4 text-brand-pink">Poster Visual *</h3>
-                <div onClick={() => fileInputRef.current?.click()} className="w-full h-64 border-4 border-dashed border-black/20 flex flex-col items-center justify-center cursor-pointer hover:border-brand-pink overflow-hidden bg-gray-50">
-                  {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/10 text-6xl">add_a_photo</span>}
-                  <p className="mt-2 text-[8px] font-black uppercase text-gray-400">Click to upload</p>
+                <div>
+                  <h3 className="text-xl font-black uppercase italic border-b-4 border-black pb-4 text-brand-pink mb-4">Poster Visual *</h3>
+                  <div onClick={() => fileInputRef.current?.click()} className="w-full h-56 border-4 border-dashed border-black/20 flex flex-col items-center justify-center cursor-pointer hover:border-brand-pink overflow-hidden bg-gray-50">
+                    {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/20 text-6xl">add_a_photo</span>}
+                    <p className="mt-2 text-[8px] font-black uppercase text-gray-400">Click to upload</p>
+                  </div>
+                  <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
                 </div>
-                <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
 
-                <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-gray-400 italic border-t-4 border-black pt-6">Production Photos (max 3)</p>
-                  {[0, 1, 2].map(i => (
-                    <div key={i}>
-                      <div onClick={() => photoRefs[i].current?.click()} className="w-full h-24 border-2 border-dashed border-black/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-gray-50">
-                        {photoPreviews[i] ? <img src={photoPreviews[i]!} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/20 text-3xl">add_photo_alternate</span>}
+                <div>
+                  <h3 className="text-xl font-black uppercase italic border-b-4 border-black pb-4 text-brand-cyan mb-4">Production Photos</h3>
+                  <div className="space-y-3">
+                    {[0, 1, 2].map(i => (
+                      <div key={i}>
+                        <div onClick={() => photoRefs[i].current?.click()} className="w-full h-24 border-2 border-dashed border-black/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-gray-50">
+                          {photoPreviews[i] ? <img src={photoPreviews[i]!} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/20 text-3xl">add_photo_alternate</span>}
+                        </div>
+                        <input type="file" ref={photoRefs[i]} onChange={handlePhotoChange(i)} className="hidden" accept="image/*" />
                       </div>
-                      <input type="file" ref={photoRefs[i]} onChange={handlePhotoChange(i)} className="hidden" accept="image/*" />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
+
                 <div className="pt-4 border-t-4 border-black">
                   <button onClick={handleLaunch} className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl">
                     Deploy Asset
