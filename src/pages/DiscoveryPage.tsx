@@ -1027,33 +1027,34 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             </div>
           </section>
 
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 pb-24">
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-24">
             {filteredShows.map((show) => (
               <div key={show.id} onClick={() => handleShowSelect(show)} className="group relative cursor-pointer bg-brand-surface border-4 border-white hover:shadow-neo-yellow transition-all overflow-hidden flex flex-col">
-                <div className="aspect-[4/6] relative overflow-hidden">
+                <div className="aspect-[2/3] relative overflow-hidden">
                   <img src={show.imageUrl} alt={show.title} className="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent opacity-80 group-hover:opacity-100"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 opacity-80 group-hover:opacity-100"></div>
                   <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
-                     <span className="px-2 py-0.5 text-[8px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.duration}m</span>
-                     <span className="px-2 py-0.5 text-[8px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-cyan text-black">{show.location}</span>
+                     <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.duration}m</span>
+                     <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-cyan text-black">{show.location}</span>
                   </div>
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
                     <div className="space-y-2">
-                      <p className="text-brand-pink text-[9px] font-black uppercase italic tracking-[0.2em]">{show.genre} {show.subgenre ? `• ${show.subgenre}` : ''}</p>
-                      <h3 className="text-2xl font-black uppercase italic leading-[0.85] text-white group-hover:text-brand-yellow transition-colors">{show.title}</h3>
+                      <p className="text-brand-pink text-[11px] font-black uppercase italic tracking-[0.2em]">{show.genre} {show.subgenre ? `• ${show.subgenre}` : ''}</p>
+                      <h3 className="text-3xl font-black uppercase italic leading-[0.85] text-white group-hover:text-brand-yellow transition-colors">{show.title}</h3>
+                      <p className="text-white/60 text-xs uppercase font-bold">{show.author}</p>
                     </div>
                   </div>
                 </div>
-                <div className="bg-brand-black border-t-4 border-white p-4 flex items-center justify-between">
+                <div className="bg-brand-black border-t-4 border-white p-5 flex items-center justify-between">
                    <div className="flex items-center gap-2 group/metric">
-                      <span className="material-symbols-outlined text-brand-cyan text-sm">visibility</span>
-                      <span className="text-[10px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
+                      <span className="material-symbols-outlined text-brand-cyan text-base">visibility</span>
+                      <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
                    </div>
                    <div className="flex items-center gap-2 group/metric">
-                      <span className="material-symbols-outlined text-brand-pink text-sm">favorite</span>
-                      <span className="text-[10px] font-black text-white/60 group-hover/metric:text-brand-pink transition-colors">{show.likesCount.toLocaleString()}</span>
+                      <span className="material-symbols-outlined text-brand-pink text-base">favorite</span>
+                      <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-pink transition-colors">{show.likesCount.toLocaleString()}</span>
                    </div>
-                   <div className="text-[8px] font-black text-white/20 uppercase italic">
+                   <div className="text-[9px] font-black text-white/30 uppercase italic">
                       EST. {show.productionYear}
                    </div>
                 </div>
