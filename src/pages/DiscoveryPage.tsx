@@ -834,6 +834,16 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <RoyaltyCalculator show={selectedShow} />
                   </section>
 
+                  {/* SCRIPT SCENARIO */}
+                  {selectedShow.scriptScenario && (
+                    <section className="space-y-4">
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">Script Scenario — 3 Pages in English</h4>
+                      <div className="bg-black border-4 border-brand-yellow p-8">
+                        <pre className="text-white font-mono text-sm leading-relaxed whitespace-pre-wrap">{selectedShow.scriptScenario}</pre>
+                      </div>
+                    </section>
+                  )}
+
                   {/* PRODUCTION PHOTOS */}
                   {selectedShow.productionPhotos && selectedShow.productionPhotos.length > 0 && (
                     <section className="space-y-6">
