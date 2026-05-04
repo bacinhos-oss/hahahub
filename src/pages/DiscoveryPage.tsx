@@ -137,24 +137,48 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-xl" onClick={() => setSelectedShowId(null)}></div>
-        <div className="relative bg-brand-black border-4 border-white w-full max-w-5xl max-h-[82vh] overflow-y-auto shadow-neo-yellow animate-in zoom-in duration-300 text-white pb-12">
+        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[90vh] overflow-y-auto shadow-neo-yellow animate-in zoom-in duration-300 text-white pb-12">
           <button onClick={() => setSelectedShowId(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all z-20">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
           
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-2/5 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
-                <div className="w-full h-72 lg:h-full relative lg:min-h-[500px]">
-                  <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center absolute inset-0" alt={selectedShow.title} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-black/20"></div>
-                  <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
-                    <div className="px-4 py-2 text-[10px] font-black uppercase italic border-2 border-black shadow-[4px_4px_0px_white] bg-brand-yellow text-black">
-                      {selectedShow.riskProfile}
+            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
+                <div className="flex flex-col h-full">
+                  {/* POSTER */}
+                  <div className="relative flex-shrink-0" style={{height: '55%', minHeight: '280px'}}>
+                    <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center" alt={selectedShow.title} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                    <div className="absolute top-4 left-4 z-10">
+                      <div className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-black shadow-[3px_3px_0px_white] bg-brand-yellow text-black">
+                        {selectedShow.riskProfile}
+                      </div>
+                    </div>
+                    <div className="absolute bottom-3 left-4 z-10">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-white/50 italic">Poster</p>
                     </div>
                   </div>
-                  <div className="absolute bottom-6 left-6 right-6 z-10 lg:hidden">
-                    <h3 className="text-2xl font-black uppercase italic text-white leading-none drop-shadow-lg">{selectedShow.title}</h3>
-                    <p className="text-white/60 text-xs font-bold italic mt-1">{selectedShow.location} • {selectedShow.duration} min</p>
+
+                  {/* PRODUCTION PHOTOS */}
+                  <div className="border-t-4 border-white flex-1">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30 italic px-4 pt-3 pb-2">Production Photos</p>
+                    {selectedShow.productionPhotos && selectedShow.productionPhotos.length > 0 ? (
+                      <div className="grid grid-cols-3 gap-1 px-2 pb-2">
+                        {selectedShow.productionPhotos.slice(0, 3).map((photo, i) => (
+                          <div key={i} className="relative aspect-square border border-white/10 overflow-hidden">
+                            <img src={photo} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-1 px-2 pb-2">
+                        {[1,2,3].map(i => (
+                          <div key={i} className="aspect-square border border-white/10 bg-white/5 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-white/10 text-2xl">image</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
             </div>
