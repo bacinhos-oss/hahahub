@@ -144,7 +144,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
-                <div className="w-full h-64 lg:h-full relative min-h-[300px]">
+                <div className="w-full h-56 lg:h-full relative min-h-[220px] lg:min-h-[400px] lg:max-h-[600px]">
                   <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center absolute inset-0" alt={selectedShow.title} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-black/20"></div>
                   <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
