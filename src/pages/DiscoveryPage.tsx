@@ -109,25 +109,19 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </div>
 
                   {/* PRODUCTION PHOTOS */}
-                  <div className="border-t-4 border-white flex-1">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30 italic px-4 pt-3 pb-2">Production Photos</p>
-                    {selectedShow.productionPhotos && selectedShow.productionPhotos.length > 0 ? (
-                      <div className="flex flex-col gap-1 px-2 pb-2">
-                        {selectedShow.productionPhotos.slice(0, 3).map((photo, i) => (
-                          <div key={i} className="relative w-full h-24 border border-white/10 overflow-hidden">
-                            <img src={photo} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-1 px-2 pb-2">
-                        {[1,2,3].map(i => (
-                          <div key={i} className="w-full h-24 border border-white/10 bg-white/5 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white/10 text-xl">image</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  <div className="border-t-4 border-white flex-1 px-3 pt-3 pb-3">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan italic mb-3">Photos from Production</p>
+                    <div className="space-y-2">
+                      {[0, 1, 2].map(i => (
+                        <div key={i} className="w-full h-24 border-2 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center">
+                          {selectedShow.productionPhotos && selectedShow.productionPhotos[i] ? (
+                            <img src={selectedShow.productionPhotos[i]} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                          ) : (
+                            <span className="material-symbols-outlined text-white/10 text-3xl">add_photo_alternate</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
             </div>
