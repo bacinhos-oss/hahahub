@@ -137,14 +137,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-xl" onClick={() => setSelectedShowId(null)}></div>
-        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[90vh] overflow-y-auto shadow-neo-yellow animate-in zoom-in duration-300 text-white pb-12">
+        <div className="relative bg-brand-black border-4 border-white w-full max-w-5xl max-h-[82vh] overflow-y-auto shadow-neo-yellow animate-in zoom-in duration-300 text-white pb-12">
           <button onClick={() => setSelectedShowId(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all z-20">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
           
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
-                <div className="w-full h-56 lg:h-full relative min-h-[220px] lg:min-h-[400px] lg:max-h-[600px]">
+            <div className="lg:w-2/5 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
+                <div className="w-full h-72 lg:h-full relative lg:min-h-[500px]">
                   <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center absolute inset-0" alt={selectedShow.title} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-black/20"></div>
                   <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
