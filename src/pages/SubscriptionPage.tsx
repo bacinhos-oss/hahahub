@@ -377,11 +377,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         international_success_notes: editForm.internationalSuccessNotes,
         script_scenario: editForm.scriptScenario,
         is_produced: true,
+        production_photos: editForm.productionPhotos || [],
       }).eq('id', manageShow.id);
 
       if (error) { console.error('Error:', error.message); }
       else {
-        onUpdateShow({ ...manageShow, ...editForm } as Show);
+        onUpdateShow({ ...manageShow, ...editForm, productionPhotos: editForm.productionPhotos || manageShow.productionPhotos } as Show);
         setSaveSuccess(true);
         setTimeout(() => { setSaveSuccess(false); setManageShow(null); }, 1500);
       }
@@ -549,10 +550,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <div key={i}>
                     <div
                       onClick={() => editPhotoRefs[i].current?.click()}
-                      className="w-full h-24 border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-white/5"
+                      className="w-full h-24 border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-black/40 relative group"
                     >
                       {editPhotoPreviews[i] ? (
-                        <img src={editPhotoPreviews[i]!} className="w-full h-full object-cover" alt={"Photo " + (i+1)} />
+                        <>
+                          <img src={editPhotoPreviews[i]!} className="w-full h-full object-cover" alt={"Photo " + (i+1)} />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="material-symbols-outlined text-white text-2xl">edit</span>
+                          </div>
+                        </>
                       ) : (
                         <span className="material-symbols-outlined text-white/20 text-3xl">add_photo_alternate</span>
                       )}
