@@ -163,18 +163,18 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="border-t-4 border-white flex-1">
                     <p className="text-[8px] font-black uppercase tracking-widest text-white/30 italic px-4 pt-3 pb-2">Production Photos</p>
                     {selectedShow.productionPhotos && selectedShow.productionPhotos.length > 0 ? (
-                      <div className="grid grid-cols-3 gap-1 px-2 pb-2">
+                      <div className="flex gap-1 px-2 pb-2">
                         {selectedShow.productionPhotos.slice(0, 3).map((photo, i) => (
-                          <div key={i} className="relative aspect-square border border-white/10 overflow-hidden">
+                          <div key={i} className="relative flex-1 h-20 border border-white/10 overflow-hidden">
                             <img src={photo} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="grid grid-cols-3 gap-1 px-2 pb-2">
+                      <div className="flex gap-1 px-2 pb-2">
                         {[1,2,3].map(i => (
-                          <div key={i} className="aspect-square border border-white/10 bg-white/5 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white/10 text-2xl">image</span>
+                          <div key={i} className="flex-1 h-20 border border-white/10 bg-white/5 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-white/10 text-xl">image</span>
                           </div>
                         ))}
                       </div>
