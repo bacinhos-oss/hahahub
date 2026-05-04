@@ -4,57 +4,6 @@ import Navigation from '../components/Navigation';
 import { Page, Show, User } from '../types';
 
 
-const RoyaltyCalculator: React.FC<{ show: Show }> = ({ show }) => {
-  const [ticketPrice, setTicketPrice] = useState(25);
-  const [seats, setSeats] = useState(200);
-  const [occupancy, setOccupancy] = useState(75);
-  const [performances, setPerformances] = useState(20);
-
-  const royaltyPct = parseFloat((show.royaltyRange || '8').replace('%','').split('-')[0]) || 8;
-  const gbo = ticketPrice * seats * (occupancy / 100) * performances;
-  const royalty = gbo * (royaltyPct / 100);
-  const advance = parseFloat((show.advanceFee || '0').replace(/[€,]/g, '')) || 0;
-  const net = royalty - advance;
-
-  const fmt = (n: number) => '€' + Math.round(n).toLocaleString();
-
-  return (
-    <div className="bg-black border-4 border-brand-cyan p-8 space-y-6 shadow-neo-cyan">
-      <div className="flex items-center justify-between">
-        <h4 className="text-lg font-black uppercase italic text-brand-cyan">Royalty Calculator</h4>
-        <span className="text-[10px] font-black uppercase text-brand-cyan/60 italic">Based on {royaltyPct}% GBO</span>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {[
-          { label: 'Ticket Price (€)', name: 'ticket', value: ticketPrice, min: 5, max: 200, set: setTicketPrice },
-          { label: 'Seats', name: 'seats', value: seats, min: 50, max: 2000, set: setSeats },
-          { label: 'Occupancy %', name: 'occ', value: occupancy, min: 10, max: 100, set: setOccupancy },
-          { label: 'Performances', name: 'perf', value: performances, min: 1, max: 500, set: setPerformances },
-        ].map(f => (
-          <div key={f.name} className="space-y-2">
-            <label className="text-[9px] font-black uppercase text-gray-400 italic">{f.label}</label>
-            <input type="range" min={f.min} max={f.max} value={f.value} onChange={e => f.set(Number(e.target.value))} className="w-full accent-brand-cyan" />
-            <p className="text-brand-cyan font-black text-lg">{f.value}</p>
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-4 border-t-2 border-brand-cyan/20 pt-6">
-        <div className="text-center">
-          <p className="text-[9px] font-black uppercase text-gray-500 italic mb-1">Gross Box Office</p>
-          <p className="text-2xl font-black text-white">{fmt(gbo)}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-[9px] font-black uppercase text-gray-500 italic mb-1">Royalty ({royaltyPct}%)</p>
-          <p className="text-2xl font-black text-brand-cyan">{fmt(royalty)}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-[9px] font-black uppercase text-gray-500 italic mb-1">Net (after advance)</p>
-          <p className={'text-2xl font-black ' + (net >= 0 ? 'text-brand-yellow' : 'text-brand-pink')}>{fmt(net)}</p>
-        </div>
-      </div>
-    </div>
-  );
-};
 interface DiscoveryPageProps {
   onNavigate: (page: Page) => void;
   onLogout?: () => void;
@@ -163,17 +112,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="border-t-4 border-white flex-1">
                     <p className="text-[8px] font-black uppercase tracking-widest text-white/30 italic px-4 pt-3 pb-2">Production Photos</p>
                     {selectedShow.productionPhotos && selectedShow.productionPhotos.length > 0 ? (
-                      <div className="flex gap-1 px-2 pb-2">
+                      <div className="flex flex-col gap-1 px-2 pb-2">
                         {selectedShow.productionPhotos.slice(0, 3).map((photo, i) => (
-                          <div key={i} className="relative flex-1 h-20 border border-white/10 overflow-hidden">
+                          <div key={i} className="relative w-full h-24 border border-white/10 overflow-hidden">
                             <img src={photo} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="flex gap-1 px-2 pb-2">
+                      <div className="flex flex-col gap-1 px-2 pb-2">
                         {[1,2,3].map(i => (
-                          <div key={i} className="flex-1 h-20 border border-white/10 bg-white/5 flex items-center justify-center">
+                          <div key={i} className="w-full h-24 border border-white/10 bg-white/5 flex items-center justify-center">
                             <span className="material-symbols-outlined text-white/10 text-xl">image</span>
                           </div>
                         ))}
@@ -458,7 +407,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>
 
                     {/* ROYALTY CALCULATOR */}
-                    <RoyaltyCalculator show={selectedShow} />
                   </section>
 
                   {/* SCRIPT SCENARIO */}
