@@ -143,13 +143,18 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           </button>
           
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10">
-                <div className="w-full relative" style={{height: '40vh'}}>
-                  <img src={selectedShow.imageUrl} className="w-full object-cover" style={{height: '40vh', objectFit: 'cover'}} alt={selectedShow.title} />
+            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
+                <div className="w-full h-64 lg:h-full relative min-h-[300px]">
+                  <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center absolute inset-0" alt={selectedShow.title} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-black/20"></div>
                   <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
                     <div className="px-4 py-2 text-[10px] font-black uppercase italic border-2 border-black shadow-[4px_4px_0px_white] bg-brand-yellow text-black">
                       {selectedShow.riskProfile}
                     </div>
+                  </div>
+                  <div className="absolute bottom-6 left-6 right-6 z-10 lg:hidden">
+                    <h3 className="text-2xl font-black uppercase italic text-white leading-none drop-shadow-lg">{selectedShow.title}</h3>
+                    <p className="text-white/60 text-xs font-bold italic mt-1">{selectedShow.location} • {selectedShow.duration} min</p>
                   </div>
                 </div>
             </div>
