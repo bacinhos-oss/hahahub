@@ -63,20 +63,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
-        {/* STATS */}
-        <section className="px-6 md:px-12 py-12 border-y-4 border-white/10 bg-brand-surface">
-          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { number: '50+', label: 'Productions' },
-              { number: '20+', label: 'Countries' },
-              { number: '100%', label: 'Direct Licensing' },
-              { number: '1', label: 'Annual Fee' },
-            ].map((s, i) => (
-              <div key={i}>
-                <p className="text-4xl md:text-6xl font-black uppercase italic text-brand-yellow">{s.number}</p>
-                <p className="text-xs font-black uppercase tracking-widest text-white/40 mt-2">{s.label}</p>
-              </div>
-            ))}
+        {/* QUOTES */}
+        <section className="px-6 md:px-12 py-16 border-y-4 border-white/10 bg-brand-surface overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { quote: "Laughter is the only currency that multiplies when shared.", author: "Chief of Laughter", org: "HahaHub" },
+                { quote: "Comedy is not a genre. It's a survival strategy.", author: "Chief of Laughter", org: "HahaHub" },
+                { quote: "The human race has one really effective weapon, and that is laughter.", author: "Mark Twain", org: "1835–1910" },
+              ].map((q, i) => (
+                <div key={i} className={"border-l-4 pl-6 " + (i === 0 ? "border-brand-yellow" : i === 1 ? "border-brand-cyan" : "border-brand-pink")}>
+                  <p className="text-white/70 font-bold italic text-lg leading-relaxed mb-4">"{q.quote}"</p>
+                  <p className={"text-xs font-black uppercase tracking-widest " + (i === 0 ? "text-brand-yellow" : i === 1 ? "text-brand-cyan" : "text-brand-pink")}>— {q.author}</p>
+                  <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">{q.org}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

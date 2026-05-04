@@ -105,7 +105,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                          (filterCast === 'Solo/Duo' && totalCast <= 2) ||
                          (filterCast === 'Small (3-5)' && totalCast >= 3 && totalCast <= 5) ||
                          (filterCast === 'Large (6+)' && totalCast >= 6);
-      const matchesSearch = show.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch = !q || [
+        show.title, show.author, show.director, show.synopsis,
+        show.genre, show.subgenre, show.location, show.language,
+        show.humorType, show.rightsStatus, show.budgetRange,
+        show.producerName, show.riskProfile,
+        String(show.duration), String(show.maleRoles + show.femaleRoles),
+      ].some(field => field?.toLowerCase().includes(q));
       return matchesGenre && matchesCountry && matchesRisk && matchesCast && matchesSearch;
     });
 
@@ -603,7 +610,22 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-white/40 italic">Comedy Type</label>
                     <select value={filterGenre} onChange={(e) => setFilterGenre(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-pink italic">
-                        {allGenres.map(g => <option key={g} value={g}>{g}</option>)}
+                        <option value="All">All Types</option>
+                        <option value="Comedy">Comedy (All)</option>
+                        <optgroup label="── Comedy Subgenres ──">
+                          <option value="Farce">Farce</option>
+                          <option value="Monocomedy">Monocomedy</option>
+                          <option value="Black Comedy">Black Comedy</option>
+                          <option value="Satire">Satire</option>
+                          <option value="Absurd">Absurd / Surreal</option>
+                          <option value="Romantic Comedy">Romantic Comedy</option>
+                          <option value="Slapstick">Slapstick</option>
+                          <option value="Stand-up">Stand-up Theatre</option>
+                          <option value="Improv">Improv / Sketch</option>
+                          <option value="Musical Comedy">Musical Comedy</option>
+                          <option value="Dark Comedy">Dark Comedy</option>
+                        </optgroup>
+                        {allGenres.filter(g => g !== 'All' && g !== 'Comedy').map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
                 </div>
                 <div className="space-y-2">
@@ -631,8 +653,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </select>
                 </div>
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 italic">Search</label>
-                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="SEARCH TITLE..." className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-white italic" />
+                    <label className="text-[10px] font-black uppercase text-white/40 italic">Smart Search</label>
+                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search title, author, country, cast..." className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-white italic" />
                 </div>
             </div>
           </section>

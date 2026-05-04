@@ -264,6 +264,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const [tickledToast, setTickledToast] = useState<{show: boolean, showTitle: string}>({show: false, showTitle: ''});
 
   useEffect(() => { if (user?.id) { loadMyRealStats(); loadInquiries(); } }, [user]);
 
@@ -373,13 +374,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         is_produced: true,
       }).eq('id', manageShow.id);
 
-      if (error) { alert('Error: ' + error.message); }
+      if (error) { console.error('Error:', error.message); }
       else {
         onUpdateShow({ ...manageShow, ...editForm } as Show);
         setSaveSuccess(true);
         setTimeout(() => { setSaveSuccess(false); setManageShow(null); }, 1500);
       }
-    } catch (err: any) { alert('Error: ' + (err.message || err)); }
+    } catch (err: any) { console.error('Error:', err.message || err); }
     setIsSaving(false);
   };
 
@@ -564,6 +565,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </section>
 
+            {/* TICKLED TOAST NOTIFICATION */}
+            {tickledToast.show && (
+              <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-bounce">
+                <div className="bg-brand-yellow text-black border-4 border-black shadow-neo-magenta px-8 py-6 text-center max-w-sm">
+                  <p className="text-2xl font-black uppercase italic leading-none mb-1">YOU'VE BEEN<br/><span className="text-brand-pink">TICKLED!</span> 🎭</p>
+                  <p className="text-xs font-black uppercase tracking-widest mt-2 opacity-70">{tickledToast.showTitle}</p>
+                  <button onClick={() => setTickledToast({show: false, showTitle: ''})} className="mt-4 text-[9px] font-black uppercase border-2 border-black px-4 py-1 hover:bg-black hover:text-white transition-all">Dismiss</button>
+                </div>
+              </div>
+            )}
+
             {/* 1. MY ASSETS — most important */}
             <section className="space-y-8">
               <div className="flex items-center justify-between">
@@ -613,9 +625,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* 2. INQUIRIES */}
             {inquiries.length > 0 && (
               <section className="space-y-4">
-                <div className="flex items-center gap-4 mb-6">
-                  <h2 className="text-xs font-black uppercase tracking-widest text-white/40 italic">Incoming Signals</h2>
-                  <span className="bg-brand-cyan text-black text-[9px] font-black px-2 py-1 uppercase animate-pulse">{inquiries.length} NEW</span>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-4xl font-black uppercase italic">You've Been <span className="text-brand-cyan">Tickled</span></h2>
+                    {inquiries.filter(i => !i.is_read).length > 0 && (
+                      <span className="bg-brand-cyan text-black text-[9px] font-black px-3 py-1 uppercase animate-pulse">{inquiries.filter(i => !i.is_read).length} UNREAD</span>
+                    )}
+                  </div>
+                  <p className="text-[9px] font-black uppercase text-white/30 italic">{inquiries.length} total inquiries</p>
                 </div>
                 {inquiries.map((inq) => (
                   <div key={inq.id} className={"bg-brand-surface border-4 p-6 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan")}>
@@ -733,8 +750,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* 4. CONTRACT TEMPLATES */}
             <section className="space-y-6">
               <div>
-                <h2 className="text-4xl font-black uppercase italic">Contract <span className="text-brand-cyan">Templates</span></h2>
-                <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-2 italic">International rights agreement templates — download, fill in, and use</p>
+                <h2 className="text-xl font-black uppercase italic text-white/40">Contract <span className="text-white/20">Templates</span></h2>
+                <p className="text-white/20 text-xs font-bold uppercase tracking-widest mt-1 italic">International rights agreement templates</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {CONTRACT_TEMPLATES.map((doc, i) => (
