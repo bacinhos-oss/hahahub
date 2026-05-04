@@ -413,20 +413,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </section>
                   )}
 
-                  {/* PRODUCTION PHOTOS */}
-                  {selectedShow.productionPhotos && selectedShow.productionPhotos.length > 0 && (
-                    <section className="space-y-6">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">Production Photos</h4>
-                      <div className="grid grid-cols-3 gap-4">
-                        {selectedShow.productionPhotos.slice(0, 3).map((photo, i) => (
-                          <div key={i} className="aspect-video border-4 border-white overflow-hidden">
-                            <img src={photo} alt={`Production photo ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
                   {/* CTA SECTION */}
                   <div className="bg-brand-surface border-8 border-brand-cyan p-12 text-center space-y-10 shadow-neo-magenta">
                       <div className="space-y-2">

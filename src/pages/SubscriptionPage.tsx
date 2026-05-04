@@ -291,7 +291,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       .eq('producer_id', user?.id)
       .order('created_at', { ascending: false })
       .limit(20);
-    if (data) setInquiries(data);
+    if (data) {
+      setInquiries(data);
+      const unread = data.filter((inq: any) => !inq.is_read);
+      if (unread.length > 0) {
+        setTickledToast({ show: true, showTitle: unread[0].show_title });
+        setTimeout(() => setTickledToast({ show: false, showTitle: '' }), 5000);
+      }
+    }
   };
 
   const markAsRead = async (inquiryId: string) => {
