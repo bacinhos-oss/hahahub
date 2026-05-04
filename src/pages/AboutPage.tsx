@@ -25,6 +25,23 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
             </h1>
           </section>
 
+          {/* ROTATING QUOTES */}
+          <section className="border-4 border-brand-yellow p-8 md:p-12 bg-brand-surface relative overflow-hidden">
+            <div className="absolute top-4 right-6 text-[80px] font-black text-brand-yellow/10 leading-none">"</div>
+            {[
+              { quote: "Comedy is not a genre. It's a survival strategy.", author: "Chief of Laughter", org: "HahaHub" },
+              { quote: "Laughter is the only currency that multiplies when shared.", author: "Chief of Laughter", org: "HahaHub" },
+              { quote: "Rights are serious. Comedy is not. We handle both.", author: "Chief of Laughter", org: "HahaHub" },
+              { quote: "The world has enough drama. We're here for the punchline.", author: "Chief of Laughter", org: "HahaHub" },
+              { quote: "A show that makes you laugh once will be forgotten. One that makes you cry with laughter will run forever.", author: "Chief of Laughter", org: "HahaHub" },
+            ].map((q, i) => (
+              <div key={i} className={"border-l-4 border-brand-yellow pl-6 " + (i > 0 ? "mt-8 border-l-2 border-white/10" : "")}>
+                <p className={"font-bold italic leading-relaxed mb-2 " + (i === 0 ? "text-2xl md:text-3xl text-white" : "text-base text-white/50")}>"{q.quote}"</p>
+                <p className={"text-xs font-black uppercase tracking-widest " + (i === 0 ? "text-brand-yellow" : "text-white/20")}>— {q.author}, {q.org}</p>
+              </div>
+            ))}
+          </section>
+
           {/* Core Vision Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 border-t-8 border-white pt-12">
             <div className="lg:col-span-7 space-y-8">
@@ -138,7 +155,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
               <div className="space-y-4 pt-8">
                 <h3 className="text-2xl font-black uppercase italic text-white">Liability</h3>
                 <p className="text-gray-400 font-bold italic">
-                  If you are a copyright holder and believe your content has been published without authorization, please contact us immediately at <span className="text-brand-yellow">legal@hahahub.com</span>. Content that is the subject of a copyright dispute will be removed promptly until rights are clarified.
+                  If you are a copyright holder and believe your content has been published without authorization, please contact us immediately at <span className="text-brand-yellow">legal@hahahub.art</span>. Content that is the subject of a copyright dispute will be removed promptly until rights are clarified.
                 </p>
               </div>
 

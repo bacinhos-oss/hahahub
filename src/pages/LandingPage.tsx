@@ -12,6 +12,21 @@ interface LandingPageProps {
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess, shows }) => {
   const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: string } | null>(null);
   const [teaserLock, setTeaserLock] = useState<string | null>(null);
+  const [quoteIdx, setQuoteIdx] = useState(0);
+  const quotes = [
+    { quote: "Laughter is the only currency that multiplies when shared.", author: "Chief of Laughter", org: "HahaHub" },
+    { quote: "Comedy is not a genre. It's a survival strategy.", author: "Chief of Laughter", org: "HahaHub" },
+    { quote: "Rights are serious. Comedy is not. We handle both.", author: "Chief of Laughter", org: "HahaHub" },
+    { quote: "A show that makes you laugh once will be forgotten. One that makes you cry with laughter will run forever.", author: "Chief of Laughter", org: "HahaHub" },
+    { quote: "The world has enough drama. We're here for the punchline.", author: "Chief of Laughter", org: "HahaHub" },
+    { quote: "The human race has one really effective weapon, and that is laughter.", author: "Mark Twain", org: "1835–1910" },
+    { quote: "Life does not cease to be funny when people die.", author: "George Bernard Shaw", org: "1856–1950" },
+    { quote: "We are all in the gutter, but some of us are looking at the stars.", author: "Oscar Wilde", org: "1854–1900" },
+  ];
+  React.useEffect(() => {
+    const t = setInterval(() => setQuoteIdx(i => (i + 1) % quotes.length), 4000);
+    return () => clearInterval(t);
+  }, []);
   const teaserShows = shows.slice(0, 4);
 
   return (
@@ -63,21 +78,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
-        {/* QUOTES */}
+        {/* QUOTES - rotating */}
         <section className="px-6 md:px-12 py-16 border-y-4 border-white/10 bg-brand-surface overflow-hidden">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { quote: "Laughter is the only currency that multiplies when shared.", author: "Chief of Laughter", org: "HahaHub" },
-                { quote: "Comedy is not a genre. It's a survival strategy.", author: "Chief of Laughter", org: "HahaHub" },
-                { quote: "The human race has one really effective weapon, and that is laughter.", author: "Mark Twain", org: "1835–1910" },
-              ].map((q, i) => (
-                <div key={i} className={"border-l-4 pl-6 " + (i === 0 ? "border-brand-yellow" : i === 1 ? "border-brand-cyan" : "border-brand-pink")}>
-                  <p className="text-white/70 font-bold italic text-lg leading-relaxed mb-4">"{q.quote}"</p>
-                  <p className={"text-xs font-black uppercase tracking-widest " + (i === 0 ? "text-brand-yellow" : i === 1 ? "text-brand-cyan" : "text-brand-pink")}>— {q.author}</p>
-                  <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">{q.org}</p>
-                </div>
-              ))}
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+              <div className="flex gap-2 flex-shrink-0">
+                {quotes.map((_, i) => (
+                  <button key={i} onClick={() => setQuoteIdx(i)} className={"w-2 h-2 transition-all " + (i === quoteIdx ? "bg-brand-yellow w-6" : "bg-white/20")} />
+                ))}
+              </div>
+              <div className="border-l-4 border-brand-yellow pl-6 transition-all">
+                <p className="text-white/80 font-bold italic text-xl md:text-2xl leading-relaxed mb-4">"{quotes[quoteIdx].quote}"</p>
+                <p className="text-xs font-black uppercase tracking-widest text-brand-yellow">— {quotes[quoteIdx].author}</p>
+                <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">{quotes[quoteIdx].org}</p>
+              </div>
             </div>
           </div>
         </section>

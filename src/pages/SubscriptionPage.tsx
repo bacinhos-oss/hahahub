@@ -257,6 +257,65 @@ const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white
 const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
 const lbl = "block text-[9px] font-black uppercase text-gray-500 mb-1 italic";
 
+const RoyaltyCalculator: React.FC = () => {
+  const [ticketPrice, setTicketPrice] = useState(25);
+  const [seats, setSeats] = useState(200);
+  const [occupancy, setOccupancy] = useState(75);
+  const [performances, setPerformances] = useState(20);
+  const [royaltyPct, setRoyaltyPct] = useState(8);
+
+  const gbo = ticketPrice * seats * (occupancy / 100) * performances;
+  const royalty = gbo * (royaltyPct / 100);
+  const fmt = (n: number) => '€' + Math.round(n).toLocaleString();
+
+  return (
+    <div className="bg-brand-surface border-4 border-brand-cyan p-6 md:p-8 space-y-6 shadow-neo-cyan">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h4 className="text-2xl font-black uppercase italic text-brand-cyan">Royalty Calculator</h4>
+        <span className="text-[10px] font-black uppercase text-brand-cyan/60 italic bg-brand-cyan/10 px-3 py-1">Producer Tool</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {[
+          { label: 'Ticket Price (€)', value: ticketPrice, min: 5, max: 200, set: setTicketPrice, color: 'brand-yellow' },
+          { label: 'Theatre Seats', value: seats, min: 50, max: 2000, set: setSeats, color: 'brand-cyan' },
+          { label: 'Occupancy %', value: occupancy, min: 10, max: 100, set: setOccupancy, color: 'brand-pink' },
+          { label: 'Performances', value: performances, min: 1, max: 500, set: setPerformances, color: 'brand-cyan' },
+        ].map(f => (
+          <div key={f.label} className="space-y-2">
+            <div className="flex justify-between items-center">
+              <label className="text-[9px] font-black uppercase text-gray-400 italic">{f.label}</label>
+              <span className={"text-lg font-black text-" + f.color}>{f.value}{f.label.includes('%') ? '%' : f.label.includes('€') ? ' €' : ''}</span>
+            </div>
+            <input type="range" min={f.min} max={f.max} value={f.value} onChange={e => f.set(Number(e.target.value))} className={"w-full accent-" + f.color} />
+          </div>
+        ))}
+      </div>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <label className="text-[9px] font-black uppercase text-gray-400 italic">Royalty % (GBO)</label>
+          <span className="text-lg font-black text-brand-yellow">{royaltyPct}%</span>
+        </div>
+        <input type="range" min={3} max={20} value={royaltyPct} onChange={e => setRoyaltyPct(Number(e.target.value))} className="w-full accent-brand-yellow" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t-4 border-brand-cyan/20 pt-6">
+        <div className="bg-black border-2 border-white/10 p-4 text-center">
+          <p className="text-[9px] font-black uppercase text-gray-500 italic mb-2">Gross Box Office</p>
+          <p className="text-2xl font-black text-white">{fmt(gbo)}</p>
+        </div>
+        <div className="bg-black border-2 border-brand-cyan/30 p-4 text-center">
+          <p className="text-[9px] font-black uppercase text-brand-cyan/60 italic mb-2">Royalty ({royaltyPct}%)</p>
+          <p className="text-2xl font-black text-brand-cyan">{fmt(royalty)}</p>
+        </div>
+        <div className="bg-brand-yellow border-2 border-black p-4 text-center">
+          <p className="text-[9px] font-black uppercase text-black/60 italic mb-2">Producer Keeps</p>
+          <p className="text-2xl font-black text-black">{fmt(gbo - royalty)}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, shows, onDeleteShow, onUpdateShow }) => {
   const [manageShow, setManageShow] = useState<Show | null>(null);
   const [editForm, setEditForm] = useState<Partial<Show>>({});
@@ -635,7 +694,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <p className="text-[9px] font-black uppercase text-white/30 italic">{inquiries.length} total inquiries</p>
                 </div>
                 {inquiries.map((inq) => (
-                  <div key={inq.id} className={"bg-brand-surface border-4 p-6 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan")}>
+                  <div key={inq.id} className={"bg-brand-surface border-4 p-4 md:p-6 flex flex-col gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan")}>
                     <div className="flex-1">
                       <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
                       <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
@@ -649,7 +708,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           markAsRead(inq.id);
                           window.open("mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title));
                         }}
-                        className={"text-[9px] font-black uppercase px-4 py-2 border-2 border-black transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20" : "bg-brand-yellow text-black hover:bg-white")}
+                        className={"w-full text-[11px] font-black uppercase px-4 py-3 border-2 border-black transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20" : "bg-brand-yellow text-black")}
                       >
                         {inq.is_read ? "TICKLED BACK ✓" : "TICKLE BACK 🎭"}
                       </button>
@@ -746,6 +805,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </a>
               </div>
             </div>
+
+            {/* 5. ROYALTY CALCULATOR */}
+            <section className="space-y-6">
+              <div>
+                <h2 className="text-4xl font-black uppercase italic">Royalty <span className="text-brand-cyan">Calculator</span></h2>
+                <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-2 italic">Estimate your income from any production</p>
+              </div>
+              <RoyaltyCalculator />
+            </section>
 
             {/* 4. CONTRACT TEMPLATES */}
             <section className="space-y-6">

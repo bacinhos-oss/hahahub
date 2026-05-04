@@ -24,11 +24,11 @@ const RoyaltyCalculator: React.FC<{ show: Show }> = ({ show }) => {
         <h4 className="text-lg font-black uppercase italic text-brand-cyan">Royalty Calculator</h4>
         <span className="text-[10px] font-black uppercase text-brand-cyan/60 italic">Based on {royaltyPct}% GBO</span>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {[
           { label: 'Ticket Price (€)', name: 'ticket', value: ticketPrice, min: 5, max: 200, set: setTicketPrice },
           { label: 'Seats', name: 'seats', value: seats, min: 50, max: 2000, set: setSeats },
-          { label: 'Occupancy (%)', name: 'occ', value: occupancy, min: 10, max: 100, set: setOccupancy },
+          { label: 'Occupancy %', name: 'occ', value: occupancy, min: 10, max: 100, set: setOccupancy },
           { label: 'Performances', name: 'perf', value: performances, min: 1, max: 500, set: setPerformances },
         ].map(f => (
           <div key={f.name} className="space-y-2">
