@@ -449,9 +449,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     if (!isInquiryOpen) return null;
 
     return (
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+      <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 md:p-6">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-md" onClick={() => setIsInquiryOpen(false)}></div>
-        <div className="relative bg-brand-surface border-8 border-white w-full max-w-2xl p-12 shadow-neo-cyan animate-in zoom-in duration-300">
+        <div className="relative bg-brand-surface border-8 border-white w-full max-w-2xl p-5 md:p-12 max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-cyan animate-in zoom-in duration-300">
           <button onClick={() => setIsInquiryOpen(false)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
@@ -477,21 +477,21 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </button>
             </div>
           ) : (
-            <div className="space-y-10 text-white">
+            <div className="space-y-8 text-white">
               <div className="space-y-2">
-                <h3 className="text-4xl font-black uppercase italic tracking-tighter">Initiate Rights Inquiry</h3>
-                <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic">Asset: {inquiryShow?.title}</p>
+                <h3 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter leading-tight">Initiate Rights<br className="md:hidden"/> Inquiry</h3>
+                <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic truncate">Asset: {inquiryShow?.title}</p>
               </div>
 
-              <div className="space-y-8">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-gray-500 italic">Full Name</label>
-                    <input type="text" value={inquiryName} onChange={e => setInquiryName(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 p-4 text-white font-bold uppercase outline-none focus:border-brand-cyan" />
+                    <input type="text" value={inquiryName} onChange={e => setInquiryName(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 p-3 text-white font-bold uppercase outline-none focus:border-brand-cyan" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-gray-500 italic">Email Address</label>
-                    <input type="email" value={inquiryEmail} onChange={e => setInquiryEmail(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 p-4 text-white font-bold outline-none focus:border-brand-cyan" />
+                    <input type="email" value={inquiryEmail} onChange={e => setInquiryEmail(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 p-3 text-white font-bold outline-none focus:border-brand-cyan" />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -630,8 +630,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </div>
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
                     <div className="space-y-2">
-                      <p className="text-brand-pink text-[11px] font-black uppercase italic tracking-[0.2em]">{show.genre} {show.subgenre ? `• ${show.subgenre}` : ''}</p>
-                      <h3 className="text-3xl font-black uppercase italic leading-[0.85] text-white group-hover:text-brand-yellow transition-colors">{show.title}</h3>
+                      <p className="text-brand-pink text-[10px] font-black uppercase italic tracking-[0.2em]">{show.genre} {show.subgenre ? `• ${show.subgenre}` : ''}</p>
+                      <h3 className="text-xl md:text-3xl font-black uppercase italic leading-tight text-white group-hover:text-brand-yellow transition-colors line-clamp-2">{show.title}</h3>
                       <p className="text-white/60 text-xs uppercase font-bold">{show.author}</p>
                     </div>
                   </div>
