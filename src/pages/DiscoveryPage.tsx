@@ -365,36 +365,36 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 04. COMMERCIAL BIBLE */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">04. COMMERCIAL BIBLE & CLEARANCE</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-                       <div className="bg-brand-surface border-4 border-white p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+                       <div className="bg-brand-surface border-4 border-white p-4">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
-                          <p className="text-base font-black uppercase italic">{selectedShow.licenseType}</p>
+                          <p className="text-sm font-black uppercase italic">{selectedShow.licenseType}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6">
+                       <div className="bg-brand-surface border-4 border-white p-4">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Model</p>
-                          <p className="text-base font-black uppercase italic">{selectedShow.licensingModel}</p>
+                          <p className="text-sm font-black uppercase italic">{selectedShow.licensingModel}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6">
+                       <div className="bg-brand-surface border-4 border-white p-4">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Royalties</p>
-                          <p className="text-base font-black uppercase italic">{selectedShow.royaltyRange || 'Standard'}</p>
+                          <p className="text-sm font-black uppercase italic">{selectedShow.royaltyRange || 'Standard'}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6">
+                       <div className="bg-brand-surface border-4 border-white p-4">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Advance Fee</p>
-                          <p className="text-base font-black uppercase italic text-brand-yellow">{selectedShow.advanceFee || '€0'}</p>
+                          <p className="text-sm font-black uppercase italic text-brand-yellow">{selectedShow.advanceFee || '€0'}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6">
+                       <div className="bg-brand-surface border-4 border-white p-4">
                           <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Exclusivity</p>
-                          <p className="text-base font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
+                          <p className="text-sm font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
                        </div>
-                       <div className="bg-brand-surface border-2 border-white/20 p-6">
+                       <div className="bg-brand-surface border-2 border-white/20 p-4">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Decision Maker</p>
                           <p className="text-sm font-black uppercase">{selectedShow.decisionMakerType}</p>
                        </div>
-                       <div className="bg-brand-surface border-2 border-white/20 p-6">
+                       <div className="bg-brand-surface border-2 border-white/20 p-4">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Translation Rights</p>
                           <p className="text-sm font-black uppercase">{selectedShow.translationRightsIncluded ? 'INCLUDED' : 'SEPARATE'}</p>
                        </div>
-                       {selectedShow.exitScenarios && <div className="col-span-2 bg-brand-surface border-2 border-white/20 p-6">
+                       {selectedShow.exitScenarios && <div className="sm:col-span-2 bg-brand-surface border-2 border-white/20 p-4">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Exit Scenarios</p>
                           <p className="text-sm italic text-gray-300">{selectedShow.exitScenarios}</p>
                        </div>}

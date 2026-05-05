@@ -731,15 +731,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             {/* 3. SUBSCRIPTION */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-8 bg-white text-black p-8 border-8 border-black shadow-neo-magenta">
-                <div className="flex justify-between items-start mb-8 gap-6">
-                  <div>
-                    <h2 className="text-4xl font-black uppercase italic leading-none mb-2">My Subscription</h2>
+              <div className="lg:col-span-8 bg-white text-black p-5 md:p-8 border-8 border-black shadow-neo-magenta overflow-hidden">
+                <div className="flex justify-between items-start mb-6 gap-3">
+                  <div className="min-w-0">
+                    <h2 className="text-2xl md:text-4xl font-black uppercase italic leading-none mb-2">My Subscription</h2>
                     <p className="font-bold text-gray-500 uppercase tracking-widest text-xs italic">{user.subscription?.type} Plan • {user.subscription?.status}</p>
                   </div>
-                  <div className={`px-6 py-4 border-4 border-black rotate-[-2deg] ${daysRemaining <= 30 ? 'bg-brand-pink text-white' : 'bg-brand-black text-white'}`}>
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">Days Left</p>
-                    <p className="text-4xl font-black italic">{daysRemaining}</p>
+                  <div className={`px-4 py-3 border-4 border-black rotate-[-2deg] flex-shrink-0 ${daysRemaining <= 30 ? 'bg-brand-pink text-white' : 'bg-brand-black text-white'}`}>
+                    <p className="text-[9px] font-black uppercase tracking-widest mb-1 opacity-50">Days Left</p>
+                    <p className="text-3xl font-black italic">{daysRemaining}</p>
                   </div>
                 </div>
 
@@ -770,11 +770,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <span>Start</span>
                   <span className={daysRemaining <= 30 ? 'text-brand-pink' : 'text-gray-400'}>Expires: {user.subscription?.expiryDate}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-4 pt-6 border-t-4 border-black/10">
-                  <a href="mailto:info@hahahub.art?subject=Renew%20Subscription" className="bg-brand-pink text-white py-4 px-6 font-black uppercase text-xs hover:bg-black transition-all border-4 border-black text-center">
+                <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3 pt-6 border-t-4 border-black/10">
+                  <a href="mailto:info@hahahub.art?subject=Renew%20Subscription" className="bg-brand-pink text-white py-4 px-4 font-black uppercase text-xs hover:bg-black transition-all border-4 border-black text-center">
                     Renew Subscription
                   </a>
-                  <a href="mailto:info@hahahub.art?subject=Billing%20Question" className="bg-transparent text-black py-4 px-6 font-black uppercase text-xs hover:bg-black hover:text-white transition-all border-4 border-black text-center">
+                  <a href="mailto:info@hahahub.art?subject=Billing%20Question" className="bg-transparent text-black py-4 px-4 font-black uppercase text-xs hover:bg-black hover:text-white transition-all border-4 border-black text-center">
                     Contact Support
                   </a>
                 </div>
