@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import { Page, Show, User } from '../types';
 
@@ -21,6 +21,23 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [inquiryName, setInquiryName] = useState('');
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryMessage, setInquiryMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading skeleton — disappears when shows arrive
+  useEffect(() => {
+    if (shows.length > 0) {
+      const t = setTimeout(() => setIsLoading(false), 400);
+      return () => clearTimeout(t);
+    }
+  }, [shows]);
+
+  // "New this week" — show uploaded in last 7 days
+  const isNewThisWeek = (show: Show) => {
+    if (!(show as any).created_at) return false;
+    const created = new Date((show as any).created_at);
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    return created > weekAgo;
+  };
   
   const [filterGenre, setFilterGenre] = useState('All');
   const [filterCountry, setFilterCountry] = useState('All');
@@ -146,6 +163,50 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-16 w-16 flex-shrink-0 flex items-center justify-center border-4 transition-all ${isFavorited ? 'bg-brand-pink text-white border-black shadow-neo-white' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
                       <span className="material-symbols-outlined text-3xl font-black">favorite</span>
                     </button>
+                  </div>
+
+                  {/* TRANSPARENCY SCORE GAUGE */}
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-4 md:p-6 border-4 border-white/10 bg-white/5">
+                    <div className="flex-shrink-0">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-white/30 italic mb-2">Transparency Score</p>
+                      <div className="relative w-24 h-24">
+                        <svg viewBox="0 0 36 36" className="w-24 h-24 -rotate-90">
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1A1A1A" strokeWidth="3" />
+                          <circle
+                            cx="18" cy="18" r="15.9" fill="none"
+                            stroke={selectedShow.transparencyScore >= 80 ? '#03DAC6' : selectedShow.transparencyScore >= 50 ? '#FFDE03' : '#FF0266'}
+                            strokeWidth="3"
+                            strokeDasharray={`${selectedShow.transparencyScore} 100`}
+                            strokeLinecap="butt"
+                            className="transition-all duration-1000"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-2xl font-black text-white">{selectedShow.transparencyScore}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-black uppercase italic text-white mb-2">
+                        {selectedShow.transparencyScore >= 80 ? '✓ High Transparency' : selectedShow.transparencyScore >= 50 ? '~ Medium Transparency' : '⚠ Low Transparency'}
+                      </p>
+                      <p className="text-xs text-white/40 font-bold italic leading-relaxed">
+                        {selectedShow.transparencyScore >= 80
+                          ? 'This production has complete commercial data, rights info, and production history. Low-risk deal.'
+                          : selectedShow.transparencyScore >= 50
+                          ? 'Most key data is present. Some commercial details may need to be confirmed directly with the producer.'
+                          : 'Limited data available. Recommend direct contact to verify rights and commercial terms before proceeding.'}
+                      </p>
+                      <div className="mt-3 h-2 bg-white/10 w-full">
+                        <div
+                          className="h-full transition-all duration-1000"
+                          style={{
+                            width: `${selectedShow.transparencyScore}%`,
+                            background: selectedShow.transparencyScore >= 80 ? '#03DAC6' : selectedShow.transparencyScore >= 50 ? '#FFDE03' : '#FF0266'
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   {/* SYNOPSIS - MOVED HIGHER AS REQUESTED */}
@@ -413,6 +474,37 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </section>
                   )}
 
+                  {/* SIMILAR SHOWS */}
+                  {(() => {
+                    const similar = shows
+                      .filter(s => s.id !== selectedShow.id && s.is_produced && (s.genre === selectedShow.genre || s.location === selectedShow.location))
+                      .slice(0, 3);
+                    if (similar.length === 0) return null;
+                    return (
+                      <section className="space-y-4">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 italic">Similar Shows</h4>
+                        <div className="grid grid-cols-3 gap-3">
+                          {similar.map(s => (
+                            <div
+                              key={s.id}
+                              onClick={() => { setSelectedShowId(s.id); onUpdateStats(s.id, 'view'); }}
+                              className="group cursor-pointer border-2 border-white/20 hover:border-brand-yellow transition-all overflow-hidden"
+                            >
+                              <div className="aspect-[2/3] relative overflow-hidden">
+                                <img src={s.imageUrl} alt={s.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                                <div className="absolute bottom-0 left-0 p-2 w-full">
+                                  <p className="text-[8px] font-black uppercase text-brand-cyan italic">{s.genre}</p>
+                                  <p className="text-xs font-black uppercase italic text-white leading-tight line-clamp-2">{s.title}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })()}
+
                   {/* CTA SECTION */}
                   <div className="bg-brand-surface border-8 border-brand-cyan p-6 md:p-12 text-center space-y-6 shadow-neo-magenta">
                       <div className="space-y-2">
@@ -619,14 +711,35 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           </section>
 
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-24">
-            {filteredShows.map((show) => (
-              <div key={show.id} onClick={() => handleShowSelect(show)} className="group relative cursor-pointer bg-brand-surface border-4 border-white hover:shadow-neo-yellow transition-all overflow-hidden flex flex-col">
+            {isLoading ? (
+              // LOADING SKELETONS
+              [...Array(6)].map((_, i) => (
+                <div key={i} className="bg-brand-surface border-4 border-white/10 overflow-hidden animate-pulse">
+                  <div className="aspect-[2/3] bg-white/5"></div>
+                  <div className="p-5 space-y-3">
+                    <div className="h-2 bg-white/10 w-1/3 rounded"></div>
+                    <div className="h-4 bg-white/10 w-3/4 rounded"></div>
+                    <div className="h-3 bg-white/10 w-1/2 rounded"></div>
+                  </div>
+                </div>
+              ))
+            ) : filteredShows.length === 0 ? (
+              <div className="col-span-3 py-32 text-center">
+                <p className="text-white/20 font-black uppercase italic text-2xl">No shows match your filters.</p>
+              </div>
+            ) : filteredShows.map((show) => (
+              <div key={show.id} onClick={() => handleShowSelect(show)} className="group relative cursor-pointer bg-brand-surface border-4 border-white hover:shadow-neo-yellow hover:border-brand-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col">
                 <div className="aspect-[2/3] relative overflow-hidden">
                   <img src={show.imageUrl} alt={show.title} className="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 opacity-80 group-hover:opacity-100"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 opacity-80 group-hover:opacity-60 transition-opacity"></div>
+                  <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
+                    {isNewThisWeek(show) && (
+                      <span className="px-3 py-1 text-[9px] font-black uppercase italic bg-brand-pink text-white border-2 border-black shadow-[2px_2px_0px_black] animate-pulse">🔥 New</span>
+                    )}
+                  </div>
                   <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
-                     <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.duration}m</span>
-                     <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-cyan text-black">{show.location}</span>
+                    <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.duration}m</span>
+                    <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-cyan text-black">{show.location}</span>
                   </div>
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
                     <div className="space-y-2">
@@ -637,17 +750,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </div>
                 </div>
                 <div className="bg-brand-black border-t-4 border-white p-5 flex items-center justify-between">
-                   <div className="flex items-center gap-2 group/metric">
-                      <span className="material-symbols-outlined text-brand-cyan text-base">visibility</span>
-                      <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
-                   </div>
-                   <div className="flex items-center gap-2 group/metric">
-                      <span className="material-symbols-outlined text-brand-pink text-base">favorite</span>
-                      <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-pink transition-colors">{show.likesCount.toLocaleString()}</span>
-                   </div>
-                   <div className="text-[9px] font-black text-white/30 uppercase italic">
-                      EST. {show.productionYear}
-                   </div>
+                  <div className="flex items-center gap-2 group/metric">
+                    <span className="material-symbols-outlined text-brand-cyan text-base">visibility</span>
+                    <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2 group/metric">
+                    <span className="material-symbols-outlined text-brand-pink text-base">favorite</span>
+                    <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-pink transition-colors">{show.likesCount.toLocaleString()}</span>
+                  </div>
+                  <div className="text-[9px] font-black text-white/30 uppercase italic">
+                    EST. {show.productionYear}
+                  </div>
                 </div>
               </div>
             ))}
