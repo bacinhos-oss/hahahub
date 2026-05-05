@@ -119,7 +119,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
                   </div>
                 </div>
 
-                <div className="bg-brand-black text-white p-10 border-4 border-black shadow-[8px_8px_0px_#00FFFF]">
+                <div className="bg-brand-black text-white p-10 border-4 border-black shadow-[8px_8px_0px_#03DAC6]">
                   <p className="text-lg font-bold italic leading-relaxed text-center">
                     HaHaHub does not set prices but ensures shared definitions, reporting standards, and transparency to remove friction from international theatrical production.
                   </p>

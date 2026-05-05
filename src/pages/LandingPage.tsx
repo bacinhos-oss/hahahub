@@ -216,7 +216,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 </ul>
                 <button
                   onClick={() => onNavigate('login')}
-                  className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-xl hover:bg-brand-pink hover:text-white transition-all shadow-[6px_6px_0px_#FF00FF] italic"
+                  className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-xl hover:bg-brand-pink hover:text-white transition-all shadow-[6px_6px_0px_#FF0266] italic"
                 >
                   Enter the Ecosystem →
                 </button>

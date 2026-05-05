@@ -21,12 +21,12 @@
                 extend: {
                     colors: {
                         brand: {
-                            yellow: '#FFFF00',   /* LOCKED */
-                            pink:   '#FF00FF',   /* LOCKED */
-                            cyan:   '#00FFFF',   /* LOCKED */
-                            black:  '#0A0A0A',   /* LOCKED */
-                            surface:'#111111',   /* LOCKED */
-                            border: '#1A1A1A',   /* LOCKED */
+                            yellow: '#FFDE03',   /* LOCKED */
+                            pink:   '#FF0266',   /* LOCKED */
+                            cyan:   '#03DAC6',   /* LOCKED */
+                            black:  '#050505',   /* LOCKED */
+                            surface:'#121212',   /* LOCKED */
+                            border: '#2E2E2E',   /* LOCKED */
                         }
                     },
                     fontFamily: {
@@ -36,9 +36,9 @@
                         syne:    ['Syne', 'sans-serif'],
                     },
                     boxShadow: {
-                        'neo-magenta': '4px 4px 0px 0px #FF00FF',
-                        'neo-cyan':    '4px 4px 0px 0px #00FFFF',
-                        'neo-yellow':  '4px 4px 0px 0px #FFFF00',
+                        'neo-magenta': '4px 4px 0px 0px #FF0266',
+                        'neo-cyan':    '4px 4px 0px 0px #03DAC6',
+                        'neo-yellow':  '4px 4px 0px 0px #FFDE03',
                         'neo-white':   '8px 8px 0px 0px #FFFFFF',
                     },
                     animation: {
@@ -62,7 +62,7 @@
 
             body {
                 @apply bg-brand-black text-white selection:bg-brand-yellow selection:text-black;
-                background-image: radial-gradient(#1A1A1A 1px, transparent 1px);
+                background-image: radial-gradient(#2E2E2E 1px, transparent 1px);
                 background-size: 30px 30px;
                 font-family: 'Space Grotesk', sans-serif;
             }
@@ -83,19 +83,19 @@
         }
         .logo-text {
             font-family: 'Bowlby One SC', cursive;
-            text-shadow: 2px 2px 0px #FF00FF, 4px 4px 0px #00FFFF;
+            text-shadow: 2px 2px 0px #FF0266, 4px 4px 0px #03DAC6;
             color: #FFFFFF;
         }
         .ticker-wrap {
             overflow: hidden;
-            background: #FFFF00;
-            color: #0A0A0A;
+            background: #FFDE03;
+            color: #050505;
             font-weight: 900;
             text-transform: uppercase;
             padding: 4px 0;
             font-size: 10px;
             letter-spacing: 0.1em;
-            border-bottom: 2px solid #0A0A0A;
+            border-bottom: 2px solid #050505;
         }
     </style>
     <script>

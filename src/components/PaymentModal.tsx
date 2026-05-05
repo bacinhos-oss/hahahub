@@ -120,7 +120,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
 
         {step === 'success' && (
           <div className="text-black text-center py-10 space-y-8 animate-in zoom-in duration-500">
-            <div className="w-24 h-24 bg-brand-cyan border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF00FF]">
+            <div className="w-24 h-24 bg-brand-cyan border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF0266]">
               <span className="material-symbols-outlined text-black text-6xl font-black">check</span>
             </div>
             <div>

@@ -195,8 +195,8 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0A0A0A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontFamily: 'Bowlby One SC, cursive', fontSize: '3rem', color: '#FFFF00' }}>HAHAHUB</div>
+      <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontFamily: 'Bowlby One SC, cursive', fontSize: '3rem', color: '#FFDE03' }}>HAHAHUB</div>
       </div>
     )
   }
