@@ -271,6 +271,18 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [tickledToast, setTickledToast] = useState<{show: boolean, showTitle: string}>({show: false, showTitle: ''});
 
+  // Royalty Calculator state
+  const [calcTicketPrice, setCalcTicketPrice] = useState(25);
+  const [calcSeats, setCalcSeats] = useState(200);
+  const [calcOccupancy, setCalcOccupancy] = useState(75);
+  const [calcPerformances, setCalcPerformances] = useState(10);
+  const [calcRoyalty, setCalcRoyalty] = useState(8);
+  const calcGrossPerShow = calcTicketPrice * calcSeats * (calcOccupancy / 100);
+  const calcTotalGross = calcGrossPerShow * calcPerformances;
+  const calcTotalRoyalty = calcTotalGross * (calcRoyalty / 100);
+  const calcROI = 99; // annual membership cost
+  const calcMultiplier = calcTotalRoyalty > 0 ? (calcTotalRoyalty / calcROI).toFixed(1) : '0';
+
   useEffect(() => { if (user?.id) { loadMyRealStats(); loadInquiries(); } }, [user]);
 
   const loadMyRealStats = async () => {
@@ -294,16 +306,22 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     if (data) {
       setInquiries(data);
       const unread = data.filter((inq: any) => !inq.is_read);
-      if (unread.length > 0) {
+      // Only show toast once per session — not on every refresh
+      const toastKey = 'hahahub_toast_shown_' + user?.id;
+      const alreadyShown = sessionStorage.getItem(toastKey);
+      if (unread.length > 0 && !alreadyShown) {
         setTickledToast({ show: true, showTitle: unread[0].show_title });
+        sessionStorage.setItem(toastKey, '1');
         setTimeout(() => setTickledToast({ show: false, showTitle: '' }), 5000);
       }
     }
   };
 
   const markAsRead = async (inquiryId: string) => {
-    await supabase.from('inquiries').update({ is_read: true }).eq('id', inquiryId);
+    // Optimistic update first — instant UI feedback
     setInquiries(prev => prev.map(inq => inq.id === inquiryId ? { ...inq, is_read: true } : inq));
+    // Then persist to Supabase
+    await supabase.from('inquiries').update({ is_read: true }).eq('id', inquiryId);
   };
 
   const daysRemaining = useMemo(() => {
@@ -575,19 +593,49 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       ref={editPhotoRefs[i]}
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
-                        if (!file) return;
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          const newPreviews = [...editPhotoPreviews];
-                          newPreviews[i] = reader.result as string;
-                          setEditPhotoPreviews(newPreviews);
+                        if (!file || !manageShow) return;
+
+                        // Show local preview immediately
+                        const localUrl = URL.createObjectURL(file);
+                        const newPreviews = [...editPhotoPreviews];
+                        newPreviews[i] = localUrl;
+                        setEditPhotoPreviews(newPreviews);
+
+                        // Upload to Supabase Storage
+                        const ext = file.name.split('.').pop();
+                        const path = `production-photos/${manageShow.id}/photo_${i}_${Date.now()}.${ext}`;
+                        const { data: uploadData, error: uploadError } = await supabase.storage
+                          .from('show-images')
+                          .upload(path, file, { upsert: true });
+
+                        if (uploadError) {
+                          // Fallback to base64 if storage fails
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            const newPhotos = [...(editForm.productionPhotos || [null, null, null])];
+                            newPhotos[i] = reader.result as string;
+                            setEditForm(prev => ({ ...prev, productionPhotos: newPhotos }));
+                          };
+                          reader.readAsDataURL(file);
+                        } else {
+                          // Get public URL
+                          const { data: urlData } = supabase.storage
+                            .from('show-images')
+                            .getPublicUrl(path);
+                          const publicUrl = urlData.publicUrl;
+
+                          // Update preview with real URL
+                          const newPreviews2 = [...editPhotoPreviews];
+                          newPreviews2[i] = publicUrl;
+                          setEditPhotoPreviews(newPreviews2);
+
+                          // Update form
                           const newPhotos = [...(editForm.productionPhotos || [null, null, null])];
-                          newPhotos[i] = reader.result as string;
+                          newPhotos[i] = publicUrl;
                           setEditForm(prev => ({ ...prev, productionPhotos: newPhotos }));
-                        };
-                        reader.readAsDataURL(file);
+                        }
                       }}
                     />
                   </div>
@@ -727,6 +775,60 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <p className="text-4xl font-black uppercase italic">{stat.value}</p>
                 </div>
               ))}
+            </section>
+
+            {/* ROYALTY CALCULATOR */}
+            <section className="bg-brand-surface border-4 border-brand-yellow p-6 md:p-10 shadow-neo-yellow">
+              <div className="flex items-center gap-4 mb-8">
+                <span className="material-symbols-outlined text-brand-yellow text-3xl">calculate</span>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-black uppercase italic leading-none">Royalty <span className="text-brand-yellow">Calculator</span></h2>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mt-1">Estimate your licensing income</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {[
+                  { label: 'Ticket Price (€)', value: calcTicketPrice, set: setCalcTicketPrice, min: 1, max: 200, step: 1 },
+                  { label: 'Seats per Show', value: calcSeats, set: setCalcSeats, min: 10, max: 2000, step: 10 },
+                  { label: 'Occupancy (%)', value: calcOccupancy, set: setCalcOccupancy, min: 10, max: 100, step: 5 },
+                  { label: 'Number of Shows', value: calcPerformances, set: setCalcPerformances, min: 1, max: 500, step: 1 },
+                  { label: 'Royalty Rate (%)', value: calcRoyalty, set: setCalcRoyalty, min: 1, max: 25, step: 0.5 },
+                ].map((item, i) => (
+                  <div key={i}>
+                    <div className="flex justify-between mb-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/50 italic">{item.label}</label>
+                      <span className="text-brand-yellow font-black text-sm">{item.value}{item.label.includes('%') ? '%' : item.label.includes('€') ? ' €' : ''}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={item.min} max={item.max} step={item.step}
+                      value={item.value}
+                      onChange={e => item.set(Number(e.target.value))}
+                      className="w-full accent-brand-yellow h-2 bg-white/10 rounded-none cursor-pointer"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t-4 border-brand-yellow/30 pt-6">
+                <div className="bg-black/40 p-4 text-center">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Gross / Show</p>
+                  <p className="text-xl font-black text-brand-cyan">€{Math.round(calcGrossPerShow).toLocaleString()}</p>
+                </div>
+                <div className="bg-black/40 p-4 text-center">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Total Gross</p>
+                  <p className="text-xl font-black text-white">€{Math.round(calcTotalGross).toLocaleString()}</p>
+                </div>
+                <div className="bg-brand-yellow/10 border-4 border-brand-yellow p-4 text-center">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow/60 mb-1">Your Royalties</p>
+                  <p className="text-2xl font-black text-brand-yellow">€{Math.round(calcTotalRoyalty).toLocaleString()}</p>
+                </div>
+                <div className="bg-black/40 p-4 text-center">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">ROI vs €99</p>
+                  <p className="text-2xl font-black text-brand-pink">{calcMultiplier}×</p>
+                </div>
+              </div>
             </section>
 
             {/* 3. SUBSCRIPTION */}
