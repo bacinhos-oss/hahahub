@@ -126,7 +126,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </div>
             </div>
 
-            <div className="flex-1 p-8 md:p-12 space-y-16">
+            <div className="flex-1 p-4 md:p-12 space-y-16 overflow-x-hidden">
               {isGuest ? (
                 <div className="flex flex-col items-center justify-center text-center py-24 space-y-8">
                   <span className="material-symbols-outlined text-8xl text-brand-pink">lock_person</span>
@@ -184,11 +184,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         </div>
                         {selectedShow.territoryConflicts && <div className="bg-brand-surface border-2 border-white/20 p-6">
                            <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Territory Conflicts</p>
-                           <p className="text-sm font-black italic">{selectedShow.territoryConflicts}</p>
+                           <p className="text-sm font-black italic break-words">{selectedShow.territoryConflicts}</p>
                         </div>}
                         {selectedShow.mediaConflicts && <div className="bg-brand-surface border-2 border-white/20 p-6">
                            <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Media Conflicts</p>
-                           <p className="text-sm font-black italic">{selectedShow.mediaConflicts}</p>
+                           <p className="text-sm font-black italic break-words">{selectedShow.mediaConflicts}</p>
                         </div>}
                      </div>
                   </section>
@@ -211,19 +211,19 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <div className="grid grid-cols-2 gap-4">
                           <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                              <p className="text-[8px] font-black uppercase text-brand-yellow italic">Subgenre</p>
-                             <p className="text-sm font-black italic">{selectedShow.subgenre || 'N/A'}</p>
+                             <p className="text-sm font-black italic break-words">{selectedShow.subgenre || 'N/A'}</p>
                           </div>
                           <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
                              <p className="text-[8px] font-black uppercase text-gray-500 italic">Humor Type</p>
-                             <p className="text-sm font-black italic">{selectedShow.humorType}</p>
+                             <p className="text-sm font-black italic break-words">{selectedShow.humorType}</p>
                           </div>
                           <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
                              <p className="text-[8px] font-black uppercase text-gray-500 italic">Director Mandatory</p>
-                             <p className="text-sm font-black italic">{selectedShow.isDirectorMandatory ? 'YES' : 'NO'}</p>
+                             <p className="text-sm font-black italic break-words">{selectedShow.isDirectorMandatory ? 'YES' : 'NO'}</p>
                           </div>
                           <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
                              <p className="text-[8px] font-black uppercase text-gray-500 italic">Creative Team</p>
-                             <p className="text-sm font-black italic">{selectedShow.creativeTeamAvailability}</p>
+                             <p className="text-sm font-black italic break-words">{selectedShow.creativeTeamAvailability}</p>
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -242,25 +242,25 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         </div>
                         {selectedShow.translationsAvailable && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
                            <p className="text-[8px] font-black uppercase text-brand-cyan italic">Translations Available</p>
-                           <p className="text-sm font-black italic">{selectedShow.translationsAvailable}</p>
+                           <p className="text-sm font-black italic break-words">{selectedShow.translationsAvailable}</p>
                         </div>}
                         {selectedShow.internationalSuccessNotes && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                            <p className="text-[8px] font-black uppercase text-brand-yellow italic">International Success</p>
-                           <p className="text-sm italic text-gray-300">{selectedShow.internationalSuccessNotes}</p>
+                           <p className="text-sm italic text-gray-300 break-words">{selectedShow.internationalSuccessNotes}</p>
                         </div>}
                       </div>
                       <div className="bg-brand-surface border-4 border-white p-8 space-y-6 shadow-neo-magenta">
                          <div className="border-b-2 border-white/10 pb-4">
                             <p className="text-[10px] font-black uppercase text-brand-pink italic mb-2">Director's Vision Notes</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.directorNotes || 'Standard staging permitted.'}</p>
+                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.directorNotes || 'Standard staging permitted.'}</p>
                          </div>
                          <div>
                             <p className="text-[10px] font-black uppercase text-brand-cyan italic mb-2">Original Staging Solutions</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.originalProductionSolutions || 'No exclusive technical hardware required.'}</p>
+                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.originalProductionSolutions || 'No exclusive technical hardware required.'}</p>
                          </div>
                          {selectedShow.scalabilityNotes && <div>
                             <p className="text-[10px] font-black uppercase text-brand-yellow italic mb-2">Scalability Notes</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300">{selectedShow.scalabilityNotes}</p>
+                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.scalabilityNotes}</p>
                          </div>}
                       </div>
                     </div>
@@ -350,15 +350,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>
                     {selectedShow.awards && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">Awards</p>
-                       <p className="text-sm font-black italic">{selectedShow.awards}</p>
+                       <p className="text-sm font-black italic break-words">{selectedShow.awards}</p>
                     </div>}
                     {selectedShow.audienceProfile && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">Audience Profile</p>
-                       <p className="text-sm italic text-gray-300">{selectedShow.audienceProfile}</p>
+                       <p className="text-sm italic text-gray-300 break-words">{selectedShow.audienceProfile}</p>
                     </div>}
                     {selectedShow.locationsPlayed && <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
                        <p className="text-[8px] font-black uppercase text-gray-500 italic">Locations Played</p>
-                       <p className="text-sm italic text-gray-300">{selectedShow.locationsPlayed}</p>
+                       <p className="text-sm italic text-gray-300 break-words">{selectedShow.locationsPlayed}</p>
                     </div>}
                   </section>
 
@@ -396,7 +396,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                        </div>
                        {selectedShow.exitScenarios && <div className="sm:col-span-2 bg-brand-surface border-2 border-white/20 p-4">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Exit Scenarios</p>
-                          <p className="text-sm italic text-gray-300">{selectedShow.exitScenarios}</p>
+                          <p className="text-sm italic text-gray-300 break-words">{selectedShow.exitScenarios}</p>
                        </div>}
                     </div>
 
@@ -407,8 +407,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {selectedShow.scriptScenario && (
                     <section className="space-y-4">
                       <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">Script Scenario — 3 Pages in English</h4>
-                      <div className="bg-black border-4 border-brand-yellow p-8">
-                        <pre className="text-white font-mono text-sm leading-relaxed whitespace-pre-wrap">{selectedShow.scriptScenario}</pre>
+                      <div className="bg-black border-4 border-brand-yellow p-4 md:p-8 overflow-hidden">
+                        <pre className="text-white font-mono text-xs md:text-sm leading-relaxed whitespace-pre-wrap break-words overflow-x-hidden">{selectedShow.scriptScenario}</pre>
                       </div>
                     </section>
                   )}
