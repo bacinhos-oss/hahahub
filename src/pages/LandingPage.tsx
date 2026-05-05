@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Footer from '../components/Footer';
 import { Page, Show } from '../types';
 import PaymentModal from '../components/PaymentModal';
@@ -9,10 +9,27 @@ interface LandingPageProps {
   shows: Show[];
 }
 
+const FOUNDING_TOTAL = 30;
+const FOUNDING_TAKEN = 7; // update this manually as spots fill
+
+const FAQ_ITEMS = [
+  { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses looking to license international comedy productions. You must be a professional acting in a commercial capacity.' },
+  { q: 'What does a Pro membership include?', a: 'Full catalog access, unlimited show uploads, contact with rights holders, contract templates, performance analytics, and VIP networking events. One flat fee, no per-inquiry costs.' },
+  { q: 'How does licensing work?', a: 'You find a show, click "Send Inquiry", and contact the rights holder directly. HahaHub provides the discovery platform and contract templates — the deal is between you and the producer.' },
+  { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer marketplace. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
+  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers to join get lifetime free access. No annual fee, ever. In return, we ask you to upload at least one show with full data and give us feedback on the platform.' },
+  { q: 'What payment methods do you accept?', a: 'We currently accept PayPal. Stripe integration is coming soon. All prices are in EUR.' },
+  { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
+  { q: 'What languages are supported?', a: 'The platform is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
+];
+
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess, shows }) => {
   const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: string } | null>(null);
-  const [teaserLock, setTeaserLock] = useState<string | null>(null);
   const [quoteIdx, setQuoteIdx] = useState(0);
+  const [sliderIdx, setSliderIdx] = useState(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const sliderRef = useRef<NodeJS.Timeout | null>(null);
+
   const quotes = [
     { quote: "Laughter is the only currency that multiplies when shared.", author: "Chief of Laughter", org: "HahaHub" },
     { quote: "Comedy is not a genre. It's a survival strategy.", author: "Chief of Laughter", org: "HahaHub" },
@@ -23,14 +40,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
     { quote: "Life does not cease to be funny when people die.", author: "George Bernard Shaw", org: "1856–1950" },
     { quote: "We are all in the gutter, but some of us are looking at the stars.", author: "Oscar Wilde", org: "1854–1900" },
   ];
-  React.useEffect(() => {
-    const t = setInterval(() => setQuoteIdx(i => (i + 1) % quotes.length), 4000);
+
+  const sliderShows = shows.slice(0, 6);
+
+  useEffect(() => {
+    const t = setInterval(() => setQuoteIdx(i => (i + 1) % quotes.length), 4500);
     return () => clearInterval(t);
   }, []);
-  const teaserShows = shows.slice(0, 4);
+
+  useEffect(() => {
+    if (sliderShows.length === 0) return;
+    sliderRef.current = setInterval(() => setSliderIdx(i => (i + 1) % sliderShows.length), 3000);
+    return () => { if (sliderRef.current) clearInterval(sliderRef.current); };
+  }, [sliderShows.length]);
+
+  const foundingLeft = FOUNDING_TOTAL - FOUNDING_TAKEN;
 
   return (
-    <div className="flex flex-col w-full relative bg-brand-black">
+    <div className="flex flex-col w-full relative bg-brand-black overflow-x-hidden">
       <PaymentModal
         isOpen={!!selectedPlan}
         planName={selectedPlan?.name || ''}
@@ -40,13 +67,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
       />
 
       {/* NAV */}
-      <header className="fixed top-0 z-50 w-full bg-brand-black/95 backdrop-blur-md px-6 md:px-12 py-4 border-b-4 border-white">
+      <header className="fixed top-0 z-50 w-full bg-brand-black/95 backdrop-blur-md px-4 md:px-12 py-4 border-b-4 border-white">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div onClick={() => onNavigate('landing')} className="logo-text text-white text-3xl md:text-5xl uppercase tracking-tighter cursor-pointer">HahaHub</div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <button onClick={() => onNavigate('login')} className="text-xs font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors italic hidden md:block">Sign In</button>
-            <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black font-black px-8 py-3 text-sm uppercase border-4 border-black hover:bg-white transition-all shadow-neo-magenta italic">
-              Join Hub →
+            <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black font-black px-5 md:px-8 py-3 text-xs md:text-sm uppercase border-4 border-black hover:bg-white transition-all shadow-neo-magenta italic">
+              List Your Show Free →
             </button>
           </div>
         </div>
@@ -55,40 +82,125 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
       <main className="pt-24 md:pt-32">
 
         {/* HERO */}
-        <section className="px-6 md:px-12 py-20 md:py-32 max-w-7xl mx-auto">
+        <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-8">The Global Comedy Rights Ecosystem</span>
-            <h1 className="font-display text-white text-5xl sm:text-7xl md:text-9xl leading-[0.85] tracking-tighter uppercase mb-8 italic">
-              INTERNATIONAL<br/>
-              <span className="text-brand-yellow">THEATRE COMEDY</span><br/>
-              <span className="text-brand-cyan">PRODUCERS</span><br/>
-              PLATFORM.
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Comedy Rights Marketplace</span>
+            <h1 className="font-display text-white text-5xl sm:text-7xl md:text-9xl leading-[0.85] tracking-tighter uppercase mb-6 md:mb-8 italic">
+              YOUR HIT<br/>
+              <span className="text-brand-yellow">IN SPAIN.</span><br/>
+              <span className="text-brand-cyan">UNKNOWN</span><br/>
+              IN GERMANY.
             </h1>
-            <p className="text-xl md:text-2xl font-bold text-white/60 italic max-w-2xl mb-12 leading-relaxed">
-              The global ecosystem for comedy rights. Browse, license, and stage the world's funniest productions. Direct. No middlemen.
+            <p className="text-lg md:text-2xl font-bold text-white/60 italic max-w-2xl mb-8 md:mb-12 leading-relaxed">
+              HahaHub changes that. The first producer-to-producer comedy rights marketplace. Direct. No agents. No middlemen. International.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-12 py-6 text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
+              <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
                 🎭 Tickle the Laugh — Join →
               </button>
-              <button onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })} className="text-white border-b-4 border-white/30 pb-1 text-xl font-black uppercase hover:border-brand-cyan hover:text-brand-cyan transition-all italic">
+              <button onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })} className="text-white border-b-4 border-white/30 pb-1 text-lg md:text-xl font-black uppercase hover:border-brand-cyan hover:text-brand-cyan transition-all italic self-start sm:self-auto">
                 How it works ↓
               </button>
             </div>
           </div>
         </section>
 
-        {/* QUOTES - rotating */}
-        <section className="px-6 md:px-12 py-16 border-y-4 border-white/10 bg-brand-surface overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-              <div className="flex gap-2 flex-shrink-0">
-                {quotes.map((_, i) => (
-                  <button key={i} onClick={() => setQuoteIdx(i)} className={"w-2 h-2 transition-all " + (i === quoteIdx ? "bg-brand-yellow w-6" : "bg-white/20")} />
+        {/* FOUNDING PRODUCER — prvih 30 */}
+        <section className="px-4 md:px-12 py-12 md:py-20 bg-brand-yellow border-y-8 border-black">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1">
+              <span className="bg-black text-brand-yellow px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-4">Limited Offer</span>
+              <h2 className="text-4xl md:text-6xl font-black uppercase italic text-black leading-[0.9] mb-4">
+                Founding<br/>Producer
+              </h2>
+              <p className="text-black/70 font-bold italic text-lg md:text-xl max-w-xl leading-relaxed">
+                The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show and help shape the platform.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                {['Free Forever ✓', 'Founding Producer Badge ✓', 'Unlimited Uploads ✓', 'Shape the Product ✓'].map((b, i) => (
+                  <span key={i} className="bg-black text-brand-yellow px-3 py-1 text-xs font-black uppercase italic border-2 border-black">{b}</span>
                 ))}
               </div>
-              <div className="border-l-4 border-brand-yellow pl-6 transition-all">
-                <p className="text-white/80 font-bold italic text-xl md:text-2xl leading-relaxed mb-4">"{quotes[quoteIdx].quote}"</p>
+            </div>
+            <div className="flex-shrink-0 text-center">
+              <div className="bg-black border-8 border-black p-8 md:p-12 shadow-[8px_8px_0px_black] inline-block">
+                <p className="text-brand-yellow text-[10px] font-black uppercase tracking-[0.4em] mb-2">Spots Remaining</p>
+                <div className="text-8xl md:text-9xl font-black text-white leading-none mb-2">{foundingLeft}</div>
+                <p className="text-white/40 text-xs font-black uppercase tracking-widest">of {FOUNDING_TOTAL} total</p>
+                {/* Progress bar */}
+                <div className="mt-6 h-3 bg-white/10 border-2 border-white/20 w-48 mx-auto">
+                  <div className="h-full bg-brand-yellow transition-all" style={{ width: `${(FOUNDING_TAKEN / FOUNDING_TOTAL) * 100}%` }}></div>
+                </div>
+                <p className="text-white/30 text-[9px] font-black uppercase mt-2">{FOUNDING_TAKEN} taken</p>
+              </div>
+              <button
+                onClick={() => onNavigate('login')}
+                className="mt-6 w-full bg-black text-brand-yellow font-black px-10 py-5 text-lg uppercase border-4 border-black hover:bg-white hover:text-black transition-all italic shadow-[6px_6px_0px_#FF00FF]"
+              >
+                Claim Your Spot →
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* SLIDER — top shows autoplay */}
+        {sliderShows.length > 0 && (
+          <section className="py-16 md:py-24 border-b-4 border-white/10 overflow-hidden">
+            <div className="px-4 md:px-12 max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
+              <div>
+                <span className="text-brand-cyan text-xs font-black uppercase tracking-[0.5em] italic">Latest Deployments</span>
+                <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-[0.9] mt-2">
+                  IN THE <span className="text-brand-pink">VAULT</span>
+                </h2>
+              </div>
+              <button onClick={() => onNavigate('login')} className="text-white font-black uppercase border-b-4 border-brand-yellow pb-1 italic hover:text-brand-yellow transition-all text-sm">
+                View Full Catalog →
+              </button>
+            </div>
+
+            {/* Autoplay slider */}
+            <div className="relative">
+              <div className="flex gap-4 px-4 md:px-12 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
+                {sliderShows.map((show, i) => (
+                  <div
+                    key={show.id}
+                    onClick={() => onNavigate('login')}
+                    className={`group relative flex-shrink-0 w-48 md:w-64 aspect-[2/3] cursor-pointer overflow-hidden border-4 transition-all duration-500 snap-start ${i === sliderIdx ? 'border-brand-yellow shadow-neo-yellow scale-105' : 'border-white/30 grayscale hover:grayscale-0'}`}
+                  >
+                    <img src={show.imageUrl} className="w-full h-full object-cover scale-105 group-hover:scale-110 transition-all duration-700" alt={show.title} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="bg-brand-pink text-white px-3 py-2 border-4 border-black font-black uppercase italic rotate-[-3deg] text-xs">Access Locked</div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 p-3 w-full">
+                      <p className="text-brand-cyan text-[9px] font-black uppercase tracking-widest italic mb-1">{show.genre}</p>
+                      <h3 className="text-sm font-black uppercase italic leading-tight text-white line-clamp-2">{show.title}</h3>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Dots */}
+              <div className="flex justify-center gap-2 mt-6">
+                {sliderShows.map((_, i) => (
+                  <button key={i} onClick={() => setSliderIdx(i)} className={`h-1.5 transition-all ${i === sliderIdx ? 'w-8 bg-brand-yellow' : 'w-2 bg-white/20'}`} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* QUOTES — fiksna višina, fade */}
+        <section className="px-4 md:px-12 py-12 md:py-16 border-b-4 border-white/10 bg-brand-surface">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-16">
+              <div className="flex gap-2 flex-shrink-0">
+                {quotes.map((_, i) => (
+                  <button key={i} onClick={() => setQuoteIdx(i)} className={"h-1.5 transition-all " + (i === quoteIdx ? "w-8 bg-brand-yellow" : "w-2 bg-white/20")} />
+                ))}
+              </div>
+              {/* Fixed height prevents layout jump */}
+              <div className="border-l-4 border-brand-yellow pl-6 h-28 md:h-24 flex flex-col justify-center overflow-hidden">
+                <p className="text-white/80 font-bold italic text-lg md:text-2xl leading-snug mb-3 line-clamp-3">"{quotes[quoteIdx].quote}"</p>
                 <p className="text-xs font-black uppercase tracking-widest text-brand-yellow">— {quotes[quoteIdx].author}</p>
                 <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">{quotes[quoteIdx].org}</p>
               </div>
@@ -96,62 +208,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
-        {/* TEASER CATALOG */}
-        <section className="px-6 md:px-12 py-24 border-b-4 border-white/10">
-          <div className="max-w-7xl mx-auto space-y-12">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-6">
-              <div>
-                <span className="text-brand-cyan text-xs font-black uppercase tracking-[0.5em] italic">Latest Deployments</span>
-                <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-[0.9] mt-2">
-                  IN THE <span className="text-brand-pink">VAULT</span>
-                </h2>
-              </div>
-              <button onClick={() => onNavigate('login')} className="text-white font-black uppercase border-b-4 border-brand-yellow pb-1 italic hover:text-brand-yellow transition-all">
-                View Full Catalog →
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-              {teaserShows.map((show) => (
-                <div
-                  key={show.id}
-                  onMouseEnter={() => setTeaserLock(show.id)}
-                  onMouseLeave={() => setTeaserLock(null)}
-                  onClick={() => onNavigate('login')}
-                  className="group relative bg-brand-black border-4 border-white aspect-[2/3] cursor-pointer overflow-hidden hover:shadow-neo-yellow hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all"
-                >
-                  <img src={show.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110 transition-all duration-700" alt={show.title} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-70"></div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-brand-pink text-white px-4 py-2 border-4 border-black font-black uppercase italic rotate-[-3deg] text-sm">Access Locked</div>
-                  </div>
-                  <div className="absolute bottom-0 left-0 p-4 w-full">
-                    <p className="text-brand-cyan text-[9px] font-black uppercase tracking-widest italic mb-1">{show.genre}</p>
-                    <h3 className="text-sm md:text-lg font-black uppercase italic leading-none text-white">{show.title}</h3>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* HOW IT WORKS */}
-        <section className="px-6 md:px-12 py-24 border-b-4 border-white/10" id="how">
+        <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10" id="how">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-5xl md:text-7xl font-black uppercase italic text-white mb-4">How It <span className="text-brand-cyan">Works</span></h2>
-            <p className="text-white/40 font-bold italic text-lg mb-16">Join the ecosystem of 100+ producers worldwide.</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <h2 className="text-4xl md:text-7xl font-black uppercase italic text-white mb-4">How It <span className="text-brand-cyan">Works</span></h2>
+            <p className="text-white/40 font-bold italic text-lg mb-12 md:mb-16">Three steps. No agents. No gatekeepers.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {[
-                { step: '01', icon: 'search', color: 'brand-cyan', title: 'Browse', desc: 'Explore 50+ international comedy productions. Filter by genre, territory, cast size, and budget.' },
+                { step: '01', icon: 'search', color: 'brand-cyan', title: 'Browse', desc: 'Explore international comedy productions. Filter by genre, territory, cast size, and budget.' },
                 { step: '02', icon: 'handshake', color: 'brand-yellow', title: 'License', desc: 'Contact rights holders directly. Use our contract templates. No agents, no hidden fees.' },
                 { step: '03', icon: 'theater_comedy', color: 'brand-pink', title: 'Stage It', desc: 'Get full script, technical rider, and commercial data. Everything you need to produce.' },
               ].map((item, i) => (
-                <div key={i} className="border-4 border-white p-8 hover:shadow-neo-yellow transition-all">
-                  <div className="flex items-start justify-between mb-8">
-                    <span className={`text-6xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
-                    <span className={`material-symbols-outlined text-4xl text-${item.color}`}>{item.icon}</span>
+                <div key={i} className="border-4 border-white p-6 md:p-8 hover:shadow-neo-yellow transition-all">
+                  <div className="flex items-start justify-between mb-6 md:mb-8">
+                    <span className={`text-5xl md:text-6xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
+                    <span className={`material-symbols-outlined text-3xl md:text-4xl text-${item.color}`}>{item.icon}</span>
                   </div>
-                  <h3 className="text-3xl font-black uppercase italic text-white mb-4">{item.title}</h3>
+                  <h3 className="text-2xl md:text-3xl font-black uppercase italic text-white mb-4">{item.title}</h3>
                   <p className="text-gray-400 font-bold italic leading-relaxed">{item.desc}</p>
                 </div>
               ))}
@@ -160,11 +233,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         </section>
 
         {/* FOR WHO */}
-        <section className="px-6 md:px-12 py-24 bg-brand-surface border-b-4 border-white/10">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <section className="px-4 md:px-12 py-16 md:py-24 bg-brand-surface border-b-4 border-white/10">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
             <div>
-              <h2 className="text-5xl md:text-7xl font-black uppercase italic text-white mb-8">Built for <span className="text-brand-yellow">Producers.</span></h2>
-              <div className="space-y-6">
+              <h2 className="text-4xl md:text-7xl font-black uppercase italic text-white mb-8">Built for <span className="text-brand-yellow">Producers.</span></h2>
+              <div className="space-y-5">
                 {[
                   { icon: 'verified', text: 'Verified rights holders only — every listing is authenticated' },
                   { icon: 'description', text: 'Full commercial data — royalties, territories, box office history' },
@@ -173,19 +246,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   { icon: 'picture_as_pdf', text: '3-page script scenario in English for every production' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-4">
-                    <span className="material-symbols-outlined text-brand-cyan text-2xl flex-shrink-0 mt-1">{item.icon}</span>
-                    <p className="text-white/70 font-bold italic text-lg leading-tight">{item.text}</p>
+                    <span className="material-symbols-outlined text-brand-cyan text-2xl flex-shrink-0 mt-0.5">{item.icon}</span>
+                    <p className="text-white/70 font-bold italic text-base md:text-lg leading-tight">{item.text}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="border-8 border-white p-8 bg-brand-black shadow-neo-yellow">
+            <div className="border-8 border-white p-6 md:p-8 bg-brand-black shadow-neo-yellow">
               <p className="text-brand-cyan text-xs font-black uppercase tracking-[0.4em] italic mb-6">Who it's for</p>
               <div className="space-y-4">
                 {['Theater Producers', 'Venue Programmers', 'Festival Directors', 'Co-Production Houses', 'Rights Agents'].map((role, i) => (
                   <div key={i} className="flex items-center gap-4 border-b border-white/10 pb-4">
                     <span className="w-2 h-2 bg-brand-pink flex-shrink-0"></span>
-                    <span className="font-black uppercase italic text-white text-lg">{role}</span>
+                    <span className="font-black uppercase italic text-white text-base md:text-lg">{role}</span>
                   </div>
                 ))}
               </div>
@@ -193,41 +266,106 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
-        {/* PRICING */}
-        <section className="px-6 md:px-12 py-32" id="pricing">
-          <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-            <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] italic mb-8">Simple Pricing</span>
-            <h2 className="font-display text-white text-6xl md:text-8xl uppercase mb-6 italic">One Price.<br/><span className="text-brand-pink">Full Access.</span></h2>
-            <p className="text-white/40 font-bold italic text-xl mb-16 max-w-xl">No tiers, no upsells, no per-inquiry fees. One annual membership gives you everything.</p>
+        {/* PRICING — 3 tieri */}
+        <section className="px-4 md:px-12 py-16 md:py-32" id="pricing">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12 md:mb-16">
+              <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] italic mb-6 inline-block">Pricing</span>
+              <h2 className="font-display text-white text-5xl md:text-8xl uppercase italic">Comedy <span className="text-brand-pink">Travels.</span></h2>
+              <p className="text-white/40 font-bold italic text-lg mt-4 max-w-xl mx-auto">Pick your passport. No per-inquiry fees. No commissions. Ever.</p>
+            </div>
 
-            <div className="w-full max-w-lg">
-              <div className="bg-white border-8 border-black p-12 shadow-neo-magenta relative">
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-pink text-white px-6 py-1 font-black uppercase text-xs italic border-4 border-black">Most Popular</div>
-                <h3 className="text-3xl font-black uppercase italic text-black mb-2">Annual Pro Pass</h3>
-                <p className="text-gray-500 font-bold italic text-sm mb-8">Full access for 12 months</p>
-                <div className="text-7xl font-black text-brand-pink mb-2">€99</div>
-                <p className="text-gray-400 text-sm font-bold italic mb-10">per year · ~€8/month</p>
-                <ul className="text-left space-y-3 mb-10">
-                  {['Full catalog access', 'Unlimited asset uploads', 'Contract templates', 'Direct licensing tools', 'Performance analytics', 'VIP networking events'].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
-                      <span className="material-symbols-outlined text-brand-pink text-lg">check_circle</span>{f}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
+
+              {/* FREE */}
+              <div className="bg-brand-surface border-4 border-white/30 p-6 md:p-8">
+                <p className="text-white/40 text-xs font-black uppercase tracking-widest italic mb-2">Free</p>
+                <h3 className="text-2xl font-black uppercase italic text-white mb-1">Explorer</h3>
+                <div className="text-5xl font-black text-white/60 mb-1">€0</div>
+                <p className="text-white/30 text-xs font-bold italic mb-8">forever</p>
+                <ul className="space-y-3 mb-8">
+                  {['Browse 3 shows', 'Basic search', 'No contact info', 'No uploads'].map((f, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/40">
+                      <span className="material-symbols-outlined text-white/20 text-base">remove</span>{f}
                     </li>
                   ))}
                 </ul>
-                <button
-                  onClick={() => onNavigate('login')}
-                  className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-xl hover:bg-brand-pink hover:text-white transition-all shadow-[6px_6px_0px_#FF0266] italic"
-                >
+                <button onClick={() => onNavigate('login')} className="w-full py-4 border-4 border-white/20 text-white/40 font-black uppercase text-sm italic hover:border-white hover:text-white transition-all">
+                  Start Free
+                </button>
+              </div>
+
+              {/* PRO — highlighted */}
+              <div className="bg-white border-8 border-black p-6 md:p-10 shadow-neo-magenta relative md:-mt-4">
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-pink text-white px-6 py-1 font-black uppercase text-xs italic border-4 border-black whitespace-nowrap">Most Popular</div>
+                <p className="text-gray-400 text-xs font-black uppercase tracking-widest italic mb-2">Pro</p>
+                <h3 className="text-2xl font-black uppercase italic text-black mb-1">Comedy Passport</h3>
+                <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
+                <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
+                <ul className="space-y-3 mb-8">
+                  {['Full catalog access', 'Unlimited show uploads', 'Direct contact with rights holders', 'Contract templates', 'Performance analytics', 'Priority support'].map((f, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
+                      <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={() => onNavigate('login')} className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-lg hover:bg-brand-pink hover:text-white transition-all italic">
                   Enter the Ecosystem →
                 </button>
-                <p className="text-gray-400 text-xs font-bold italic mt-4 text-center">Secure payment via PayPal</p>
+                <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via PayPal</p>
               </div>
+
+              {/* STUDIO */}
+              <div className="bg-brand-surface border-4 border-brand-cyan p-6 md:p-8 shadow-neo-cyan">
+                <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-2">Studio</p>
+                <h3 className="text-2xl font-black uppercase italic text-white mb-1">Production House</h3>
+                <div className="text-5xl font-black text-brand-cyan mb-1">€299</div>
+                <p className="text-white/30 text-xs font-bold italic mb-8">per year</p>
+                <ul className="space-y-3 mb-8">
+                  {['Everything in Pro', 'Verified badge ✓', 'Advanced analytics', 'Priority listing', 'Multi-user access', 'Dedicated support'].map((f, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/70">
+                      <span className="material-symbols-outlined text-brand-cyan text-base">check_circle</span>{f}
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={() => window.location.href = 'mailto:info@hahahub.art?subject=Studio Plan'} className="w-full py-4 bg-brand-cyan text-black border-4 border-black font-black uppercase text-sm italic hover:bg-white transition-all">
+                  Contact Us →
+                </button>
+                <p className="text-white/20 text-xs font-bold italic mt-3 text-center">Coming soon — reserve your spot</p>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="px-4 md:px-12 py-16 md:py-24 border-t-4 border-white/10 bg-brand-surface">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-6xl font-black uppercase italic text-white mb-3">FAQ</h2>
+            <p className="text-white/30 font-bold italic text-lg mb-12">Everything you need to know.</p>
+            <div className="space-y-3">
+              {FAQ_ITEMS.map((item, i) => (
+                <div key={i} className={"border-4 transition-all " + (openFaq === i ? "border-brand-yellow" : "border-white/20")}>
+                  <button
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="w-full flex items-center justify-between p-5 text-left gap-4"
+                  >
+                    <span className="font-black uppercase italic text-white text-sm md:text-base">{item.q}</span>
+                    <span className={`material-symbols-outlined text-2xl flex-shrink-0 transition-all ${openFaq === i ? 'text-brand-yellow rotate-45' : 'text-white/40'}`}>add</span>
+                  </button>
+                  {openFaq === i && (
+                    <div className="px-5 pb-5 border-t-2 border-white/10 pt-4">
+                      <p className="text-white/60 font-bold italic leading-relaxed text-sm">{item.a}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* TERMS MINI */}
-        <section className="px-6 md:px-12 py-16 border-t-4 border-white/10">
+        <section className="px-4 md:px-12 py-16 border-t-4 border-white/10">
           <div className="max-w-4xl mx-auto space-y-6 text-white/30 text-xs font-bold italic leading-relaxed">
             <h3 className="text-white/60 font-black uppercase text-sm tracking-widest not-italic">Terms of Use — Summary</h3>
             <p>HAHAHUB is a producer-to-producer platform for discovering and licensing international theatrical productions. By registering, you confirm you are a professional acting in a commercial capacity and are at least 18 years of age.</p>
