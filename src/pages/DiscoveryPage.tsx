@@ -86,7 +86,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-xl" onClick={() => setSelectedShowId(null)}></div>
-        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[90vh] overflow-y-auto shadow-neo-yellow animate-in zoom-in duration-300 text-white pb-12">
+        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-yellow animate-in zoom-in duration-300 text-white pb-12">
           <button onClick={() => setSelectedShowId(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all z-20">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
@@ -414,10 +414,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   )}
 
                   {/* CTA SECTION */}
-                  <div className="bg-brand-surface border-8 border-brand-cyan p-12 text-center space-y-10 shadow-neo-magenta">
+                  <div className="bg-brand-surface border-8 border-brand-cyan p-6 md:p-12 text-center space-y-6 shadow-neo-magenta">
                       <div className="space-y-2">
-                        <h4 className="text-5xl font-black uppercase italic tracking-tighter">Initiate Rights Clearing</h4>
-                        <p className="text-sm font-black uppercase italic text-brand-cyan">Estimated Advance: {selectedShow.advanceFee || "€0"} • Clearing Speed: {selectedShow.rightsClearingSpeed}</p>
+                        <h4 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter leading-tight">Initiate Rights<br/>Clearing</h4>
+                        <p className="text-xs md:text-sm font-black uppercase italic text-brand-cyan leading-relaxed">
+                          Estimated Advance: {selectedShow.advanceFee || "€0"}<br className="md:hidden"/> • Clearing Speed: {selectedShow.rightsClearingSpeed}
+                        </p>
                       </div>
                       <button 
                         onClick={() => {
@@ -429,7 +431,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           setInquirySuccess(false);
                           setIsInquiryOpen(true);
                         }}
-                        className="bg-brand-yellow text-black px-16 py-8 font-black uppercase border-4 border-black shadow-[8px_8px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic tracking-[0.4em] text-2xl"
+                        className="w-full md:w-auto bg-brand-yellow text-black px-8 md:px-16 py-5 md:py-8 font-black uppercase border-4 border-black shadow-[8px_8px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic tracking-[0.2em] md:tracking-[0.4em] text-lg md:text-2xl"
                       >
                         Send Inquiry
                       </button>
