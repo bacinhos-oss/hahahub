@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Footer from '../components/Footer';
 import { Page, Show } from '../types';
 import PaymentModal from '../components/PaymentModal';
+import { supabase } from '../lib/supabase';
 
 interface LandingPageProps {
   onNavigate: (page: Page) => void;
@@ -10,14 +11,13 @@ interface LandingPageProps {
 }
 
 const FOUNDING_TOTAL = 30;
-const FOUNDING_TAKEN = 7; // update this manually as spots fill
 
 const FAQ_ITEMS = [
-  { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses looking to license international comedy productions. You must be a professional acting in a commercial capacity.' },
-  { q: 'What does a Pro membership include?', a: 'Full catalog access, unlimited show uploads, contact with rights holders, contract templates, performance analytics, and VIP networking events. One flat fee, no per-inquiry costs.' },
-  { q: 'How does licensing work?', a: 'You find a show, click "Send Inquiry", and contact the rights holder directly. HahaHub provides the discovery platform and contract templates — the deal is between you and the producer.' },
+  { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your platform.' },
+  { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
+  { q: 'How does licensing work?', a: 'You find a show, click "Send Inquiry", and contact the rights holder directly. HahaHub provides the discovery platform and contract templates — the deal is between you and the producer. No commission.' },
   { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer marketplace. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
-  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers to join get lifetime free access. No annual fee, ever. In return, we ask you to upload at least one show with full data and give us feedback on the platform.' },
+  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on the platform.' },
   { q: 'What payment methods do you accept?', a: 'We currently accept PayPal. Stripe integration is coming soon. All prices are in EUR.' },
   { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
   { q: 'What languages are supported?', a: 'The platform is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
@@ -28,6 +28,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [sliderIdx, setSliderIdx] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [foundingTaken, setFoundingTaken] = useState<number | null>(null);
   const sliderRef = useRef<NodeJS.Timeout | null>(null);
 
   const quotes = [
@@ -43,6 +44,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
 
   const sliderShows = shows.slice(0, 6);
 
+  // Load real founding producer count from Supabase
+  useEffect(() => {
+    const loadFoundingCount = async () => {
+      const { count } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_paid', true);
+      setFoundingTaken(count || 0);
+    };
+    loadFoundingCount();
+  }, []);
+
   useEffect(() => {
     const t = setInterval(() => setQuoteIdx(i => (i + 1) % quotes.length), 4500);
     return () => clearInterval(t);
@@ -54,7 +67,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
     return () => { if (sliderRef.current) clearInterval(sliderRef.current); };
   }, [sliderShows.length]);
 
-  const foundingLeft = FOUNDING_TOTAL - FOUNDING_TAKEN;
+  const foundingLeft = foundingTaken !== null ? Math.max(0, FOUNDING_TOTAL - foundingTaken) : null;
+  const isFull = foundingLeft === 0;
 
   return (
     <div className="flex flex-col w-full relative bg-brand-black overflow-x-hidden">
@@ -84,15 +98,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         {/* HERO */}
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Comedy Rights Marketplace</span>
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Global Comedy Rights Ecosystem</span>
             <h1 className="font-display text-white text-5xl sm:text-7xl md:text-9xl leading-[0.85] tracking-tighter uppercase mb-6 md:mb-8 italic">
-              YOUR HIT<br/>
-              <span className="text-brand-yellow">IN SPAIN.</span><br/>
-              <span className="text-brand-cyan">UNKNOWN</span><br/>
-              IN GERMANY.
+              INTERNATIONAL<br/>
+              <span className="text-brand-yellow">THEATRE COMEDY</span><br/>
+              <span className="text-brand-cyan">PRODUCERS</span><br/>
+              PLATFORM.
             </h1>
-            <p className="text-lg md:text-2xl font-bold text-white/60 italic max-w-2xl mb-8 md:mb-12 leading-relaxed">
-              HahaHub changes that. The first producer-to-producer comedy rights marketplace. Direct. No agents. No middlemen. International.
+            <p className="text-base md:text-xl font-bold text-white/50 italic max-w-2xl mb-4 leading-relaxed">
+              Your hit in Spain is unknown in Germany. HahaHub changes that.
+            </p>
+            <p className="text-base md:text-lg font-bold text-white/40 italic max-w-2xl mb-10 md:mb-12 leading-relaxed">
+              The first producer-to-producer comedy rights marketplace. Buy rights, sell rights. Direct. No agents. No middlemen. International.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
@@ -100,44 +117,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               </button>
               <button onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })} className="text-white border-b-4 border-white/30 pb-1 text-lg md:text-xl font-black uppercase hover:border-brand-cyan hover:text-brand-cyan transition-all italic self-start sm:self-auto">
                 How it works ↓
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* FOUNDING PRODUCER — prvih 30 */}
-        <section className="px-4 md:px-12 py-12 md:py-20 bg-brand-yellow border-y-8 border-black">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex-1">
-              <span className="bg-black text-brand-yellow px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-4">Limited Offer</span>
-              <h2 className="text-4xl md:text-6xl font-black uppercase italic text-black leading-[0.9] mb-4">
-                Founding<br/>Producer
-              </h2>
-              <p className="text-black/70 font-bold italic text-lg md:text-xl max-w-xl leading-relaxed">
-                The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show and help shape the platform.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                {['Free Forever ✓', 'Founding Producer Badge ✓', 'Unlimited Uploads ✓', 'Shape the Product ✓'].map((b, i) => (
-                  <span key={i} className="bg-black text-brand-yellow px-3 py-1 text-xs font-black uppercase italic border-2 border-black">{b}</span>
-                ))}
-              </div>
-            </div>
-            <div className="flex-shrink-0 text-center">
-              <div className="bg-black border-8 border-black p-8 md:p-12 shadow-[8px_8px_0px_black] inline-block">
-                <p className="text-brand-yellow text-[10px] font-black uppercase tracking-[0.4em] mb-2">Spots Remaining</p>
-                <div className="text-8xl md:text-9xl font-black text-white leading-none mb-2">{foundingLeft}</div>
-                <p className="text-white/40 text-xs font-black uppercase tracking-widest">of {FOUNDING_TOTAL} total</p>
-                {/* Progress bar */}
-                <div className="mt-6 h-3 bg-white/10 border-2 border-white/20 w-48 mx-auto">
-                  <div className="h-full bg-brand-yellow transition-all" style={{ width: `${(FOUNDING_TAKEN / FOUNDING_TOTAL) * 100}%` }}></div>
-                </div>
-                <p className="text-white/30 text-[9px] font-black uppercase mt-2">{FOUNDING_TAKEN} taken</p>
-              </div>
-              <button
-                onClick={() => onNavigate('login')}
-                className="mt-6 w-full bg-black text-brand-yellow font-black px-10 py-5 text-lg uppercase border-4 border-black hover:bg-white hover:text-black transition-all italic shadow-[6px_6px_0px_#FF00FF]"
-              >
-                Claim Your Spot →
               </button>
             </div>
           </div>
@@ -157,10 +136,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 View Full Catalog →
               </button>
             </div>
-
-            {/* Autoplay slider */}
             <div className="relative">
-              <div className="flex gap-4 px-4 md:px-12 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex gap-4 px-4 md:px-12 overflow-x-auto snap-x snap-mandatory pb-4" style={{ scrollbarWidth: 'none' }}>
                 {sliderShows.map((show, i) => (
                   <div
                     key={show.id}
@@ -179,7 +156,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   </div>
                 ))}
               </div>
-              {/* Dots */}
               <div className="flex justify-center gap-2 mt-6">
                 {sliderShows.map((_, i) => (
                   <button key={i} onClick={() => setSliderIdx(i)} className={`h-1.5 transition-all ${i === sliderIdx ? 'w-8 bg-brand-yellow' : 'w-2 bg-white/20'}`} />
@@ -189,45 +165,56 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </section>
         )}
 
-        {/* QUOTES — fiksna višina, fade */}
-        <section className="px-4 md:px-12 py-12 md:py-16 border-b-4 border-white/10 bg-brand-surface">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-16">
-              <div className="flex gap-2 flex-shrink-0">
-                {quotes.map((_, i) => (
-                  <button key={i} onClick={() => setQuoteIdx(i)} className={"h-1.5 transition-all " + (i === quoteIdx ? "w-8 bg-brand-yellow" : "w-2 bg-white/20")} />
-                ))}
-              </div>
-              {/* Fixed height prevents layout jump */}
-              <div className="border-l-4 border-brand-yellow pl-6 h-28 md:h-24 flex flex-col justify-center overflow-hidden">
-                <p className="text-white/80 font-bold italic text-lg md:text-2xl leading-snug mb-3 line-clamp-3">"{quotes[quoteIdx].quote}"</p>
-                <p className="text-xs font-black uppercase tracking-widest text-brand-yellow">— {quotes[quoteIdx].author}</p>
-                <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">{quotes[quoteIdx].org}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* HOW IT WORKS */}
+        {/* HOW IT WORKS — BUY & SELL */}
         <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10" id="how">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-4xl md:text-7xl font-black uppercase italic text-white mb-4">How It <span className="text-brand-cyan">Works</span></h2>
-            <p className="text-white/40 font-bold italic text-lg mb-12 md:mb-16">Three steps. No agents. No gatekeepers.</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {[
-                { step: '01', icon: 'search', color: 'brand-cyan', title: 'Browse', desc: 'Explore international comedy productions. Filter by genre, territory, cast size, and budget.' },
-                { step: '02', icon: 'handshake', color: 'brand-yellow', title: 'License', desc: 'Contact rights holders directly. Use our contract templates. No agents, no hidden fees.' },
-                { step: '03', icon: 'theater_comedy', color: 'brand-pink', title: 'Stage It', desc: 'Get full script, technical rider, and commercial data. Everything you need to produce.' },
-              ].map((item, i) => (
-                <div key={i} className="border-4 border-white p-6 md:p-8 hover:shadow-neo-yellow transition-all">
-                  <div className="flex items-start justify-between mb-6 md:mb-8">
-                    <span className={`text-5xl md:text-6xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
-                    <span className={`material-symbols-outlined text-3xl md:text-4xl text-${item.color}`}>{item.icon}</span>
+            <p className="text-white/40 font-bold italic text-lg mb-12 md:mb-16">Whether you're buying rights or selling them — three steps.</p>
+
+            {/* BUY */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-widest italic">I want to stage a show</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { step: '01', icon: 'search', color: 'brand-cyan', title: 'Browse', desc: 'Explore international comedy productions. Filter by genre, territory, cast size, and budget.' },
+                  { step: '02', icon: 'mail', color: 'brand-yellow', title: 'Inquire', desc: 'Contact rights holders directly. No agents, no hidden fees. Use our contract templates.' },
+                  { step: '03', icon: 'theater_comedy', color: 'brand-pink', title: 'Stage It', desc: 'Get full script, technical rider, and commercial data. Everything you need to produce.' },
+                ].map((item, i) => (
+                  <div key={i} className="border-4 border-white p-6 md:p-8 hover:shadow-neo-cyan transition-all">
+                    <div className="flex items-start justify-between mb-6">
+                      <span className={`text-5xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
+                      <span className={`material-symbols-outlined text-3xl text-${item.color}`}>{item.icon}</span>
+                    </div>
+                    <h3 className="text-2xl font-black uppercase italic text-white mb-3">{item.title}</h3>
+                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm">{item.desc}</p>
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-black uppercase italic text-white mb-4">{item.title}</h3>
-                  <p className="text-gray-400 font-bold italic leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            {/* SELL */}
+            <div>
+              <div className="flex items-center gap-4 mb-6">
+                <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-widest italic">I want to sell my show internationally</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { step: '01', icon: 'upload', color: 'brand-pink', title: 'Deploy', desc: 'Upload your show with full commercial data — cast, rights, territories, royalties, script scenario in English.' },
+                  { step: '02', icon: 'notifications', color: 'brand-yellow', title: 'Get Tickled', desc: 'Receive inquiries directly from producers worldwide. You are notified instantly via email.' },
+                  { step: '03', icon: 'handshake', color: 'brand-cyan', title: 'Close the Deal', desc: 'Negotiate directly. Use our contract templates. Keep 100% of the licensing fee — no commission.' },
+                ].map((item, i) => (
+                  <div key={i} className="border-4 border-white/40 p-6 md:p-8 hover:shadow-neo-magenta transition-all">
+                    <div className="flex items-start justify-between mb-6">
+                      <span className={`text-5xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
+                      <span className={`material-symbols-outlined text-3xl text-${item.color}`}>{item.icon}</span>
+                    </div>
+                    <h3 className="text-2xl font-black uppercase italic text-white mb-3">{item.title}</h3>
+                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -266,6 +253,70 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
+        {/* FOUNDING PRODUCER — po For Who */}
+        {!isFull && (
+          <section className="px-4 md:px-12 py-12 md:py-20 bg-brand-yellow border-y-8 border-black">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="flex-1">
+                <span className="bg-black text-brand-yellow px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-4">Limited — {foundingLeft !== null ? foundingLeft : '...'} spots left</span>
+                <h2 className="text-4xl md:text-6xl font-black uppercase italic text-black leading-[0.9] mb-4">
+                  Founding<br/>Producer
+                </h2>
+                <p className="text-black/70 font-bold italic text-lg md:text-xl max-w-xl leading-relaxed">
+                  The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show with full data and help shape the platform.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {['Free Forever ✓', 'Founding Producer Badge ✓', 'Unlimited Uploads ✓', 'Shape the Product ✓'].map((b, i) => (
+                    <span key={i} className="bg-black text-brand-yellow px-3 py-1 text-xs font-black uppercase italic border-2 border-black">{b}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="flex-shrink-0 text-center w-full md:w-auto">
+                <div className="bg-black border-8 border-black p-8 md:p-12 inline-block w-full md:w-auto">
+                  <p className="text-brand-yellow text-[10px] font-black uppercase tracking-[0.4em] mb-2">Spots Remaining</p>
+                  <div className="text-8xl md:text-9xl font-black text-white leading-none mb-2">
+                    {foundingLeft !== null ? foundingLeft : '—'}
+                  </div>
+                  <p className="text-white/40 text-xs font-black uppercase tracking-widest">of {FOUNDING_TOTAL} total</p>
+                  <div className="mt-6 h-3 bg-white/10 border-2 border-white/20 w-full md:w-48 mx-auto">
+                    <div
+                      className="h-full bg-brand-yellow transition-all duration-1000"
+                      style={{ width: foundingTaken !== null ? `${Math.min(100, (foundingTaken / FOUNDING_TOTAL) * 100)}%` : '0%' }}
+                    ></div>
+                  </div>
+                  <p className="text-white/30 text-[9px] font-black uppercase mt-2">
+                    {foundingTaken !== null ? foundingTaken : '...'} taken
+                  </p>
+                </div>
+                <button
+                  onClick={() => onNavigate('login')}
+                  className="mt-6 w-full bg-black text-brand-yellow font-black px-10 py-5 text-lg uppercase border-4 border-black hover:bg-white hover:text-black transition-all italic shadow-[6px_6px_0px_#FF00FF]"
+                >
+                  Claim Your Spot →
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* QUOTES — fiksna višina */}
+        <section className="px-4 md:px-12 py-12 md:py-16 border-b-4 border-white/10 bg-brand-surface">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-16">
+              <div className="flex gap-2 flex-shrink-0">
+                {quotes.map((_, i) => (
+                  <button key={i} onClick={() => setQuoteIdx(i)} className={"h-1.5 transition-all " + (i === quoteIdx ? "w-8 bg-brand-yellow" : "w-2 bg-white/20")} />
+                ))}
+              </div>
+              <div className="border-l-4 border-brand-yellow pl-6 h-28 md:h-24 flex flex-col justify-center overflow-hidden">
+                <p className="text-white/80 font-bold italic text-lg md:text-2xl leading-snug mb-3 line-clamp-3">"{quotes[quoteIdx].quote}"</p>
+                <p className="text-xs font-black uppercase tracking-widest text-brand-yellow">— {quotes[quoteIdx].author}</p>
+                <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">{quotes[quoteIdx].org}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* PRICING — 3 tieri */}
         <section className="px-4 md:px-12 py-16 md:py-32" id="pricing">
           <div className="max-w-7xl mx-auto">
@@ -274,9 +325,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               <h2 className="font-display text-white text-5xl md:text-8xl uppercase italic">Comedy <span className="text-brand-pink">Travels.</span></h2>
               <p className="text-white/40 font-bold italic text-lg mt-4 max-w-xl mx-auto">Pick your passport. No per-inquiry fees. No commissions. Ever.</p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
-
               {/* FREE */}
               <div className="bg-brand-surface border-4 border-white/30 p-6 md:p-8">
                 <p className="text-white/40 text-xs font-black uppercase tracking-widest italic mb-2">Free</p>
@@ -294,8 +343,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   Start Free
                 </button>
               </div>
-
-              {/* PRO — highlighted */}
+              {/* PRO */}
               <div className="bg-white border-8 border-black p-6 md:p-10 shadow-neo-magenta relative md:-mt-4">
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-pink text-white px-6 py-1 font-black uppercase text-xs italic border-4 border-black whitespace-nowrap">Most Popular</div>
                 <p className="text-gray-400 text-xs font-black uppercase tracking-widest italic mb-2">Pro</p>
@@ -314,7 +362,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 </button>
                 <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via PayPal</p>
               </div>
-
               {/* STUDIO */}
               <div className="bg-brand-surface border-4 border-brand-cyan p-6 md:p-8 shadow-neo-cyan">
                 <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-2">Studio</p>
@@ -333,7 +380,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 </button>
                 <p className="text-white/20 text-xs font-bold italic mt-3 text-center">Coming soon — reserve your spot</p>
               </div>
-
             </div>
           </div>
         </section>
@@ -346,12 +392,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
             <div className="space-y-3">
               {FAQ_ITEMS.map((item, i) => (
                 <div key={i} className={"border-4 transition-all " + (openFaq === i ? "border-brand-yellow" : "border-white/20")}>
-                  <button
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full flex items-center justify-between p-5 text-left gap-4"
-                  >
+                  <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full flex items-center justify-between p-5 text-left gap-4">
                     <span className="font-black uppercase italic text-white text-sm md:text-base">{item.q}</span>
-                    <span className={`material-symbols-outlined text-2xl flex-shrink-0 transition-all ${openFaq === i ? 'text-brand-yellow rotate-45' : 'text-white/40'}`}>add</span>
+                    <span className={`material-symbols-outlined text-2xl flex-shrink-0 transition-transform ${openFaq === i ? 'text-brand-yellow rotate-45' : 'text-white/40'}`}>add</span>
                   </button>
                   {openFaq === i && (
                     <div className="px-5 pb-5 border-t-2 border-white/10 pt-4">
@@ -364,7 +407,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
-        {/* TERMS MINI */}
+        {/* TERMS */}
         <section className="px-4 md:px-12 py-16 border-t-4 border-white/10">
           <div className="max-w-4xl mx-auto space-y-6 text-white/30 text-xs font-bold italic leading-relaxed">
             <h3 className="text-white/60 font-black uppercase text-sm tracking-widest not-italic">Terms of Use — Summary</h3>
