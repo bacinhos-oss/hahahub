@@ -176,7 +176,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   // PASSWORD RESET SCREENS
   if (isResetMode) return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black text-black">
-      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#03DAC6]">
+      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#00FFFF]">
         <button onClick={() => setIsResetMode(false)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-8 italic">← Back</button>
         <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
         <h2 className="text-2xl font-black uppercase mb-8 italic">Set New Password</h2>
@@ -205,7 +205,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   // PAYMENT STEP
   if (regStep === 'payment') return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black">
-      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#FF0266]">
+      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#FF00FF]">
         <div className="logo-text text-4xl uppercase mb-6 text-center text-black">HAHAHUB</div>
         <div className="text-center mb-8">
           <span className="bg-brand-yellow text-black px-4 py-1 text-xs font-black uppercase tracking-[0.3em] italic">Step 2 of 2</span>
@@ -231,9 +231,9 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   // SUCCESS SCREEN
   if (regStep === 'success') return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black">
-      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#03DAC6] text-center">
+      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#00FFFF] text-center">
         <div className="logo-text text-4xl uppercase mb-8 text-black">HAHAHUB</div>
-        <div className="w-28 h-28 bg-brand-yellow border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF0266] mb-8">
+        <div className="w-28 h-28 bg-brand-yellow border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF00FF] mb-8">
           <span className="text-5xl">🎭</span>
         </div>
         <h2 className="text-4xl font-black uppercase italic mb-3 text-black leading-tight">Tickle<br/>the Laugh!</h2>
@@ -252,7 +252,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   // MAIN LOGIN/REGISTER FORM
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-brand-black text-black">
-      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#FF0266]">
+      <div className="max-w-md w-full bg-white border-8 border-black p-12 shadow-[12px_12px_0px_#FF00FF]">
         <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-8 italic">← Back</button>
         <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
 

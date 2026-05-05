@@ -2,11 +2,18 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>HAHAHUB | Comedy Discovery</title>
+
+    <!-- FONT PRELOAD — prevents FOUT on all devices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@400;600;700&display=block">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=block">
+    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Space+Grotesk:wght@300;400;500;600;700&family=Bowlby+One+SC&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -14,32 +21,32 @@
                 extend: {
                     colors: {
                         brand: {
-                            yellow: '#FFDE03',
-                            pink: '#FF0266',
-                            cyan: '#03DAC6',
-                            black: '#050505',
-                            surface: '#121212',
-                            border: '#2E2E2E'
+                            yellow: '#FFFF00',   /* LOCKED */
+                            pink:   '#FF00FF',   /* LOCKED */
+                            cyan:   '#00FFFF',   /* LOCKED */
+                            black:  '#0A0A0A',   /* LOCKED */
+                            surface:'#111111',   /* LOCKED */
+                            border: '#1A1A1A',   /* LOCKED */
                         }
                     },
                     fontFamily: {
-                        sans: ['Space Grotesk', 'sans-serif'],
+                        sans:    ['Space Grotesk', 'sans-serif'],
                         display: ['Bungee', 'cursive'],
-                        funky: ['Bowlby One SC', 'cursive'],
-                        syne: ['Syne', 'sans-serif'],
+                        funky:   ['Bowlby One SC', 'cursive'],
+                        syne:    ['Syne', 'sans-serif'],
                     },
                     boxShadow: {
-                        'neo-magenta': '4px 4px 0px 0px #FF0266',
-                        'neo-cyan': '4px 4px 0px 0px #03DAC6',
-                        'neo-yellow': '4px 4px 0px 0px #FFDE03',
-                        'neo-white': '8px 8px 0px 0px #FFFFFF',
+                        'neo-magenta': '4px 4px 0px 0px #FF00FF',
+                        'neo-cyan':    '4px 4px 0px 0px #00FFFF',
+                        'neo-yellow':  '4px 4px 0px 0px #FFFF00',
+                        'neo-white':   '8px 8px 0px 0px #FFFFFF',
                     },
                     animation: {
                         'marquee': 'marquee 25s linear infinite',
                     },
                     keyframes: {
                         marquee: {
-                            '0%': { transform: 'translateX(0%)' },
+                            '0%':   { transform: 'translateX(0%)' },
                             '100%': { transform: 'translateX(-100%)' },
                         }
                     }
@@ -48,32 +55,60 @@
         }
     </script>
     <style type="text/tailwindcss">
+        /* FOUT PREVENTION — hide body until fonts are ready */
         @layer base {
+            html { visibility: hidden; }
+            html.fonts-loaded { visibility: visible; }
+
             body {
                 @apply bg-brand-black text-white selection:bg-brand-yellow selection:text-black;
-                background-image: radial-gradient(#222 1px, transparent 1px);
+                background-image: radial-gradient(#1A1A1A 1px, transparent 1px);
                 background-size: 30px 30px;
+                font-family: 'Space Grotesk', sans-serif;
+            }
+
+            /* Force font render — prevents swap blinking */
+            *, *::before, *::after {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
             }
         }
+
+        /* Safe area padding for iPhone notch/home bar */
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .safe-top    { padding-top:    env(safe-area-inset-top, 0px); }
+
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         .logo-text {
             font-family: 'Bowlby One SC', cursive;
-            text-shadow: 2px 2px 0px #FF0266, 4px 4px 0px #03DAC6;
+            text-shadow: 2px 2px 0px #FF00FF, 4px 4px 0px #00FFFF;
+            color: #FFFFFF;
         }
         .ticker-wrap {
             overflow: hidden;
-            background: #FFDE03;
-            color: black;
+            background: #FFFF00;
+            color: #0A0A0A;
             font-weight: 900;
             text-transform: uppercase;
             padding: 4px 0;
             font-size: 10px;
             letter-spacing: 0.1em;
-            border-bottom: 2px solid black;
+            border-bottom: 2px solid #0A0A0A;
         }
     </style>
+    <script>
+        /* Font load detection — removes visibility:hidden as soon as fonts ready */
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+                document.documentElement.classList.add('fonts-loaded');
+            });
+        } else {
+            /* Fallback: show after 300ms max */
+            setTimeout(() => document.documentElement.classList.add('fonts-loaded'), 300);
+        }
+    </script>
 </head>
 <body>
     <div id="root"></div>
