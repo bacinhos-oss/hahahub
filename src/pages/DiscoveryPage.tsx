@@ -22,6 +22,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryMessage, setInquiryMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [shortlist, setShortlist] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('hahahub_shortlist') || '[]'); } catch { return []; }
+  });
+  const [showShortlistOnly, setShowShortlistOnly] = useState(false);
 
   // Simulate loading skeleton — disappears when shows arrive
   useEffect(() => {
@@ -30,6 +34,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       return () => clearTimeout(t);
     }
   }, [shows]);
+
+  const toggleShortlist = (e: React.MouseEvent, showId: string) => {
+    e.stopPropagation();
+    const next = shortlist.includes(showId)
+      ? shortlist.filter(id => id !== showId)
+      : [...shortlist, showId];
+    setShortlist(next);
+    localStorage.setItem('hahahub_shortlist', JSON.stringify(next));
+  };
 
   // "New this week" — show uploaded in last 7 days
   const isNewThisWeek = (show: Show) => {
@@ -63,6 +76,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const filteredShows = useMemo(() => {
     let result = shows.filter(show => {
       if (!show.is_produced) return false;
+      if (showShortlistOnly && !shortlist.includes(show.id)) return false;
       const totalCast = (show.maleRoles || 0) + (show.femaleRoles || 0);
       const matchesGenre = filterGenre === 'All' || show.genre === filterGenre || show.subgenre === filterGenre;
       const matchesCountry = filterCountry === 'All' || show.location === filterCountry;
@@ -88,7 +102,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       if (sortBy === 'Trending') return (b.viewsCount || 0) - (a.viewsCount || 0);
       return 0;
     });
-  }, [shows, filterGenre, filterCountry, filterRisk, filterCast, sortBy, searchQuery]);
+  }, [shows, filterGenre, filterCountry, filterRisk, filterCast, sortBy, searchQuery, shortlist, showShortlistOnly]);
 
   const handleShowSelect = (show: Show) => {
     setSelectedShowId(show.id);
@@ -655,6 +669,13 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </select>
                 </div>
               </div>
+              <button
+                onClick={() => setShowShortlistOnly(v => !v)}
+                className={`flex items-center gap-2 px-4 py-3 border-4 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black shadow-neo-magenta' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}
+              >
+                <span className="material-symbols-outlined text-base">bookmark</span>
+                Shortlist {shortlist.length > 0 && <span className="ml-1">({shortlist.length})</span>}
+              </button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6 border-y-4 border-white/10 py-8">
@@ -738,6 +759,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     )}
                   </div>
                   <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
+                    <button
+                      onClick={(e) => toggleShortlist(e, show.id)}
+                      className={`w-8 h-8 flex items-center justify-center border-2 transition-all ${shortlist.includes(show.id) ? 'bg-brand-yellow text-black border-black' : 'bg-black/60 text-white/60 border-white/30 hover:border-white hover:text-white'}`}
+                    >
+                      <span className="material-symbols-outlined text-sm">{shortlist.includes(show.id) ? 'bookmark' : 'bookmark_border'}</span>
+                    </button>
                     <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.duration}m</span>
                     <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-cyan text-black">{show.location}</span>
                   </div>

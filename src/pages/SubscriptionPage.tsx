@@ -667,10 +667,48 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 <ShareButton title="My HAHAHUB Profile" text="Check out my comedy catalog!" url={window.location.href} />
                 <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
                   <p className="text-xl font-black uppercase italic">{user.name}</p>
-                  <p className="text-[10px] font-black text-brand-cyan uppercase tracking-widest mt-1">Verified Producer</p>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <p className="text-[10px] font-black text-brand-cyan uppercase tracking-widest">Verified Producer</p>
+                    {!user.isPaid && userUploads.length === 0 && (
+                      <span className="bg-brand-yellow text-black text-[8px] font-black uppercase px-2 py-0.5 italic">🏆 Founding Producer</span>
+                    )}
+                    {user.isAdmin && (
+                      <span className="bg-brand-pink text-white text-[8px] font-black uppercase px-2 py-0.5 italic">⚡ Admin</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </section>
+
+            {/* ONBOARDING TOUR — samo za nove producente brez uploadov */}
+            {userUploads.length === 0 && !user.isAdmin && (
+              <section className="border-4 border-brand-yellow bg-brand-yellow/5 p-6 md:p-8">
+                <div className="flex items-start gap-4 mb-6">
+                  <span className="text-3xl">🎭</span>
+                  <div>
+                    <h3 className="text-xl font-black uppercase italic text-brand-yellow">Welcome to HahaHub!</h3>
+                    <p className="text-white/60 font-bold italic text-sm mt-1">You're 3 steps away from going live. Here's how to start:</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { step: '01', icon: 'upload', color: 'brand-cyan', title: 'Deploy Your First Show', desc: 'Upload a production with full data — cast, rights, script scenario in English.', action: 'Deploy Asset →', page: 'upload' as const },
+                    { step: '02', icon: 'search', color: 'brand-yellow', title: 'Browse the Catalog', desc: 'Explore international comedy productions. Shortlist shows you like.', action: 'Go to Catalog →', page: 'discovery' as const },
+                    { step: '03', icon: 'mail', color: 'brand-pink', title: 'Send Your First Inquiry', desc: 'Contact a rights holder directly. No agents. No fees.', action: 'Browse Shows →', page: 'discovery' as const },
+                  ].map((item, i) => (
+                    <div key={i} className="bg-brand-black border-2 border-white/10 p-5">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`text-3xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
+                        <span className={`material-symbols-outlined text-2xl text-${item.color}`}>{item.icon}</span>
+                      </div>
+                      <h4 className="font-black uppercase italic text-white text-sm mb-2">{item.title}</h4>
+                      <p className="text-white/40 text-xs font-bold italic leading-relaxed mb-4">{item.desc}</p>
+                      <button onClick={() => onNavigate(item.page)} className={`text-[10px] font-black uppercase italic text-${item.color} hover:underline`}>{item.action}</button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* TICKLED TOAST NOTIFICATION */}
             {tickledToast.show && (
