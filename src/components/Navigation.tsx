@@ -61,7 +61,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             </div>
           ) : (
             <button onClick={() => onNavigate('login')} className="bg-white text-black font-black px-6 py-2 text-sm uppercase border-2 border-black hover:bg-brand-yellow transition-all shadow-neo-magenta italic">
-              LOGIN
+              Tickle In →
             </button>
           )}
         </div>
@@ -118,7 +118,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
               </button>
             ) : (
               <button onClick={() => { onNavigate('login'); setMenuOpen(false); }} className="w-full bg-white text-black font-black py-4 text-lg uppercase border-2 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">
-                LOGIN
+                Tickle In →
               </button>
             )}
           </div>

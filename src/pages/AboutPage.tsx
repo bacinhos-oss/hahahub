@@ -43,30 +43,31 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
                 HAHAHUB IS THE FIRST <span className="text-brand-cyan">PRODUCER-TO-PRODUCER</span> COMEDY RIGHTS MARKETPLACE IN THE WORLD.
               </p>
               <div className="h-2 w-24 bg-brand-pink"></div>
-              <p className="text-lg md:text-xl text-white font-black leading-tight italic uppercase tracking-tighter">
-                YOUR HIT IN SPAIN IS UNKNOWN IN GERMANY. WE CHANGE THAT.
+              <p className="text-lg md:text-xl text-brand-yellow font-black leading-tight italic uppercase tracking-tighter">
+                TICKLE. SET UP. PUNCH.
               </p>
-              <p className="text-base md:text-xl text-gray-400 font-bold leading-relaxed italic">
-                We connect producers through standardized commercial frameworks and transparent deal structures. Find fresh comedy for your next season, or sell your hits internationally — direct, no agents, no middlemen.
+              <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic">
+                Something's been rotting in your season lineup. Hunt it down. Or deploy your own. International. Raw. Funny as hell. Cut the agent. Kill the middleman. Direct line, producer to producer. Buy rights or sell them. Keep every cent.
               </p>
-              <p className="text-base md:text-xl text-gray-400 font-bold leading-relaxed italic">
-                HahaHub reduces uncertainty, speeds up decisions, and enables scalable international collaboration. Rights are serious. Comedy is not. We handle both.
+              <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic">
+                Curtain up. Lights on. Your punchline. Their stage. Different language. Same laugh. That's international. That's HahaHub. Play it.
               </p>
+              <p className="text-white/30 font-black uppercase text-xs tracking-widest italic">Rights are serious. Comedy is not. We handle both.</p>
             </div>
 
             <div className="lg:col-span-5 bg-brand-surface border-4 border-white p-8 md:p-10 shadow-neo-magenta md:rotate-1">
-              <h3 className="text-2xl md:text-3xl font-black uppercase italic text-brand-pink mb-6 md:mb-8 border-b-4 border-brand-pink pb-2">THE JOURNEY</h3>
+              <h3 className="text-2xl md:text-3xl font-black uppercase italic text-brand-pink mb-6 md:mb-8 border-b-4 border-brand-pink pb-2">THE MOVES</h3>
               <ul className="space-y-6 md:space-y-8">
                 {[
-                  { t: 'DISCOVERY', d: 'Filter through standardized producer-centric metrics.' },
-                  { t: 'EVALUATION', d: 'Immediate access to break-even data and risk profiles.' },
-                  { t: 'CONNECTION', d: 'Direct channel between producers. No gatekeepers.' },
-                  { t: 'EXECUTION', d: 'Close deals with contract templates. Keep 100% of fees.' }
+                  { t: 'TICKLE', d: 'Hunt it down or deploy your own. International. Raw. Funny as hell.' },
+                  { t: 'SET UP', d: 'Cut the agent. Direct line, producer to producer. No commission. No bullshit.' },
+                  { t: 'PUNCH', d: 'Curtain up. Lights on. Your punchline. Their stage. Same laugh.' },
+                  { t: 'BREAK A LEG.', d: '🎭', special: true },
                 ].map((step, i) => (
                   <li key={i} className="flex gap-4">
-                    <span className="text-brand-yellow font-black text-2xl italic flex-shrink-0">/{i+1}</span>
+                    <span className="text-brand-yellow font-black text-2xl italic flex-shrink-0">{i < 3 ? `/${i+1}` : '✓'}</span>
                     <div>
-                      <p className="font-black uppercase text-sm text-white tracking-widest italic mb-1">{step.t}</p>
+                      <p className={`font-black uppercase text-sm tracking-widest italic mb-1 ${step.special ? 'text-brand-yellow' : 'text-white'}`}>{step.t}</p>
                       <p className="text-xs text-gray-500 font-bold italic">{step.d}</p>
                     </div>
                   </li>
@@ -239,12 +240,13 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
             <h2 className="text-4xl md:text-8xl font-black uppercase italic tracking-tighter text-white">READY TO <span className="text-transparent" style={{ WebkitTextStroke: '2px white' }}>SCALE?</span></h2>
             <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
               <button onClick={() => onNavigate('discovery')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 font-black uppercase text-lg md:text-xl border-4 border-white shadow-neo-magenta italic hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all">
-                JOIN THE NETWORK
+                🥊 Tickle It Now →
               </button>
               <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 md:px-12 py-5 md:py-6 font-black uppercase text-lg md:text-xl border-4 border-white shadow-neo-white italic hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all">
-                DEPLOY ASSET
+                Set Up Your Show →
               </button>
             </div>
+            <p className="text-white/20 font-black uppercase text-xs tracking-widest italic mt-4">Break a Leg. 🎭</p>
           </section>
 
         </div>

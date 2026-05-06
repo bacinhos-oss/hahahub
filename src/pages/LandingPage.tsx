@@ -87,7 +87,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           <div className="flex items-center gap-3 md:gap-4">
             <button onClick={() => onNavigate('login')} className="text-xs font-black uppercase tracking-widest text-white/60 hover:text-white transition-colors italic hidden md:block">Sign In</button>
             <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black font-black px-5 md:px-8 py-3 text-xs md:text-sm uppercase border-4 border-black hover:bg-white transition-all shadow-neo-magenta italic">
-              List Your Show Free →
+              Set Up Your Show →
             </button>
           </div>
         </div>
@@ -113,7 +113,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
-                🎭 Tickle the Laugh — Join →
+                🥊 Tickle It Now →
               </button>
               <button onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })} className="text-white border-b-4 border-white/30 pb-1 text-lg md:text-xl font-black uppercase hover:border-brand-cyan hover:text-brand-cyan transition-all italic self-start sm:self-auto">
                 How it works ↓
@@ -165,30 +165,35 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </section>
         )}
 
-        {/* HOW IT WORKS — BUY & SELL */}
+        {/* TICKLE. SET UP. PUNCH. */}
         <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10" id="how">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-7xl font-black uppercase italic text-white mb-4">How It <span className="text-brand-cyan">Works</span></h2>
-            <p className="text-white/40 font-bold italic text-lg mb-12 md:mb-16">Whether you're buying rights or selling them — three steps.</p>
+            <div className="mb-12 md:mb-16">
+              <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-white leading-none">
+                TICKLE.<br/><span className="text-brand-yellow">SET UP.</span><br/><span className="text-brand-pink">PUNCH.</span>
+              </h2>
+              <p className="text-white/40 font-bold italic text-lg mt-6 max-w-xl">Whether you're buying rights or selling them — same three moves.</p>
+            </div>
 
             {/* BUY */}
-            <div className="mb-12">
+            <div className="mb-10">
               <div className="flex items-center gap-4 mb-6">
                 <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-widest italic">I want to stage a show</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { step: '01', icon: 'search', color: 'brand-cyan', title: 'Browse', desc: 'Explore international comedy productions. Filter by genre, territory, cast size, and budget.' },
-                  { step: '02', icon: 'mail', color: 'brand-yellow', title: 'Inquire', desc: 'Contact rights holders directly. No agents, no hidden fees. Use our contract templates.' },
-                  { step: '03', icon: 'theater_comedy', color: 'brand-pink', title: 'Stage It', desc: 'Get full script, technical rider, and commercial data. Everything you need to produce.' },
+                  { step: 'TICKLE', icon: 'search', color: 'brand-cyan', title: 'Tickle the Vault', desc: "Something's been rotting in your season lineup. Hunt it down. International. Raw. Funny as hell. The show your audience didn't know they needed.", cta: 'Tickle It →' },
+                  { step: 'SET UP', icon: 'mail', color: 'brand-yellow', title: 'Cut the Middleman', desc: 'Direct line to the producer. Templates. Terms. Done. No commission. No bullshit. No mercy.', cta: 'Set It Up →' },
+                  { step: 'PUNCH', icon: 'theater_comedy', color: 'brand-pink', title: 'Curtain Up', desc: "Lights on. They're already laughing. That's your show now. You found it here.", cta: 'Punch It →' },
                 ].map((item, i) => (
-                  <div key={i} className="border-4 border-white p-6 md:p-8 hover:shadow-neo-cyan transition-all">
-                    <div className="flex items-start justify-between mb-6">
-                      <span className={`text-5xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
+                  <div key={i} className="border-4 border-white p-6 md:p-8 hover:shadow-neo-cyan hover:border-brand-cyan transition-all group">
+                    <div className="flex items-start justify-between mb-4">
+                      <span className={`text-xs font-black uppercase tracking-widest text-${item.color} italic`}>{item.step}</span>
                       <span className={`material-symbols-outlined text-3xl text-${item.color}`}>{item.icon}</span>
                     </div>
-                    <h3 className="text-2xl font-black uppercase italic text-white mb-3">{item.title}</h3>
-                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm">{item.desc}</p>
+                    <h3 className="text-xl md:text-2xl font-black uppercase italic text-white mb-3 group-hover:text-brand-cyan transition-colors">{item.title}</h3>
+                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm mb-4">{item.desc}</p>
+                    <button onClick={() => onNavigate('login')} className={`text-[10px] font-black uppercase italic text-${item.color} hover:underline`}>{item.cta}</button>
                   </div>
                 ))}
               </div>
@@ -201,17 +206,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { step: '01', icon: 'upload', color: 'brand-pink', title: 'Deploy', desc: 'Upload your show with full commercial data — cast, rights, territories, royalties, script scenario in English.' },
-                  { step: '02', icon: 'notifications', color: 'brand-yellow', title: 'Get Tickled', desc: 'Receive inquiries directly from producers worldwide. You are notified instantly via email.' },
-                  { step: '03', icon: 'handshake', color: 'brand-cyan', title: 'Close the Deal', desc: 'Negotiate directly. Use our contract templates. Keep 100% of the licensing fee — no commission.' },
+                  { step: 'TICKLE', icon: 'upload', color: 'brand-pink', title: 'Deploy Your Hit', desc: "Your show is killing it at home. Nobody abroad gives a damn. Yet. Deploy it. Raw data. Full dossier. Go international or go home.", cta: 'Set Up Your Show →' },
+                  { step: 'SET UP', icon: 'notifications', color: 'brand-yellow', title: "You've Been Tickled 📩", desc: "Someone wants your show. Negotiate direct. Keep every cent. No agent taking their 15% cut of your sweat.", cta: 'Set It Up →' },
+                  { step: 'PUNCH', icon: 'handshake', color: 'brand-cyan', title: 'New Stage. New Country.', desc: "Your punchline. Their stage. Different language. Same laugh. That's international. That's HahaHub. Play it.", cta: 'Punch It →' },
                 ].map((item, i) => (
-                  <div key={i} className="border-4 border-white/40 p-6 md:p-8 hover:shadow-neo-magenta transition-all">
-                    <div className="flex items-start justify-between mb-6">
-                      <span className={`text-5xl font-black italic text-${item.color} opacity-30`}>{item.step}</span>
+                  <div key={i} className="border-4 border-white/40 p-6 md:p-8 hover:shadow-neo-magenta hover:border-brand-pink transition-all group">
+                    <div className="flex items-start justify-between mb-4">
+                      <span className={`text-xs font-black uppercase tracking-widest text-${item.color} italic`}>{item.step}</span>
                       <span className={`material-symbols-outlined text-3xl text-${item.color}`}>{item.icon}</span>
                     </div>
-                    <h3 className="text-2xl font-black uppercase italic text-white mb-3">{item.title}</h3>
-                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm">{item.desc}</p>
+                    <h3 className="text-xl md:text-2xl font-black uppercase italic text-white mb-3 group-hover:text-brand-pink transition-colors">{item.title}</h3>
+                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm mb-4">{item.desc}</p>
+                    <button onClick={() => onNavigate('login')} className={`text-[10px] font-black uppercase italic text-${item.color} hover:underline`}>{item.cta}</button>
                   </div>
                 ))}
               </div>
@@ -358,7 +364,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   ))}
                 </ul>
                 <button onClick={() => onNavigate('login')} className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-lg hover:bg-brand-pink hover:text-white transition-all italic">
-                  Enter the Ecosystem →
+                  Set It Up Now →
                 </button>
                 <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via PayPal</p>
               </div>

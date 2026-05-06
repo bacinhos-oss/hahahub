@@ -746,7 +746,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               ))
             ) : filteredShows.length === 0 ? (
               <div className="col-span-3 py-32 text-center">
-                <p className="text-white/20 font-black uppercase italic text-2xl">No shows match your filters.</p>
+                <p className="text-white/20 font-black uppercase italic text-2xl">Shush.</p>
+                <p className="text-white/10 font-black uppercase italic text-sm mt-2">Nothing to tickle here. Adjust your filters.</p>
               </div>
             ) : filteredShows.map((show) => (
               <div key={show.id} onClick={() => handleShowSelect(show)} className="group relative cursor-pointer bg-brand-surface border-4 border-white hover:shadow-neo-yellow hover:border-brand-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col">

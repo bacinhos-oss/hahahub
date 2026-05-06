@@ -234,12 +234,12 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
       <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#03DAC6] text-center">
         <div className="logo-text text-4xl uppercase mb-8 text-black">HAHAHUB</div>
         <div className="w-28 h-28 bg-brand-yellow border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF0266] mb-8">
-          <span className="text-5xl">🎭</span>
+          <span className="text-5xl">🥊</span>
         </div>
-        <h2 className="text-4xl font-black uppercase italic mb-3 text-black leading-tight">Tickle<br/>the Laugh!</h2>
-        <p className="font-black text-brand-pink uppercase tracking-[0.2em] text-sm mb-4">Premium Access Active</p>
+        <h2 className="text-4xl font-black uppercase italic mb-3 text-black leading-tight">All Set Up.<br/>Time to Punch.</h2>
+        <p className="font-black text-brand-pink uppercase tracking-[0.2em] text-sm mb-4">You're set up. Go hunt. 🎭</p>
         <p className="text-gray-600 font-bold text-sm mb-2">Welcome, <strong className="text-black">{name.toUpperCase()}</strong>!</p>
-        <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Entering the vault...</p>
+        <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Break a Leg.</p>
         <div className="flex justify-center gap-1 mt-6">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="w-2 h-2 bg-brand-cyan animate-bounce" style={{ animationDelay: `${i * 0.15}s` }}></div>
@@ -262,7 +262,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           <div className="flex border-4 border-black mb-8 p-1">
             {[false, true].map((val, i) => (
               <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
-                {i === 0 ? 'Sign In' : 'Join Hub'}
+                {i === 0 ? 'Tickle In' : 'Set Up Hub'}
               </button>
             ))}
           </div>
@@ -281,7 +281,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         )}
 
         <h2 className="text-black text-2xl font-black uppercase mb-8 italic">
-          {adminMode ? 'Control Center Access' : isNew ? 'Create Account' : 'Welcome back, legend'}
+          {adminMode ? 'Control Center Access' : isNew ? 'Set Up Your Hub.' : 'Welcome back, legend. 🥊'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -303,7 +303,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           {error && <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>}
 
           <button type="submit" disabled={loading} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic hover:bg-brand-pink transition-all">
-            {loading ? 'LOADING...' : adminMode ? 'ENTER HQ' : isNew ? 'NEXT → PAYMENT' : 'ENTER THE VAULT'}
+            {loading ? 'Tickling...' : adminMode ? 'ENTER HQ' : isNew ? 'Set It Up → Payment' : 'Tickle In →'}
           </button>
         </form>
 
