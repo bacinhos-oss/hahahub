@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { User } from '../types'
+import PaymentModal from '../components/PaymentModal'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
-const PAYPAL_CLIENT_ID = 'AWTdSJP21yPSFId7J2fucaypo0J5G1EEb93kwYuptegD_LY2g7G8lxC0ioNL4AeZhBEuEuFODiIbGQIX'
 
 interface Props {
   onSuccess: (isPaid: boolean) => void
@@ -22,60 +22,16 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   const [isResetMode, setIsResetMode] = useState(false)
   const [resetSent, setResetSent] = useState(false)
 
-  // Registration flow steps
+  // Registration flow
   const [regStep, setRegStep] = useState<'form' | 'payment' | 'success'>('form')
   const [pendingUser, setPendingUser] = useState<any>(null)
-  const paypalRef = useRef<HTMLDivElement>(null)
-  const paypalLoaded = useRef(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
 
   useEffect(() => {
     const hash = window.location.hash.substring(1)
     const params = new URLSearchParams(hash)
     if (params.get('type') === 'recovery') setIsResetMode(true)
   }, [])
-
-  useEffect(() => {
-    if (regStep !== 'payment') return
-    const loadPayPal = () => {
-      if (paypalLoaded.current) { 
-        setTimeout(() => renderPayPal(), 100)
-        return 
-      }
-      // Check if already loaded
-      if ((window as any).paypal) {
-        paypalLoaded.current = true
-        setTimeout(() => renderPayPal(), 100)
-        return
-      }
-      const existing = document.querySelector('script[src*="paypal.com/sdk"]')
-      if (existing) {
-        existing.addEventListener('load', () => { paypalLoaded.current = true; renderPayPal() })
-        return
-      }
-      const script = document.createElement('script')
-      script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`
-      script.onload = () => { paypalLoaded.current = true; setTimeout(() => renderPayPal(), 100) }
-      document.body.appendChild(script)
-    }
-    loadPayPal()
-  }, [regStep])
-
-  const renderPayPal = () => {
-    if (!paypalRef.current || !(window as any).paypal) return
-    paypalRef.current.innerHTML = ''
-    ;(window as any).paypal.Buttons({
-      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
-      createOrder: (_data: any, actions: any) => actions.order.create({
-        purchase_units: [{ amount: { value: '99.00', currency_code: 'EUR' }, description: 'HAHAHUB Annual Pass' }]
-      }),
-      onApprove: async (_data: any, actions: any) => {
-        await actions.order.capture()
-        await completeRegistration()
-      },
-      onError: () => { setError('PayPal payment failed. Please try again.'); setRegStep('form') },
-      onCancel: () => setRegStep('form')
-    }).render(paypalRef.current)
-  }
 
   const completeRegistration = async () => {
     if (!pendingUser) return
@@ -92,11 +48,9 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
       favorites: [], uploadedShowIds: [],
     }
     setCurrentUser(user)
+    setShowPaymentModal(false)
     setRegStep('success')
-    // Wait for success screen then navigate - user is already set so discovery guard will pass
-    setTimeout(() => {
-      onSuccess(true)
-    }, 3500)
+    setTimeout(() => { onSuccess(true) }, 3500)
   }
 
   const handleForgotPassword = async () => {
@@ -145,7 +99,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           } else {
             // Go to payment step
             setPendingUser({ id: data.user.id, email })
-            setRegStep('payment')
+            setShowPaymentModal(true)
           }
         }
       } else {
@@ -202,32 +156,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     </div>
   )
 
-  // PAYMENT STEP
-  if (regStep === 'payment') return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black overflow-x-hidden">
-      <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#FF0266]">
-        <div className="logo-text text-4xl uppercase mb-6 text-center text-black">HAHAHUB</div>
-        <div className="text-center mb-8">
-          <span className="bg-brand-yellow text-black px-4 py-1 text-xs font-black uppercase tracking-[0.3em] italic">Step 2 of 2</span>
-        </div>
-        <h2 className="text-2xl font-black uppercase italic mb-2 text-black">Unlock the Vault</h2>
-        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-6">Annual Pass — €99</p>
-        <div className="bg-gray-100 border-4 border-black p-4 mb-8 text-black">
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Registering as</p>
-          <p className="font-black uppercase">{name}</p>
-          <p className="text-xs text-gray-500">{email}</p>
-        </div>
-        {error && <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic mb-6">{error}</div>}
-        <div ref={paypalRef} className="min-h-[150px]">
-          <div className="flex items-center justify-center py-10">
-            <div className="w-10 h-10 border-4 border-brand-yellow border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        </div>
-        <button onClick={() => setRegStep('form')} className="mt-6 w-full text-center text-gray-400 text-xs font-black uppercase tracking-widest hover:text-black italic">← Back</button>
-      </div>
-    </div>
-  )
-
   // SUCCESS SCREEN
   if (regStep === 'success') return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black overflow-x-hidden">
@@ -252,6 +180,15 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   // MAIN LOGIN/REGISTER FORM
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black text-black overflow-x-hidden">
+      <PaymentModal
+        isOpen={showPaymentModal}
+        planName="Annual Pass"
+        price="€99"
+        userEmail={email}
+        userName={name}
+        onClose={() => setShowPaymentModal(false)}
+        onSuccess={completeRegistration}
+      />
       <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#FF0266]">
         <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-8 italic">← Back</button>
         <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
