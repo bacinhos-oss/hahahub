@@ -198,6 +198,7 @@ module.exports = async function handler(req, res) {
     const result = await resend.emails.send({
       from: FROM,
       to,
+      bcc: 'info@hahahub.art',
       subject,
       html,
     });
