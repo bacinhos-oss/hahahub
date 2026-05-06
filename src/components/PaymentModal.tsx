@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 // STRIPE PUBLIC KEY — zamenjaj z živim ključem pred launchom
-const STRIPE_PUBLIC_KEY = 'pk_test_placeholder_replace_with_live_key';
+const STRIPE_PUBLIC_KEY = 'pk_test_51TU05V2eTQB4erlR7UWNCCI5lcntrAaPbCcY53jIrMqdCGilLM8cJDTBgIlAh80Oo63nrwrtbDlcN7jJRMtG5Kij00dAFaxx94';
 
 interface PaymentModalProps {
   planName: string;
@@ -79,29 +79,48 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
     setIsProcessing(true);
     setErrorMsg('');
     try {
-      // Create PaymentMethod
+      // 1. Create PaymentIntent via backend
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planName,
+          email: userEmail,
+          companyName,
+          vatNumber,
+          country,
+        }),
+      });
+      const { clientSecret, error: backendError } = await response.json();
+      if (backendError) {
+        setErrorMsg(backendError);
+        setIsProcessing(false);
+        return;
+      }
+
+      // 2. Confirm payment with Stripe
       const card = elementsRef.current.getElement('card');
-      const { paymentMethod, error } = await stripeRef.current.createPaymentMethod({
-        type: 'card',
-        card,
-        billing_details: {
-          name: companyName || userName || '',
-          email: userEmail || '',
+      const { error, paymentIntent } = await stripeRef.current.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card,
+          billing_details: {
+            name: companyName || userName || '',
+            email: userEmail || '',
+          },
         },
       });
+
       if (error) {
         setErrorMsg(error.message || 'Missed the punch. Try again.');
         setIsProcessing(false);
         return;
       }
-      // Here you would call your backend to create PaymentIntent
-      // For now, simulate success (replace with real backend call)
-      console.log('PaymentMethod created:', paymentMethod.id);
-      console.log('VAT:', vatNumber, 'Company:', companyName, 'Country:', country);
-      // Simulate success for now
-      setStep('success');
-      generateInvoice();
-      setTimeout(() => onSuccess(), 2500);
+
+      if (paymentIntent?.status === 'succeeded') {
+        setStep('success');
+        generateInvoice();
+        setTimeout(() => onSuccess(), 2500);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Missed the punch. Try again.');
       setIsProcessing(false);
