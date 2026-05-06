@@ -1,26 +1,25 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import Stripe from 'stripe';
+const Stripe = require('stripe');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-06-20',
 });
 
-const PLAN_AMOUNTS: Record<string, number> = {
+const PLAN_AMOUNTS = {
   'Annual Pass': 9900,
   'Quarterly Pass': 5900,
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { planName, email, companyName, vatNumber, country } = req.body;
-
   const amount = PLAN_AMOUNTS[planName];
-  if (!amount) {
-    return res.status(400).json({ error: 'Invalid plan' });
-  }
+  if (!amount) return res.status(400).json({ error: 'Invalid plan' });
 
   try {
     const isReverseCharge = !!vatNumber && country !== 'SI';
@@ -31,15 +30,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: total,
       currency: 'eur',
-      receipt_email: email,
+      receipt_email: email || undefined,
       metadata: {
         planName,
         companyName: companyName || '',
         vatNumber: vatNumber || '',
         country: country || '',
-        isReverseCharge: String(isReverseCharge),
       },
-      description: `HahaHub ${planName} — Tickle. Set Up. Punch.`,
+      description: `HahaHub ${planName}`,
     });
 
     return res.status(200).json({
@@ -48,8 +46,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       vatAmount,
       isReverseCharge,
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error('Stripe error:', err);
     return res.status(500).json({ error: err.message });
   }
-}
+};
