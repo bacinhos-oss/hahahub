@@ -260,6 +260,18 @@ const App: React.FC = () => {
 
 
 
+  const sendEmail = async (type: string, to: string, data: any) => {
+    try {
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, to, data }),
+      });
+    } catch (err) {
+      console.error('Email send error:', err);
+    }
+  };
+
   const handlePurchaseSuccess = async (planName: string) => {
     if (!currentUser) return
     const expiry = planName.includes('Annual') 
@@ -267,6 +279,19 @@ const App: React.FC = () => {
       : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiry }).eq('id', currentUser.id)
     setCurrentUser(prev => prev ? { ...prev, isPaid: true, subscription: { type: planName.includes('Annual') ? 'Annual' : 'Quarterly', expiryDate: expiry, status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } } : null)
+    // Send welcome + payment confirmation emails
+    const invoiceNum = 'HH-' + Date.now().toString().slice(-6);
+    await sendEmail('payment_confirmation', currentUser.email, {
+      name: currentUser.name,
+      planName,
+      amount: planName.includes('Annual') ? '€99' : '€59',
+      invoiceNum,
+      expiry,
+    });
+    await sendEmail('welcome', currentUser.email, {
+      name: currentUser.name,
+      email: currentUser.email,
+    });
     setCurrentPage('discovery')
   }
 

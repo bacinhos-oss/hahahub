@@ -306,13 +306,32 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     if (data) {
       setInquiries(data);
       const unread = data.filter((inq: any) => !inq.is_read);
-      // Only show toast once per session — not on every refresh
       const toastKey = 'hahahub_toast_shown_' + user?.id;
       const alreadyShown = sessionStorage.getItem(toastKey);
       if (unread.length > 0 && !alreadyShown) {
         setTickledToast({ show: true, showTitle: unread[0].show_title });
         sessionStorage.setItem(toastKey, '1');
         setTimeout(() => setTickledToast({ show: false, showTitle: '' }), 5000);
+        // Send email notification for new inquiries
+        unread.forEach(async (inq: any) => {
+          if (!inq.email_sent && user?.email) {
+            await fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'inquiry',
+                to: user.email,
+                data: {
+                  producerName: user.name,
+                  buyerName: inq.buyer_name || 'A Producer',
+                  buyerEmail: inq.buyer_email || '',
+                  showTitle: inq.show_title || '',
+                  message: inq.message || '',
+                },
+              }),
+            }).catch(console.error);
+          }
+        });
       }
     }
   };
