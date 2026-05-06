@@ -234,8 +234,16 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">00. RIGHTS & IDENTITY</h4>
                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
-                           <p className="text-[9px] font-black uppercase text-brand-cyan mb-1 tracking-widest italic">Producer / Company</p>
+                           <p className="text-[9px] font-black uppercase text-brand-cyan mb-2 tracking-widest italic">Producer / Company</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
+                           <div className="flex flex-wrap gap-1 mt-2">
+                             {(selectedShow as any).is_verified && (
+                               <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">✓ Verified</span>
+                             )}
+                             {(selectedShow as any).is_founding && (
+                               <span className="bg-brand-yellow text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">🏆 Founding</span>
+                             )}
+                           </div>
                         </div>
                         <div className="bg-brand-surface border-4 border-white p-6">
                            <p className="text-[9px] font-black uppercase text-brand-yellow mb-1 tracking-widest italic">Copyright Holder</p>
@@ -781,6 +789,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="flex items-center gap-2 group/metric">
                     <span className="material-symbols-outlined text-brand-cyan text-base">visibility</span>
                     <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {(show as any).is_verified && (
+                      <span className="text-[8px] font-black uppercase text-brand-cyan border border-brand-cyan/40 px-1.5 py-0.5 italic">✓</span>
+                    )}
+                    {(show as any).is_founding && (
+                      <span className="text-[8px] font-black uppercase text-brand-yellow border border-brand-yellow/40 px-1.5 py-0.5 italic">🏆</span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 group/metric">
                     <span className="material-symbols-outlined text-brand-pink text-base">favorite</span>

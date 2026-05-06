@@ -32,7 +32,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   }, []);
 
   const loadStats = async () => {
-    const { data } = await supabase.from('profiles').select('id, is_paid, name, uploaded_show_ids, subscription_expiry');
+    const { data } = await supabase.from('profiles').select('id, is_paid, name, email, is_verified, is_founding, uploaded_show_ids, subscription_expiry').order('created_at', { ascending: false });
     if (data) {
       setUsers(data);
       setLiveStats({
@@ -62,6 +62,12 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const loadUsers = async () => {
     setLoadingUsers(true);
     await loadStats();
+    // Load individual users with email
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, name, email, is_paid, is_verified, is_founding, uploaded_show_ids, subscription_expiry')
+      .order('created_at', { ascending: false });
+    if (data) setUsers(data);
     setLoadingUsers(false);
   };
 
@@ -348,19 +354,19 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
         </section>
 
         <section className="bg-brand-surface border-4 border-white overflow-hidden shadow-neo-cyan">
-          <div className="px-8 py-5 border-b-4 border-white flex justify-between items-center bg-white/[0.02]">
+          <div className="px-4 md:px-8 py-5 border-b-4 border-white flex justify-between items-center bg-white/[0.02]">
             <h3 className="font-display text-xl uppercase tracking-tighter italic">Recent Despatches</h3>
             <span className="text-[10px] text-white/40 font-black uppercase italic">{invites.length} total</span>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left italic">
+          <div className="overflow-x-auto w-full">
+            <table className="w-full text-left italic min-w-[600px]">
               <thead className="bg-black/40 text-[10px] uppercase text-brand-yellow font-black tracking-[0.2em] border-b-2 border-brand-border">
                 <tr>
-                  <th className="px-8 py-4">Producer</th>
-                  <th className="px-8 py-4">Credentials</th>
-                  <th className="px-8 py-4">Duration</th>
-                  <th className="px-8 py-4">Status</th>
-                  <th className="px-8 py-4 text-right">Actions</th>
+                  <th className="px-4 md:px-8 py-4">Producer</th>
+                  <th className="px-4 md:px-8 py-4">Credentials</th>
+                  <th className="px-4 md:px-8 py-4">Duration</th>
+                  <th className="px-4 md:px-8 py-4">Status</th>
+                  <th className="px-4 md:px-8 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-brand-border">
@@ -368,16 +374,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   <tr><td colSpan={5} className="p-12 text-center text-white/20 font-black uppercase italic">No invites sent yet.</td></tr>
                 ) : invites.map((inv) => (
                   <tr key={inv.id} className="hover:bg-brand-yellow/5 transition-colors group">
-                    <td className="px-8 py-5">
+                    <td className="px-4 md:px-8 py-5">
                       <span className="font-black text-sm uppercase block">{inv.recipient}</span>
                       <span className="text-[10px] text-gray-500">{inv.email}</span>
                     </td>
-                    <td className="px-8 py-5 font-mono">
+                    <td className="px-4 md:px-8 py-5 font-mono">
                        <span className="text-[10px] text-brand-cyan uppercase font-black block">U: {inv.generatedUsername}</span>
                        <span className="text-[10px] text-brand-pink uppercase font-black">P: {inv.generatedPassword}</span>
                     </td>
-                    <td className="px-8 py-5"><span className="text-xs font-bold uppercase text-brand-yellow">{inv.duration}</span></td>
-                    <td className="px-8 py-5">
+                    <td className="px-4 md:px-8 py-5"><span className="text-xs font-bold uppercase text-brand-yellow">{inv.duration}</span></td>
+                    <td className="px-4 md:px-8 py-5">
                        <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase ${inv.status === 'live' ? 'bg-green-500/10 text-green-400 border-green-500/30' : inv.status === 'pending' ? 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}>
                           {inv.status}
                        </span>
