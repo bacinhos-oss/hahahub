@@ -33,9 +33,10 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         {/* LOGO */}
         <button
           onClick={() => { onNavigate(user ? 'discovery' : 'landing'); setMenuOpen(false); }}
-          className="logo-text text-2xl md:text-4xl uppercase tracking-tighter hover:scale-105 transition-transform"
+          className="flex flex-col items-start hover:scale-105 transition-transform"
         >
-          HAHAHUB
+          <span className="logo-text text-2xl md:text-4xl uppercase tracking-tighter">HAHAHUB</span>
+          <span className="hidden md:block text-[8px] font-black uppercase tracking-[0.25em] text-white/30 italic leading-none mt-0.5">Tickle. Set Up. Punch.</span>
         </button>
 
         {/* DESKTOP NAV */}
