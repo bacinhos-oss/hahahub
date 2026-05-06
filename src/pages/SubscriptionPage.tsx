@@ -946,6 +946,42 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </div>
 
+            {/* INVOICE ARCHIVE */}
+            {(() => {
+              const invoices = (() => { try { return JSON.parse(localStorage.getItem('hahahub_invoices') || '[]'); } catch { return []; } })();
+              if (invoices.length === 0) return null;
+              return (
+                <section className="space-y-4">
+                  <h2 className="text-xl font-black uppercase italic text-white">Invoice <span className="text-brand-yellow">Archive</span></h2>
+                  <div className="space-y-3">
+                    {invoices.map((inv: any) => (
+                      <div key={inv.id} className="bg-brand-surface border-2 border-white/20 p-4 flex items-center justify-between gap-4">
+                        <div>
+                          <p className="font-black uppercase italic text-white text-sm">{inv.id}</p>
+                          <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{inv.date} · {inv.plan} · €{inv.amount}</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const blob = new Blob([inv.html], { type: 'text/html' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `HahaHub-Invoice-${inv.id}.html`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          }}
+                          className="flex items-center gap-2 bg-brand-yellow text-black px-4 py-2 font-black uppercase text-xs border-2 border-black hover:bg-white transition-all italic flex-shrink-0"
+                        >
+                          <span className="material-symbols-outlined text-sm">download</span>
+                          Download
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            })()}
+
             {/* 4. CONTRACT TEMPLATES */}
             <section className="space-y-6">
               <div>

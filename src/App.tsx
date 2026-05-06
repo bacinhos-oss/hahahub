@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage'
 import PrivacyPage from './pages/PrivacyPage'
 import UploadPage from './pages/UploadPage'
 import CookieBanner from './components/CookieBanner'
+import NotFoundPage from './pages/NotFoundPage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
@@ -195,8 +196,9 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontFamily: 'Bowlby One SC, cursive', fontSize: '3rem', color: '#FFDE03' }}>HAHAHUB</div>
+      <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+        <div style={{ fontFamily: 'Bowlby One SC, cursive', fontSize: '3rem', color: '#FFDE03', textShadow: '3px 3px 0 #FF0266' }}>HAHAHUB</div>
+        <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '10px', color: 'rgba(255,255,255,0.2)', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 900 }}>Tickling the vault...</div>
       </div>
     )
   }
@@ -290,7 +292,7 @@ const App: React.FC = () => {
       case 'about': return <AboutPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'privacy': return <PrivacyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
-      default: return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
+      default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />
     }
   }
 
