@@ -175,29 +175,75 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   <th className="px-8 py-4">Uploads</th>
                   <th className="px-8 py-4">Status</th>
                   <th className="px-8 py-4">Expires</th>
-                  <th className="px-8 py-4 text-right">PRO Toggle</th>
+                  <th className="px-8 py-4">Verified</th>
+                  <th className="px-8 py-4">Founding</th>
+                  <th className="px-8 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-brand-border">
                 {users.length === 0 ? (
-                  <tr><td colSpan={5} className="p-12 text-center text-white/20 font-black uppercase italic">No producers yet.</td></tr>
-                ) : users.map((u: any) => (
-                  <tr key={u.id} className="hover:bg-brand-yellow/5 transition-colors">
-                    <td className="px-8 py-5"><span className="font-black text-sm uppercase">{u.name || '—'}</span></td>
+                  <tr><td colSpan={7} className="p-12 text-center text-white/20 font-black uppercase italic">No producers yet.</td></tr>
+                ) : users.map((u: any) => {
+                  const isExpired = u.subscription_expiry && new Date(u.subscription_expiry) < new Date();
+                  return (
+                  <tr key={u.id} className={`hover:bg-brand-yellow/5 transition-colors ${isExpired ? 'opacity-50' : ''}`}>
+                    <td className="px-8 py-5"><span className="font-black text-sm uppercase">{u.name || '—'}</span><br/><span className="text-[10px] text-white/30">{u.email}</span></td>
                     <td className="px-8 py-5"><span className="text-xs font-bold">{u.uploaded_show_ids?.length || 0}</span></td>
                     <td className="px-8 py-5">
                       <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase ${u.is_paid ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
                         {u.is_paid ? 'PRO' : 'FREE'}
                       </span>
                     </td>
-                    <td className="px-8 py-5"><span className="text-[10px] text-gray-500 font-bold">{u.subscription_expiry || '—'}</span></td>
-                    <td className="px-8 py-5 text-right">
-                      <button onClick={() => togglePro(u.id, u.is_paid)} className={`px-4 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_paid ? 'border-brand-pink text-brand-pink hover:bg-brand-pink hover:text-white' : 'border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black'}`}>
-                        {u.is_paid ? 'Revoke PRO' : 'Grant PRO'}
+                    <td className="px-8 py-5">
+                      <span className={`text-[10px] font-bold ${isExpired ? 'text-brand-pink' : 'text-gray-500'}`}>
+                        {isExpired ? '⚠ EXPIRED' : (u.subscription_expiry || '—')}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5">
+                      <button
+                        onClick={async () => {
+                          const newVal = !u.is_verified;
+                          await supabase.from('profiles').update({ is_verified: newVal }).eq('id', u.id);
+                          setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_verified: newVal } : x));
+                        }}
+                        className={`px-3 py-1 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_verified ? 'border-brand-cyan text-brand-cyan hover:bg-brand-pink hover:text-white hover:border-brand-pink' : 'border-white/20 text-white/30 hover:border-brand-cyan hover:text-brand-cyan'}`}
+                      >
+                        {u.is_verified ? '✓ Verified' : 'Verify'}
                       </button>
                     </td>
+                    <td className="px-8 py-5">
+                      <button
+                        onClick={async () => {
+                          const newVal = !u.is_founding;
+                          await supabase.from('profiles').update({ is_founding: newVal }).eq('id', u.id);
+                          setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_founding: newVal } : x));
+                        }}
+                        className={`px-3 py-1 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_founding ? 'border-brand-yellow text-brand-yellow' : 'border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow'}`}
+                      >
+                        {u.is_founding ? '🏆 Founding' : 'Set'}
+                      </button>
+                    </td>
+                    <td className="px-8 py-5 text-right flex items-center gap-2 justify-end">
+                      <button onClick={() => togglePro(u.id, u.is_paid)} className={`px-4 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_paid ? 'border-brand-pink text-brand-pink hover:bg-brand-pink hover:text-white' : 'border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black'}`}>
+                        {u.is_paid ? 'Revoke' : 'Grant PRO'}
+                      </button>
+                      {isExpired && (
+                        <button
+                          onClick={async () => {
+                            if (!confirm(`Remove ${u.name}? This cannot be undone.`)) return;
+                            await supabase.from('profiles').delete().eq('id', u.id);
+                            await supabase.auth.admin.deleteUser(u.id).catch(() => {});
+                            setUsers((prev: any[]) => prev.filter(x => x.id !== u.id));
+                          }}
+                          className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}
