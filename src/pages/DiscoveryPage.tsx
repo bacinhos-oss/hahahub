@@ -657,25 +657,67 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       
       <main className="pt-32 pb-20 px-6 md:px-12 flex-1">
         <div className="max-w-7xl mx-auto space-y-16">
-          <section className="space-y-10 text-white">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-              <h1 className="text-4xl sm:text-6xl md:text-9xl font-black uppercase leading-[0.8] tracking-tighter italic group">
-                Comedy <span className="text-brand-yellow">Vault</span>
+          <section className="space-y-8 text-white">
+
+            {/* HEADER */}
+            <div className="flex flex-col gap-2">
+              <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">Comedy Rights Marketplace</span>
+              <h1 className="text-5xl sm:text-7xl md:text-9xl font-black uppercase leading-[0.85] tracking-tighter italic">
+                The <span className="text-brand-yellow">Laugh</span><br/>Exchange
               </h1>
-              <div className="flex items-center gap-4 bg-brand-surface border-2 border-white/20 p-4 shadow-neo-cyan">
-                <span className="material-symbols-outlined text-brand-cyan">sort</span>
-                <div className="flex flex-col">
-                  <label className="text-[8px] font-black uppercase text-white/40 italic">Sort By</label>
-                  <select 
-                    value={sortBy} 
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-transparent border-none text-white font-black uppercase italic text-sm focus:ring-0 p-0 cursor-pointer"
-                  >
-                    <option value="Newest" className="bg-brand-black">Newest Assets</option>
-                    <option value="Popular" className="bg-brand-black">Most Liked</option>
-                    <option value="Trending" className="bg-brand-black">Trending Now</option>
-                  </select>
+            </div>
+
+            {/* STEFUNNY — SMART SEARCH */}
+            <div className="relative">
+              <div className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-6 shadow-neo-yellow">
+                <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
+                  SF
                 </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">STEFUNNY</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Ask Stefunny... genre, country, cast size, keywords"
+                    className="w-full bg-transparent border-none text-white font-black text-sm md:text-base uppercase outline-none italic placeholder:text-white/20 placeholder:normal-case placeholder:not-italic"
+                  />
+                </div>
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
+                    <span className="material-symbols-outlined text-xl">close</span>
+                  </button>
+                )}
+                {!searchQuery && (
+                  <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0">search</span>
+                )}
+              </div>
+              {searchQuery && (
+                <div className="mt-2 text-[10px] font-black uppercase italic text-white/40">
+                  {filteredShows.length > 0
+                    ? `Stefunny found ${filteredShows.length} show${filteredShows.length !== 1 ? 's' : ''} for you. 🥊`
+                    : `Stefunny found nothing. Try again.`
+                  }
+                </div>
+              )}
+            </div>
+
+            {/* SORT + SHORTLIST */}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-3 bg-brand-surface border-2 border-white/20 p-3">
+                <span className="material-symbols-outlined text-brand-cyan text-base">sort</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-transparent border-none text-white font-black uppercase italic text-xs focus:ring-0 p-0 cursor-pointer"
+                >
+                  <option value="Newest" className="bg-brand-black">Newest</option>
+                  <option value="Popular" className="bg-brand-black">Most Liked</option>
+                  <option value="Trending" className="bg-brand-black">Trending</option>
+                </select>
               </div>
               <button
                 onClick={() => setShowShortlistOnly(v => !v)}
@@ -731,10 +773,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <option value="Moderate risk">Moderate Risk</option>
                         <option value="Experimental">Experimental</option>
                     </select>
-                </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 italic">Smart Search</label>
-                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search title, author, country, cast..." className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-white italic" />
                 </div>
             </div>
           </section>

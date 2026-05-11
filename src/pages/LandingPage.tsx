@@ -98,18 +98,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         {/* HERO */}
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Global Comedy Rights Ecosystem</span>
-            <h1 className="font-display text-white text-5xl sm:text-7xl md:text-9xl leading-[0.85] tracking-tighter uppercase mb-6 md:mb-8 italic">
-              INTERNATIONAL<br/>
-              <span className="text-brand-yellow">THEATRE COMEDY</span><br/>
-              <span className="text-brand-cyan">PRODUCERS</span><br/>
-              PLATFORM.
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Comedy Rights Marketplace</span>
+            <h1 className="font-display text-white text-6xl sm:text-8xl md:text-[130px] leading-[0.85] tracking-tighter uppercase mb-4 md:mb-6 italic">
+              TICKLE.<br/>
+              <span className="text-brand-yellow">SET UP.</span><br/>
+              <span className="text-brand-pink">PUNCH.</span>
             </h1>
-            <p className="text-base md:text-xl font-bold text-white/50 italic max-w-2xl mb-4 leading-relaxed">
-              Your hit in Spain is unknown in Germany. HahaHub changes that.
+            <p className="text-lg md:text-2xl font-black uppercase italic text-white/60 tracking-widest mb-6 md:mb-8">
+              International Comedy Theatre Producers Platform
             </p>
             <p className="text-base md:text-lg font-bold text-white/40 italic max-w-2xl mb-10 md:mb-12 leading-relaxed">
-              The first producer-to-producer comedy rights marketplace. Buy rights, sell rights. Direct. No agents. No middlemen. International.
+              Your hit in Spain is unknown in Germany. HahaHub changes that. The first producer-to-producer comedy rights marketplace. Buy rights, sell rights. Direct. No agents. No middlemen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
