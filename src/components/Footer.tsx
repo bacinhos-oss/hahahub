@@ -14,7 +14,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div className="space-y-4">
             <div className="logo-text text-3xl uppercase">HAHAHUB</div>
             <p className="text-[11px] font-bold italic text-white/40 leading-relaxed">
-              The global producer-to-producer platform for international theater comedies.
+              The global producer-to-producer comedy rights exchange. No agents. No middlemen.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         </div>
 
         <div className="border-t-2 border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">© 2025 HAHAHUB. All laughs reserved.</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">© 2026 HAHAHUB. All laughs reserved.</p>
           <p className="text-[10px] font-bold italic text-white/20">Built for theater comedy producers worldwide.</p>
         </div>
       </div>

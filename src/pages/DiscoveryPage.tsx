@@ -238,10 +238,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
                            <div className="flex flex-wrap gap-1 mt-2">
                              {(selectedShow as any).is_verified && (
-                               <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">✓ Verified</span>
+                               <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">VERIFIED</span>
                              )}
                              {(selectedShow as any).is_founding && (
-                               <span className="bg-brand-yellow text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">🏆 Founding</span>
+                               <span className="bg-brand-yellow text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">FOUNDING</span>
                              )}
                            </div>
                         </div>
@@ -780,7 +780,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
             {/* HEADER */}
             <div className="flex flex-col gap-2">
-              <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">Comedy Rights The Laff Exchange</span>
+              <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">TICKLE. SET UP. PUNCH.</span>
               <h1 className="text-5xl sm:text-7xl md:text-9xl font-black uppercase leading-[0.85] tracking-tighter italic">
                 The <span className="text-brand-yellow">Laff</span><br/>Exchange
               </h1>
@@ -949,10 +949,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </div>
                   <div className="flex items-center gap-1">
                     {(show as any).is_verified && (
-                      <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">✓ Verified</span>
+                      <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">VERIFIED</span>
                     )}
                     {(show as any).is_founding && (
-                      <span className="text-[8px] font-black uppercase text-black bg-brand-yellow px-2 py-0.5 italic border border-black">🏆 Founding</span>
+                      <span className="text-[8px] font-black uppercase text-black bg-brand-yellow px-2 py-0.5 italic border border-black">FOUNDING</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 group/metric">

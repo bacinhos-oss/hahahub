@@ -694,12 +694,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     )}
                     {(user as any).is_founding && (
                       <span className="flex items-center gap-1 bg-brand-yellow text-black text-[9px] font-black uppercase px-3 py-1 italic border-2 border-black shadow-[2px_2px_0px_black]">
-                        🏆 Founding Producer
+                        FOUNDING PRODUCER
                       </span>
                     )}
                     {(user as any).is_verified && (
                       <span className="flex items-center gap-1 bg-brand-cyan text-black text-[9px] font-black uppercase px-3 py-1 italic border-2 border-black shadow-[2px_2px_0px_black]">
-                        ✓ Verified
+                        VERIFIED
                       </span>
                     )}
                     {user.isPaid && !(user as any).is_founding && (
@@ -827,7 +827,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           onClick={() => markAsRead(inq.id)}
                           className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black hover:bg-white border-black")}
                         >
-                          {inq.is_read ? "Tickle Back Again →" : "Tickle Back 🎭"}
+                          {inq.is_read ? "Tickle Back Again →" : "Tickle Back →"}
                         </a>
                         <button
                           onClick={() => {

@@ -13,14 +13,14 @@ interface LandingPageProps {
 const FOUNDING_TOTAL = 30;
 
 const FAQ_ITEMS = [
-  { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your platform.' },
+  { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your direct route.' },
   { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
-  { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery platform and contract templates — the deal is between you and the producer. No commission.' },
-  { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer marketplace. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
-  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on the platform.' },
-  { q: 'What payment methods do you accept?', a: 'We accept card payments via Stripe. Secure, no middlemen. All prices are in EUR.' },
+  { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery tools and contract templates — the deal is between you and the producer. No commission.' },
+  { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
+  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on The Laff Exchange.' },
+  { q: 'What payment methods do you accept?', a: 'We currently accept PayPal. Stripe integration is coming soon. All prices are in EUR.' },
   { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
-  { q: 'What languages are supported?', a: 'The platform is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
+  { q: 'What languages are supported?', a: 'The Laff Exchange is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
 ];
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess, shows }) => {
@@ -98,7 +98,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         {/* HERO */}
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Comedy Rights Marketplace</span>
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Laff Exchange</span>
             <h1 className="font-display text-white text-6xl sm:text-8xl md:text-[130px] leading-[0.85] tracking-tighter uppercase mb-4 md:mb-6 italic">
               TICKLE.<br/>
               <span className="text-brand-yellow">SET UP.</span><br/>
@@ -108,7 +108,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               International Comedy Theatre Producers Platform
             </p>
             <p className="text-base md:text-lg font-bold text-white/40 italic max-w-2xl mb-10 md:mb-12 leading-relaxed">
-              Your hit in Spain is unknown in Germany. HahaHub changes that. The first producer-to-producer comedy rights marketplace. Buy rights, sell rights. Direct. No agents. No middlemen.
+              Your hit in Spain is unknown in Germany. HahaHub changes that. The first producer-to-producer TICKLE. SET UP. PUNCH.. Buy rights, sell rights. Direct. No agents. No middlemen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
@@ -181,7 +181,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { step: 'TICKLE', icon: 'search', color: 'brand-cyan', title: 'Tickle the Vault', desc: "Something's been rotting in your season lineup. Hunt it down. International. Raw. Funny as hell. The show your audience didn't know they needed.", cta: 'Tickle It →' },
+                  { step: 'TICKLE', icon: 'search', color: 'brand-cyan', title: 'Tickle the Vault', desc: "Something's been rotting in your season lineup. Hunt it down. International. Raw. Funny as hell. The show your audience didn't know they needed.", cta: 'Send Inquiry →' },
                   { step: 'SET UP', icon: 'mail', color: 'brand-yellow', title: 'Cut the Middleman', desc: 'Direct line to the producer. Templates. Terms. Done. No commission. No bullshit. No mercy.', cta: 'Set It Up →' },
                   { step: 'PUNCH', icon: 'theater_comedy', color: 'brand-pink', title: 'Curtain Up', desc: "Lights on. They're already laughing. That's your show now. You found it here.", cta: 'Punch It →' },
                 ].map((item, i) => (
@@ -268,7 +268,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   Founding<br/>Producer
                 </h2>
                 <p className="text-black/70 font-bold italic text-lg md:text-xl max-w-xl leading-relaxed">
-                  The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show with full data and help shape the platform.
+                  The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show with full data and help shape The Laff Exchange.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   {['Free Forever ✓', 'Founding Producer Badge ✓', 'Unlimited Uploads ✓', 'Shape the Product ✓'].map((b, i) => (
@@ -365,7 +365,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <button onClick={() => onNavigate('login')} className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-lg hover:bg-brand-pink hover:text-white transition-all italic">
                   Set It Up Now →
                 </button>
-                <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via Stripe</p>
+                <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via PayPal</p>
               </div>
               {/* STUDIO */}
               <div className="bg-brand-surface border-4 border-brand-cyan p-6 md:p-8 shadow-neo-cyan">
@@ -416,8 +416,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         <section className="px-4 md:px-12 py-16 border-t-4 border-white/10">
           <div className="max-w-4xl mx-auto space-y-6 text-white/30 text-xs font-bold italic leading-relaxed">
             <h3 className="text-white/60 font-black uppercase text-sm tracking-widest not-italic">Terms of Use — Summary</h3>
-            <p>HAHAHUB is a producer-to-producer platform for discovering and licensing international theatrical productions. By registering, you confirm you are a professional acting in a commercial capacity and are at least 18 years of age.</p>
-            <p>Subscriptions are annual, non-refundable, and do not auto-renew. HAHAHUB is a discovery platform only — we are not party to any licensing agreements between users. Contract templates are provided for reference and do not constitute legal advice.</p>
+            <p>HAHAHUB is a producer-to-producer The Laff Exchange for discovering and licensing international theatrical productions. By registering, you confirm you are a professional acting in a commercial capacity and are at least 18 years of age.</p>
+            <p>Subscriptions are annual, non-refundable, and do not auto-renew. HAHAHUB is a discovery tool only — we are not party to any licensing agreements between users. Contract templates are provided for reference and do not constitute legal advice.</p>
             <p>All content uploaded by users remains the property of the respective rights holders. HAHAHUB reserves the right to remove listings that violate these terms. Governing law: Slovenia.</p>
             <p>Questions: <span className="text-brand-yellow">info@hahahub.art</span></p>
             <div className="flex gap-6 pt-2">

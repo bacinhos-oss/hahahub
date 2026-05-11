@@ -59,7 +59,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
               <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
                 <div>
                   <span className="bg-black text-brand-yellow px-3 py-1 text-xs font-black uppercase tracking-widest italic inline-block mb-3">
-                    🏆 {foundingLeft} spots left
+                    {foundingLeft} spots left
                   </span>
                   <h2 className="text-4xl md:text-6xl font-black uppercase italic text-black leading-[0.9]">
                     Founding<br/>Producer
