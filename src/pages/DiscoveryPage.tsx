@@ -812,7 +812,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     >
                       <span className="material-symbols-outlined text-sm">{shortlist.includes(show.id) ? 'bookmark' : 'bookmark_border'}</span>
                     </button>
-                    <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.duration}m</span>
+                    <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.productionYear}</span>
                     <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-cyan text-black">{show.location}</span>
                   </div>
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
@@ -828,12 +828,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <span className="material-symbols-outlined text-brand-cyan text-base">visibility</span>
                     <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     {(show as any).is_verified && (
-                      <span className="text-[8px] font-black uppercase text-brand-cyan border border-brand-cyan/40 px-1.5 py-0.5 italic">✓</span>
+                      <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">✓ Verified</span>
                     )}
                     {(show as any).is_founding && (
-                      <span className="text-[8px] font-black uppercase text-brand-yellow border border-brand-yellow/40 px-1.5 py-0.5 italic">🏆</span>
+                      <span className="text-[8px] font-black uppercase text-black bg-brand-yellow px-2 py-0.5 italic border border-black">🏆 Founding</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 group/metric">

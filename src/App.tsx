@@ -88,12 +88,29 @@ const App: React.FC = () => {
 
   const loadShows = async () => {
     const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
-    if (data) mapAndSetShows(data)
+    if (!data) return
+    // Fetch profiles to get is_verified + is_founding per producer
+    const userIds = [...new Set(data.map((s: any) => s.user_id).filter(Boolean))]
+    let profileMap: Record<string, { is_verified: boolean; is_founding: boolean }> = {}
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, is_verified, is_founding')
+        .in('id', userIds)
+      if (profiles) {
+        profiles.forEach((p: any) => {
+          profileMap[p.id] = { is_verified: p.is_verified || false, is_founding: p.is_founding || false }
+        })
+      }
+    }
+    mapAndSetShows(data, profileMap)
   }
 
-  const mapAndSetShows = (data: any[]) => {
+  const mapAndSetShows = (data: any[], profileMap: Record<string, { is_verified: boolean; is_founding: boolean }> = {}) => {
     const mapped = data.map((s: any) => ({
       ...s,
+      is_verified: profileMap[s.user_id]?.is_verified || false,
+      is_founding: profileMap[s.user_id]?.is_founding || false,
       id: s.id,
       title: s.title || '',
       author: s.author || '',
