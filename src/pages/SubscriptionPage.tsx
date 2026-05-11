@@ -821,15 +821,24 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     </div>
                     <div className="flex flex-col gap-2 md:items-end justify-between">
                       <p className="text-[8px] text-white/30 font-bold uppercase">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                      <button
-                        onClick={() => {
-                          markAsRead(inq.id);
-                          window.location.href = "mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title) + "&body=" + encodeURIComponent("\n\n---\nOriginal message from " + inq.from_name + ":\n" + (inq.message || ''));
-                        }}
-                        className={"text-[9px] font-black uppercase px-4 py-2 border-2 border-black transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black hover:bg-white border-black")}
-                      >
-                        {inq.is_read ? "Tickle Back Again →" : "Tickle Back 🎭"}
-                      </button>
+                      <div className="flex flex-col gap-2 items-end">
+                        <a
+                          href={"mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title) + "&body=" + encodeURIComponent("\n\n---\nOriginal message from " + inq.from_name + ":\n" + (inq.message || ''))}
+                          onClick={() => markAsRead(inq.id)}
+                          className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black hover:bg-white border-black")}
+                        >
+                          {inq.is_read ? "Tickle Back Again →" : "Tickle Back 🎭"}
+                        </a>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(inq.from_email);
+                            markAsRead(inq.id);
+                          }}
+                          className="text-[8px] font-bold italic text-white/30 hover:text-brand-cyan transition-colors underline"
+                        >
+                          {inq.from_email}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
