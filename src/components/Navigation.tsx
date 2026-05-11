@@ -101,7 +101,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             </button>
             {user && (
               <button onClick={() => { onNavigate('upload'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-cyan/70 hover:text-brand-cyan transition-colors">
-                UPLOAD
+                DROP THE PUNCH
               </button>
             )}
             {isAdmin && (
