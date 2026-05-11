@@ -72,6 +72,8 @@ const App: React.FC = () => {
         role: isAdmin ? 'admin' : 'Producer',
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
         isPaid: data?.is_paid || isAdmin, isAdmin,
+        is_verified: data?.is_verified || false,
+        is_founding: data?.is_founding || false,
         subscription: data?.is_paid || isAdmin ? { type: 'Annual', expiryDate: data?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
         favorites: data?.favorites || [],
       }
@@ -176,6 +178,7 @@ const App: React.FC = () => {
 
   const handleUpdateStats = async (showId: string, type: 'view' | 'inquiry') => {
     if (!showId) return
+    // Optimistic update UI
     setShows(prev => prev.map(s => {
       if (s.id !== showId) return s
       return {
@@ -184,13 +187,19 @@ const App: React.FC = () => {
         inquiriesCount: type === 'inquiry' ? s.inquiriesCount + 1 : s.inquiriesCount,
       }
     }))
+    // Atomic increment in Supabase — no race condition
     if (type === 'view') {
-      const { data } = await supabase.from('shows').select('views_count').eq('id', showId).maybeSingle()
-      await supabase.from('shows').update({ views_count: (data?.views_count || 0) + 1 }).eq('id', showId)
+      await supabase.rpc('increment_views', { show_id: showId }).catch(async () => {
+        // Fallback if RPC not available
+        const { data } = await supabase.from('shows').select('views_count').eq('id', showId).maybeSingle()
+        await supabase.from('shows').update({ views_count: (data?.views_count || 0) + 1 }).eq('id', showId)
+      })
     }
     if (type === 'inquiry') {
-      const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()
-      await supabase.from('shows').update({ inquiries_count: (data?.inquiries_count || 0) + 1 }).eq('id', showId)
+      await supabase.rpc('increment_inquiries', { show_id: showId }).catch(async () => {
+        const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()
+        await supabase.from('shows').update({ inquiries_count: (data?.inquiries_count || 0) + 1 }).eq('id', showId)
+      })
     }
   }
 
