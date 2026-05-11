@@ -199,7 +199,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           <div className="flex border-4 border-black mb-8 p-1">
             {[false, true].map((val, i) => (
               <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
-                {i === 0 ? 'Tickle In' : 'Join The Laff Exchange'}
+                {i === 0 ? 'Tickle In' : 'Set Up Hub'}
               </button>
             ))}
           </div>
@@ -211,7 +211,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
               <span className="text-lg">🎭</span>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Step 1 of 2</p>
-                <p className="text-xs font-black uppercase">Create Account → PayPal Payment</p>
+                <p className="text-xs font-black uppercase">Create Account → Secure Payment</p>
               </div>
             </div>
           </div>

@@ -40,7 +40,7 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('discovery')}
             className="bg-brand-yellow text-black px-8 py-4 font-black uppercase border-4 border-black shadow-neo-magenta hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all italic"
           >
-            🥊 Send Inquiry →
+            🥊 Back to Home →
           </button>
           <button
             onClick={() => onNavigate('landing')}
