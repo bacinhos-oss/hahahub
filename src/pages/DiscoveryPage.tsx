@@ -640,7 +640,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 }}
                 className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-yellow hover:bg-black transition-all italic tracking-[0.2em] text-xl"
               >
-                Tickle It 🥊
+                Send Inquiry 🥊
               </button>
             </div>
           )}
@@ -661,7 +661,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
             {/* HEADER */}
             <div className="flex flex-col gap-2">
-              <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">Comedy Rights Marketplace</span>
+              <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">Comedy Rights The Laff Exchange</span>
               <h1 className="text-5xl sm:text-7xl md:text-9xl font-black uppercase leading-[0.85] tracking-tighter italic">
                 The <span className="text-brand-yellow">Laff</span><br/>Exchange
               </h1>

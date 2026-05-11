@@ -44,7 +44,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           {navBtn('discovery', 'CATALOG', 'brand-yellow')}
           {navBtn('about', 'MISSION', 'brand-pink')}
           {navBtn('subscription', 'MY HUB', 'white')}
-          {user && navBtn('upload', 'DROP THE PUNCH', 'brand-cyan')}
+          {user && navBtn('upload', 'LIST YOUR SHOW', 'brand-cyan')}
           {isAdmin && navBtn('admin', 'ADMIN', 'brand-pink')}
         </nav>
 
@@ -101,7 +101,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             </button>
             {user && (
               <button onClick={() => { onNavigate('upload'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-cyan/70 hover:text-brand-cyan transition-colors">
-                DROP THE PUNCH
+                LIST YOUR SHOW
               </button>
             )}
             {isAdmin && (

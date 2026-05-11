@@ -16,7 +16,7 @@ const FAQ_ITEMS = [
   { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your platform.' },
   { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
   { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery platform and contract templates — the deal is between you and the producer. No commission.' },
-  { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer marketplace. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
+  { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
   { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on the platform.' },
   { q: 'What payment methods do you accept?', a: 'We currently accept PayPal. Stripe integration is coming soon. All prices are in EUR.' },
   { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
@@ -98,7 +98,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         {/* HERO */}
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Comedy Rights Marketplace</span>
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Comedy Rights The Laff Exchange</span>
             <h1 className="font-display text-white text-6xl sm:text-8xl md:text-[130px] leading-[0.85] tracking-tighter uppercase mb-4 md:mb-6 italic">
               TICKLE.<br/>
               <span className="text-brand-yellow">SET UP.</span><br/>
@@ -108,7 +108,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               International Comedy Theatre Producers Platform
             </p>
             <p className="text-base md:text-lg font-bold text-white/40 italic max-w-2xl mb-10 md:mb-12 leading-relaxed">
-              Your hit in Spain is unknown in Germany. HahaHub changes that. The first producer-to-producer comedy rights marketplace. Buy rights, sell rights. Direct. No agents. No middlemen.
+              Your hit in Spain is unknown in Germany. HahaHub changes that. The first producer-to-producer comedy rights The Laff Exchange. Buy rights, sell rights. Direct. No agents. No middlemen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
@@ -181,7 +181,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { step: 'TICKLE', icon: 'search', color: 'brand-cyan', title: 'Tickle the Vault', desc: "Something's been rotting in your season lineup. Hunt it down. International. Raw. Funny as hell. The show your audience didn't know they needed.", cta: 'Tickle It →' },
+                  { step: 'TICKLE', icon: 'search', color: 'brand-cyan', title: 'Tickle the Vault', desc: "Something's been rotting in your season lineup. Hunt it down. International. Raw. Funny as hell. The show your audience didn't know they needed.", cta: 'Send Inquiry →' },
                   { step: 'SET UP', icon: 'mail', color: 'brand-yellow', title: 'Cut the Middleman', desc: 'Direct line to the producer. Templates. Terms. Done. No commission. No bullshit. No mercy.', cta: 'Set It Up →' },
                   { step: 'PUNCH', icon: 'theater_comedy', color: 'brand-pink', title: 'Curtain Up', desc: "Lights on. They're already laughing. That's your show now. You found it here.", cta: 'Punch It →' },
                 ].map((item, i) => (

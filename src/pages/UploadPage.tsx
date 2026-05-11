@@ -208,7 +208,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       <div className="min-h-screen bg-brand-black flex items-center justify-center">
         <div className="text-center space-y-6">
           <div className="text-8xl font-black text-brand-cyan">✓</div>
-          <h2 className="text-5xl font-black uppercase italic text-white">Punch Dropped! 🥊</h2>
+          <h2 className="text-5xl font-black uppercase italic text-white">Show Listed! 🎭 🥊</h2>
           <p className="text-brand-cyan font-bold uppercase tracking-widest">Redirecting to My Hub...</p>
         </div>
       </div>
@@ -222,7 +222,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
         <div className="max-w-6xl mx-auto space-y-16">
           <header>
             <h1 className="text-7xl md:text-[120px] font-black uppercase italic leading-[0.8] tracking-tighter">
-              DROP THE <span className="text-brand-pink">PUNCH</span>
+              LIST YOUR <span className="text-brand-pink">SHOW</span>
             </h1>
           </header>
 
@@ -486,7 +486,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
 
                 <div className="pt-4 border-t-4 border-black">
                   <button onClick={handleLaunch} className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl">
-                    Drop the Punch
+                    List Your Show
                   </button>
                 </div>
               </div>

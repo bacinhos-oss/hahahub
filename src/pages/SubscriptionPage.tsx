@@ -724,7 +724,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[
-                    { step: '01', icon: 'upload', color: 'brand-cyan', title: 'Deploy Your First Show', desc: 'Upload a production with full data — cast, rights, script scenario in English.', action: 'Drop the Punch →', page: 'upload' as const },
+                    { step: '01', icon: 'upload', color: 'brand-cyan', title: 'Deploy Your First Show', desc: 'Upload a production with full data — cast, rights, script scenario in English.', action: 'List Your Show →', page: 'upload' as const },
                     { step: '02', icon: 'search', color: 'brand-yellow', title: 'Browse the Catalog', desc: 'Explore international comedy productions. Tickle List shows you like.', action: 'Go to Catalog →', page: 'discovery' as const },
                     { step: '03', icon: 'mail', color: 'brand-pink', title: 'Send Your First Inquiry', desc: 'Contact a rights holder directly. No agents. No fees.', action: 'Browse Shows →', page: 'discovery' as const },
                   ].map((item, i) => (
@@ -757,7 +757,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <section className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-yellow">Assets</span></h2>
-                <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-4 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">+ Drop the Punch</button>
+                <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-4 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">+ List Your Show</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {userUploads.length === 0 ? (

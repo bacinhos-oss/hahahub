@@ -199,7 +199,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           <div className="flex border-4 border-black mb-8 p-1">
             {[false, true].map((val, i) => (
               <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
-                {i === 0 ? 'Tickle In' : 'Set Up Hub'}
+                {i === 0 ? 'Tickle In' : 'Join The Laff Exchange'}
               </button>
             ))}
           </div>
