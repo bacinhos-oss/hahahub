@@ -535,20 +535,29 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           Estimated Advance: {selectedShow.advanceFee || "€0"}<br className="md:hidden"/> • Clearing Speed: {selectedShow.rightsClearingSpeed}
                         </p>
                       </div>
-                      <button 
-                        onClick={() => {
-                          setInquiryShowId(selectedShowId);
-                          setSelectedShowId(null);
-                          setInquiryName(user?.name || '');
-                          setInquiryEmail(user?.email || '');
-                          setInquiryMessage('');
-                          setInquirySuccess(false);
-                          setIsInquiryOpen(true);
-                        }}
-                        className="w-full md:w-auto bg-brand-yellow text-black px-8 md:px-16 py-5 md:py-8 font-black uppercase border-4 border-black shadow-[8px_8px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic tracking-[0.2em] md:tracking-[0.4em] text-lg md:text-2xl"
-                      >
-                        Tickle It
-                      </button>
+                      <div className="flex flex-col md:flex-row gap-4 justify-center">
+                        <button 
+                          onClick={() => {
+                            setInquiryShowId(selectedShowId);
+                            setSelectedShowId(null);
+                            setInquiryName(user?.name || '');
+                            setInquiryEmail(user?.email || '');
+                            setInquiryMessage('');
+                            setInquirySuccess(false);
+                            setIsInquiryOpen(true);
+                          }}
+                          className="w-full md:w-auto bg-brand-yellow text-black px-8 md:px-16 py-5 md:py-8 font-black uppercase border-4 border-black shadow-[8px_8px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic tracking-[0.2em] md:tracking-[0.4em] text-lg md:text-2xl"
+                        >
+                          Tickle It
+                        </button>
+                        <button
+                          onClick={() => downloadDossier(selectedShow)}
+                          className="w-full md:w-auto bg-transparent text-white px-8 md:px-12 py-5 md:py-8 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic tracking-[0.2em] text-sm md:text-base flex items-center justify-center gap-3"
+                        >
+                          <span className="material-symbols-outlined text-xl">download</span>
+                          The Dossier
+                        </button>
+                      </div>
                   </div>
                 </div>
               )}
@@ -647,6 +656,116 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
         </div>
       </div>
     );
+  };
+
+
+  const downloadDossier = (show: Show | null) => {
+    if (!show) return;
+    const totalCast = (show.maleRoles || 0) + (show.femaleRoles || 0);
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>${show.title} — Production Dossier</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Space Grotesk', sans-serif; background: #fff; color: #050505; }
+    .cover { background: #050505; color: #fff; padding: 60px 48px 48px; min-height: 320px; display: flex; flex-direction: column; justify-content: flex-end; }
+    .cover-label { font-size: 9px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; color: #03DAC6; margin-bottom: 12px; }
+    .cover-title { font-size: 72px; font-weight: 900; text-transform: uppercase; line-height: 0.85; letter-spacing: -2px; margin-bottom: 16px; }
+    .cover-title span { color: #FFDE03; }
+    .cover-meta { font-size: 13px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.4); letter-spacing: 0.2em; }
+    .section { padding: 40px 48px; border-bottom: 3px solid #f0f0f0; }
+    .section-label { font-size: 8px; font-weight: 900; letter-spacing: 0.5em; text-transform: uppercase; color: #03DAC6; margin-bottom: 8px; }
+    .section-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 20px; border-left: 6px solid #FFDE03; padding-left: 16px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .stat { background: #f8f8f8; padding: 16px; }
+    .stat-label { font-size: 8px; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; color: #999; margin-bottom: 4px; }
+    .stat-value { font-size: 20px; font-weight: 900; text-transform: uppercase; }
+    .synopsis { font-size: 14px; line-height: 1.7; color: #333; font-weight: 500; }
+    .score-bar { height: 8px; background: #f0f0f0; margin-top: 8px; }
+    .score-fill { height: 8px; background: ${(show.transparencyScore || 0) >= 80 ? '#03DAC6' : (show.transparencyScore || 0) >= 50 ? '#FFDE03' : '#FF0266'}; width: ${show.transparencyScore || 0}%; }
+    .footer { background: #050505; color: rgba(255,255,255,0.3); padding: 32px 48px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; display: flex; justify-content: space-between; align-items: center; }
+    .footer span { color: #FFDE03; }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <div class="cover-label">Production Dossier v${show.productionYear} · HahaHub · The Laff Exchange</div>
+    <div class="cover-title">${show.title}</div>
+    <div class="cover-meta">${show.author} · ${show.location} · ${show.genre}${show.subgenre ? ' · ' + show.subgenre : ''}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="section-title">Synopsis</div>
+    <p class="synopsis">${show.synopsis || 'No synopsis provided.'}</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Production Data</div>
+    <div class="section-title">Key Specs</div>
+    <div class="grid3">
+      <div class="stat"><div class="stat-label">Duration</div><div class="stat-value">${show.duration} min</div></div>
+      <div class="stat"><div class="stat-label">Cast Size</div><div class="stat-value">${totalCast} actors</div></div>
+      <div class="stat"><div class="stat-label">Production Year</div><div class="stat-value">${show.productionYear}</div></div>
+      <div class="stat"><div class="stat-label">Male Roles</div><div class="stat-value">${show.maleRoles}</div></div>
+      <div class="stat"><div class="stat-label">Female Roles</div><div class="stat-value">${show.femaleRoles}</div></div>
+      <div class="stat"><div class="stat-label">Budget Range</div><div class="stat-value">${show.budgetRange}</div></div>
+      <div class="stat"><div class="stat-label">Scale</div><div class="stat-value">${show.productionScale}</div></div>
+      <div class="stat"><div class="stat-label">Touring</div><div class="stat-value">${show.isTouringFriendly ? 'Yes' : 'No'}</div></div>
+      <div class="stat"><div class="stat-label">Performances</div><div class="stat-value">${show.performancesCount || 0}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Licensing</div>
+    <div class="section-title">Rights & Commercial</div>
+    <div class="grid2">
+      <div class="stat"><div class="stat-label">License Type</div><div class="stat-value">${show.licenseType}</div></div>
+      <div class="stat"><div class="stat-label">Licensing Model</div><div class="stat-value">${show.licensingModel}</div></div>
+      <div class="stat"><div class="stat-label">Royalty Range</div><div class="stat-value">${show.royaltyRange || 'On request'}</div></div>
+      <div class="stat"><div class="stat-label">Advance Fee</div><div class="stat-value">${show.advanceFee || 'On request'}</div></div>
+      <div class="stat"><div class="stat-label">Rights Status</div><div class="stat-value">${show.rightsStatus}</div></div>
+      <div class="stat"><div class="stat-label">Clearing Speed</div><div class="stat-value">${show.rightsClearingSpeed}</div></div>
+    </div>
+    ${show.licensedCountries ? `<div style="margin-top:16px"><div class="stat-label" style="font-size:8px;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;color:#999;margin-bottom:8px">Licensed Countries</div><p style="font-size:13px;font-weight:700">${show.licensedCountries}</p></div>` : ''}
+  </div>
+
+  <div class="section">
+    <div class="section-label">Quality</div>
+    <div class="section-title">Transparency Score</div>
+    <div style="font-size:48px;font-weight:900">${show.transparencyScore}<span style="font-size:18px;color:#999">/100</span></div>
+    <div class="score-bar"><div class="score-fill"></div></div>
+    <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:#999;margin-top:8px">Data completeness & commercial transparency rating</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Contact</div>
+    <div class="section-title">Rights Holder</div>
+    <div class="grid2">
+      <div class="stat"><div class="stat-label">Producer</div><div class="stat-value" style="font-size:16px">${show.producerName}</div></div>
+      <div class="stat"><div class="stat-label">Rights Holder</div><div class="stat-value" style="font-size:16px">${show.rightsHolder || show.producerName}</div></div>
+    </div>
+    <p style="margin-top:16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:#999">Inquiries via HahaHub — hahahub.art</p>
+  </div>
+
+  <div class="footer">
+    <div>HahaHub · <span>The Laff Exchange</span> · hahahub.art</div>
+    <div>TICKLE. SET UP. PUNCH.</div>
+    <div>Break a <span>Laffing</span> Leg. 🦵</div>
+  </div>
+</body>
+</html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${show.title.replace(/\s+/g, '_')}_Dossier_HahaHub.html`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
