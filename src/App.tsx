@@ -13,7 +13,6 @@ import CookieBanner from './components/CookieBanner'
 import NotFoundPage from './pages/NotFoundPage'
 import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
-import { Analytics } from "@vercel/analytics/next"
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
