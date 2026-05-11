@@ -15,7 +15,7 @@ const FOUNDING_TOTAL = 30;
 const FAQ_ITEMS = [
   { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your platform.' },
   { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
-  { q: 'How does licensing work?', a: 'You find a show, click "Send Inquiry", and contact the rights holder directly. HahaHub provides the discovery platform and contract templates — the deal is between you and the producer. No commission.' },
+  { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery platform and contract templates — the deal is between you and the producer. No commission.' },
   { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer marketplace. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
   { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on the platform.' },
   { q: 'What payment methods do you accept?', a: 'We currently accept PayPal. Stripe integration is coming soon. All prices are in EUR.' },
@@ -205,7 +205,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { step: 'TICKLE', icon: 'upload', color: 'brand-pink', title: 'Deploy Your Hit', desc: "Your show is killing it at home. Nobody abroad gives a damn. Yet. Deploy it. Raw data. Full dossier. Go international or go home.", cta: 'Set Up Your Show →' },
+                  { step: 'TICKLE', icon: 'upload', color: 'brand-pink', title: 'Deploy Your Hit', desc: "Your show is killing it at home. Nobody abroad gives a damn. Yet. Drop it. Raw data. Full dossier. Go international or go home.", cta: 'Set Up Your Show →' },
                   { step: 'SET UP', icon: 'notifications', color: 'brand-yellow', title: "You've Been Tickled 📩", desc: "Someone wants your show. Negotiate direct. Keep every cent. No agent taking their 15% cut of your sweat.", cta: 'Set It Up →' },
                   { step: 'PUNCH', icon: 'handshake', color: 'brand-cyan', title: 'New Stage. New Country.', desc: "Your punchline. Their stage. Different language. Same laugh. That's international. That's HahaHub. Play it.", cta: 'Punch It →' },
                 ].map((item, i) => (

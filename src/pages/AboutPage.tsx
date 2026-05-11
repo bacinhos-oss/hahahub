@@ -246,7 +246,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
                 Set Up Your Show →
               </button>
             </div>
-            <p className="text-white/20 font-black uppercase text-xs tracking-widest italic mt-4">Break a Leg. 🎭</p>
+            <p className="text-white/20 font-black uppercase text-xs tracking-widest italic mt-4">Break a Laffing Leg. 🦵</p>
           </section>
 
         </div>

@@ -167,7 +167,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         <h2 className="text-4xl font-black uppercase italic mb-3 text-black leading-tight">All Set Up.<br/>Time to Punch.</h2>
         <p className="font-black text-brand-pink uppercase tracking-[0.2em] text-sm mb-4">You're set up. Go hunt. 🎭</p>
         <p className="text-gray-600 font-bold text-sm mb-2">Welcome, <strong className="text-black">{name.toUpperCase()}</strong>!</p>
-        <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Break a Leg.</p>
+        <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Break a Laffing Leg. 🦵</p>
         <div className="flex justify-center gap-1 mt-6">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="w-2 h-2 bg-brand-cyan animate-bounce" style={{ animationDelay: `${i * 0.15}s` }}></div>

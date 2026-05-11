@@ -49,7 +49,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="footer">
     <p>HahaHub — The Comedy Rights Marketplace</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>
@@ -57,7 +57,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 
   welcome: ({ name, email }) => ({
-    subject: `You're Set Up. Break a Leg. 🎭 — HahaHub`,
+    subject: `You're Set Up. Break a Laffing Leg. 🦵 — HahaHub`,
     html: `
 <!DOCTYPE html>
 <html>
@@ -81,11 +81,11 @@ h1 { font-size: 40px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="step">
     <div class="step-num">01</div>
-    <div><strong style="text-transform:uppercase;font-style:italic;">Tickle</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Browse international comedy productions. Shortlist what excites you.</span></div>
+    <div><strong style="text-transform:uppercase;font-style:italic;">Tickle</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Browse international comedy productions. Tickle List what excites you.</span></div>
   </div>
   <div class="step">
     <div class="step-num">02</div>
-    <div><strong style="text-transform:uppercase;font-style:italic;">Set Up</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Deploy your show or contact rights holders directly. No agents.</span></div>
+    <div><strong style="text-transform:uppercase;font-style:italic;">Set Up</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Drop your show or contact rights holders directly. No agents.</span></div>
   </div>
   <div class="step">
     <div class="step-num">03</div>
@@ -96,7 +96,7 @@ h1 { font-size: 40px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="footer">
     <p>HahaHub — The Comedy Rights Marketplace | info@hahahub.art</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>
@@ -139,7 +139,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="footer">
     <p>HahaHub | info@hahahub.art | Ljubljana, Slovenia</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>
@@ -171,7 +171,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <a href="mailto:info@hahahub.art?subject=Renew Subscription" class="cta">Renew My Pass →</a>
   <div class="footer">
     <p>HahaHub | info@hahahub.art</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>

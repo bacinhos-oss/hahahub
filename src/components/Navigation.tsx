@@ -44,7 +44,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           {navBtn('discovery', 'CATALOG', 'brand-yellow')}
           {navBtn('about', 'MISSION', 'brand-pink')}
           {navBtn('subscription', 'MY HUB', 'white')}
-          {user && navBtn('upload', 'UPLOAD', 'brand-cyan')}
+          {user && navBtn('upload', 'DROP THE PUNCH', 'brand-cyan')}
           {isAdmin && navBtn('admin', 'ADMIN', 'brand-pink')}
         </nav>
 
