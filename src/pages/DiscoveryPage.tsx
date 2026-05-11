@@ -786,43 +786,23 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </h1>
             </div>
 
-            {/* STEFUNNY — SMART SEARCH */}
-            <div className="relative">
-              <div className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-6 shadow-neo-yellow">
-                <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
-                  SF
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">STEFUNNY</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ask Stefunny... genre, country, cast size, keywords"
-                    className="w-full bg-transparent border-none text-white font-black text-sm md:text-base uppercase outline-none italic placeholder:text-white/20 placeholder:normal-case placeholder:not-italic"
-                  />
-                </div>
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
-                    <span className="material-symbols-outlined text-xl">close</span>
-                  </button>
-                )}
-                {!searchQuery && (
-                  <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0">search</span>
-                )}
+            {/* STEFUNNY LINK */}
+            <button
+              onClick={() => onNavigate('stefunny')}
+              className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-5 shadow-neo-yellow hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all w-full text-left group"
+            >
+              <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
+                SF
               </div>
-              {searchQuery && (
-                <div className="mt-2 text-[10px] font-black uppercase italic text-white/40">
-                  {filteredShows.length > 0
-                    ? `Stefunny found ${filteredShows.length} show${filteredShows.length !== 1 ? 's' : ''} for you. 🥊`
-                    : `Stefunny found nothing. Try again.`
-                  }
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">MISS STEFUNNY</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
                 </div>
-              )}
-            </div>
+                <p className="text-white/40 font-bold italic text-xs">Search by genre, country, cast, keywords →</p>
+              </div>
+              <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
 
             {/* SORT + SHORTLIST */}
             <div className="flex flex-wrap items-center gap-4">
@@ -914,8 +894,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <p className="text-white/20 font-black uppercase italic text-2xl">Shush.</p>
                 <p className="text-white/10 font-black uppercase italic text-sm mt-2">Nothing to tickle here. Adjust your filters.</p>
               </div>
-            ) : filteredShows.map((show) => (
-              <div key={show.id} onClick={() => handleShowSelect(show)} className="group relative cursor-pointer bg-brand-surface border-4 border-white hover:shadow-neo-yellow hover:border-brand-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col">
+            ) : filteredShows.map((show, index) => {
+              const isFreeBlocked = !user?.isPaid && !user?.isAdmin && index >= 3;
+              return (
+              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 border-white hover:shadow-neo-yellow hover:border-brand-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40 hover:opacity-60' : ''}`}>
+                {isFreeBlocked && (
+                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm border-4 border-brand-yellow">
+                    <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
+                    <p className="text-brand-yellow font-black uppercase italic text-xs tracking-widest text-center px-4">Pro Access Only</p>
+                    <p className="text-white/40 font-bold italic text-[10px] mt-1">Unlock all shows →</p>
+                  </div>
+                )}
                 <div className="aspect-[2/3] relative overflow-hidden">
                   <img src={show.imageUrl} alt={show.title} className="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 opacity-80 group-hover:opacity-60 transition-opacity"></div>
@@ -964,7 +953,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
           </section>
         </div>
       </main>
