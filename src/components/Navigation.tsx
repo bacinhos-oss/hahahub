@@ -41,7 +41,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
 
         {/* DESKTOP NAV */}
         <nav className="hidden lg:flex items-center gap-10 italic">
-          {navBtn('discovery', 'CATALOG', 'brand-yellow')}
+          {navBtn('discovery', 'THE LAFF EXCHANGE', 'brand-yellow')}
           {navBtn('about', 'MISSION', 'brand-pink')}
           {navBtn('subscription', 'MY HUB', 'white')}
           {user && navBtn('upload', 'LIST YOUR SHOW', 'brand-cyan')}
@@ -91,7 +91,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         <div className="lg:hidden absolute top-full left-0 right-0 bg-brand-black border-b-4 border-white px-6 py-8 space-y-6 animate-in slide-in-from-top-2">
           <div className="flex flex-col gap-6">
             <button onClick={() => { onNavigate('discovery'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-yellow transition-colors">
-              CATALOG
+              THE LAFF EXCHANGE
             </button>
             <button onClick={() => { onNavigate('about'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-pink transition-colors">
               MISSION
