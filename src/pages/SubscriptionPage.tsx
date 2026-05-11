@@ -766,14 +766,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     <button onClick={() => onNavigate('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Deploy First Asset</button>
                   </div>
                 ) : userUploads.map((show) => (
-                  <div key={show.id} className={"bg-brand-surface border-4 p-4 md:p-6 flex gap-4 hover:shadow-neo-yellow transition-all " + (show.inquiriesCount > 0 && inquiries.some(inq => inq.show_id === show.id && !inq.is_read) ? "border-brand-cyan shadow-neo-cyan animate-pulse" : show.inquiriesCount > 0 ? "border-brand-cyan" : "border-white")}>
+                  <div key={show.id} className={"bg-brand-surface border-4 p-4 md:p-6 flex gap-4 hover:shadow-neo-yellow transition-all " + (show.inquiriesCount > 0 && inquiries.some(inq => inq.show_id === show.id && !inq.is_read) ? "border-brand-cyan shadow-neo-cyan" : show.inquiriesCount > 0 ? "border-brand-cyan" : "border-white")}>
                     <div className="w-20 md:w-24 h-28 md:h-32 border-2 border-white/10 flex-shrink-0">
                       <img src={show.imageUrl} className="w-full h-full object-cover" alt={show.title} />
                     </div>
                     <div className="flex-1 flex flex-col justify-between min-w-0">
                       <div>
                         {inquiries.some(inq => inq.show_id === show.id && !inq.is_read) && (
-                          <span className="inline-block bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-1 mb-1 animate-pulse">🎭 NEW INQUIRY</span>
+                          <span className="inline-block bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-1 mb-1 text-[8px] font-black uppercase px-2 py-1 mb-1">🎭 New Tickle</span>
                         )}
                         <h3 className="text-lg font-black uppercase italic leading-none truncate">{show.title}</h3>
                         <div className="mt-2 flex items-center gap-2">
@@ -806,7 +806,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <div className="flex items-center gap-4">
                     <h2 className="text-4xl font-black uppercase italic">You've Been <span className="text-brand-cyan">Tickled</span></h2>
                     {inquiries.filter(i => !i.is_read).length > 0 && (
-                      <span className="bg-brand-cyan text-black text-[9px] font-black px-3 py-1 uppercase animate-pulse">{inquiries.filter(i => !i.is_read).length} UNREAD</span>
+                      <span className="bg-brand-cyan text-black text-[9px] font-black px-3 py-1 uppercase font-black px-3 py-1 uppercase">{inquiries.filter(i => !i.is_read).length} UNREAD</span>
                     )}
                   </div>
                   <p className="text-[9px] font-black uppercase text-white/30 italic">{inquiries.length} total inquiries</p>
@@ -824,11 +824,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       <button
                         onClick={() => {
                           markAsRead(inq.id);
-                          window.open("mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title));
+                          window.location.href = "mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title) + "&body=" + encodeURIComponent("\n\n---\nOriginal message from " + inq.from_name + ":\n" + (inq.message || ''));
                         }}
-                        className={"text-[9px] font-black uppercase px-4 py-2 border-2 border-black transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20" : "bg-brand-yellow text-black hover:bg-white")}
+                        className={"text-[9px] font-black uppercase px-4 py-2 border-2 border-black transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black hover:bg-white border-black")}
                       >
-                        {inq.is_read ? "TICKLED BACK ✓" : "TICKLE BACK 🎭"}
+                        {inq.is_read ? "Tickle Back Again →" : "Tickle Back 🎭"}
                       </button>
                     </div>
                   </div>

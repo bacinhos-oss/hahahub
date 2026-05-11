@@ -576,7 +576,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <span className="material-symbols-outlined text-black text-6xl font-black">send</span>
               </div>
               <div className="space-y-4">
-                <h2 className="text-4xl font-black uppercase italic text-white">You Tickled<br/>the Laugh! 🎭</h2>
+                <h2 className="text-4xl font-black uppercase italic text-white">You Tickled<br/>the Laff! 🎭</h2>
                 <p className="text-brand-cyan font-bold uppercase tracking-[0.2em] text-sm italic">The producer has been notified of your interest.</p>
                 <p className="text-white/40 text-xs font-bold italic">Expect a reply within 2-5 business days.</p>
               </div>
@@ -663,7 +663,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             <div className="flex flex-col gap-2">
               <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">Comedy Rights Marketplace</span>
               <h1 className="text-5xl sm:text-7xl md:text-9xl font-black uppercase leading-[0.85] tracking-tighter italic">
-                The <span className="text-brand-yellow">Laugh</span><br/>Exchange
+                The <span className="text-brand-yellow">Laff</span><br/>Exchange
               </h1>
             </div>
 
