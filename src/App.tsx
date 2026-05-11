@@ -13,6 +13,7 @@ import CookieBanner from './components/CookieBanner'
 import NotFoundPage from './pages/NotFoundPage'
 import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
+import ProducerPage from './pages/ProducerPage'
 import StefunnyPage from './pages/StefunnyPage'
 import { Analytics } from "@vercel/analytics/next"
 
@@ -22,6 +23,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('landing')
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [shows, setShows] = useState<Show[]>([])
+  const [currentProducerId, setCurrentProducerId] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
 
@@ -350,6 +352,7 @@ const App: React.FC = () => {
       case 'pricing': return <PricingPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onPurchaseSuccess={handlePurchaseSuccess} />
       case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'stefunny': return <StefunnyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} shows={shows} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} />
+      case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} />
       default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />
     }
   }

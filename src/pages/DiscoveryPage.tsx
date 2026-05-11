@@ -236,6 +236,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
                            <p className="text-[9px] font-black uppercase text-brand-cyan mb-2 tracking-widest italic">Producer / Company</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
+                           {(selectedShow as any).user_id && (
+                             <button
+                               onClick={() => { onNavigate('producer' as any); }}
+                               className="text-[9px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors mt-1 block"
+                             >
+                               View Producer Profile →
+                             </button>
+                           )}
                            <div className="flex flex-wrap gap-1 mt-2">
                              {(selectedShow as any).is_verified && (
                                <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">VERIFIED</span>
@@ -936,12 +944,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <span className="material-symbols-outlined text-brand-cyan text-base">visibility</span>
                     <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 flex-wrap">
                     {(show as any).is_verified && (
                       <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">VERIFIED</span>
                     )}
                     {(show as any).is_founding && (
                       <span className="text-[8px] font-black uppercase text-black bg-brand-yellow px-2 py-0.5 italic border border-black">FOUNDING</span>
+                    )}
+                    {show.licensedCountries && show.licensedCountries.split(',').filter(Boolean).length > 0 && (
+                      <span className="text-[8px] font-black uppercase text-white bg-brand-pink px-2 py-0.5 italic border border-black">
+                        {show.licensedCountries.split(',').filter((s: string) => s.trim()).length} COUNTRIES
+                      </span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 group/metric">
