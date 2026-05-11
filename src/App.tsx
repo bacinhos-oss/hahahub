@@ -187,8 +187,11 @@ const App: React.FC = () => {
     ))
     if (currentUser.id) {
       await supabase.from('profiles').update({ favorites: newFavs }).eq('id', currentUser.id)
-      await supabase.from('shows').update({ 
-        likes_count: isFav ? Math.max(0, (shows.find(s => s.id === showId)?.likesCount || 1) - 1) : (shows.find(s => s.id === showId)?.likesCount || 0) + 1
+      // Read fresh value from DB to avoid stale closure race condition
+      const { data: freshShow } = await supabase.from('shows').select('likes_count').eq('id', showId).maybeSingle()
+      const currentLikes = freshShow?.likes_count || 0
+      await supabase.from('shows').update({
+        likes_count: Math.max(0, currentLikes + (isFav ? -1 : 1))
       }).eq('id', showId)
     }
   }
@@ -204,19 +207,14 @@ const App: React.FC = () => {
         inquiriesCount: type === 'inquiry' ? s.inquiriesCount + 1 : s.inquiriesCount,
       }
     }))
-    // Atomic increment in Supabase — no race condition
+    // Always use direct DB read + write to avoid RPC/RLS issues
     if (type === 'view') {
-      await supabase.rpc('increment_views', { show_id: showId }).catch(async () => {
-        // Fallback if RPC not available
-        const { data } = await supabase.from('shows').select('views_count').eq('id', showId).maybeSingle()
-        await supabase.from('shows').update({ views_count: (data?.views_count || 0) + 1 }).eq('id', showId)
-      })
+      const { data } = await supabase.from('shows').select('views_count').eq('id', showId).maybeSingle()
+      await supabase.from('shows').update({ views_count: (data?.views_count || 0) + 1 }).eq('id', showId)
     }
     if (type === 'inquiry') {
-      await supabase.rpc('increment_inquiries', { show_id: showId }).catch(async () => {
-        const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()
-        await supabase.from('shows').update({ inquiries_count: (data?.inquiries_count || 0) + 1 }).eq('id', showId)
-      })
+      const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()
+      await supabase.from('shows').update({ inquiries_count: (data?.inquiries_count || 0) + 1 }).eq('id', showId)
     }
   }
 
