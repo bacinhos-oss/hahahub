@@ -22,8 +22,10 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div className="space-y-4">
             <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Platform</h4>
             <div className="flex flex-col gap-3">
-              <button onClick={() => onNavigate('discovery')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Catalog</button>
+              <button onClick={() => onNavigate('discovery')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">The Laff Exchange</button>
               <button onClick={() => onNavigate('about')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Mission</button>
+              <button onClick={() => onNavigate('pricing')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Pricing</button>
+              <button onClick={() => onNavigate('faq')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">FAQ</button>
               <button onClick={() => onNavigate('subscription')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">My Hub</button>
               <button onClick={() => onNavigate('login')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Sign In</button>
             </div>

@@ -11,6 +11,8 @@ import PrivacyPage from './pages/PrivacyPage'
 import UploadPage from './pages/UploadPage'
 import CookieBanner from './components/CookieBanner'
 import NotFoundPage from './pages/NotFoundPage'
+import PricingPage from './pages/PricingPage'
+import FAQPage from './pages/FAQPage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
@@ -341,6 +343,8 @@ const App: React.FC = () => {
       case 'about': return <AboutPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'privacy': return <PrivacyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
+      case 'pricing': return <PricingPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onPurchaseSuccess={handlePurchaseSuccess} />
+      case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />
     }
   }
