@@ -18,7 +18,7 @@ const FAQ_ITEMS = [
   { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery tools and contract templates — the deal is between you and the producer. No commission.' },
   { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
   { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on The Laff Exchange.' },
-  { q: 'What payment methods do you accept?', a: 'We currently accept PayPal. Stripe integration is coming soon. All prices are in EUR.' },
+  { q: 'What payment methods do you accept?', a: 'We accept Stripe — all major credit and debit cards. All prices are in EUR. Subscriptions are annual and non-refundable.' },
   { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
   { q: 'What languages are supported?', a: 'The Laff Exchange is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
 ];
@@ -331,59 +331,58 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               <p className="text-white/40 font-bold italic text-lg mt-4 max-w-xl mx-auto">Pick your passport. No per-inquiry fees. No commissions. Ever.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
-              {/* FREE */}
+              {/* GIGL - Free */}
               <div className="bg-brand-surface border-4 border-white/30 p-6 md:p-8">
                 <p className="text-white/40 text-xs font-black uppercase tracking-widest italic mb-2">Free</p>
-                <h3 className="text-2xl font-black uppercase italic text-white mb-1">Explorer</h3>
-                <div className="text-5xl font-black text-white/60 mb-1">€0</div>
+                <h3 className="text-4xl font-black uppercase italic text-white mb-1">GIGL</h3>
+                <div className="text-5xl font-black text-white/40 mb-1">€0</div>
                 <p className="text-white/30 text-xs font-bold italic mb-8">forever</p>
                 <ul className="space-y-3 mb-8">
-                  {['Browse 3 shows', 'Basic search', 'No contact info', 'No uploads'].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/40">
+                  {['3 shows preview', 'Basic catalog browse', '3 Laff Wire posts', 'No contact access', 'No uploads'].map((f, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/30">
                       <span className="material-symbols-outlined text-white/20 text-base">remove</span>{f}
                     </li>
                   ))}
                 </ul>
                 <button onClick={() => onNavigate('login')} className="w-full py-4 border-4 border-white/20 text-white/40 font-black uppercase text-sm italic hover:border-white hover:text-white transition-all">
-                  Start Free
+                  Start Giggling
                 </button>
               </div>
-              {/* PRO */}
+              {/* LAFF - Pro */}
               <div className="bg-white border-8 border-black p-6 md:p-10 shadow-neo-magenta relative md:-mt-4">
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-pink text-white px-6 py-1 font-black uppercase text-xs italic border-4 border-black whitespace-nowrap">Most Popular</div>
                 <p className="text-gray-400 text-xs font-black uppercase tracking-widest italic mb-2">Pro</p>
-                <h3 className="text-2xl font-black uppercase italic text-black mb-1">Comedy Passport</h3>
+                <h3 className="text-4xl font-black uppercase italic text-black mb-1">LAFF</h3>
                 <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
                 <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Full catalog access', 'Unlimited show uploads', 'Direct contact with rights holders', 'Contract templates', 'Performance analytics', 'Priority support'].map((f, i) => (
+                  {['Full catalog access', 'Unlimited show uploads', 'Direct contact with rights holders', 'Contract templates', 'The Dossier PDF download', 'Laff Wire — 7 days', 'Post to Laff Wire', 'Analytics'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
                   ))}
                 </ul>
                 <button onClick={() => onNavigate('login')} className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-lg hover:bg-brand-pink hover:text-white transition-all italic">
-                  Set It Up Now →
+                  Start Laffing →
                 </button>
-                <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via PayPal</p>
+                <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via Stripe</p>
               </div>
-              {/* STUDIO */}
+              {/* ROAR - Studio */}
               <div className="bg-brand-surface border-4 border-brand-cyan p-6 md:p-8 shadow-neo-cyan">
                 <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-2">Studio</p>
-                <h3 className="text-2xl font-black uppercase italic text-white mb-1">Production House</h3>
-                <div className="text-5xl font-black text-brand-cyan mb-1">€299</div>
-                <p className="text-white/30 text-xs font-bold italic mb-8">per year</p>
+                <h3 className="text-4xl font-black uppercase italic text-white mb-1">ROAR</h3>
+                <div className="text-5xl font-black text-brand-cyan mb-1">€189</div>
+                <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Everything in Pro', 'Verified badge ✓', 'Advanced analytics', 'Priority listing', 'Multi-user access', 'Dedicated support'].map((f, i) => (
+                  {['Everything in LAFF', 'VERIFIED badge', 'Priority listing', 'Public Producer Profile', 'Laff Wire — live real-time', 'Co-production feature', 'Multi-user (3 seats)', 'White-label Dossier'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/70">
                       <span className="material-symbols-outlined text-brand-cyan text-base">check_circle</span>{f}
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => window.location.href = 'mailto:info@hahahub.art?subject=Studio Plan'} className="w-full py-4 bg-brand-cyan text-black border-4 border-black font-black uppercase text-sm italic hover:bg-white transition-all">
-                  Contact Us →
+                <button onClick={() => onNavigate('login')} className="w-full py-4 bg-brand-cyan text-black border-4 border-black font-black uppercase text-sm italic hover:bg-white transition-all">
+                  Start Roaring →
                 </button>
-                <p className="text-white/20 text-xs font-bold italic mt-3 text-center">Coming soon — reserve your spot</p>
               </div>
             </div>
           </div>

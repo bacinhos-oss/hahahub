@@ -22,7 +22,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
     const load = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, name, email, is_verified, is_founding, is_paid, created_at')
+        .select('id, name, email, is_verified, is_founding, is_paid, created_at, bio, website, location_city, festivals')
         .eq('id', producerId)
         .maybeSingle();
       setProducer(data);
