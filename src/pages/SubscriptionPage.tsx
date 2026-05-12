@@ -287,7 +287,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const calcROI = 99; // annual membership cost
   const calcMultiplier = calcTotalRoyalty > 0 ? (calcTotalRoyalty / calcROI).toFixed(1) : '0';
 
-  useEffect(() => { if (user?.id) { loadMyRealStats(); loadInquiries(); } }, [user]);
+  useEffect(() => {
+    if (user?.id) {
+      loadMyRealStats();
+      loadInquiries();
+      supabase.from('profiles').select('bio, website, location_city, festivals').eq('id', user.id).maybeSingle().then(({ data }) => {
+        if (data) setProfileForm({ bio: data.bio || '', website: data.website || '', location_city: data.location_city || '', festivals: data.festivals || '' });
+      });
+    }
+  }, [user]);
 
   const loadMyRealStats = async () => {
     const { data: myShows } = await supabase.from('shows').select('views_count, inquiries_count, likes_count').eq('user_id', user?.id);
@@ -708,7 +716,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     )}
                     {user.isPaid && !(user as any).is_founding && (
                       <span className="flex items-center gap-1 bg-white/10 text-white text-[9px] font-black uppercase px-3 py-1 italic border border-white/20">
-                        PRO Member
+                        {(user as any).plan === 'roar' ? 'ROAR' : 'LAFF'}
                       </span>
                     )}
                   </div>
@@ -758,7 +766,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             )}
 
             {/* TABS */}
-            <div className="flex gap-0 border-4 border-white/20 w-fit">
+            <div className="flex border-4 border-white/20 w-fit mb-2">
               {(['assets', 'inquiries', 'profile'] as const).map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
@@ -767,8 +775,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               ))}
             </div>
 
-            {activeTab === 'assets' && (
-            <section className="space-y-8">
+            {/* 1. MY ASSETS */}
+            {activeTab !== 'profile' && activeTab !== 'inquiries' && <section className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-yellow">Assets</span></h2>
                 <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-4 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">+ List Your Show</button>
@@ -812,10 +820,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 ))}
               </div>
             </section>
-            )}
 
-            {activeTab === 'inquiries' && (
-            <section className="space-y-6">
+            </section>}
+
+            {/* 2. INQUIRIES */}
+            {activeTab === 'inquiries' && <section className="space-y-6">
             {inquiries.length > 0 && (
               <section className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
@@ -871,9 +880,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </div>
               ))}
             </section>
-            )}
 
-            {activeTab === 'assets' && (<>
+            </section>}
+
+            {/* ROYALTY + INVOICES - shown in assets tab */}
+            {activeTab === 'assets' && <>
             {/* ROYALTY CALCULATOR */}
             <section className="bg-brand-surface border-4 border-brand-yellow p-6 md:p-10 shadow-neo-yellow">
               <div className="flex items-center gap-4 mb-8">
@@ -1068,13 +1079,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 ))}
               </div>
             </section>
-            </>)}
+
+          </>}
 
             {/* MY PROFILE TAB */}
             {activeTab === 'profile' && (
               <section className="space-y-8">
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
-                <p className="text-white/40 font-bold italic text-sm -mt-6">Appears on your public Producer Profile.</p>
+                <p className="text-white/40 font-bold italic text-sm">Appears on your public Producer Profile page.</p>
                 <div className="space-y-6 max-w-2xl">
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Bio / About</label>
@@ -1093,9 +1105,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     <textarea value={profileForm.festivals} onChange={e => setProfileForm(p => ({...p, festivals: e.target.value}))} placeholder="Edinburgh Fringe 2023, Avignon 2024..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-20 transition-colors" />
                   </div>
                   <button onClick={async () => {
-                    if (!user?.id) return; setProfileSaving(true);
+                    if (!user?.id) return;
+                    setProfileSaving(true);
                     await supabase.from('profiles').update({ bio: profileForm.bio, website: profileForm.website, location_city: profileForm.location_city, festivals: profileForm.festivals }).eq('id', user.id);
-                    setProfileSaving(false); setProfileSaved(true); setTimeout(() => setProfileSaved(false), 3000);
+                    setProfileSaving(false);
+                    setProfileSaved(true);
+                    setTimeout(() => setProfileSaved(false), 3000);
                   }} disabled={profileSaving} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-white transition-all disabled:opacity-40">
                     {profileSaving ? 'Saving...' : profileSaved ? 'Saved! ✓' : 'Save Profile →'}
                   </button>
