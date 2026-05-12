@@ -812,8 +812,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 ))}
               </div>
             </section>
-
-            </section>)}
+            )}
 
             {activeTab === 'inquiries' && (
             <section className="space-y-6">
@@ -872,8 +871,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </div>
               ))}
             </section>
-
-            </section>)}
+            )}
 
             {activeTab === 'assets' && (<>
             {/* ROYALTY CALCULATOR */}
