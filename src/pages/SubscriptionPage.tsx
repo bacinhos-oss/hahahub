@@ -266,10 +266,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRef2 = React.useRef<HTMLInputElement>(null);
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile'>('assets');
   const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile'>('assets');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -698,17 +698,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     )}
                     {(user as any).is_founding && (
                       <span className="flex items-center gap-1 bg-brand-yellow text-black text-[9px] font-black uppercase px-3 py-1 italic border-2 border-black shadow-[2px_2px_0px_black]">
-                        FOUNDING PRODUCER
+                        🏆 Founding Producer
                       </span>
                     )}
                     {(user as any).is_verified && (
                       <span className="flex items-center gap-1 bg-brand-cyan text-black text-[9px] font-black uppercase px-3 py-1 italic border-2 border-black shadow-[2px_2px_0px_black]">
-                        VERIFIED
+                        ✓ Verified
                       </span>
                     )}
                     {user.isPaid && !(user as any).is_founding && (
                       <span className="flex items-center gap-1 bg-white/10 text-white text-[9px] font-black uppercase px-3 py-1 italic border border-white/20">
-                        {(user as any).plan === 'roar' ? 'ROAR' : 'LAFF'}
+                        PRO Member
                       </span>
                     )}
                   </div>
@@ -760,18 +760,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* TABS */}
             <div className="flex gap-0 border-4 border-white/20 w-fit">
               {(['assets', 'inquiries', 'profile'] as const).map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}
-                >
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
                   {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : 'My Profile'}
                 </button>
               ))}
             </div>
 
-            {/* 1. MY ASSETS */}
-            {activeTab === 'assets' && <section className="space-y-8">
+            {activeTab === 'assets' && (
+            <section className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-yellow">Assets</span></h2>
                 <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-4 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">+ List Your Show</button>
@@ -814,10 +811,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                 ))}
               </div>
-            </section>}
+            </section>
 
-            {/* 2. INQUIRIES */}
-            {activeTab === 'inquiries' && <section className="space-y-6">
+            </section>)}
+
+            {activeTab === 'inquiries' && (
+            <section className="space-y-6">
             {inquiries.length > 0 && (
               <section className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
@@ -845,7 +844,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           onClick={() => markAsRead(inq.id)}
                           className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black hover:bg-white border-black")}
                         >
-                          {inq.is_read ? "Tickle Back Again →" : "Tickle Back →"}
+                          {inq.is_read ? "Tickle Back Again →" : "Tickle Back 🎭"}
                         </a>
                         <button
                           onClick={() => {
@@ -874,6 +873,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               ))}
             </section>
 
+            </section>)}
+
+            {activeTab === 'assets' && (<>
             {/* ROYALTY CALCULATOR */}
             <section className="bg-brand-surface border-4 border-brand-yellow p-6 md:p-10 shadow-neo-yellow">
               <div className="flex items-center gap-4 mb-8">
@@ -1067,19 +1069,18 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                 ))}
               </div>
-            </section>}
+            </section>
+            </>)}
 
-            {/* 3. MY PROFILE TAB */}
+            {/* MY PROFILE TAB */}
             {activeTab === 'profile' && (
               <section className="space-y-8">
-                <div>
-                  <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
-                  <p className="text-white/40 font-bold italic text-sm mt-1">This appears on your public Producer Profile page.</p>
-                </div>
+                <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
+                <p className="text-white/40 font-bold italic text-sm -mt-6">Appears on your public Producer Profile.</p>
                 <div className="space-y-6 max-w-2xl">
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Bio / About</label>
-                    <textarea value={profileForm.bio} onChange={e => setProfileForm(p => ({...p, bio: e.target.value}))} placeholder="Short intro — who you are, what you produce, where you've been..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-28 transition-colors" />
+                    <textarea value={profileForm.bio} onChange={e => setProfileForm(p => ({...p, bio: e.target.value}))} placeholder="Short intro — who you are, what you produce..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-28 transition-colors" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">City / Country</label>
@@ -1091,19 +1092,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Festivals & Credits</label>
-                    <textarea value={profileForm.festivals} onChange={e => setProfileForm(p => ({...p, festivals: e.target.value}))} placeholder="Edinburgh Fringe 2023, Avignon 2024, BITEF Belgrade..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-20 transition-colors" />
+                    <textarea value={profileForm.festivals} onChange={e => setProfileForm(p => ({...p, festivals: e.target.value}))} placeholder="Edinburgh Fringe 2023, Avignon 2024..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-20 transition-colors" />
                   </div>
-                  <button
-                    onClick={async () => {
-                      if (!user?.id) return;
-                      setProfileSaving(true);
-                      await supabase.from('profiles').update({ bio: profileForm.bio, website: profileForm.website, location_city: profileForm.location_city, festivals: profileForm.festivals }).eq('id', user.id);
-                      setProfileSaving(false); setProfileSaved(true);
-                      setTimeout(() => setProfileSaved(false), 3000);
-                    }}
-                    disabled={profileSaving}
-                    className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-white transition-all disabled:opacity-40"
-                  >
+                  <button onClick={async () => {
+                    if (!user?.id) return; setProfileSaving(true);
+                    await supabase.from('profiles').update({ bio: profileForm.bio, website: profileForm.website, location_city: profileForm.location_city, festivals: profileForm.festivals }).eq('id', user.id);
+                    setProfileSaving(false); setProfileSaved(true); setTimeout(() => setProfileSaved(false), 3000);
+                  }} disabled={profileSaving} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-white transition-all disabled:opacity-40">
                     {profileSaving ? 'Saving...' : profileSaved ? 'Saved! ✓' : 'Save Profile →'}
                   </button>
                 </div>
