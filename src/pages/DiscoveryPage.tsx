@@ -238,7 +238,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
                            {(selectedShow as any).user_id && (
                              <button
-                               onClick={() => { onNavigate('producer' as any); }}
+                               onClick={() => { if (onViewProducer && (selectedShow as any).user_id) { onViewProducer((selectedShow as any).user_id); } onNavigate('producer' as any); }}
                                className="text-[9px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors mt-1 block"
                              >
                                View Producer Profile →

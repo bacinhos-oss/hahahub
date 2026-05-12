@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, User } from '../types';
@@ -11,13 +11,33 @@ interface LaffWirePageProps {
   onViewProducer?: (producerId: string) => void;
 }
 
-const POST_TYPES: Record<string, { label: string; color: string }> = {
-  new_show:      { label: 'NEW SHOW',        color: 'bg-brand-yellow text-black' },
-  discount:      { label: 'DISCOUNT',         color: 'bg-brand-pink text-white' },
-  co_production: { label: 'CO-PRODUCTION',    color: 'bg-brand-cyan text-black' },
-  news:          { label: 'NEWS',             color: 'bg-white text-black' },
-  rights:        { label: 'RIGHTS AVAILABLE', color: 'bg-brand-yellow text-black' },
+const POST_TYPES: Record<string, { label: string; bg: string; text: string }> = {
+  new_show:      { label: 'NEW SHOW',        bg: '#FFDE03', text: '#000' },
+  discount:      { label: 'DISCOUNT',         bg: '#FF0266', text: '#fff' },
+  co_production: { label: 'CO-PRODUCTION',    bg: '#03DAC6', text: '#000' },
+  news:          { label: 'NEWS',             bg: '#fff',    text: '#000' },
+  rights:        { label: 'RIGHTS',           bg: '#FFDE03', text: '#000' },
 };
+
+const Avatar: React.FC<{ name: string; url?: string; size?: number; verified?: boolean; founding?: boolean }> = ({ name, url, size = 44, verified, founding }) => (
+  <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+    <div className={`w-full h-full rounded-full overflow-hidden border-2 flex items-center justify-center ${founding ? 'border-brand-yellow' : verified ? 'border-brand-cyan' : 'border-white/20'}`}
+      style={{ background: url ? 'transparent' : '#1a1a1a' }}>
+      {url ? <img src={url} alt={name} className="w-full h-full object-cover" /> :
+        <span className="font-black uppercase text-white/60" style={{ fontSize: size * 0.35 }}>{name?.[0] || '?'}</span>}
+    </div>
+    {verified && (
+      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-brand-cyan border-2 border-brand-black flex items-center justify-center">
+        <span className="material-symbols-outlined text-black" style={{ fontSize: '8px', fontVariationSettings: "'wght' 700" }}>check</span>
+      </div>
+    )}
+    {founding && !verified && (
+      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-brand-yellow border-2 border-brand-black flex items-center justify-center">
+        <span className="material-symbols-outlined text-black" style={{ fontSize: '8px' }}>star</span>
+      </div>
+    )}
+  </div>
+);
 
 const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer }) => {
   const [posts, setPosts] = useState<any[]>([]);
@@ -27,8 +47,9 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   const [submitting, setSubmitting] = useState(false);
   const [postError, setPostError] = useState('');
   const [postSuccess, setPostSuccess] = useState(false);
-  const [likes, setLikes] = useState<Record<string, number>>({});
   const [liked, setLiked] = useState<Record<string, boolean>>({});
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   const plan = (user as any)?.plan || 'gigl';
   const isRoar = plan === 'roar' || user?.isAdmin;
@@ -37,265 +58,242 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   useEffect(() => {
     loadPosts();
     if (isRoar) {
-      const channel = supabase
-        .channel('laff_wire')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (payload) => {
-          setPosts(prev => [payload.new, ...prev]);
-        })
-        .subscribe();
-      return () => { supabase.removeChannel(channel); };
+      const ch = supabase.channel('wire_live')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, p => {
+          loadPosts();
+        }).subscribe();
+      return () => { supabase.removeChannel(ch); };
     }
   }, []);
 
   const loadPosts = async () => {
     setLoading(true);
-    try {
-      let query = supabase
-        .from('posts')
-        .select('*, profiles(id, name, is_verified, is_founding, user_type)')
-        .order('created_at', { ascending: false });
-
-      if (!isLaff) query = query.limit(3);
-      else if (!isRoar) {
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        query = query.gte('created_at', sevenDaysAgo);
-      }
-
-      const { data, error } = await query;
-      if (error) {
-        console.error('Posts error:', error);
-        setPosts([]);
-      } else {
-        setPosts(data || []);
-        // Init likes
-        const l: Record<string, number> = {};
-        data?.forEach((p: any) => { l[p.id] = p.likes_count || 0; });
-        setLikes(l);
-      }
-    } catch (e) {
-      console.error(e);
-      setPosts([]);
-    }
+    let q = supabase.from('posts')
+      .select('*, profiles(id, name, is_verified, is_founding, avatar_url, user_type, location_city)')
+      .order('created_at', { ascending: false });
+    if (!isLaff) q = q.limit(3);
+    else if (!isRoar) q = q.gte('created_at', new Date(Date.now() - 7*86400000).toISOString());
+    const { data } = await q;
+    setPosts(data || []);
+    const lc: Record<string, number> = {};
+    data?.forEach((p: any) => { lc[p.id] = p.likes_count || 0; });
+    setLikeCounts(lc);
     setLoading(false);
   };
 
   const handlePost = async () => {
-    if (!newPost.trim()) { setPostError('Write something first.'); return; }
-    if (!user?.id) { setPostError('You must be logged in.'); return; }
-    if (!isLaff) { setPostError('LAFF or ROAR membership required.'); return; }
-    
-    setSubmitting(true);
-    setPostError('');
-    
-    const { data, error } = await supabase.from('posts').insert({
-      user_id: user.id,
-      type: postType,
-      content: newPost.trim(),
-      likes_count: 0,
-    }).select();
-    
-    if (error) {
-      console.error('Insert error:', error);
-      setPostError('Failed to post: ' + error.message);
-    } else {
-      setNewPost('');
-      setPostSuccess(true);
-      setTimeout(() => setPostSuccess(false), 3000);
-      loadPosts();
-    }
+    if (!newPost.trim()) return;
+    if (!user?.id) { setPostError('Login required'); return; }
+    setSubmitting(true); setPostError('');
+    const { error } = await supabase.from('posts').insert({
+      user_id: user.id, type: postType, content: newPost.trim(), likes_count: 0
+    });
+    if (error) { setPostError('Error: ' + error.message); }
+    else { setNewPost(''); setPostSuccess(true); setTimeout(() => setPostSuccess(false), 3000); loadPosts(); }
     setSubmitting(false);
   };
 
   const handleLike = async (postId: string) => {
-    if (!user?.id) { onNavigate('login'); return; }
-    const isLiked = liked[postId];
-    const current = likes[postId] || 0;
-    const newCount = isLiked ? current - 1 : current + 1;
-    
-    // Optimistic update
-    setLikes(prev => ({ ...prev, [postId]: newCount }));
-    setLiked(prev => ({ ...prev, [postId]: !isLiked }));
-    
-    // Save to DB
-    await supabase.from('posts').update({ likes_count: newCount }).eq('id', postId);
+    if (!user) { onNavigate('login'); return; }
+    const isNowLiked = !liked[postId];
+    const current = likeCounts[postId] || 0;
+    const next = isNowLiked ? current + 1 : Math.max(0, current - 1);
+    setLiked(p => ({ ...p, [postId]: isNowLiked }));
+    setLikeCounts(p => ({ ...p, [postId]: next }));
+    await supabase.from('posts').update({ likes_count: next }).eq('id', postId);
   };
 
-  const timeAgo = (date: string) => {
-    const diff = Date.now() - new Date(date).getTime();
-    const mins = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    if (mins < 2) return 'just now';
-    if (mins < 60) return `${mins}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
+  const timeAgo = (d: string) => {
+    const s = Math.floor((Date.now() - new Date(d).getTime()) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s/60) + 'm';
+    if (s < 86400) return Math.floor(s/3600) + 'h';
+    return Math.floor(s/86400) + 'd';
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-black">
       <Navigation activePage="wire" onNavigate={onNavigate} onLogout={onLogout} user={user} />
 
-      <main className="pt-32 pb-20 px-4 md:px-12 flex-1">
-        <div className="max-w-3xl mx-auto space-y-10">
+      <main className="pt-28 pb-20 flex-1">
 
-          {/* HEADER */}
-          <div>
-            <span className="text-brand-pink text-[10px] font-black uppercase tracking-[0.5em] italic block mb-2">Live Feed</span>
-            <div className="flex items-end justify-between gap-4">
-              <h1 className="text-6xl md:text-9xl font-black uppercase italic leading-[0.85] tracking-tighter text-white">
-                THE LAFF<br/><span className="text-brand-pink">WIRE</span>
+        {/* HEADER STRIP */}
+        <div className="px-4 md:px-12 pb-8 border-b-4 border-white/10">
+          <div className="max-w-2xl mx-auto flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.5em] italic text-brand-pink mb-1">Live Feed</p>
+              <h1 className="text-5xl md:text-7xl font-black uppercase italic leading-none tracking-tighter text-white">
+                THE LAFF <span className="text-brand-pink">WIRE</span>
               </h1>
+            </div>
+            <div className="flex items-center gap-3 pb-2">
               {isRoar && (
-                <div className="flex items-center gap-2 text-brand-pink text-[9px] font-black uppercase italic pb-4">
-                  <span className="w-2 h-2 rounded-full bg-brand-pink animate-pulse"></span>
-                  Live
+                <div className="flex items-center gap-1.5 text-brand-pink text-[9px] font-black uppercase italic">
+                  <span className="w-2 h-2 rounded-full bg-brand-pink animate-pulse"></span>LIVE
                 </div>
               )}
-            </div>
-            <p className="text-white/30 font-bold italic mt-3 text-sm">What's happening on The Laff Exchange. Right now.</p>
-          </div>
-
-          {/* COMPOSER — always visible for LAFF+ */}
-          {isLaff ? (
-            <div className="border-4 border-brand-yellow p-6 space-y-4 shadow-neo-yellow">
-              <p className="text-[10px] font-black uppercase italic text-brand-yellow tracking-widest">Punch It Out →</p>
-              
-              {/* Type selector */}
-              <div className="flex gap-2 flex-wrap">
-                {Object.entries(POST_TYPES).map(([key, val]) => (
-                  <button key={key} onClick={() => setPostType(key)}
-                    className={`px-3 py-1 text-[9px] font-black uppercase italic border-2 transition-all ${postType === key ? `${val.color} border-black` : 'border-white/20 text-white/40 hover:border-white'}`}>
-                    {val.label}
-                  </button>
-                ))}
-              </div>
-
-              <textarea
-                value={newPost}
-                onChange={e => { setNewPost(e.target.value); setPostError(''); }}
-                placeholder="New show, discount offer, co-production opportunity, festival news..."
-                className="w-full bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-28 transition-colors"
-              />
-
-              {postError && <p className="text-brand-pink text-xs font-black italic">⚠ {postError}</p>}
-              {postSuccess && <p className="text-brand-cyan text-xs font-black italic">✓ Posted! Punchline delivered.</p>}
-
-              <div className="flex items-center gap-4">
-                <button onClick={handlePost} disabled={submitting || !newPost.trim()}
-                  className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all disabled:opacity-40 text-sm shadow-[4px_4px_0px_black] hover:shadow-none hover:translate-x-1 hover:translate-y-1">
-                  {submitting ? 'Punching...' : 'Punch It Out →'}
+              {!isLaff && (
+                <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black">
+                  Upgrade →
                 </button>
-                <p className="text-white/20 text-xs italic">Visible to all members</p>
-              </div>
+              )}
             </div>
-          ) : (
-            <div className="border-4 border-white/10 p-6 text-center">
-              <p className="text-white/30 font-bold italic text-sm mb-3">Want to post on The Laff Wire?</p>
-              <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-8 py-3 font-black uppercase italic border-4 border-black text-sm">
-                Upgrade to LAFF →
-              </button>
+          </div>
+        </div>
+
+        <div className="max-w-2xl mx-auto px-4 md:px-0 py-6 space-y-0">
+
+          {/* COMPOSER */}
+          {isLaff && (
+            <div className="border-b-4 border-white/10 pb-6 mb-2">
+              <div className="flex gap-3">
+                <Avatar name={user?.name || '?'} size={44} verified={(user as any)?.is_verified} founding={(user as any)?.is_founding} />
+                <div className="flex-1 space-y-3">
+                  <textarea
+                    ref={textRef}
+                    value={newPost}
+                    onChange={e => { setNewPost(e.target.value); setPostError(''); }}
+                    placeholder="What's happening in your theatre world?"
+                    className="w-full bg-transparent border-none text-white font-bold italic text-base outline-none placeholder:text-white/20 resize-none min-h-[60px]"
+                    rows={2}
+                  />
+                  {/* Type pills */}
+                  <div className="flex gap-2 flex-wrap">
+                    {Object.entries(POST_TYPES).map(([key, val]) => (
+                      <button key={key} onClick={() => setPostType(key)}
+                        className={`px-3 py-1 text-[8px] font-black uppercase italic border-2 transition-all rounded-full ${postType === key ? 'border-black' : 'border-white/20 text-white/30 hover:border-white/50'}`}
+                        style={postType === key ? { background: val.bg, color: val.text, borderColor: '#000' } : {}}>
+                        {val.label}
+                      </button>
+                    ))}
+                  </div>
+                  {postError && <p className="text-brand-pink text-xs font-black italic">⚠ {postError}</p>}
+                  {postSuccess && <p className="text-brand-cyan text-xs font-black italic">✓ Punchline delivered!</p>}
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    <p className="text-white/20 text-[10px] italic">{newPost.length}/500</p>
+                    <button onClick={handlePost} disabled={submitting || !newPost.trim()}
+                      className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black disabled:opacity-30 hover:bg-white transition-all">
+                      {submitting ? '...' : 'Punch It Out →'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           {/* FEED */}
-          <div className="space-y-4">
-            {loading ? (
-              [1,2,3].map(i => (
-                <div key={i} className="border-4 border-white/10 p-6 animate-pulse space-y-3">
-                  <div className="h-3 bg-white/10 w-1/4 rounded"></div>
-                  <div className="h-5 bg-white/10 w-3/4 rounded"></div>
-                  <div className="h-4 bg-white/10 w-1/2 rounded"></div>
+          {loading ? (
+            <div className="space-y-0">
+              {[1,2,3].map(i => (
+                <div key={i} className="py-5 border-b border-white/10 flex gap-3 animate-pulse">
+                  <div className="w-11 h-11 rounded-full bg-white/10 flex-shrink-0"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 bg-white/10 w-1/3 rounded"></div>
+                    <div className="h-4 bg-white/10 w-5/6 rounded"></div>
+                    <div className="h-3 bg-white/10 w-2/3 rounded"></div>
+                  </div>
                 </div>
-              ))
-            ) : posts.length === 0 ? (
-              <div className="border-4 border-white/10 p-12 text-center">
-                <p className="text-white/20 font-black uppercase italic">Nothing on the wire yet.</p>
-                {isLaff && <p className="text-white/10 text-xs italic mt-2">Be the first to punch it out.</p>}
-              </div>
-            ) : (
-              posts.map((post, i) => {
+              ))}
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-white/20 font-black uppercase italic text-lg">Nothing on the wire yet.</p>
+              {isLaff && <p className="text-white/10 text-sm italic mt-2">Be the first to punch it out.</p>}
+            </div>
+          ) : (
+            <div className="space-y-0">
+              {posts.map((post, i) => {
                 const type = POST_TYPES[post.type] || POST_TYPES.news;
                 const isBlurred = !isLaff && i >= 3;
-                const producerId = post.profiles?.id;
+                const pid = post.profiles?.id;
                 const isVerified = post.profiles?.is_verified || post.profiles?.user_type === 'roar';
                 const isFounding = post.profiles?.is_founding;
-                const postLikes = likes[post.id] ?? (post.likes_count || 0);
+                const lc = likeCounts[post.id] ?? 0;
                 const isLiked = liked[post.id] || false;
 
                 return (
-                  <div key={post.id} className={`border-4 transition-all p-5 md:p-6 ${isBlurred ? 'border-white/10 opacity-30 pointer-events-none select-none' : 'border-white/20 hover:border-brand-yellow'}`}>
-                    
-                    {/* TOP ROW */}
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {/* Type badge */}
-                        <span className={`text-[8px] font-black uppercase italic px-2 py-1 border-2 border-black ${type.color}`}>
-                          {type.label}
-                        </span>
-                        
-                        {/* Producer name — clickable if has ID */}
-                        {producerId ? (
+                  <div key={post.id} className={`py-5 border-b border-white/10 ${isBlurred ? 'opacity-20 pointer-events-none select-none' : ''}`}>
+                    <div className="flex gap-3">
+                      {/* Avatar — clickable */}
+                      <button
+                        onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))}
+                        disabled={!pid}
+                        className="flex-shrink-0 disabled:cursor-default"
+                      >
+                        <Avatar
+                          name={post.profiles?.name || '?'}
+                          url={post.profiles?.avatar_url}
+                          size={44}
+                          verified={isVerified}
+                          founding={isFounding}
+                        />
+                      </button>
+
+                      <div className="flex-1 min-w-0">
+                        {/* Name + type + time */}
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
                           <button
-                            onClick={() => { onViewProducer?.(producerId); onNavigate('producer'); }}
-                            className="font-black uppercase italic text-sm text-white hover:text-brand-yellow transition-colors underline-offset-2 hover:underline"
+                            onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))}
+                            disabled={!pid}
+                            className="font-black uppercase italic text-sm text-white hover:text-brand-yellow transition-colors disabled:cursor-default"
                           >
                             {post.profiles?.name || 'Producer'}
                           </button>
-                        ) : (
-                          <span className="font-black uppercase italic text-sm text-white">
-                            {post.profiles?.name || 'Producer'}
-                          </span>
-                        )}
+                          {isVerified && (
+                            <span className="w-3.5 h-3.5 rounded-full bg-brand-cyan border border-black flex items-center justify-center">
+                              <span className="material-symbols-outlined text-black" style={{ fontSize: '7px', fontVariationSettings: "'wght' 700" }}>check</span>
+                            </span>
+                          )}
+                          {isFounding && (
+                            <span className="w-3.5 h-3.5 rounded-full bg-brand-yellow border border-black flex items-center justify-center">
+                              <span className="material-symbols-outlined text-black" style={{ fontSize: '7px' }}>star</span>
+                            </span>
+                          )}
+                          {post.profiles?.location_city && (
+                            <span className="text-white/30 text-[9px] italic">· {post.profiles.location_city}</span>
+                          )}
+                          <span className="text-white/20 text-[9px] italic ml-auto">{timeAgo(post.created_at)}</span>
+                        </div>
 
-                        {/* Instagram-style badges */}
-                        {isVerified && (
-                          <span className="w-4 h-4 rounded-full bg-brand-cyan border border-black flex items-center justify-center" title="Verified">
-                            <span className="material-symbols-outlined text-black" style={{fontSize:'9px'}}>check</span>
-                          </span>
-                        )}
-                        {isFounding && (
-                          <span className="w-4 h-4 rounded-full bg-brand-yellow border border-black flex items-center justify-center" title="Founding">
-                            <span className="material-symbols-outlined text-black" style={{fontSize:'9px'}}>star</span>
-                          </span>
-                        )}
+                        {/* Type pill */}
+                        <span className="inline-block text-[7px] font-black uppercase italic px-2 py-0.5 rounded-full mb-2 border border-black"
+                          style={{ background: type.bg, color: type.text }}>
+                          {type.label}
+                        </span>
+
+                        {/* Content */}
+                        <p className="text-white/80 font-bold italic leading-relaxed text-sm">{post.content}</p>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-5 mt-3">
+                          <button onClick={() => handleLike(post.id)}
+                            className={`flex items-center gap-1 text-[11px] font-black transition-all ${isLiked ? 'text-brand-pink' : 'text-white/30 hover:text-brand-pink'}`}>
+                            <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isLiked ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
+                            {lc > 0 && <span>{lc}</span>}
+                          </button>
+                          {pid && (
+                            <button
+                              onClick={() => { onViewProducer?.(pid); onNavigate('producer'); }}
+                              className="text-[10px] font-black uppercase italic text-white/20 hover:text-brand-cyan transition-colors"
+                            >
+                              Profile →
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-white/20 text-[10px] font-black italic flex-shrink-0">{timeAgo(post.created_at)}</span>
-                    </div>
-
-                    {/* CONTENT */}
-                    <p className="text-white/80 font-bold italic leading-relaxed text-sm md:text-base">{post.content}</p>
-
-                    {/* BOTTOM ROW — likes */}
-                    <div className="mt-4 flex items-center gap-4">
-                      <button
-                        onClick={() => handleLike(post.id)}
-                        className={`flex items-center gap-1.5 text-[10px] font-black uppercase italic transition-all ${isLiked ? 'text-brand-pink' : 'text-white/30 hover:text-brand-pink'}`}
-                      >
-                        <span className="material-symbols-outlined text-sm">{isLiked ? 'favorite' : 'favorite_border'}</span>
-                        {postLikes > 0 && <span>{postLikes}</span>}
-                      </button>
-                      {producerId && (
-                        <button
-                          onClick={() => { onViewProducer?.(producerId); onNavigate('producer'); }}
-                          className="text-[10px] font-black uppercase italic text-white/20 hover:text-brand-cyan transition-colors"
-                        >
-                          View Producer →
-                        </button>
-                      )}
                     </div>
                   </div>
                 );
-              })
-            )}
-          </div>
+              })}
+            </div>
+          )}
 
-          {/* UPGRADE BANNER for GIGL */}
+          {/* UPGRADE */}
           {!isLaff && (
-            <div className="border-8 border-brand-yellow p-8 text-center shadow-neo-yellow">
-              <h2 className="text-3xl font-black uppercase italic text-white mb-2">Want the full wire?</h2>
-              <p className="text-white/40 font-bold italic text-sm mb-6">
-                LAFF — 7 days · ROAR — live, real-time, post anything
-              </p>
+            <div className="mt-8 border-4 border-brand-yellow p-8 text-center shadow-neo-yellow">
+              <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-2">Members only</p>
+              <h2 className="text-3xl font-black uppercase italic text-white mb-1">Full Wire Access</h2>
+              <p className="text-white/40 font-bold italic text-sm mb-6">LAFF — 7 days · ROAR — live, real-time, post & engage</p>
               <button onClick={() => onNavigate('pricing')}
                 className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all">
                 Upgrade Now →
