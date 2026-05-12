@@ -766,7 +766,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             )}
 
             {/* TABS */}
-            <div className="flex border-4 border-white/20 w-fit mb-2">
+            <div className="flex border-4 border-white/20 w-fit">
               {(['assets', 'inquiries', 'profile'] as const).map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
@@ -776,7 +776,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             </div>
 
             {/* 1. MY ASSETS */}
-            {activeTab !== 'profile' && activeTab !== 'inquiries' && <section className="space-y-8">
+            {activeTab === 'assets' && (
+            <section className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-yellow">Assets</span></h2>
                 <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-4 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">+ List Your Show</button>
@@ -821,10 +822,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </section>
 
-            </section>}
+            </section>
+            )}
 
             {/* 2. INQUIRIES */}
-            {activeTab === 'inquiries' && <section className="space-y-6">
+            {activeTab === 'inquiries' && (
+            <section className="space-y-6">
             {inquiries.length > 0 && (
               <section className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
@@ -881,10 +884,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               ))}
             </section>
 
-            </section>}
+            </section>
+            )}
 
-            {/* ROYALTY + INVOICES - shown in assets tab */}
-            {activeTab === 'assets' && <>
+            {activeTab === 'assets' && (<>
             {/* ROYALTY CALCULATOR */}
             <section className="bg-brand-surface border-4 border-brand-yellow p-6 md:p-10 shadow-neo-yellow">
               <div className="flex items-center gap-4 mb-8">
@@ -1080,7 +1083,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </section>
 
-          </>}
+          </>)}
 
             {/* MY PROFILE TAB */}
             {activeTab === 'profile' && (
