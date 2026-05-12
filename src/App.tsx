@@ -339,7 +339,7 @@ const App: React.FC = () => {
 
     switch (effectivePage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
-      case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} />
+      case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} onViewProducer={(id) => setCurrentProducerId(id)} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
       case 'login': return <LoginPage 
         onSuccess={(isPaid: boolean) => setCurrentPage(isPaid ? 'discovery' : 'landing')} 
@@ -352,7 +352,7 @@ const App: React.FC = () => {
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
       case 'pricing': return <PricingPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onPurchaseSuccess={handlePurchaseSuccess} />
       case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
-      case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
+      case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onViewProducer={(id) => { setCurrentProducerId(id); setCurrentPage('producer'); }} />
       case 'stefunny': return <StefunnyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} shows={shows} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} />
       case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} />
       default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />
