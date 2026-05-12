@@ -40,6 +40,10 @@ const Avatar: React.FC<{ name: string; url?: string; size?: number; verified?: b
 );
 
 const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer }) => {
+  const viewProducer = React.useCallback((id: string) => {
+    if (onViewProducer) onViewProducer(id);
+    onNavigate('producer' as any);
+  }, [onViewProducer, onNavigate]);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
@@ -216,7 +220,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                     <div className="flex gap-3">
                       {/* Avatar — clickable */}
                       <button
-                        onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))}
+                        onClick={() => pid && viewProducer(pid)}
                         disabled={!pid}
                         className="flex-shrink-0 disabled:cursor-default"
                       >
@@ -233,7 +237,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                         {/* Name + type + time */}
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <button
-                            onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))}
+                            onClick={() => pid && viewProducer(pid)}
                             disabled={!pid}
                             className="font-black uppercase italic text-sm text-white hover:text-brand-yellow transition-colors disabled:cursor-default"
                           >
@@ -273,7 +277,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                           </button>
                           {pid && (
                             <button
-                              onClick={() => { onViewProducer?.(pid); onNavigate('producer'); }}
+                              onClick={() => pid && viewProducer(pid)}
                               className="text-[10px] font-black uppercase italic text-white/20 hover:text-brand-cyan transition-colors"
                             >
                               Profile →
