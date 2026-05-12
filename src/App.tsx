@@ -13,6 +13,7 @@ import CookieBanner from './components/CookieBanner'
 import NotFoundPage from './pages/NotFoundPage'
 import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
+import LaffWirePage from './pages/LaffWirePage'
 import ProducerPage from './pages/ProducerPage'
 import StefunnyPage from './pages/StefunnyPage'
 import { Analytics } from "@vercel/analytics/next"
@@ -78,7 +79,7 @@ const App: React.FC = () => {
         role: isAdmin ? 'admin' : 'Producer',
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
         isPaid: data?.is_paid || isAdmin, isAdmin,
-        plan: isAdmin ? 'studio' : (data?.user_type === 'studio' ? 'studio' : (data?.is_paid ? 'pro' : 'free')),
+        plan: isAdmin ? 'roar' : (data?.user_type === 'roar' ? 'roar' : (data?.user_type === 'laff' || data?.is_paid ? 'laff' : 'gigl')),
         is_verified: data?.is_verified || false,
         is_founding: data?.is_founding || false,
         subscription: data?.is_paid || isAdmin ? { type: 'Annual', expiryDate: data?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
@@ -309,7 +310,7 @@ const App: React.FC = () => {
       ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
       : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiry }).eq('id', currentUser.id)
-    const newPlan = planName.toLowerCase().includes('studio') ? 'studio' : 'pro'
+    const newPlan = planName.toLowerCase().includes('roar') ? 'roar' : 'laff'
     setCurrentUser(prev => prev ? { ...prev, isPaid: true, plan: newPlan, subscription: { type: planName.includes('Annual') ? 'Annual' : 'Quarterly', expiryDate: expiry, status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } } : null)
     // Send welcome + payment confirmation emails
     const invoiceNum = 'HH-' + Date.now().toString().slice(-6);
@@ -351,6 +352,7 @@ const App: React.FC = () => {
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} />
       case 'pricing': return <PricingPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onPurchaseSuccess={handlePurchaseSuccess} />
       case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
+      case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'stefunny': return <StefunnyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} shows={shows} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} />
       case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} />
       default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />

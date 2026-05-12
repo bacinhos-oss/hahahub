@@ -1,4 +1,4 @@
-export type Page = 'landing' | 'discovery' | 'admin' | 'login' | 'subscription' | 'about' | 'privacy' | 'upload' | 'pricing' | 'faq' | 'stefunny' | 'producer';
+export type Page = 'landing' | 'discovery' | 'admin' | 'login' | 'subscription' | 'about' | 'privacy' | 'upload' | 'pricing' | 'faq' | 'stefunny' | 'producer' | 'wire';
 
 export type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
 export interface SubscriptionInfo {
@@ -45,7 +45,7 @@ export interface Show {
   isFavorited?: boolean; userId?: string;
 }
 export interface User {
-  id?: string; email?: string; name: string; role: string; avatar: string; isPaid: boolean; isAdmin?: boolean; plan?: 'free' | 'pro' | 'studio';
+  id?: string; email?: string; name: string; role: string; avatar: string; isPaid: boolean; isAdmin?: boolean; plan?: 'gigl' | 'laff' | 'roar';
   subscription?: SubscriptionInfo; favorites: string[]; uploadedShowIds?: string[];
   totalViews?: number; totalInquiries?: number;
 }
