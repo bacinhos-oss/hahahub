@@ -818,8 +818,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             </section>}
 
-            {/* 2. INQUIRIES */
-            activeTab === 'inquiries' && <section className="space-y-6">}
+            {/* 2. INQUIRIES */}
+            {activeTab === 'inquiries' && <section className="space-y-6">
             {inquiries.length > 0 && (
               <section className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
