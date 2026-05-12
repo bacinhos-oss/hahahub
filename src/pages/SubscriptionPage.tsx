@@ -814,8 +814,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                 ))}
               </div>
-            </section>
-
             </section>}
 
             {/* 2. INQUIRIES */}
@@ -1069,9 +1067,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                 ))}
               </div>
-            </section>
-
-          </div>}
+            </section>}
 
             {/* 3. MY PROFILE TAB */}
             {activeTab === 'profile' && (
