@@ -907,7 +907,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             ) : filteredShows.map((show, index) => {
               const isFreeBlocked = !user?.isPaid && !user?.isAdmin && index >= 3;
               return (
-              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 hover:shadow-neo-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40 hover:opacity-60' : ''} ${(show as any).producer_plan === 'roar' ? 'border-brand-pink shadow-[4px_4px_0px_rgba(255,2,102,0.4)]' : 'border-white hover:border-brand-yellow'}`}>
+              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 hover:shadow-neo-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40 hover:opacity-60' : ''} ${(show as any).producer_plan === 'roar' ? 'border-brand-pink shadow-[4px_4px_0px_rgba(255,2,102,0.5)] hover:shadow-none hover:border-brand-pink' : 'border-white hover:border-brand-yellow hover:shadow-neo-yellow'}`}>
                 {isFreeBlocked && (
                   <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm border-4 border-brand-yellow">
                     <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
