@@ -912,67 +912,65 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <div
                 key={show.id}
                 onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)}
-                className={`group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 flex flex-col
-                  ${isFreeBlocked ? 'opacity-40' : 'hover:-translate-y-1'}
-                  ${(show as any).producer_plan === 'roar'
-                    ? 'border-2 border-brand-pink shadow-[0_4px_20px_rgba(255,2,102,0.25)] hover:shadow-[0_8px_32px_rgba(255,2,102,0.4)]'
-                    : 'border-2 border-white/10 hover:border-white/40 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)]'
-                  }`}
+                className={`group relative cursor-pointer bg-brand-surface border-4 border-white overflow-hidden flex flex-col transition-all duration-200
+                  ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-yellow hover:shadow-neo-yellow hover:translate-x-[-3px] hover:translate-y-[-3px]'}`}
               >
-                {/* Lock overlay for free users */}
+                {/* Lock overlay */}
                 {isFreeBlocked && (
-                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm rounded-2xl">
+                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70">
                     <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
                     <p className="text-brand-yellow font-black uppercase italic text-xs">Upgrade to LAFF</p>
                   </div>
                 )}
 
                 {/* IMAGE */}
-                <div className="relative aspect-[3/4] overflow-hidden bg-brand-black">
+                <div className="relative overflow-hidden" style={{aspectRatio:'2/3'}}>
                   {show.imageUrl ? (
                     <img src={show.imageUrl} alt={show.title}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105" />
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-full h-full bg-brand-black flex items-center justify-center">
                       <span className="text-6xl font-black uppercase italic text-white/10">{show.title[0]}</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
 
                   {/* TOP BADGES */}
-                  <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
+                  <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                     {(show as any).producer_plan === 'roar' && (
-                      <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5 rounded-full border border-black/20">FEATURED</span>
+                      <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-2 py-0.5 italic border border-black">FEATURED</span>
                     )}
                     {(() => {
                       const days = (show as any).created_at ? Math.floor((Date.now() - new Date((show as any).created_at).getTime()) / 86400000) : 999;
-                      return days <= 10 ? <span className="text-[8px] font-black uppercase bg-white text-black px-2 py-0.5 rounded-full">NEW</span> : null;
+                      return days <= 10 ? <span className="text-[7px] font-black uppercase bg-white text-black px-2 py-0.5 italic border border-black">NEW</span> : null;
                     })()}
                   </div>
 
                   {/* BOTTOM INFO */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="text-brand-pink text-[9px] font-black uppercase italic tracking-widest mb-1">{show.genre}</p>
-                    <h3 className="font-black uppercase italic text-white text-base leading-tight group-hover:text-brand-yellow transition-colors line-clamp-2">{show.title}</h3>
-                    <p className="text-white/50 text-[10px] font-bold mt-1">{show.author}</p>
+                    <h3 className="font-black uppercase italic text-white text-sm leading-tight group-hover:text-brand-yellow transition-colors">{show.title}</h3>
+                    <p className="text-white/40 text-[9px] font-bold mt-0.5">{show.author}</p>
                   </div>
                 </div>
 
                 {/* BOTTOM BAR */}
-                <div className="bg-brand-surface px-4 py-3 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1 text-[10px] text-white/30 font-bold">
-                      <span className="material-symbols-outlined text-sm text-white/20">visibility</span>
+                <div className="border-t-4 border-white/20 group-hover:border-brand-yellow/30 px-3 py-2 flex items-center justify-between gap-2 transition-all">
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">
+                      <span className="material-symbols-outlined text-sm text-brand-cyan">visibility</span>
                       {show.viewsCount || 0}
                     </span>
-                    <span className="flex items-center gap-1 text-[10px] text-white/30 font-bold">
-                      <span className="material-symbols-outlined text-sm text-white/20" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
+                    <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">
+                      <span className="material-symbols-outlined text-sm text-brand-pink" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
                       {show.likesCount || 0}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    {getProfileBadges(show).slice(0,2).map(b => <Badge key={b} type={b} size="xs" />)}
-                    <span className="text-white/20 text-[9px] font-bold italic ml-1">{show.productionYear}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-white/30 text-[9px] font-black italic">{show.location}</span>
+                    <span className="text-white/20 text-[9px]">·</span>
+                    <span className="text-white/30 text-[9px] font-black italic">{show.productionYear}</span>
+                    {getProfileBadges(show).slice(0,1).map(b => <Badge key={b} type={b} size="xs" />)}
                   </div>
                 </div>
               </div>
