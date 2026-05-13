@@ -907,7 +907,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             ) : filteredShows.map((show, index) => {
               const isFreeBlocked = !user?.isPaid && !user?.isAdmin && index >= 3;
               return (
-              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 border-white hover:shadow-neo-yellow hover:border-brand-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40 hover:opacity-60' : ''}`}>
+              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 hover:shadow-neo-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40 hover:opacity-60' : ''} ${(show as any).producer_plan === 'roar' ? 'border-brand-pink shadow-[4px_4px_0px_rgba(255,2,102,0.4)]' : 'border-white hover:border-brand-yellow'}`}>
                 {isFreeBlocked && (
                   <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm border-4 border-brand-yellow">
                     <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
@@ -920,7 +920,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 opacity-80 group-hover:opacity-60 transition-opacity"></div>
                   <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
                     {isNewThisWeek(show) && (
-                      <span className="px-3 py-1 text-[9px] font-black uppercase italic bg-brand-pink text-white border-2 border-black shadow-[2px_2px_0px_black] animate-pulse"> New</span>
+                      <span className="px-3 py-1 text-[9px] font-black uppercase italic bg-brand-pink text-white border-2 border-black shadow-[2px_2px_0px_black] animate-pulse">🔥 New</span>
                     )}
                   </div>
                   <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
@@ -947,6 +947,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center gap-1 flex-wrap">
+                    {(show as any).producer_plan === 'roar' && (
+                      <span className="text-[7px] font-black uppercase text-white bg-brand-pink px-2 py-0.5 italic border border-black">FEATURED</span>
+                    )}
                     {(show as any).is_verified && (
                       <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">VERIFIED</span>
                     )}
