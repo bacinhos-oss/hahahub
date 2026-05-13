@@ -69,7 +69,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   const loadPosts = async () => {
     setLoading(true);
     let q = supabase.from('posts')
-      .select('*, profiles(id, name, is_verified, is_founding, user_type)')
+      .select('*, profiles(id, name, is_verified, is_founding)')
       .order('created_at', { ascending: false });
     if (!isLaff) q = q.limit(3);
     else if (!isRoar) q = q.gte('created_at', new Date(Date.now() - 7*86400000).toISOString());
