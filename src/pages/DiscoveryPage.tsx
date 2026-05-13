@@ -909,76 +909,70 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               const freeLimit = !user ? 5 : plan === 'gigl' ? 5 : 9999;
               const isFreeBlocked = plan === 'gigl' && !user?.isAdmin && index >= freeLimit;
               return (
-              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 transition-all duration-300 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40' : 'hover:translate-x-[-3px] hover:translate-y-[-3px]'} ${(show as any).producer_plan === 'roar' ? 'border-brand-pink shadow-[4px_4px_0px_rgba(255,2,102,0.4)] hover:shadow-[6px_6px_0px_rgba(255,2,102,0.6)] hover:border-brand-pink' : 'border-white/30 hover:border-brand-yellow hover:shadow-neo-yellow'}`}>
+              <div
+                key={show.id}
+                onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)}
+                className={`group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 flex flex-col
+                  ${isFreeBlocked ? 'opacity-40' : 'hover:-translate-y-1'}
+                  ${(show as any).producer_plan === 'roar'
+                    ? 'border-2 border-brand-pink shadow-[0_4px_20px_rgba(255,2,102,0.25)] hover:shadow-[0_8px_32px_rgba(255,2,102,0.4)]'
+                    : 'border-2 border-white/10 hover:border-white/40 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)]'
+                  }`}
+              >
+                {/* Lock overlay for free users */}
                 {isFreeBlocked && (
-                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm border-4 border-brand-yellow">
+                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm rounded-2xl">
                     <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
-                    <p className="text-brand-yellow font-black uppercase italic text-xs tracking-widest text-center px-4">Pro Access Only</p>
-                    <p className="text-white/40 font-bold italic text-[10px] mt-1">Unlock all shows →</p>
+                    <p className="text-brand-yellow font-black uppercase italic text-xs">Upgrade to LAFF</p>
                   </div>
                 )}
-                <div className="aspect-[2/3] relative overflow-hidden">
-                  <img src={show.imageUrl} alt={show.title} className="w-full h-full object-cover transition-all duration-700 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 opacity-80 group-hover:opacity-60 transition-opacity"></div>
-                  <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
-                    {isNewThisWeek(show) && (
-                      <span className="px-3 py-1 text-[9px] font-black uppercase italic bg-brand-pink text-white border-2 border-black shadow-[2px_2px_0px_black] animate-pulse">🔥 New</span>
-                    )}
-                  </div>
-                  <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
-                    <button
-                      onClick={(e) => toggleShortlist(e, show.id)}
-                      className={`w-8 h-8 flex items-center justify-center border-2 transition-all ${shortlist.includes(show.id) ? 'bg-brand-yellow text-black border-black' : 'bg-black/60 text-white/60 border-white/30 hover:border-white hover:text-white'}`}
-                    >
-                      <span className="material-symbols-outlined text-sm">{shortlist.includes(show.id) ? 'bookmark' : 'bookmark_border'}</span>
-                    </button>
-                    <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-yellow text-black">{show.productionYear}</span>
-                    <span className="px-3 py-1 text-[10px] font-black uppercase italic border border-black shadow-[2px_2px_0px_white] bg-brand-cyan text-black">{show.location}</span>
-                  </div>
-                  <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <div className="space-y-2">
-                      <p className="text-brand-pink text-[10px] font-black uppercase italic tracking-[0.2em]">{show.genre} {show.subgenre ? `• ${show.subgenre}` : ''}</p>
-                      <h3 className="text-xl md:text-3xl font-black uppercase italic leading-tight text-white group-hover:text-brand-yellow transition-colors line-clamp-2">{show.title}</h3>
-                      <p className="text-white/60 text-xs uppercase font-bold">{show.author}</p>
+
+                {/* IMAGE */}
+                <div className="relative aspect-[3/4] overflow-hidden bg-brand-black">
+                  {show.imageUrl ? (
+                    <img src={show.imageUrl} alt={show.title}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-6xl font-black uppercase italic text-white/10">{show.title[0]}</span>
                     </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+
+                  {/* TOP BADGES */}
+                  <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
+                    {(show as any).producer_plan === 'roar' && (
+                      <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5 rounded-full border border-black/20">FEATURED</span>
+                    )}
+                    {(() => {
+                      const days = (show as any).created_at ? Math.floor((Date.now() - new Date((show as any).created_at).getTime()) / 86400000) : 999;
+                      return days <= 10 ? <span className="text-[8px] font-black uppercase bg-white text-black px-2 py-0.5 rounded-full">NEW</span> : null;
+                    })()}
+                  </div>
+
+                  {/* BOTTOM INFO */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-brand-pink text-[9px] font-black uppercase italic tracking-widest mb-1">{show.genre}</p>
+                    <h3 className="font-black uppercase italic text-white text-base leading-tight group-hover:text-brand-yellow transition-colors line-clamp-2">{show.title}</h3>
+                    <p className="text-white/50 text-[10px] font-bold mt-1">{show.author}</p>
                   </div>
                 </div>
-                <div className="bg-brand-black border-t-4 border-white p-5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 group/metric">
-                    <span className="material-symbols-outlined text-brand-cyan text-base">visibility</span>
-                    <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
+
+                {/* BOTTOM BAR */}
+                <div className="bg-brand-surface px-4 py-3 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1 text-[10px] text-white/30 font-bold">
+                      <span className="material-symbols-outlined text-sm text-white/20">visibility</span>
+                      {show.viewsCount || 0}
+                    </span>
+                    <span className="flex items-center gap-1 text-[10px] text-white/30 font-bold">
+                      <span className="material-symbols-outlined text-sm text-white/20" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
+                      {show.likesCount || 0}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1 flex-wrap">
-                    {(show as any).producer_plan === 'roar' && (
-                      <span className="text-[7px] font-black uppercase text-white bg-brand-pink px-2 py-0.5 italic border border-black">FEATURED</span>
-                    )}
-                    {(show as any).is_verified && (
-                      <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">VERIFIED</span>
-                    )}
-                    {(show as any).is_founding && (
-                      <span className="text-[8px] font-black uppercase text-black bg-brand-yellow px-2 py-0.5 italic border border-black">FOUNDING</span>
-                    )}
-                    {show.licensedCountries && show.licensedCountries.split(',').filter(Boolean).length > 0 && (
-                      <span className="text-[8px] font-black uppercase text-white bg-brand-pink px-2 py-0.5 italic border border-black">
-                        {show.licensedCountries.split(',').filter((s: string) => s.trim()).length} COUNTRIES
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 group/metric">
-                    <span className="material-symbols-outlined text-brand-pink text-base">favorite</span>
-                    <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-pink transition-colors">{show.likesCount.toLocaleString()}</span>
-                  </div>
-                  <div className="text-[9px] font-black text-white/30 uppercase italic">
-                    EST. {show.productionYear}
+                  <div className="flex items-center gap-1">
+                    {getProfileBadges(show).slice(0,2).map(b => <Badge key={b} type={b} size="xs" />)}
+                    <span className="text-white/20 text-[9px] font-bold italic ml-1">{show.productionYear}</span>
                   </div>
                 </div>
               </div>
-            )})}
-          </section>
-        </div>
-      </main>
-    </div>
-  );
-};
-
-export default DiscoveryPage;
