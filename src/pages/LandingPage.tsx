@@ -331,56 +331,62 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               <p className="text-white/40 font-bold italic text-lg mt-4 max-w-xl mx-auto">Pick your passport. No per-inquiry fees. No commissions. Ever.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
-              {/* GIGL - Free */}
-              <div className="bg-brand-surface border-4 border-white/30 p-6 md:p-8">
-                <p className="text-white/40 text-xs font-black uppercase tracking-widest italic mb-2">Free</p>
+              {/* GIGL */}
+              <div className="bg-brand-surface border-4 border-white/20 p-6 md:p-8">
+                <p className="text-white/40 text-xs font-black uppercase tracking-widest italic mb-2">Free · Solo Producer</p>
                 <h3 className="text-4xl font-black uppercase italic text-white mb-1">GIGL</h3>
                 <div className="text-5xl font-black text-white/40 mb-1">€0</div>
                 <p className="text-white/30 text-xs font-bold italic mb-8">forever</p>
                 <ul className="space-y-3 mb-8">
-                  {['3 shows preview', 'Basic catalog browse', '3 Laff Wire posts', 'No contact access', 'No uploads'].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/30">
-                      <span className="material-symbols-outlined text-white/20 text-base">remove</span>{f}
+                  {[
+                    { t: 'Browse 5 shows', ok: false },
+                    { t: 'Upload 1 show', ok: true },
+                    { t: 'Wire — read only', ok: false },
+                    { t: 'No contact access', ok: false },
+                    { t: 'No Dossier', ok: false },
+                  ].map((f, i) => (
+                    <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/60' : 'text-white/25'}`}>
+                      <span className={`material-symbols-outlined text-base ${f.ok ? 'text-brand-cyan' : 'text-white/20'}`}>{f.ok ? 'check' : 'remove'}</span>{f.t}
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => onNavigate('login')} className="w-full py-4 border-4 border-white/20 text-white/40 font-black uppercase text-sm italic hover:border-white hover:text-white transition-all">
-                  Start Giggling
+                <button onClick={() => { sessionStorage.setItem('selectedPlan','gigl'); onNavigate('login'); }} className="w-full py-4 border-4 border-white/20 text-white/40 font-black uppercase text-sm italic hover:border-white hover:text-white transition-all">
+                  Start for Free
                 </button>
               </div>
-              {/* LAFF - Pro */}
+              {/* LAFF */}
               <div className="bg-white border-8 border-black p-6 md:p-10 shadow-neo-magenta relative md:-mt-4">
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-pink text-white px-6 py-1 font-black uppercase text-xs italic border-4 border-black whitespace-nowrap">Most Popular</div>
-                <p className="text-gray-400 text-xs font-black uppercase tracking-widest italic mb-2">Pro</p>
+                <p className="text-gray-400 text-xs font-black uppercase tracking-widest italic mb-2">Pro · Production House</p>
                 <h3 className="text-4xl font-black uppercase italic text-black mb-1">LAFF</h3>
                 <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
                 <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Full catalog access', 'Unlimited show uploads', 'Direct contact with rights holders', 'Contract templates', 'The Dossier PDF download', 'Laff Wire — 7 days', 'Post to Laff Wire', 'Analytics'].map((f, i) => (
+                  {['Browse full catalog — unlimited', 'Upload up to 10 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Contract templates', 'Laff Wire — 7 days + post', 'Producer Profile'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => onNavigate('login')} className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-lg hover:bg-brand-pink hover:text-white transition-all italic">
+                <button onClick={() => { sessionStorage.setItem('selectedPlan','laff'); onNavigate('login'); }} className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-lg hover:bg-brand-pink hover:text-white transition-all italic">
                   Start Laffing →
                 </button>
                 <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via Stripe</p>
               </div>
-              {/* ROAR - Studio */}
-              <div className="bg-brand-surface border-4 border-brand-cyan p-6 md:p-8 shadow-neo-cyan">
-                <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-2">Studio</p>
+              {/* ROAR */}
+              <div className="bg-brand-surface border-4 border-brand-pink p-6 md:p-8 shadow-[8px_8px_0px_rgba(255,2,102,0.4)]">
+                <p className="text-brand-pink text-xs font-black uppercase tracking-widest italic mb-2">Studio · Full Power</p>
                 <h3 className="text-4xl font-black uppercase italic text-white mb-1">ROAR</h3>
-                <div className="text-5xl font-black text-brand-cyan mb-1">€189</div>
+                <div className="text-5xl font-black text-brand-pink mb-1">€189</div>
                 <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Everything in LAFF', 'VERIFIED badge', 'Priority listing', 'Public Producer Profile', 'Laff Wire — live real-time', 'Co-production feature', 'Multi-user (3 seats)', 'White-label Dossier'].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/70">
-                      <span className="material-symbols-outlined text-brand-cyan text-base">check_circle</span>{f}
+                  {['Browse full catalog — unlimited', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge in catalog', 'Priority listing — always first', 'VERIFIED badge', 'Laff Wire — live real-time'].map((f, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
+                      <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => onNavigate('login')} className="w-full py-4 bg-brand-cyan text-black border-4 border-black font-black uppercase text-sm italic hover:bg-white transition-all">
+                <button onClick={() => { sessionStorage.setItem('selectedPlan','roar'); onNavigate('login'); }} className="w-full py-4 bg-brand-pink text-white border-4 border-black font-black uppercase text-sm italic hover:bg-white hover:text-black transition-all">
                   Start Roaring →
                 </button>
               </div>
