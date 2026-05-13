@@ -24,7 +24,7 @@
     <meta name="twitter:title" content="HahaHub | Comedy Rights Marketplace">
     <meta name="twitter:description" content="Tickle. Set Up. Punch. The first P2P comedy rights platform.">
 
-    <!-- Google Analytics G-SEPT0657QY -->
+
 
     <!-- FONT PRELOAD — prevents FOUT on all devices -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -131,15 +131,21 @@
         }
     </script>
 </head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SEPT0657QY"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-SEPT0657QY');
-</script>
+    <!-- Google Analytics — disabled until cookie consent -->
+    <script>
+      window['ga-disable-G-SEPT0657QY'] = true; // disabled by default
+      // Enable if user previously accepted
+      if (localStorage.getItem('hahahub_cookies') === 'accepted') {
+        window['ga-disable-G-SEPT0657QY'] = false;
+      }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SEPT0657QY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-SEPT0657QY', { anonymize_ip: true });
+    </script>
 <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
