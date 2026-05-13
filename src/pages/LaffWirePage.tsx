@@ -40,10 +40,6 @@ const Avatar: React.FC<{ name: string; url?: string; size?: number; verified?: b
 );
 
 const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer }) => {
-  const viewProducer = React.useCallback((id: string) => {
-    if (onViewProducer) onViewProducer(id);
-    onNavigate('producer' as any);
-  }, [onViewProducer, onNavigate]);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
@@ -73,7 +69,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   const loadPosts = async () => {
     setLoading(true);
     let q = supabase.from('posts')
-      .select('*, profiles(id, name, is_verified, is_founding, avatar_url, user_type, location_city)')
+      .select('*, profiles(id, name, is_verified, is_founding, user_type)')
       .order('created_at', { ascending: false });
     if (!isLaff) q = q.limit(3);
     else if (!isRoar) q = q.gte('created_at', new Date(Date.now() - 7*86400000).toISOString());
@@ -220,7 +216,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                     <div className="flex gap-3">
                       {/* Avatar — clickable */}
                       <button
-                        onClick={() => pid && viewProducer(pid)}
+                        onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))}
                         disabled={!pid}
                         className="flex-shrink-0 disabled:cursor-default"
                       >
@@ -237,7 +233,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                         {/* Name + type + time */}
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <button
-                            onClick={() => pid && viewProducer(pid)}
+                            onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))}
                             disabled={!pid}
                             className="font-black uppercase italic text-sm text-white hover:text-brand-yellow transition-colors disabled:cursor-default"
                           >
@@ -277,7 +273,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                           </button>
                           {pid && (
                             <button
-                              onClick={() => pid && viewProducer(pid)}
+                              onClick={() => { onViewProducer?.(pid); onNavigate('producer'); }}
                               className="text-[10px] font-black uppercase italic text-white/20 hover:text-brand-cyan transition-colors"
                             >
                               Profile →
