@@ -268,7 +268,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile'>('assets');
-  const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '' });
+  const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '', avatar_url: '' });
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarInputRef = React.useRef<HTMLInputElement>(null);
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -293,7 +295,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       loadMyRealStats();
       loadInquiries();
       supabase.from('profiles').select('bio, website, location_city, festivals').eq('id', user.id).maybeSingle().then(({ data }) => {
-        if (data) setProfileForm({ bio: data.bio || '', website: data.website || '', location_city: data.location_city || '', festivals: data.festivals || '' });
+        if (data) setProfileForm({ bio: data.bio || '', website: data.website || '', location_city: data.location_city || '', festivals: data.festivals || '', avatar_url: data.avatar_url || '' });
       });
     }
   }, [user]);
@@ -1077,6 +1079,51 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
                 <p className="text-white/40 font-bold italic text-sm">Appears on your public Producer Profile page.</p>
                 <div className="space-y-6 max-w-2xl">
+                  {/* VIEW MY PROFILE BUTTON */}
+                  <button
+                    onClick={() => { if (user?.id) { (window as any).__producerId = user.id; onNavigate('producer' as any); } }}
+                    className="w-full bg-brand-surface border-4 border-brand-cyan text-brand-cyan py-4 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">open_in_new</span>
+                    View My Public Profile →
+                  </button>
+
+                  {/* AVATAR UPLOAD */}
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Profile Photo</label>
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-20 rounded-full border-4 border-white/20 overflow-hidden flex items-center justify-center bg-brand-surface flex-shrink-0">
+                        {profileForm.avatar_url ? (
+                          <img src={profileForm.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-2xl font-black uppercase italic text-white/20">{user?.name?.[0]}</span>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <input ref={avatarInputRef} type="file" accept="image/*" className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file || !user?.id) return;
+                            setAvatarUploading(true);
+                            const ext = file.name.split('.').pop();
+                            const path = `avatars/${user.id}/avatar.${ext}`;
+                            const { error } = await supabase.storage.from('show-images').upload(path, file, { upsert: true });
+                            if (!error) {
+                              const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path);
+                              setProfileForm(p => ({ ...p, avatar_url: urlData.publicUrl }));
+                            }
+                            setAvatarUploading(false);
+                          }}
+                        />
+                        <button onClick={() => avatarInputRef.current?.click()} disabled={avatarUploading}
+                          className="bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-brand-yellow transition-all disabled:opacity-40">
+                          {avatarUploading ? 'Uploading...' : 'Upload Photo'}
+                        </button>
+                        <p className="text-white/20 text-[9px] italic mt-1">JPG or PNG, max 2MB</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Bio / About</label>
                     <textarea value={profileForm.bio} onChange={e => setProfileForm(p => ({...p, bio: e.target.value}))} placeholder="Short intro — who you are, what you produce..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-28 transition-colors" />
@@ -1096,7 +1143,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <button onClick={async () => {
                     if (!user?.id) return;
                     setProfileSaving(true);
-                    await supabase.from('profiles').update({ bio: profileForm.bio, website: profileForm.website, location_city: profileForm.location_city, festivals: profileForm.festivals }).eq('id', user.id);
+                    await supabase.from('profiles').update({ bio: profileForm.bio, website: profileForm.website, location_city: profileForm.location_city, festivals: profileForm.festivals, avatar_url: profileForm.avatar_url }).eq('id', user.id);
                     setProfileSaving(false);
                     setProfileSaved(true);
                     setTimeout(() => setProfileSaved(false), 3000);
