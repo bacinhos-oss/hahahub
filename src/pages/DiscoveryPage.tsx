@@ -905,7 +905,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <p className="text-white/10 font-black uppercase italic text-sm mt-2">Nothing to tickle here. Adjust your filters.</p>
               </div>
             ) : filteredShows.map((show, index) => {
-              const isFreeBlocked = !user?.isPaid && !user?.isAdmin && index >= 3;
+              const plan = (user as any)?.plan || 'gigl';
+              const freeLimit = !user ? 5 : plan === 'gigl' ? 5 : 9999;
+              const isFreeBlocked = plan === 'gigl' && !user?.isAdmin && index >= freeLimit;
               return (
               <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 transition-all duration-300 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40' : 'hover:translate-x-[-3px] hover:translate-y-[-3px]'} ${(show as any).producer_plan === 'roar' ? 'border-brand-pink shadow-[4px_4px_0px_rgba(255,2,102,0.4)] hover:shadow-[6px_6px_0px_rgba(255,2,102,0.6)] hover:border-brand-pink' : 'border-white/30 hover:border-brand-yellow hover:shadow-neo-yellow'}`}>
                 {isFreeBlocked && (

@@ -33,7 +33,10 @@ const compressImage = (file: File, maxWidth: number, quality: number): Promise<F
   });
 };
 
-const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onUpload }) => {
+const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onUpload, userShowCount = 0 }) => {
+  const plan = (user as any)?.plan || 'gigl';
+  const uploadLimit = user?.isAdmin ? 9999 : plan === 'roar' ? 9999 : plan === 'laff' ? 10 : 1;
+  const isAtLimit = userShowCount >= uploadLimit;
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -218,6 +221,27 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   return (
     <div className="flex flex-col min-h-screen bg-brand-black overflow-y-auto text-white">
       <Navigation onNavigate={onNavigate} onLogout={onLogout} activePage="upload" user={user} />
+      {isAtLimit && (
+        <div className="fixed inset-0 z-50 bg-brand-black flex flex-col items-center justify-center gap-6 px-4">
+          <h1 className="text-5xl font-black uppercase italic text-white text-center">
+            {plan === 'gigl' ? 'GIGL limit reached.' : 'LAFF limit reached.'}
+          </h1>
+          <p className="text-white/40 font-bold italic text-center max-w-md">
+            {plan === 'gigl' ? `You've used your 1 free show slot. Upgrade to LAFF for up to 10 shows.` : `You've reached 10 shows on LAFF. Upgrade to ROAR for unlimited uploads.`}
+          </p>
+          <div className="flex gap-4">
+            <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all">
+              {plan === 'gigl' ? 'Upgrade to LAFF →' : 'Upgrade to ROAR →'}
+            </button>
+            <button onClick={() => onNavigate('subscription')} className="border-4 border-white text-white px-8 py-4 font-black uppercase italic hover:bg-white hover:text-black transition-all">
+              My Hub
+            </button>
+          </div>
+          <p className="text-white/20 text-xs italic">
+            {plan === 'gigl' ? '1/1 show used' : `${userShowCount}/10 shows used`}
+          </p>
+        </div>
+      )}
       <main className="pt-40 pb-24 px-8">
         <div className="max-w-6xl mx-auto space-y-16">
           <header>
