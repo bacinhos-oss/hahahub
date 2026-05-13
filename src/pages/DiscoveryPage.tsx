@@ -11,9 +11,10 @@ interface DiscoveryPageProps {
   onToggleFavorite: (id: string) => void;
   onUpdateStats: (id: string, type: 'view' | 'inquiry') => void;
   shows: Show[];
+  onViewProducer?: (producerId: string) => void;
 }
 
-const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpdateStats, shows }) => {
+const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpdateStats, shows, onViewProducer }) => {
   const [selectedShowId, setSelectedShowId] = useState<string | null>(null);
   const [inquiryShowId, setInquiryShowId] = useState<string | null>(null);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
