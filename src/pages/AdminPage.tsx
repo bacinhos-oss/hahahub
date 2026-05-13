@@ -19,6 +19,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const [newEmail, setNewEmail] = useState('');
   const [newNote, setNewNote] = useState('Welcome to the Vault. Your credentials for the HAHAHUB Producer Tier are enclosed below.');
   const [selectedDuration, setSelectedDuration] = useState<InvitationDuration>('1 Month');
+  const [invitePlan, setInvitePlan] = useState<'gigl' | 'laff' | 'roar'>('laff');
   const [mailLog, setMailLog] = useState<{title: string, msg: string} | null>(null);
   const [users, setUsers] = useState<any[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -92,6 +93,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       recipient: newName,
       email: newEmail,
       duration: selectedDuration,
+      plan: invitePlan,
       status: 'pending',
       note: newNote,
       generated_username: username,
@@ -112,7 +114,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU" },
-        body: JSON.stringify({ email: newEmail, name: newName, password, note: newNote, duration: selectedDuration })
+        body: JSON.stringify({ email: newEmail, name: newName, password, note: newNote, duration: selectedDuration, plan: invitePlan })
       });
       triggerMailLog(`Email Sent to ${newName}`, `Real email dispatched to: ${newEmail}\n\nEmail: ${newEmail}\nPassword: ${password}\nDuration: ${selectedDuration}`);
     } catch (e) {
@@ -356,11 +358,26 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               <textarea value={newNote} onChange={(e) => setNewNote(e.target.value)} rows={4} className="w-full border-4 border-white bg-brand-black text-white focus:border-brand-pink p-4 font-bold italic outline-none text-sm" />
             </label>
           </div>
-          <div className="mb-10">
+          <div className="mb-8">
             <span className="text-brand-cyan text-xs font-black uppercase tracking-widest mb-4 block italic">Access Duration Tier</span>
             <div className="flex flex-wrap gap-3">
               {durations.map((dur) => (
                 <button key={dur} onClick={() => setSelectedDuration(dur)} className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-2 transition-all ${selectedDuration === dur ? 'bg-brand-pink text-white border-brand-pink shadow-[4px_4px_0px_white]' : 'bg-transparent text-white border-white/20 hover:border-white'}`}>{dur}</button>
+              ))}
+            </div>
+          </div>
+          <div className="mb-10">
+            <span className="text-brand-yellow text-xs font-black uppercase tracking-widest mb-4 block italic">Plan Tier</span>
+            <div className="flex flex-wrap gap-3">
+              {(['gigl', 'laff', 'roar'] as const).map((plan) => (
+                <button key={plan} onClick={() => setInvitePlan(plan)}
+                  className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-2 transition-all ${invitePlan === plan ? 
+                    plan === 'roar' ? 'bg-brand-pink text-white border-brand-pink shadow-[4px_4px_0px_white]' :
+                    plan === 'laff' ? 'bg-brand-cyan text-black border-brand-cyan shadow-[4px_4px_0px_white]' :
+                    'bg-white/20 text-white border-white shadow-[4px_4px_0px_white]'
+                  : 'bg-transparent text-white/40 border-white/20 hover:border-white hover:text-white'}`}>
+                  {plan === 'gigl' ? 'GIGL — Free' : plan === 'laff' ? 'LAFF — €99' : 'ROAR — €189'}
+                </button>
               ))}
             </div>
           </div>
@@ -398,7 +415,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                        <span className="text-[10px] text-brand-cyan uppercase font-black block">U: {inv.generatedUsername}</span>
                        <span className="text-[10px] text-brand-pink uppercase font-black">P: {inv.generatedPassword}</span>
                     </td>
-                    <td className="px-4 md:px-8 py-5"><span className="text-xs font-bold uppercase text-brand-yellow">{inv.duration}</span></td>
+                    <td className="px-4 md:px-8 py-5"><span className="text-xs font-bold uppercase text-brand-yellow">{inv.duration}</span><br/><span className="text-[9px] font-black uppercase text-brand-cyan">{(inv as any).plan || 'laff'}</span></td>
                     <td className="px-4 md:px-8 py-5">
                        <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase ${inv.status === 'live' ? 'bg-green-500/10 text-green-400 border-green-500/30' : inv.status === 'pending' ? 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}>
                           {inv.status}
