@@ -32,7 +32,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   }, []);
 
   const loadStats = async () => {
-    const { data } = await supabase.from('profiles').select('id, is_paid, name, email, is_verified, is_founding, uploaded_show_ids, subscription_expiry').order('created_at', { ascending: false });
+    const { data } = await supabase.from('profiles').select('id, is_paid, name, email, is_verified, is_founding, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
     if (data) {
       setUsers(data);
       setLiveStats({
@@ -65,7 +65,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     // Load individual users with email
     const { data } = await supabase
       .from('profiles')
-      .select('id, name, email, is_paid, is_verified, is_founding, uploaded_show_ids, subscription_expiry')
+      .select('id, name, email, is_paid, is_verified, is_founding, uploaded_show_ids, subscription_expiry, user_type')
       .order('created_at', { ascending: false });
     if (data) setUsers(data);
     setLoadingUsers(false);
@@ -196,8 +196,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                     <td className="px-8 py-5"><span className="font-black text-sm uppercase">{u.name || '—'}</span><br/><span className="text-[10px] text-white/30">{u.email}</span></td>
                     <td className="px-8 py-5"><span className="text-xs font-bold">{u.uploaded_show_ids?.length || 0}</span></td>
                     <td className="px-8 py-5">
-                      <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase ${u.is_paid ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
-                        {u.is_paid ? 'PRO' : 'FREE'}
+                      <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase ${u.user_type === 'roar' ? 'bg-brand-pink/10 text-brand-pink border-brand-pink/30' : u.user_type === 'laff' || u.is_paid ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
+                        {u.user_type === 'roar' ? 'ROAR' : u.user_type === 'laff' || u.is_paid ? 'LAFF' : 'GIGL'}
                       </span>
                     </td>
                     <td className="px-8 py-5">
@@ -230,9 +230,25 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       </button>
                     </td>
                     <td className="px-8 py-5 text-right flex items-center gap-2 justify-end">
-                      <button onClick={() => togglePro(u.id, u.is_paid)} className={`px-4 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_paid ? 'border-brand-pink text-brand-pink hover:bg-brand-pink hover:text-white' : 'border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black'}`}>
-                        {u.is_paid ? 'Revoke' : 'Grant PRO'}
-                      </button>
+                      <select
+                        value={u.user_type || (u.is_paid ? 'laff' : 'gigl')}
+                        onChange={async (e) => {
+                          const plan = e.target.value;
+                          const isPaid = plan !== 'gigl';
+                          const expiryStr = isPaid ? new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0] : null;
+                          await supabase.from('profiles').update({ 
+                            user_type: plan, 
+                            is_paid: isPaid,
+                            subscription_expiry: expiryStr
+                          }).eq('id', u.id);
+                          setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr } : x));
+                        }}
+                        className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-white/20 bg-brand-black text-white hover:border-brand-yellow transition-all cursor-pointer"
+                      >
+                        <option value="gigl">GIGL (Free)</option>
+                        <option value="laff">LAFF (€99)</option>
+                        <option value="roar">ROAR (€189)</option>
+                      </select>
                       {isExpired && (
                         <button
                           onClick={async () => {
