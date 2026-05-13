@@ -267,7 +267,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRef2 = React.useRef<HTMLInputElement>(null);
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile'>('assets');
+  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics'>('assets');
+  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '', avatar_url: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
@@ -754,10 +755,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             {/* TABS */}
             <div className="flex border-4 border-white/20 w-fit">
-              {(['assets', 'inquiries', 'profile'] as const).map(tab => (
+              {(['assets', 'inquiries', 'profile', ...((user as any)?.plan === 'roar' || user?.isAdmin ? ['analytics'] : [])] as const).map((tab: any) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                  {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : 'My Profile'}
+                  {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : '⚡ Analytics'}
                 </button>
               ))}
             </div>
@@ -1070,6 +1071,63 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             </section>
 
           </>)}
+
+            {/* ANALYTICS TAB — ROAR only */}
+            {activeTab === 'analytics' && (
+              <section className="space-y-8">
+                <div>
+                  <h2 className="text-4xl font-black uppercase italic">Show <span className="text-brand-pink">Analytics</span></h2>
+                  <p className="text-white/40 font-bold italic text-sm mt-1">Performance data for your shows. ROAR exclusive.</p>
+                </div>
+                {analyticsData.length === 0 ? (
+                  <p className="text-white/20 font-bold italic">No shows to analyze yet.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {analyticsData.map((show: any, i: number) => (
+                      <div key={i} className="border-4 border-white/20 p-6 hover:border-brand-pink transition-all">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div>
+                            <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">{show.genre} · {show.location}</p>
+                            <h3 className="text-xl font-black uppercase italic text-white">{show.title}</h3>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="bg-brand-black border-2 border-white/10 p-4 text-center">
+                            <span className="material-symbols-outlined text-brand-cyan text-2xl block mb-1">visibility</span>
+                            <p className="text-2xl font-black text-brand-cyan">{show.views_count || 0}</p>
+                            <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">Views</p>
+                          </div>
+                          <div className="bg-brand-black border-2 border-white/10 p-4 text-center">
+                            <span className="material-symbols-outlined text-brand-pink text-2xl block mb-1" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
+                            <p className="text-2xl font-black text-brand-pink">{show.likes_count || 0}</p>
+                            <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">Likes</p>
+                          </div>
+                          <div className="bg-brand-black border-2 border-white/10 p-4 text-center">
+                            <span className="material-symbols-outlined text-brand-yellow text-2xl block mb-1">mail</span>
+                            <p className="text-2xl font-black text-brand-yellow">{show.inquiries_count || 0}</p>
+                            <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">Inquiries</p>
+                          </div>
+                        </div>
+                        {show.views_count > 0 && (
+                          <div className="mt-4 border-t border-white/10 pt-4">
+                            <p className="text-[9px] font-black uppercase italic text-white/30 mb-2">Conversion Rate</p>
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 h-2 bg-white/10">
+                                <div className="h-2 bg-brand-yellow transition-all"
+                                  style={{ width: `${Math.min(100, ((show.inquiries_count || 0) / (show.views_count || 1)) * 100 * 10)}%` }}></div>
+                              </div>
+                              <span className="text-brand-yellow font-black text-sm">
+                                {(((show.inquiries_count || 0) / (show.views_count || 1)) * 100).toFixed(1)}%
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
 
             {/* MY PROFILE TAB */}
             {activeTab === 'profile' && (

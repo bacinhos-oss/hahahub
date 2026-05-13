@@ -560,13 +560,23 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         >
                           Tickle It
                         </button>
-                        <button
-                          onClick={() => downloadDossier(selectedShow)}
-                          className="w-full md:w-auto bg-transparent text-white px-8 md:px-12 py-5 md:py-8 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic tracking-[0.2em] text-sm md:text-base flex items-center justify-center gap-3"
-                        >
-                          <span className="material-symbols-outlined text-xl">download</span>
-                          The Dossier
-                        </button>
+                        {user?.isPaid || user?.isAdmin ? (
+                          <button
+                            onClick={() => downloadDossier(selectedShow)}
+                            className="w-full md:w-auto bg-transparent text-white px-8 md:px-12 py-5 md:py-8 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic tracking-[0.2em] text-sm md:text-base flex items-center justify-center gap-3"
+                          >
+                            <span className="material-symbols-outlined text-xl">download</span>
+                            The Dossier
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => onNavigate('pricing')}
+                            className="w-full md:w-auto bg-transparent text-white/30 px-8 md:px-12 py-5 md:py-8 font-black uppercase border-4 border-white/20 hover:border-brand-yellow hover:text-brand-yellow transition-all italic tracking-[0.2em] text-sm md:text-base flex items-center justify-center gap-3"
+                          >
+                            <span className="material-symbols-outlined text-xl">lock</span>
+                            Dossier — LAFF+
+                          </button>
+                        )}
                       </div>
                   </div>
                 </div>
