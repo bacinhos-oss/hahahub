@@ -1,4 +1,4 @@
-
+import { Badge, getProfileBadges } from '../components/Badge';
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import { Page, Show, User } from '../types';
