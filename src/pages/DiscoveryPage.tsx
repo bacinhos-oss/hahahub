@@ -976,3 +976,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </div>
                 </div>
               </div>
+            )})}
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default DiscoveryPage;
