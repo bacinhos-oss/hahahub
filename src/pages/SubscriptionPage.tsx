@@ -809,7 +809,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </section>
 
-            </section>
             )}
 
             {/* 2. INQUIRIES */}
