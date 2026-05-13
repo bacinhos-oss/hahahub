@@ -3,6 +3,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, User } from '../types';
 import { supabase } from '../lib/supabase';
+import { Avatar, Badge, getProfileBadges } from '../components/Badge';
 
 interface LaffWirePageProps {
   onNavigate: (page: Page) => void;
@@ -19,25 +20,7 @@ const POST_TYPES: Record<string, { label: string; bg: string; text: string }> = 
   rights:        { label: 'RIGHTS',           bg: '#FFDE03', text: '#000' },
 };
 
-const Avatar: React.FC<{ name: string; url?: string; size?: number; verified?: boolean; founding?: boolean }> = ({ name, url, size = 44, verified, founding }) => (
-  <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
-    <div className={`w-full h-full rounded-full overflow-hidden border-2 flex items-center justify-center ${founding ? 'border-brand-yellow' : verified ? 'border-brand-cyan' : 'border-white/20'}`}
-      style={{ background: url ? 'transparent' : '#1a1a1a' }}>
-      {url ? <img src={url} alt={name} className="w-full h-full object-cover" /> :
-        <span className="font-black uppercase text-white/60" style={{ fontSize: size * 0.35 }}>{name?.[0] || '?'}</span>}
-    </div>
-    {verified && (
-      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-brand-cyan border-2 border-brand-black flex items-center justify-center">
-        <span className="material-symbols-outlined text-black" style={{ fontSize: '8px', fontVariationSettings: "'wght' 700" }}>check</span>
-      </div>
-    )}
-    {founding && !verified && (
-      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-brand-yellow border-2 border-brand-black flex items-center justify-center">
-        <span className="material-symbols-outlined text-black" style={{ fontSize: '8px' }}>star</span>
-      </div>
-    )}
-  </div>
-);
+
 
 const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer }) => {
   const [posts, setPosts] = useState<any[]>([]);
@@ -147,7 +130,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
           {isLaff && (
             <div className="border-b-4 border-white/10 pb-6 mb-2">
               <div className="flex gap-3">
-                <Avatar name={user?.name || '?'} size={44} verified={(user as any)?.is_verified} founding={(user as any)?.is_founding} />
+                <Avatar name={user?.name || '?'} size={44} badges={getProfileBadges(user)} />
                 <div className="flex-1 space-y-3">
                   <textarea
                     ref={textRef}
@@ -220,13 +203,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                         disabled={!pid}
                         className="flex-shrink-0 disabled:cursor-default"
                       >
-                        <Avatar
-                          name={post.profiles?.name || '?'}
-                          url={post.profiles?.avatar_url}
-                          size={44}
-                          verified={isVerified}
-                          founding={isFounding}
-                        />
+                        <Avatar name={post.profiles?.name || '?'} size={44} badges={getProfileBadges(post.profiles)} onClick={() => pid && viewProducer(pid)} />
                       </button>
 
                       <div className="flex-1 min-w-0">
