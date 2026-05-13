@@ -147,15 +147,15 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
                 <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
                 <ul className="space-y-3 mb-10">
                   {[
-                    'Everything in LAFF',
+                    'Full catalog — unlimited',
+                    'Upload unlimited shows',
+                    'Direct contact with rights holders',
+                    'The Dossier PDF download',
+                    'FEATURED badge in catalog',
+                    'Priority listing — always first',
                     'VERIFIED badge',
-                    'Priority listing in catalog',
-                    'Public Producer Profile',
-                    'The Laff Wire — live, real-time',
-                    'Co-production feature',
-                    'Multi-user (3 seats)',
+                    'Laff Wire — live, real-time',
                     'White-label Dossier',
-                    'Show of the Month eligible',
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/70">
                       <span className="material-symbols-outlined text-brand-cyan text-base">check_circle</span>{f}
