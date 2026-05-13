@@ -1106,9 +1106,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                             if (!file) return;
                             if (file.size > 500000) { alert('Max 500KB please'); return; }
                             const reader = new FileReader();
-                            reader.onload = () => {
+                            reader.onload = async () => {
                               const base64 = reader.result as string;
                               setProfileForm(p => ({ ...p, avatar_url: base64 }));
+                              // Save immediately to Supabase
+                              if (user?.id) {
+                                await supabase.from('profiles').update({ avatar_url: base64 }).eq('id', user.id);
+                              }
                             };
                             reader.readAsDataURL(file);
                           }} />
