@@ -269,6 +269,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics'>('assets');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+  const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
+  const [shortlistCounts, setShortlistCounts] = useState<Record<string, number>>({});
   const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '', avatar_url: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
@@ -295,11 +297,39 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       loadInquiries();
       // Load analytics for ROAR/Admin
       if ((user as any)?.plan === 'roar' || (user as any)?.isAdmin) {
+        // My shows analytics
         supabase.from('shows')
-          .select('title, views_count, likes_count, inquiries_count, location, genre, production_year')
+          .select('id, title, views_count, likes_count, inquiries_count, location, genre, production_year, licensed_countries')
           .eq('user_id', user.id)
           .then(({ data }) => {
             if (data && data.length > 0) setAnalyticsData(data);
+          });
+        // Catalog average for benchmarking
+        supabase.from('shows')
+          .select('views_count, likes_count, inquiries_count')
+          .then(({ data }) => {
+            if (data && data.length > 0) {
+              const avg = {
+                views: Math.round(data.reduce((s, x) => s + (x.views_count || 0), 0) / data.length),
+                likes: Math.round(data.reduce((s, x) => s + (x.likes_count || 0), 0) / data.length),
+                inquiries: Math.round(data.reduce((s, x) => s + (x.inquiries_count || 0), 0) / data.length),
+              };
+              setCatalogAvg(avg);
+            }
+          });
+        // Shortlist counts — how many producers favorited each show
+        supabase.from('profiles')
+          .select('favorites')
+          .then(({ data }) => {
+            if (data) {
+              const counts: Record<string, number> = {};
+              data.forEach((p: any) => {
+                (p.favorites || []).forEach((id: string) => {
+                  counts[id] = (counts[id] || 0) + 1;
+                });
+              });
+              setShortlistCounts(counts);
+            }
           });
       }
       supabase.from('profiles').select('bio, website, location_city, festivals').eq('id', user.id).maybeSingle().then(({ data }) => {
@@ -1083,58 +1113,140 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             {/* ANALYTICS TAB — ROAR only */}
             {activeTab === 'analytics' && (
-              <section className="space-y-8">
+              <section className="space-y-10">
                 <div>
-                  <h2 className="text-4xl font-black uppercase italic">Show <span className="text-brand-pink">Analytics</span></h2>
-                  <p className="text-white/40 font-bold italic text-sm mt-1">Performance data for your shows. ROAR exclusive.</p>
+                  <h2 className="text-4xl font-black uppercase italic">⚡ Show <span className="text-brand-pink">Analytics</span></h2>
+                  <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Real data from The Laff Exchange</p>
                 </div>
+
                 {analyticsData.length === 0 ? (
-                  <p className="text-white/20 font-bold italic">No shows to analyze yet.</p>
-                ) : (
+                  <p className="text-white/20 font-bold italic">No shows to analyze yet. Upload a show first.</p>
+                ) : (<>
+
+                  {/* BEST PERFORMER */}
+                  {(() => {
+                    const best = [...analyticsData].sort((a, b) => (b.inquiries_count || 0) - (a.inquiries_count || 0))[0];
+                    return (
+                      <div className="bg-brand-yellow border-4 border-black p-6 shadow-neo-magenta">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-black/50 mb-1">⭐ Best Performer</p>
+                        <h3 className="text-2xl font-black uppercase italic text-black">{best.title}</h3>
+                        <div className="flex gap-6 mt-3">
+                          <span className="text-black font-black text-sm">{best.views_count || 0} views</span>
+                          <span className="text-black font-black text-sm">{best.inquiries_count || 0} inquiries</span>
+                          <span className="text-black font-black text-sm">{shortlistCounts[best.id] || 0} on shortlists</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* CATALOG BENCHMARK */}
+                  <div className="border-4 border-white/20 p-6">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-4">📊 Your Average vs Catalog Average</p>
+                    <div className="grid grid-cols-3 gap-4">
+                      {[
+                        { label: 'Views', yours: Math.round(analyticsData.reduce((s,x) => s+(x.views_count||0),0)/analyticsData.length), avg: catalogAvg.views, color: 'text-brand-cyan' },
+                        { label: 'Likes', yours: Math.round(analyticsData.reduce((s,x) => s+(x.likes_count||0),0)/analyticsData.length), avg: catalogAvg.likes, color: 'text-brand-pink' },
+                        { label: 'Inquiries', yours: Math.round(analyticsData.reduce((s,x) => s+(x.inquiries_count||0),0)/analyticsData.length), avg: catalogAvg.inquiries, color: 'text-brand-yellow' },
+                      ].map((stat, i) => (
+                        <div key={i} className="bg-brand-black border-2 border-white/10 p-4">
+                          <p className="text-[9px] font-black uppercase italic text-white/30 mb-2">{stat.label}</p>
+                          <p className={`text-2xl font-black ${stat.color}`}>{stat.yours}</p>
+                          <p className="text-white/20 text-[9px] mt-1">Catalog avg: {stat.avg}</p>
+                          <div className={`text-[9px] font-black mt-1 ${stat.yours >= stat.avg ? 'text-green-400' : 'text-red-400'}`}>
+                            {stat.yours >= stat.avg ? `+${stat.yours - stat.avg} above avg` : `${stat.yours - stat.avg} below avg`}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* PER SHOW BREAKDOWN */}
                   <div className="space-y-4">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Per Show Breakdown</p>
                     {analyticsData.map((show: any, i: number) => (
                       <div key={i} className="border-4 border-white/20 p-6 hover:border-brand-pink transition-all">
-                        <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="flex items-start justify-between gap-4 mb-5">
                           <div>
                             <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">{show.genre} · {show.location}</p>
                             <h3 className="text-xl font-black uppercase italic text-white">{show.title}</h3>
                           </div>
+                          {shortlistCounts[show.id] > 0 && (
+                            <span className="bg-brand-cyan text-black px-3 py-1 text-[9px] font-black uppercase italic border-2 border-black flex-shrink-0">
+                              {shortlistCounts[show.id]} on shortlist
+                            </span>
+                          )}
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="bg-brand-black border-2 border-white/10 p-4 text-center">
-                            <span className="material-symbols-outlined text-brand-cyan text-2xl block mb-1">visibility</span>
-                            <p className="text-2xl font-black text-brand-cyan">{show.views_count || 0}</p>
-                            <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">Views</p>
-                          </div>
-                          <div className="bg-brand-black border-2 border-white/10 p-4 text-center">
-                            <span className="material-symbols-outlined text-brand-pink text-2xl block mb-1" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
-                            <p className="text-2xl font-black text-brand-pink">{show.likes_count || 0}</p>
-                            <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">Likes</p>
-                          </div>
-                          <div className="bg-brand-black border-2 border-white/10 p-4 text-center">
-                            <span className="material-symbols-outlined text-brand-yellow text-2xl block mb-1">mail</span>
-                            <p className="text-2xl font-black text-brand-yellow">{show.inquiries_count || 0}</p>
-                            <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">Inquiries</p>
-                          </div>
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                          {[
+                            { icon: 'visibility', val: show.views_count || 0, label: 'Views', color: 'text-brand-cyan', vs: catalogAvg.views },
+                            { icon: 'favorite', val: show.likes_count || 0, label: 'Likes', color: 'text-brand-pink', vs: catalogAvg.likes },
+                            { icon: 'mail', val: show.inquiries_count || 0, label: 'Inquiries', color: 'text-brand-yellow', vs: catalogAvg.inquiries },
+                          ].map((s, j) => (
+                            <div key={j} className="bg-brand-black border-2 border-white/10 p-3 text-center">
+                              <span className={`material-symbols-outlined text-xl block mb-1 ${s.color}`} style={s.label==='Likes'?{fontVariationSettings:"'FILL' 1"}:{}}>{s.icon}</span>
+                              <p className={`text-xl font-black ${s.color}`}>{s.val}</p>
+                              <p className="text-[8px] font-black uppercase italic text-white/20 mt-0.5">{s.label}</p>
+                              <p className={`text-[8px] font-black mt-1 ${s.val >= s.vs ? 'text-green-400' : 'text-red-400'}`}>
+                                {s.val >= s.vs ? '↑ above avg' : '↓ below avg'}
+                              </p>
+                            </div>
+                          ))}
                         </div>
-                        {show.views_count > 0 && (
-                          <div className="mt-4 border-t border-white/10 pt-4">
-                            <p className="text-[9px] font-black uppercase italic text-white/30 mb-2">Conversion Rate</p>
-                            <div className="flex items-center gap-3">
-                              <div className="flex-1 h-2 bg-white/10">
-                                <div className="h-2 bg-brand-yellow transition-all"
-                                  style={{ width: `${Math.min(100, ((show.inquiries_count || 0) / (show.views_count || 1)) * 100 * 10)}%` }}></div>
-                              </div>
-                              <span className="text-brand-yellow font-black text-sm">
+
+                        {/* Conversion bar */}
+                        {(show.views_count || 0) > 0 && (
+                          <div>
+                            <div className="flex justify-between mb-1">
+                              <p className="text-[9px] font-black uppercase italic text-white/30">Conversion Rate</p>
+                              <span className="text-brand-yellow font-black text-xs">
                                 {(((show.inquiries_count || 0) / (show.views_count || 1)) * 100).toFixed(1)}%
                               </span>
                             </div>
+                            <div className="h-2 bg-white/10">
+                              <div className="h-2 bg-brand-yellow transition-all"
+                                style={{ width: `${Math.min(100, ((show.inquiries_count || 0) / (show.views_count || 1)) * 500)}%` }}></div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Countries */}
+                        {show.licensed_countries && (
+                          <div className="mt-4 border-t border-white/10 pt-3">
+                            <p className="text-[9px] font-black uppercase italic text-white/20 mb-1">Licensed Countries</p>
+                            <p className="text-white/50 text-xs font-bold italic">{show.licensed_countries}</p>
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
-                )}
+
+                  {/* INQUIRY DETAILS */}
+                  {inquiries.length > 0 && (
+                    <div className="space-y-4">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Recent Inquiries — Who Tickled You</p>
+                      <div className="space-y-3">
+                        {inquiries.slice(0, 10).map((inq: any, i: number) => (
+                          <div key={i} className="border-4 border-white/10 p-4 flex items-center justify-between gap-4">
+                            <div>
+                              <p className="font-black uppercase italic text-white text-sm">{inq.from_name}</p>
+                              <p className="text-white/30 text-[9px] italic">{inq.from_email}</p>
+                              <p className="text-brand-pink text-[8px] font-black uppercase italic mt-1">{inq.show_title}</p>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <p className="text-white/20 text-[9px] font-bold">{new Date(inq.created_at).toLocaleDateString('en-GB')}</p>
+                              <span className={`text-[8px] font-black uppercase italic px-2 py-0.5 mt-1 inline-block ${inq.is_read ? 'text-white/20 border border-white/10' : 'bg-brand-cyan text-black border border-black'}`}>
+                                {inq.is_read ? 'Replied' : 'New'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                </>)}
               </section>
             )}
 
