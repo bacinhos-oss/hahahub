@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import ShareButton from '../components/ShareButton';
 import { supabase } from '../lib/supabase';
+import { Badge, getProfileBadges } from '../components/Badge';
 import { Page, User, Show } from '../types';
 
 interface SubscriptionPageProps {
@@ -699,26 +700,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
                   <p className="text-xl font-black uppercase italic">{user.name}</p>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    {user.isAdmin && (
-                      <span className="flex items-center gap-1 bg-brand-pink text-white text-[9px] font-black uppercase px-3 py-1 italic border-2 border-black shadow-[2px_2px_0px_black]">
-                        ⚡ Admin
-                      </span>
-                    )}
-                    {(user as any).is_founding && (
-                      <span className="flex items-center gap-1 bg-brand-yellow text-black text-[9px] font-black uppercase px-3 py-1 italic border-2 border-black shadow-[2px_2px_0px_black]">
-                        🏆 Founding Producer
-                      </span>
-                    )}
-                    {(user as any).is_verified && (
-                      <span className="flex items-center gap-1 bg-brand-cyan text-black text-[9px] font-black uppercase px-3 py-1 italic border-2 border-black shadow-[2px_2px_0px_black]">
-                        ✓ Verified
-                      </span>
-                    )}
-                    {user.isPaid && !(user as any).is_founding && (
-                      <span className="flex items-center gap-1 bg-white/10 text-white text-[9px] font-black uppercase px-3 py-1 italic border border-white/20">
-                        {(user as any).plan === 'roar' ? 'ROAR' : 'LAFF'}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {getProfileBadges(user).map(b => (
+                        <Badge key={b} type={b} size="md" showLabel />
+                      ))}
+                      {user.isAdmin && <Badge type="roar" size="md" showLabel />}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -822,6 +809,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             </section>
 
+            </section>
             )}
 
             {/* 2. INQUIRIES */}

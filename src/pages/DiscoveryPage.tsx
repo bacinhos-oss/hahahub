@@ -1,7 +1,8 @@
-import { Badge, getProfileBadges } from '../components/Badge';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import { Page, Show, User } from '../types';
+import { Badge, getProfileBadges } from '../components/Badge';
 
 
 interface DiscoveryPageProps {
@@ -946,7 +947,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center gap-1 flex-wrap">
-                    {getProfileBadges(show).map(b => <Badge key={b} type={b} size="xs" />)}
+                    {(show as any).is_verified && (
+                      <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">VERIFIED</span>
+                    )}
+                    {(show as any).is_founding && (
+                      <span className="text-[8px] font-black uppercase text-black bg-brand-yellow px-2 py-0.5 italic border border-black">FOUNDING</span>
+                    )}
                     {show.licensedCountries && show.licensedCountries.split(',').filter(Boolean).length > 0 && (
                       <span className="text-[8px] font-black uppercase text-white bg-brand-pink px-2 py-0.5 italic border border-black">
                         {show.licensedCountries.split(',').filter((s: string) => s.trim()).length} COUNTRIES
