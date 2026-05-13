@@ -99,10 +99,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     });
 
     return result.sort((a, b) => {
-      // ROAR producers always first
-      const aRoar = (a as any).is_verified ? 1 : 0;
-      const bRoar = (b as any).is_verified ? 1 : 0;
-      if (bRoar !== aRoar) return bRoar - aRoar;
       if (sortBy === 'Newest') return (b.productionYear || 0) - (a.productionYear || 0);
       if (sortBy === 'Popular') return (b.likesCount || 0) - (a.likesCount || 0);
       if (sortBy === 'Trending') return (b.viewsCount || 0) - (a.viewsCount || 0);
@@ -924,7 +920,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 opacity-80 group-hover:opacity-60 transition-opacity"></div>
                   <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
                     {isNewThisWeek(show) && (
-                      <span className="px-3 py-1 text-[9px] font-black uppercase italic bg-brand-pink text-white border-2 border-black shadow-[2px_2px_0px_black] animate-pulse">🔥 New</span>
+                      <span className="px-3 py-1 text-[9px] font-black uppercase italic bg-brand-pink text-white border-2 border-black shadow-[2px_2px_0px_black] animate-pulse"> New</span>
                     )}
                   </div>
                   <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
@@ -951,9 +947,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <span className="text-[11px] font-black text-white/60 group-hover/metric:text-brand-cyan transition-colors">{show.viewsCount.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center gap-1 flex-wrap">
-                    {(show as any).is_verified && (
-                      <span className="text-[7px] font-black uppercase text-white bg-brand-pink px-2 py-0.5 italic border border-black">PRIORITY</span>
-                    )}
                     {(show as any).is_verified && (
                       <span className="text-[8px] font-black uppercase text-black bg-brand-cyan px-2 py-0.5 italic border border-black">VERIFIED</span>
                     )}

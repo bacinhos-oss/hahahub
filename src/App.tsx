@@ -99,26 +99,27 @@ const App: React.FC = () => {
     if (!data) return
     // Fetch profiles to get is_verified + is_founding per producer
     const userIds = [...new Set(data.map((s: any) => s.user_id).filter(Boolean))]
-    let profileMap: Record<string, { is_verified: boolean; is_founding: boolean }> = {}
+    let profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}
     if (userIds.length > 0) {
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, is_verified, is_founding')
+        .select('id, is_verified, is_founding, user_type')
         .in('id', userIds)
       if (profiles) {
         profiles.forEach((p: any) => {
-          profileMap[p.id] = { is_verified: p.is_verified || false, is_founding: p.is_founding || false }
+          profileMap[p.id] = { is_verified: p.is_verified || false, is_founding: p.is_founding || false, user_type: p.user_type || 'gigl' }
         })
       }
     }
     mapAndSetShows(data, profileMap)
   }
 
-  const mapAndSetShows = (data: any[], profileMap: Record<string, { is_verified: boolean; is_founding: boolean }> = {}) => {
+  const mapAndSetShows = (data: any[], profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}) => {
     const mapped = data.map((s: any) => ({
       ...s,
       is_verified: profileMap[s.user_id]?.is_verified || false,
       is_founding: profileMap[s.user_id]?.is_founding || false,
+      producer_plan: profileMap[s.user_id]?.user_type || 'gigl',
       id: s.id,
       title: s.title || '',
       author: s.author || '',
