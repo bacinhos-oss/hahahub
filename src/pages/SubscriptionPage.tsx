@@ -269,8 +269,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile'>('assets');
   const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '', avatar_url: '' });
-  const [avatarUploading, setAvatarUploading] = useState(false);
-  const avatarInputRef = React.useRef<HTMLInputElement>(null);
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -1076,22 +1074,23 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* MY PROFILE TAB */}
             {activeTab === 'profile' && (
               <section className="space-y-8">
-                <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
-                <p className="text-white/40 font-bold italic text-sm">Appears on your public Producer Profile page.</p>
-                <div className="space-y-6 max-w-2xl">
-                  {/* VIEW MY PROFILE BUTTON */}
+                <div className="flex items-center justify-between">
+                  <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
                   <button
-                    onClick={() => { if (user?.id) { (window as any).__producerId = user.id; onNavigate('producer' as any); } }}
-                    className="w-full bg-brand-surface border-4 border-brand-cyan text-brand-cyan py-4 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all flex items-center justify-center gap-2"
+                    onClick={() => { onNavigate('producer' as any); }}
+                    className="bg-brand-cyan text-black px-6 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all flex items-center gap-2"
                   >
-                    <span className="material-symbols-outlined">open_in_new</span>
-                    View My Public Profile →
+                    <span className="material-symbols-outlined text-sm">open_in_new</span>
+                    View Public Profile
                   </button>
+                </div>
+                <p className="text-white/40 font-bold italic text-sm -mt-4">Appears on your public Producer Profile page.</p>
+                <div className="space-y-6 max-w-2xl">
 
-                  {/* AVATAR UPLOAD */}
+                  {/* AVATAR */}
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Profile Photo</label>
-                    <div className="flex items-center gap-4">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-3">Profile Photo</label>
+                    <div className="flex items-center gap-5">
                       <div className="w-20 h-20 rounded-full border-4 border-white/20 overflow-hidden flex items-center justify-center bg-brand-surface flex-shrink-0">
                         {profileForm.avatar_url ? (
                           <img src={profileForm.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -1099,27 +1098,22 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <span className="text-2xl font-black uppercase italic text-white/20">{user?.name?.[0]}</span>
                         )}
                       </div>
-                      <div className="flex-1">
-                        <input ref={avatarInputRef} type="file" accept="image/*" className="hidden"
-                          onChange={async (e) => {
+                      <div>
+                        <label className="cursor-pointer bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-brand-yellow transition-all inline-block">
+                          Upload Photo
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                             const file = e.target.files?.[0];
-                            if (!file || !user?.id) return;
-                            setAvatarUploading(true);
-                            const ext = file.name.split('.').pop();
-                            const path = `avatars/${user.id}/avatar.${ext}`;
-                            const { error } = await supabase.storage.from('show-images').upload(path, file, { upsert: true });
-                            if (!error) {
-                              const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path);
-                              setProfileForm(p => ({ ...p, avatar_url: urlData.publicUrl }));
-                            }
-                            setAvatarUploading(false);
-                          }}
-                        />
-                        <button onClick={() => avatarInputRef.current?.click()} disabled={avatarUploading}
-                          className="bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-brand-yellow transition-all disabled:opacity-40">
-                          {avatarUploading ? 'Uploading...' : 'Upload Photo'}
-                        </button>
-                        <p className="text-white/20 text-[9px] italic mt-1">JPG or PNG, max 2MB</p>
+                            if (!file) return;
+                            if (file.size > 500000) { alert('Max 500KB please'); return; }
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              const base64 = reader.result as string;
+                              setProfileForm(p => ({ ...p, avatar_url: base64 }));
+                            };
+                            reader.readAsDataURL(file);
+                          }} />
+                        </label>
+                        <p className="text-white/20 text-[9px] italic mt-1">Max 500KB · JPG or PNG</p>
                       </div>
                     </div>
                   </div>
@@ -1143,7 +1137,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <button onClick={async () => {
                     if (!user?.id) return;
                     setProfileSaving(true);
-                    await supabase.from('profiles').update({ bio: profileForm.bio, website: profileForm.website, location_city: profileForm.location_city, festivals: profileForm.festivals, avatar_url: profileForm.avatar_url }).eq('id', user.id);
+                    await supabase.from('profiles').update({
+                      bio: profileForm.bio,
+                      website: profileForm.website,
+                      location_city: profileForm.location_city,
+                      festivals: profileForm.festivals,
+                      avatar_url: profileForm.avatar_url,
+                    }).eq('id', user.id);
                     setProfileSaving(false);
                     setProfileSaved(true);
                     setTimeout(() => setProfileSaved(false), 3000);
