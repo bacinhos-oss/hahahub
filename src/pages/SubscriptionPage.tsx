@@ -293,6 +293,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     if (user?.id) {
       loadMyRealStats();
       loadInquiries();
+      // Load analytics for ROAR/Admin
+      if ((user as any)?.plan === 'roar' || (user as any)?.isAdmin) {
+        supabase.from('shows')
+          .select('title, views_count, likes_count, inquiries_count, location, genre, production_year')
+          .eq('user_id', user.id)
+          .then(({ data }) => {
+            if (data && data.length > 0) setAnalyticsData(data);
+          });
+      }
       supabase.from('profiles').select('bio, website, location_city, festivals').eq('id', user.id).maybeSingle().then(({ data }) => {
         if (data) setProfileForm({ bio: data.bio || '', website: data.website || '', location_city: data.location_city || '', festivals: data.festivals || '', avatar_url: data.avatar_url || '' });
       });
