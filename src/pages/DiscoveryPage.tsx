@@ -119,7 +119,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-xl" onClick={() => setSelectedShowId(null)}></div>
-        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-yellow animate-in zoom-in duration-300 text-white pb-12">
+        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-yellow animate-in fade-in zoom-in-95 duration-500 ease-out text-white pb-12">
           <button onClick={() => setSelectedShowId(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all z-20">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
@@ -584,7 +584,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 md:p-6">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-md" onClick={() => setIsInquiryOpen(false)}></div>
-        <div className="relative bg-brand-surface border-8 border-white w-full max-w-2xl p-5 md:p-12 max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-cyan animate-in zoom-in duration-300">
+        <div className="relative bg-brand-surface border-8 border-white w-full max-w-2xl p-5 md:p-12 max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-cyan animate-in fade-in zoom-in-95 duration-500 ease-out">
           <button onClick={() => setIsInquiryOpen(false)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
@@ -907,7 +907,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             ) : filteredShows.map((show, index) => {
               const isFreeBlocked = !user?.isPaid && !user?.isAdmin && index >= 3;
               return (
-              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 hover:shadow-neo-yellow hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all duration-200 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40 hover:opacity-60' : ''} ${(show as any).producer_plan === 'roar' ? 'border-brand-pink shadow-[4px_4px_0px_rgba(255,2,102,0.5)] hover:shadow-none hover:border-brand-pink' : 'border-white hover:border-brand-yellow hover:shadow-neo-yellow'}`}>
+              <div key={show.id} onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)} className={`group relative cursor-pointer bg-brand-surface border-4 transition-all duration-300 overflow-hidden flex flex-col ${isFreeBlocked ? 'opacity-40' : 'hover:translate-x-[-3px] hover:translate-y-[-3px]'} ${(show as any).producer_plan === 'roar' ? 'border-brand-pink shadow-[4px_4px_0px_rgba(255,2,102,0.4)] hover:shadow-[6px_6px_0px_rgba(255,2,102,0.6)] hover:border-brand-pink' : 'border-white/30 hover:border-brand-yellow hover:shadow-neo-yellow'}`}>
                 {isFreeBlocked && (
                   <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm border-4 border-brand-yellow">
                     <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
