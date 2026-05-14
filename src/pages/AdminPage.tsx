@@ -1,75 +1,63 @@
-
 import React, { useState, useEffect } from 'react';
-import { Page, Invitation, InvitationDuration, Show } from '../types';
 import { supabase } from '../lib/supabase';
+import { Page, User, Show } from '../types';
+
+interface Invitation {
+  id: string;
+  recipient: string;
+  email: string;
+  duration: string;
+  status: string;
+  generatedUsername: string;
+  generatedPassword: string;
+  plan?: string;
+}
+
+type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
+const durations: InvitationDuration[] = ['7 Days', '1 Month', '1 Year', 'Lifetime'];
 
 interface AdminPageProps {
   onNavigate: (page: Page) => void;
   onLogout?: () => void;
   shows: Show[];
   onDeleteShow: (id: string) => void;
+  user?: User;
 }
 
-type AdminTab = 'access' | 'analytics' | 'catalog';
-
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
-  const [activeTab, setActiveTab] = useState<AdminTab>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog'>('analytics');
+  const [users, setUsers] = useState<any[]>([]);
   const [invites, setInvites] = useState<Invitation[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
-  const [newNote, setNewNote] = useState('Welcome to the Vault. Your credentials for the HAHAHUB Producer Tier are enclosed below.');
+  const [newNote, setNewNote] = useState('');
+  const [password, setPassword] = useState('');
   const [selectedDuration, setSelectedDuration] = useState<InvitationDuration>('1 Month');
   const [invitePlan, setInvitePlan] = useState<'gigl' | 'laff' | 'roar'>('laff');
-  const [mailLog, setMailLog] = useState<{title: string, msg: string} | null>(null);
-  const [users, setUsers] = useState<any[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  const [liveStats, setLiveStats] = useState({ totalUsers: 0, proUsers: 0 });
-
-  const durations: InvitationDuration[] = ['7 Days', '1 Month', '1 Year', 'Lifetime'];
+  const [mailLog, setMailLog] = useState<{ title: string; msg: string } | null>(null);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    loadStats();
+    loadUsers();
     loadInvites();
   }, []);
 
-  const loadStats = async () => {
-    const { data } = await supabase.from('profiles').select('id, is_paid, name, email, is_verified, is_founding, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
-    if (data) {
-      setUsers(data);
-      setLiveStats({
-        totalUsers: data.length,
-        proUsers: data.filter((p: any) => p.is_paid).length,
-      });
-    }
+  const loadUsers = async () => {
+    setLoadingUsers(true);
+    const { data } = await supabase.from('profiles').select('id, name, email, is_paid, is_verified, is_founding, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
+    setUsers(data || []);
+    setLoadingUsers(false);
   };
 
   const loadInvites = async () => {
     const { data } = await supabase.from('invitations').select('*').order('created_at', { ascending: false });
-    if (data) {
-      setInvites(data.map((inv: any) => ({
-        id: inv.id,
-        recipient: inv.recipient,
-        email: inv.email,
-        duration: inv.duration,
-        sentDate: new Date(inv.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-        status: inv.status,
-        note: inv.note,
-        generatedUsername: inv.generated_username,
-        generatedPassword: inv.generated_password,
-      })));
-    }
-  };
-
-  const loadUsers = async () => {
-    setLoadingUsers(true);
-    await loadStats();
-    // Load individual users with email
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, name, email, is_paid, is_verified, is_founding, uploaded_show_ids, subscription_expiry, user_type')
-      .order('created_at', { ascending: false });
-    if (data) setUsers(data);
-    setLoadingUsers(false);
+    if (data) setInvites(data.map((inv: any) => ({
+      id: inv.id, recipient: inv.recipient, email: inv.email,
+      duration: inv.duration, status: inv.status,
+      generatedUsername: inv.email, generatedPassword: inv.password || '—',
+      plan: inv.plan || 'laff',
+    })));
   };
 
   const triggerMailLog = (title: string, msg: string) => {
@@ -77,415 +65,271 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     setTimeout(() => setMailLog(null), 8000);
   };
 
-  const generateCredentials = (name: string) => {
-    const slug = name.toUpperCase().replace(/\s+/g, '_');
-    const randomId = Math.floor(1000 + Math.random() * 9000);
-    const username = `${slug}_PRO_${randomId}`;
-    const password = 'Hh_' + Math.random().toString(36).substr(2, 8);
-    return { username, password };
-  };
-
   const sendInvite = async () => {
-    if (!newName || !newEmail) { alert("Please enter Name and Email."); return; }
-    const { username, password } = generateCredentials(newName);
-
+    if (!newName || !newEmail || !password) return;
+    setSending(true);
     const { data } = await supabase.from('invitations').insert([{
-      recipient: newName,
-      email: newEmail,
-      duration: selectedDuration,
-      plan: invitePlan,
-      status: 'pending',
-      note: newNote,
-      generated_username: username,
-      generated_password: password,
-    }]).select().single();
-
-    const newInvite: Invitation = {
-      id: data?.id || Date.now().toString(),
       recipient: newName, email: newEmail, duration: selectedDuration,
-      sentDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      status: 'pending', note: newNote,
-      generatedUsername: username, generatedPassword: password,
-    };
-
-    setInvites(prev => [newInvite, ...prev]);
-    // Send real email via Supabase Edge Function
+      status: 'pending', password, note: newNote, plan: invitePlan,
+    }]).select();
+    if (data?.[0]) {
+      setInvites(prev => [{ id: data[0].id, recipient: newName, email: newEmail, duration: selectedDuration, status: 'pending', generatedUsername: newEmail, generatedPassword: password, plan: invitePlan }, ...prev]);
+    }
     try {
       await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU" },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: newEmail, name: newName, password, note: newNote, duration: selectedDuration, plan: invitePlan })
       });
-      triggerMailLog(`Email Sent to ${newName}`, `Real email dispatched to: ${newEmail}\n\nEmail: ${newEmail}\nPassword: ${password}\nDuration: ${selectedDuration}`);
-    } catch (e) {
-      triggerMailLog(`Access Provisioned: ${newName}`, `Credentials:\nEmail: ${newEmail}\nPassword: ${password}\nDuration: ${selectedDuration}`);
-    }
-    setNewNote('Welcome to the Vault. Your credentials for the HAHAHUB Producer Tier are enclosed below.');
+      triggerMailLog(`Email Sent to ${newName}`, `Dispatched to: ${newEmail}\nPassword: ${password}\nPlan: ${invitePlan.toUpperCase()}\nDuration: ${selectedDuration}`);
+    } catch (e) { console.error(e); }
+    setNewName(''); setNewEmail(''); setNewNote(''); setPassword('');
+    setSending(false);
   };
 
-  const togglePro = async (userId: string, currentStatus: boolean) => {
-    const expiry = new Date(); expiry.setFullYear(expiry.getFullYear() + 1);
-    const expiryStr = `Dec 24, ${expiry.getFullYear()}`;
-    await supabase.from('profiles').update({ is_paid: !currentStatus, subscription_expiry: !currentStatus ? expiryStr : null }).eq('id', userId);
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_paid: !currentStatus, subscription_expiry: !currentStatus ? expiryStr : null } : u));
-    setLiveStats(prev => ({ ...prev, proUsers: !currentStatus ? prev.proUsers + 1 : prev.proUsers - 1 }));
-    triggerMailLog(`PRO ${!currentStatus ? 'Granted' : 'Revoked'}`, `User PRO access ${!currentStatus ? `ACTIVATED until ${expiryStr}` : 'DEACTIVATED'}.`);
+  const deleteInvite = async (id: string, name: string) => {
+    if (!window.confirm(`Delete invite for ${name}?`)) return;
+    await supabase.from('invitations').delete().eq('id', id);
+    setInvites(prev => prev.filter(i => i.id !== id));
   };
 
-  const triggerExpiryNotification = async (inv: Invitation) => {
-    triggerMailLog(`Expiry Notification: ${inv.recipient}`, `SYSTEM ALERT sent to ${inv.email}. "Your HAHAHUB access (${inv.generatedUsername}) has officially expired."`);
-    await supabase.from('invitations').update({ status: 'expired' }).eq('id', inv.id);
-    setInvites(prev => prev.map(i => i.id === inv.id ? { ...i, status: 'expired' } : i));
+  const deleteUser = async (id: string, name: string) => {
+    if (!window.confirm(`Delete ${name}? Cannot be undone.`)) return;
+    await supabase.from('profiles').delete().eq('id', id);
+    setUsers(prev => prev.filter(u => u.id !== id));
   };
 
-  const handleCopyrightDeletion = (show: Show) => {
-    const reason = prompt("Copyright violation reason:", "Unauthorized distribution of proprietary script assets.");
-    if (reason === null) return;
-    if (window.confirm(`Permanently delete "${show.title}"?`)) {
-      onDeleteShow(show.id);
-      triggerMailLog(`Copyright Enforcement: ${show.title}`, `LEGAL CEASE & DESIST sent to ${show.producerEmail}.\nShow: ${show.title}\nStatus: REMOVED\nReason: ${reason}`);
-    }
+  const setPlan = async (userId: string, plan: string) => {
+    const isPaid = plan !== 'gigl';
+    const expiryStr = isPaid ? new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0] : null;
+    await supabase.from('profiles').update({ user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr }).eq('id', userId);
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr } : u));
   };
 
-  const renderAnalytics = () => (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {[
-          { label: 'Total Producers', value: liveStats.totalUsers, color: 'brand-cyan', icon: 'group' },
-          { label: 'PRO Members', value: liveStats.proUsers, color: 'brand-yellow', icon: 'workspace_premium' },
-          { label: 'Live Assets', value: shows.length, color: 'white', icon: 'description' },
-          { label: 'Total Views', value: shows.reduce((a, s) => a + (s.viewsCount || 0), 0).toLocaleString(), color: 'brand-pink', icon: 'visibility' },
-        ].map((stat, i) => (
-          <div key={i} className="bg-brand-surface border-4 border-white p-6 shadow-neo-white relative overflow-hidden group">
-            <div className="flex justify-between items-start mb-4">
-              <span className="material-symbols-outlined text-white/40">{stat.icon}</span>
-              <span className="text-[10px] font-black px-2 py-0.5 bg-green-500 text-black">LIVE</span>
-            </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1 italic">{stat.label}</p>
-            <p className="text-3xl font-black uppercase italic tracking-tighter">{stat.value}</p>
-          </div>
-        ))}
-      </div>
+  const toggleVerified = async (id: string, current: boolean) => {
+    await supabase.from('profiles').update({ is_verified: !current }).eq('id', id);
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, is_verified: !current } : u));
+  };
 
-      <div className="bg-brand-surface border-4 border-white overflow-hidden shadow-neo-cyan">
-        <div className="px-8 py-5 border-b-4 border-white flex justify-between items-center">
-          <h3 className="font-display text-xl uppercase tracking-tighter italic">All Producers</h3>
-          <button onClick={loadUsers} className="text-[10px] font-black uppercase tracking-widest text-brand-cyan border-2 border-brand-cyan px-4 py-2 hover:bg-brand-cyan hover:text-black transition-all italic">Refresh</button>
-        </div>
-        <div className="space-y-3">
-          {loadingUsers ? (
-            <div className="p-12 text-center font-black uppercase italic text-brand-yellow text-2xl">LOADING...</div>
-          ) : users.length === 0 ? (
-            <div className="p-12 text-center text-white/20 font-black uppercase italic">No producers yet.</div>
-          ) : users.map((u: any) => {
-            const isExpired = u.subscription_expiry && new Date(u.subscription_expiry) < new Date();
-            return (
-              <div key={u.id} className={`border-4 p-4 md:p-5 transition-all ${isExpired ? 'opacity-50 border-red-500/30' : 'border-white/20 hover:border-brand-yellow'}`}>
-                {/* TOP ROW */}
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-black uppercase italic text-white text-sm truncate">{u.name || '—'}</p>
-                    <p className="text-white/30 text-xs italic truncate">{u.email}</p>
-                    <div className="flex items-center gap-3 mt-1 flex-wrap">
-                      <span className="text-white/20 text-[9px] italic">{u.uploaded_show_ids?.length || 0} shows</span>
-                      {u.subscription_expiry && (
-                        <span className={`text-[9px] font-bold italic ${isExpired ? 'text-brand-pink' : 'text-white/30'}`}>
-                          {isExpired ? '⚠ EXPIRED' : `Exp: ${u.subscription_expiry}`}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <span className={`flex-shrink-0 px-2 py-1 text-[10px] font-black uppercase border ${u.user_type === 'roar' ? 'bg-brand-pink/10 text-brand-pink border-brand-pink/30' : u.user_type === 'laff' || u.is_paid ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
-                    {u.user_type === 'roar' ? 'ROAR' : u.user_type === 'laff' || u.is_paid ? 'LAFF' : 'GIGL'}
-                  </span>
-                </div>
-                {/* ACTIONS ROW */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <select
-                    value={u.user_type || (u.is_paid ? 'laff' : 'gigl')}
-                    onChange={async (e) => {
-                      const plan = e.target.value;
-                      const isPaid = plan !== 'gigl';
-                      const expiryStr = isPaid ? new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0] : null;
-                      await supabase.from('profiles').update({ user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr }).eq('id', u.id);
-                      setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr } : x));
-                    }}
-                    className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-white/20 bg-brand-black text-white hover:border-brand-yellow transition-all cursor-pointer"
-                  >
-                    <option value="gigl">GIGL — Free</option>
-                    <option value="laff">LAFF — €99</option>
-                    <option value="roar">ROAR — €189</option>
-                  </select>
-                  <button
-                    onClick={async () => {
-                      const newVal = !u.is_verified;
-                      await supabase.from('profiles').update({ is_verified: newVal }).eq('id', u.id);
-                      setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_verified: newVal } : x));
-                    }}
-                    className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_verified ? 'border-brand-cyan bg-brand-cyan text-black' : 'border-white/20 text-white/30 hover:border-brand-cyan'}`}>
-                    <span className="material-symbols-outlined text-sm align-middle mr-1">check</span>
-                    {u.is_verified ? 'Verified' : 'Verify'}
-                  </button>
-                  <button
-                    onClick={async () => {
-                      const newVal = !u.is_founding;
-                      await supabase.from('profiles').update({ is_founding: newVal }).eq('id', u.id);
-                      setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_founding: newVal } : x));
-                    }}
-                    className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_founding ? 'border-brand-yellow bg-brand-yellow text-black' : 'border-white/20 text-white/30 hover:border-brand-yellow'}`}>
-                    <span className="material-symbols-outlined text-sm align-middle mr-1">star</span>
-                    {u.is_founding ? 'Founding' : 'Found.'}
-                  </button>
-                  <button
-                    onClick={async () => {
-                      if (!window.confirm(`Delete ${u.name}? This cannot be undone.`)) return;
-                      await supabase.from('profiles').delete().eq('id', u.id);
-                      setUsers((prev: any[]) => prev.filter(x => x.id !== u.id));
-                    }}
-                    className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">delete</span>
-                    Delete
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderCatalogManagement = () => (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4">
-       <section className="bg-brand-surface border-4 border-white overflow-hidden shadow-neo-magenta">
-          <div className="px-8 py-5 border-b-4 border-white flex justify-between items-center bg-white/[0.02]">
-            <h3 className="font-display text-xl uppercase tracking-tighter italic">Archive Oversight</h3>
-            <span className="text-[10px] bg-brand-pink text-white px-3 py-1 font-black uppercase tracking-[0.2em] italic">Compliance Sentinel</span>
-          </div>
-          <div className="overflow-x-auto">
-             <table className="w-full text-left italic">
-                <thead className="bg-black/40 text-[10px] uppercase text-brand-yellow font-black tracking-[0.2em] border-b-2 border-brand-border">
-                   <tr>
-                      <th className="px-8 py-4">Show Details</th>
-                      <th className="px-8 py-4">Producer / Market</th>
-                      <th className="px-8 py-4">Stats</th>
-                      <th className="px-8 py-4 text-right">Legal Enforcement</th>
-                   </tr>
-                </thead>
-                <tbody className="divide-y-2 divide-brand-border">
-                   {shows.length === 0 ? (
-                     <tr><td colSpan={4} className="p-20 text-center text-white/20 font-black uppercase italic tracking-widest">Archive is currently empty.</td></tr>
-                   ) : shows.map((show) => (
-                     <tr key={show.id} className="hover:bg-brand-pink/5 transition-colors">
-                        <td className="px-8 py-5">
-                           <div className="flex items-center gap-4">
-                              {show.imageUrl && <img src={show.imageUrl} className="w-12 h-16 object-cover border-2 border-white/20" alt={show.title} />}
-                              <div>
-                                 <span className="font-black text-sm uppercase block">{show.title}</span>
-                                 <span className="text-[9px] text-gray-500 uppercase font-bold tracking-widest">{show.genre} • {show.language}</span>
-                              </div>
-                           </div>
-                        </td>
-                        <td className="px-8 py-5">
-                           <span className="text-xs font-black uppercase block">{show.producerName}</span>
-                           <span className="text-[9px] text-brand-cyan uppercase font-bold">{show.location}</span>
-                        </td>
-                        <td className="px-8 py-5">
-                           <div className="flex gap-4">
-                              <div className="text-center">
-                                 <p className="text-[8px] text-gray-500 font-black uppercase italic">Views</p>
-                                 <p className="text-xs font-black">{(show.viewsCount || 0).toLocaleString()}</p>
-                              </div>
-                              <div className="text-center">
-                                 <p className="text-[8px] text-gray-500 font-black uppercase italic">Inquiries</p>
-                                 <p className="text-xs font-black">{show.inquiriesCount || 0}</p>
-                              </div>
-                           </div>
-                        </td>
-                        <td className="px-8 py-5 text-right">
-                           <button onClick={() => handleCopyrightDeletion(show)} className="bg-brand-pink text-white px-4 py-2 text-[10px] font-black uppercase italic border-2 border-black shadow-[4px_4px_0px_black] hover:bg-black transition-all">
-                             Strike Asset (Copyright)
-                           </button>
-                        </td>
-                     </tr>
-                   ))}
-                </tbody>
-             </table>
-          </div>
-       </section>
-    </div>
-  );
-
-  const renderAccessControl = () => (
-    <div className="grid grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4">
-      <div className="col-span-12 xl:col-span-8 space-y-10">
-        <section className="bg-brand-surface border-4 border-white p-10 relative shadow-neo-yellow">
-          <span className="absolute -top-4 left-8 bg-brand-yellow text-black text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1 italic">NEW INVITE DISPATCH</span>
-          <div className="grid grid-cols-2 gap-8 mb-8 mt-4">
-            <label className="flex flex-col">
-              <span className="text-brand-pink text-xs font-black uppercase tracking-widest mb-2 italic">Producer Name *</span>
-              <input value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full border-4 border-white bg-brand-black text-white h-14 px-4 font-bold uppercase focus:border-brand-cyan outline-none" placeholder="E.G. BILL BURR" />
-            </label>
-            <label className="flex flex-col">
-              <span className="text-brand-yellow text-xs font-black uppercase tracking-widest mb-2 italic">Official Email *</span>
-              <input value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className="w-full border-4 border-white bg-brand-black text-white h-14 px-4 font-bold focus:border-brand-cyan outline-none" placeholder="PRODUCER@STAGE.COM" />
-            </label>
-          </div>
-          <div className="mb-8">
-            <label className="flex flex-col">
-              <span className="text-brand-cyan text-xs font-black uppercase tracking-widest mb-2 italic">Invitation Note</span>
-              <textarea value={newNote} onChange={(e) => setNewNote(e.target.value)} rows={4} className="w-full border-4 border-white bg-brand-black text-white focus:border-brand-pink p-4 font-bold italic outline-none text-sm" />
-            </label>
-          </div>
-          <div className="mb-8">
-            <span className="text-brand-cyan text-xs font-black uppercase tracking-widest mb-4 block italic">Access Duration Tier</span>
-            <div className="flex flex-wrap gap-3">
-              {durations.map((dur) => (
-                <button key={dur} onClick={() => setSelectedDuration(dur)} className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-2 transition-all ${selectedDuration === dur ? 'bg-brand-pink text-white border-brand-pink shadow-[4px_4px_0px_white]' : 'bg-transparent text-white border-white/20 hover:border-white'}`}>{dur}</button>
-              ))}
-            </div>
-          </div>
-          <div className="mb-10">
-            <span className="text-brand-yellow text-xs font-black uppercase tracking-widest mb-4 block italic">Plan Tier</span>
-            <div className="flex flex-wrap gap-3">
-              {(['gigl', 'laff', 'roar'] as const).map((plan) => (
-                <button key={plan} onClick={() => setInvitePlan(plan)}
-                  className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-2 transition-all ${invitePlan === plan ? 
-                    plan === 'roar' ? 'bg-brand-pink text-white border-brand-pink shadow-[4px_4px_0px_white]' :
-                    plan === 'laff' ? 'bg-brand-cyan text-black border-brand-cyan shadow-[4px_4px_0px_white]' :
-                    'bg-white/20 text-white border-white shadow-[4px_4px_0px_white]'
-                  : 'bg-transparent text-white/40 border-white/20 hover:border-white hover:text-white'}`}>
-                  {plan === 'gigl' ? 'GIGL — Free' : plan === 'laff' ? 'LAFF — €99' : 'ROAR — €189'}
-                </button>
-              ))}
-            </div>
-          </div>
-          <button onClick={sendInvite} className="bg-brand-yellow text-black font-black w-full py-6 text-xl uppercase tracking-wider border-4 border-black shadow-[6px_6px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic">
-            Authorize & Dispatch Signal
-          </button>
-        </section>
-
-        <section className="bg-brand-surface border-4 border-white overflow-hidden shadow-neo-cyan">
-          <div className="px-4 md:px-8 py-5 border-b-4 border-white flex justify-between items-center bg-white/[0.02]">
-            <h3 className="font-display text-xl uppercase tracking-tighter italic">Recent Despatches</h3>
-            <span className="text-[10px] text-white/40 font-black uppercase italic">{invites.length} total</span>
-          </div>
-          <div className="overflow-x-auto w-full">
-            <div className="space-y-3">
-              {invites.length === 0 ? (
-                <div className="p-12 text-center text-white/20 font-black uppercase italic">No invites sent yet.</div>
-              ) : invites.map((inv) => (
-                <div key={inv.id} className="border-4 border-white/20 p-4 hover:border-brand-yellow transition-all">
-                  {/* TOP */}
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="min-w-0">
-                      <p className="font-black uppercase italic text-white text-sm">{inv.recipient}</p>
-                      <p className="text-white/30 text-xs italic truncate">{inv.email}</p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className={`px-2 py-1 text-[9px] font-black uppercase border ${inv.status === 'live' ? 'bg-green-500/10 text-green-400 border-green-500/30' : inv.status === 'pending' ? 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}>
-                        {inv.status}
-                      </span>
-                    </div>
-                  </div>
-                  {/* CREDENTIALS */}
-                  <div className="bg-brand-black border-2 border-white/10 p-3 mb-3 font-mono">
-                    <p className="text-[10px] text-brand-cyan font-black">U: {inv.generatedUsername}</p>
-                    <p className="text-[10px] text-brand-pink font-black">P: {inv.generatedPassword}</p>
-                  </div>
-                  {/* BOTTOM */}
-                  <div className="flex items-center justify-between gap-3 flex-wrap">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[9px] font-black uppercase text-brand-yellow">{inv.duration}</span>
-                      <span className="text-[9px] font-black uppercase text-brand-cyan">{(inv as any).plan || 'laff'}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => triggerExpiryNotification(inv)}
-                        className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow transition-all flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm">notifications_active</span>
-                        Notify
-                      </button>
-                      <button
-                        onClick={async () => {
-                          if (!window.confirm(`Delete invite for ${inv.recipient}?`)) return;
-                          await supabase.from('invitations').delete().eq('id', inv.id);
-                          setInvites(prev => prev.filter(i => i.id !== inv.id));
-                        }}
-                        className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  );
+  const toggleFounding = async (id: string, current: boolean) => {
+    await supabase.from('profiles').update({ is_founding: !current }).eq('id', id);
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, is_founding: !current } : u));
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-black text-white">
-      {/* TOP NAV — mobile friendly */}
+
+      {/* TOP NAV */}
       <div className="border-b-4 border-white bg-brand-black sticky top-0 z-50">
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
-            <div className="logo-text text-2xl flex flex-wrap leading-none">
+            <div className="logo-text text-2xl flex leading-none">
               <span className="text-brand-yellow">HAHA</span><span className="text-brand-cyan">HUB</span>
             </div>
             <p className="text-brand-pink text-[8px] font-black tracking-[0.2em] uppercase italic">Control Center</p>
           </div>
-          <button onClick={() => onNavigate('discovery')} className="text-white/40 hover:text-white transition-colors">
-            <span className="material-symbols-outlined">close</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => onNavigate('discovery')} className="text-white/40 hover:text-white transition-colors text-xs font-black uppercase italic">← Catalog</button>
+            {onLogout && <button onClick={onLogout} className="text-brand-pink/60 hover:text-brand-pink transition-colors"><span className="material-symbols-outlined text-sm">power_settings_new</span></button>}
+          </div>
         </div>
         <nav className="flex border-t-2 border-white/10 overflow-x-auto">
-          <button onClick={() => { setActiveTab('analytics'); loadUsers(); }} className={`flex items-center gap-2 px-4 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 ${activeTab === 'analytics' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white'}`}>
-            <span className="material-symbols-outlined text-sm">analytics</span>
-            <span className="text-[10px] font-black uppercase tracking-widest italic">Metrics</span>
-          </button>
-          <button onClick={() => setActiveTab('access')} className={`flex items-center gap-2 px-4 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 ${activeTab === 'access' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-            <span className="material-symbols-outlined text-sm">mail</span>
-            <span className="text-[10px] font-black uppercase tracking-widest italic">Invites</span>
-          </button>
-          <button onClick={() => setActiveTab('catalog')} className={`flex items-center gap-2 px-4 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 ${activeTab === 'catalog' ? 'bg-brand-pink text-white' : 'text-white/40 hover:text-white'}`}>
-            <span className="material-symbols-outlined text-sm">gavel</span>
-            <span className="text-[10px] font-black uppercase tracking-widest italic">Archive</span>
-          </button>
-          <div className="pt-20">
-            <button onClick={onLogout} className="flex items-center gap-4 w-full px-6 py-4 text-brand-pink/60 hover:text-brand-pink italic transition-colors">
-              <span className="material-symbols-outlined">power_settings_new</span>
-              <span className="text-xs font-black uppercase tracking-widest">Logout HQ</span>
+          {([
+            { key: 'analytics', label: 'Producers', icon: 'group' },
+            { key: 'access', label: 'Invites', icon: 'mail' },
+            { key: 'catalog', label: 'Archive', icon: 'gavel' },
+          ] as const).map(tab => (
+            <button key={tab.key} onClick={() => { setActiveTab(tab.key); if (tab.key === 'analytics') loadUsers(); }}
+              className={`flex items-center gap-2 px-5 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 text-[10px] font-black uppercase tracking-widest italic
+                ${activeTab === tab.key ? tab.key === 'analytics' ? 'bg-brand-cyan text-black' : tab.key === 'access' ? 'bg-brand-yellow text-black' : 'bg-brand-pink text-white' : 'text-white/40 hover:text-white'}`}>
+              <span className="material-symbols-outlined text-sm">{tab.icon}</span>
+              {tab.label}
             </button>
-          </div>
+          ))}
         </nav>
+      </div>
 
-      <main className="flex-1 p-4 md:p-8 relative">
-        {mailLog && (
-          <div className="fixed top-12 right-12 z-[100] bg-brand-black border-4 border-brand-yellow p-8 shadow-neo-magenta w-[420px] animate-in slide-in-from-right-10">
-             <div className="flex items-center justify-between mb-4 border-b-2 border-brand-yellow/20 pb-2">
-                <div className="flex items-center gap-3 text-brand-yellow">
-                   <span className="material-symbols-outlined">mark_email_unread</span>
-                   <span className="text-sm font-black uppercase tracking-widest italic">{mailLog.title}</span>
+      {/* MAIL LOG */}
+      {mailLog && (
+        <div className="fixed top-20 right-4 z-[100] bg-brand-black border-4 border-brand-yellow p-6 shadow-neo-magenta w-80 animate-in slide-in-from-right-10">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-brand-yellow text-xs font-black uppercase italic">{mailLog.title}</span>
+            <button onClick={() => setMailLog(null)}><span className="material-symbols-outlined text-sm text-white/40">close</span></button>
+          </div>
+          <p className="text-[10px] font-mono text-white/70 whitespace-pre-wrap">{mailLog.msg}</p>
+        </div>
+      )}
+
+      <main className="flex-1 p-4 md:p-8">
+
+        {/* HEADER */}
+        <div className="mb-8">
+          <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none text-white">
+            {activeTab === 'analytics' ? 'PRODUCERS' : activeTab === 'access' ? 'INVITES' : 'ARCHIVE'}
+          </h1>
+          <div className="h-2 w-32 bg-brand-pink mt-2"></div>
+        </div>
+
+        {/* PRODUCERS TAB */}
+        {activeTab === 'analytics' && (
+          <div className="space-y-3">
+            {loadingUsers ? (
+              <p className="text-brand-yellow font-black uppercase italic animate-pulse">Loading...</p>
+            ) : users.length === 0 ? (
+              <p className="text-white/20 font-black uppercase italic">No producers yet.</p>
+            ) : users.map((u: any) => {
+              const isExpired = u.subscription_expiry && new Date(u.subscription_expiry) < new Date();
+              return (
+                <div key={u.id} className={`border-4 p-4 transition-all ${isExpired ? 'border-red-500/30 opacity-60' : 'border-white/20 hover:border-brand-yellow'}`}>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-black uppercase italic text-white truncate">{u.name || '—'}</p>
+                      <p className="text-white/30 text-xs italic truncate">{u.email}</p>
+                      <div className="flex gap-3 mt-1 flex-wrap">
+                        <span className="text-white/20 text-[9px]">{u.uploaded_show_ids?.length || 0} shows</span>
+                        {u.subscription_expiry && <span className={`text-[9px] font-bold ${isExpired ? 'text-brand-pink' : 'text-white/20'}`}>{isExpired ? '⚠ EXPIRED' : `Exp: ${u.subscription_expiry}`}</span>}
+                      </div>
+                    </div>
+                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${u.user_type === 'roar' ? 'text-brand-pink border-brand-pink/40' : u.user_type === 'laff' || u.is_paid ? 'text-green-400 border-green-500/30' : 'text-white/30 border-white/10'}`}>
+                      {u.user_type === 'roar' ? 'ROAR' : u.user_type === 'laff' || u.is_paid ? 'LAFF' : 'GIGL'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <select value={u.user_type || (u.is_paid ? 'laff' : 'gigl')} onChange={e => setPlan(u.id, e.target.value)}
+                      className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-white/20 bg-brand-black text-white hover:border-brand-yellow cursor-pointer">
+                      <option value="gigl">GIGL — Free</option>
+                      <option value="laff">LAFF — €99</option>
+                      <option value="roar">ROAR — €189</option>
+                    </select>
+                    <button onClick={() => toggleVerified(u.id, u.is_verified)}
+                      className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all flex items-center gap-1 ${u.is_verified ? 'bg-brand-cyan border-brand-cyan text-black' : 'border-white/20 text-white/30 hover:border-brand-cyan'}`}>
+                      <span className="material-symbols-outlined text-sm">check</span>
+                      {u.is_verified ? 'Verified' : 'Verify'}
+                    </button>
+                    <button onClick={() => toggleFounding(u.id, u.is_founding)}
+                      className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all flex items-center gap-1 ${u.is_founding ? 'bg-brand-yellow border-brand-yellow text-black' : 'border-white/20 text-white/30 hover:border-brand-yellow'}`}>
+                      <span className="material-symbols-outlined text-sm">star</span>
+                      {u.is_founding ? 'Founding' : 'Found.'}
+                    </button>
+                    <button onClick={() => deleteUser(u.id, u.name || u.email)}
+                      className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1 ml-auto">
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <button onClick={() => setMailLog(null)} className="text-white/40 hover:text-white"><span className="material-symbols-outlined text-sm">close</span></button>
-             </div>
-             <p className="text-[11px] font-mono text-white/90 leading-relaxed italic mb-6 whitespace-pre-wrap">{mailLog.msg}</p>
-             <p className="text-[8px] font-black text-brand-yellow/40 uppercase mt-4 italic text-right">SIGNAL STATUS: ENCRYPTED & SENT</p>
+              );
+            })}
           </div>
         )}
-        <header className="mb-20 text-white">
-          <div className="flex flex-col gap-4">
-             <h1 className="text-7xl font-black uppercase tracking-tighter italic leading-none">
-               {activeTab === 'analytics' ? 'THE METRICS' : activeTab === 'access' ? 'ACCESS INVITES' : 'ARCHIVE OVERSIGHT'}
-             </h1>
-             <div className="h-3 w-64 bg-brand-pink"></div>
-             <p className="text-white/40 text-sm font-black italic uppercase tracking-widest">HAHAHUB Internal Administration / Revision 4.0</p>
+
+        {/* INVITES TAB */}
+        {activeTab === 'access' && (
+          <div className="space-y-8">
+            {/* SEND INVITE FORM */}
+            <div className="border-4 border-brand-yellow p-6 space-y-4 shadow-neo-yellow">
+              <p className="text-brand-yellow text-[10px] font-black uppercase italic tracking-widest">New Invite →</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input type="text" placeholder="Producer Name" value={newName} onChange={e => setNewName(e.target.value)}
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
+                <input type="email" placeholder="Email" value={newEmail} onChange={e => setNewEmail(e.target.value)}
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
+                <input type="text" placeholder="Temp Password" value={password} onChange={e => setPassword(e.target.value)}
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
+                <input type="text" placeholder="Note (optional)" value={newNote} onChange={e => setNewNote(e.target.value)}
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
+              </div>
+              {/* Duration */}
+              <div>
+                <p className="text-[9px] font-black uppercase italic text-white/40 mb-2">Duration</p>
+                <div className="flex gap-2 flex-wrap">
+                  {durations.map(d => (
+                    <button key={d} onClick={() => setSelectedDuration(d)}
+                      className={`px-4 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${selectedDuration === d ? 'bg-brand-pink text-white border-brand-pink' : 'border-white/20 text-white/40 hover:border-white'}`}>
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Plan */}
+              <div>
+                <p className="text-[9px] font-black uppercase italic text-white/40 mb-2">Plan</p>
+                <div className="flex gap-2 flex-wrap">
+                  {(['gigl', 'laff', 'roar'] as const).map(plan => (
+                    <button key={plan} onClick={() => setInvitePlan(plan)}
+                      className={`px-4 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${invitePlan === plan ?
+                        plan === 'roar' ? 'bg-brand-pink text-white border-brand-pink' :
+                        plan === 'laff' ? 'bg-brand-cyan text-black border-brand-cyan' :
+                        'bg-white text-black border-white' : 'border-white/20 text-white/40 hover:border-white'}`}>
+                      {plan === 'gigl' ? 'GIGL — Free' : plan === 'laff' ? 'LAFF — €99' : 'ROAR — €189'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button onClick={sendInvite} disabled={sending || !newName || !newEmail || !password}
+                className="bg-brand-yellow text-black px-8 py-3 font-black uppercase italic border-4 border-black hover:bg-white transition-all disabled:opacity-40 text-sm">
+                {sending ? 'Dispatching...' : 'Dispatch Invite →'}
+              </button>
+            </div>
+
+            {/* INVITE LIST */}
+            <div className="space-y-3">
+              <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">{invites.length} invites dispatched</p>
+              {invites.length === 0 ? (
+                <p className="text-white/20 font-black uppercase italic">No invites yet.</p>
+              ) : invites.map(inv => (
+                <div key={inv.id} className="border-4 border-white/20 p-4 hover:border-brand-yellow transition-all">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0">
+                      <p className="font-black uppercase italic text-white">{inv.recipient}</p>
+                      <p className="text-white/30 text-xs italic truncate">{inv.email}</p>
+                    </div>
+                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${inv.status === 'used' ? 'text-green-400 border-green-500/30' : inv.status === 'pending' ? 'text-brand-yellow border-brand-yellow/30' : 'text-red-400 border-red-500/30'}`}>
+                      {inv.status}
+                    </span>
+                  </div>
+                  <div className="bg-brand-black border border-white/10 p-3 mb-3 font-mono">
+                    <p className="text-[10px] text-brand-cyan font-black">Email: {inv.generatedUsername}</p>
+                    <p className="text-[10px] text-brand-pink font-black">Pass: {inv.generatedPassword}</p>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="flex gap-3">
+                      <span className="text-[9px] font-black uppercase text-brand-yellow">{inv.duration}</span>
+                      <span className="text-[9px] font-black uppercase text-brand-cyan">{inv.plan?.toUpperCase() || 'LAFF'}</span>
+                    </div>
+                    <button onClick={() => deleteInvite(inv.id, inv.recipient)}
+                      className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </header>
-        {activeTab === 'analytics' ? renderAnalytics() : activeTab === 'access' ? renderAccessControl() : renderCatalogManagement()}
+        )}
+
+        {/* ARCHIVE TAB */}
+        {activeTab === 'catalog' && (
+          <div className="space-y-3">
+            {shows.length === 0 ? (
+              <p className="text-white/20 font-black uppercase italic">No shows in archive.</p>
+            ) : shows.map(show => (
+              <div key={show.id} className="border-4 border-white/20 p-4 flex items-center justify-between gap-4 hover:border-brand-pink transition-all">
+                <div className="min-w-0">
+                  <p className="font-black uppercase italic text-white truncate">{show.title}</p>
+                  <p className="text-white/30 text-xs italic">{show.genre} · {show.location} · {show.productionYear}</p>
+                  <p className="text-white/20 text-[9px] mt-1">{show.viewsCount} views · {show.inquiriesCount} inquiries</p>
+                </div>
+                <button onClick={() => onDeleteShow(show.id)}
+                  className="flex-shrink-0 px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">delete</span>
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
       </main>
     </div>
   );
