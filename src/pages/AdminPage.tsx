@@ -461,9 +461,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             </button>
           </div>
         </nav>
-      </aside>
 
-      <main className="ml-72 flex-1 p-16 relative">
+      <main className="flex-1 p-4 md:p-8 relative">
         {mailLog && (
           <div className="fixed top-12 right-12 z-[100] bg-brand-black border-4 border-brand-yellow p-8 shadow-neo-magenta w-[420px] animate-in slide-in-from-right-10">
              <div className="flex items-center justify-between mb-4 border-b-2 border-brand-yellow/20 pb-2">
