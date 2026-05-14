@@ -236,17 +236,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                     <span className="material-symbols-outlined text-sm align-middle mr-1">star</span>
                     {u.is_founding ? 'Founding' : 'Found.'}
                   </button>
-                  {isExpired && (
-                    <button
-                      onClick={async () => {
-                        if (!confirm(`Remove ${u.name}?`)) return;
-                        await supabase.from('profiles').delete().eq('id', u.id);
-                        setUsers((prev: any[]) => prev.filter(x => x.id !== u.id));
-                      }}
-                      className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all">
-                      Remove
-                    </button>
-                  )}
+                  <button
+                    onClick={async () => {
+                      if (!window.confirm(`Delete ${u.name}? This cannot be undone.`)) return;
+                      await supabase.from('profiles').delete().eq('id', u.id);
+                      setUsers((prev: any[]) => prev.filter(x => x.id !== u.id));
+                    }}
+                    className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">delete</span>
+                    Delete
+                  </button>
                 </div>
               </div>
             );
@@ -372,44 +371,55 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             <span className="text-[10px] text-white/40 font-black uppercase italic">{invites.length} total</span>
           </div>
           <div className="overflow-x-auto w-full">
-            <table className="w-full text-left italic min-w-[600px]">
-              <thead className="bg-black/40 text-[10px] uppercase text-brand-yellow font-black tracking-[0.2em] border-b-2 border-brand-border">
-                <tr>
-                  <th className="px-4 md:px-8 py-4">Producer</th>
-                  <th className="px-4 md:px-8 py-4">Credentials</th>
-                  <th className="px-4 md:px-8 py-4">Duration</th>
-                  <th className="px-4 md:px-8 py-4">Status</th>
-                  <th className="px-4 md:px-8 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y-2 divide-brand-border">
-                {invites.length === 0 ? (
-                  <tr><td colSpan={5} className="p-12 text-center text-white/20 font-black uppercase italic">No invites sent yet.</td></tr>
-                ) : invites.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-brand-yellow/5 transition-colors group">
-                    <td className="px-4 md:px-8 py-5">
-                      <span className="font-black text-sm uppercase block">{inv.recipient}</span>
-                      <span className="text-[10px] text-gray-500">{inv.email}</span>
-                    </td>
-                    <td className="px-4 md:px-8 py-5 font-mono">
-                       <span className="text-[10px] text-brand-cyan uppercase font-black block">U: {inv.generatedUsername}</span>
-                       <span className="text-[10px] text-brand-pink uppercase font-black">P: {inv.generatedPassword}</span>
-                    </td>
-                    <td className="px-4 md:px-8 py-5"><span className="text-xs font-bold uppercase text-brand-yellow">{inv.duration}</span><br/><span className="text-[9px] font-black uppercase text-brand-cyan">{(inv as any).plan || 'laff'}</span></td>
-                    <td className="px-4 md:px-8 py-5">
-                       <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase ${inv.status === 'live' ? 'bg-green-500/10 text-green-400 border-green-500/30' : inv.status === 'pending' ? 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}>
-                          {inv.status}
-                       </span>
-                    </td>
-                    <td className="px-8 py-5 text-right">
-                        <button onClick={() => triggerExpiryNotification(inv)} className="text-white/20 hover:text-brand-yellow transition-colors">
-                          <span className="material-symbols-outlined text-2xl">notifications_active</span>
-                        </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="space-y-3">
+              {invites.length === 0 ? (
+                <div className="p-12 text-center text-white/20 font-black uppercase italic">No invites sent yet.</div>
+              ) : invites.map((inv) => (
+                <div key={inv.id} className="border-4 border-white/20 p-4 hover:border-brand-yellow transition-all">
+                  {/* TOP */}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0">
+                      <p className="font-black uppercase italic text-white text-sm">{inv.recipient}</p>
+                      <p className="text-white/30 text-xs italic truncate">{inv.email}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className={`px-2 py-1 text-[9px] font-black uppercase border ${inv.status === 'live' ? 'bg-green-500/10 text-green-400 border-green-500/30' : inv.status === 'pending' ? 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}>
+                        {inv.status}
+                      </span>
+                    </div>
+                  </div>
+                  {/* CREDENTIALS */}
+                  <div className="bg-brand-black border-2 border-white/10 p-3 mb-3 font-mono">
+                    <p className="text-[10px] text-brand-cyan font-black">U: {inv.generatedUsername}</p>
+                    <p className="text-[10px] text-brand-pink font-black">P: {inv.generatedPassword}</p>
+                  </div>
+                  {/* BOTTOM */}
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[9px] font-black uppercase text-brand-yellow">{inv.duration}</span>
+                      <span className="text-[9px] font-black uppercase text-brand-cyan">{(inv as any).plan || 'laff'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => triggerExpiryNotification(inv)}
+                        className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow transition-all flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">notifications_active</span>
+                        Notify
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!window.confirm(`Delete invite for ${inv.recipient}?`)) return;
+                          await supabase.from('invitations').delete().eq('id', inv.id);
+                          setInvites(prev => prev.filter(i => i.id !== inv.id));
+                        }}
+                        className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </div>
@@ -417,26 +427,32 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   );
 
   return (
-    <div className="flex min-h-screen bg-brand-black text-white">
-      <aside className="w-72 border-r-4 border-white bg-brand-black fixed h-full z-50">
-        <div className="p-10">
-          <div className="logo-text text-3xl flex flex-wrap leading-none cursor-pointer">
-            <span className="text-brand-yellow">HAHA</span><span className="text-brand-cyan">HUB</span>
+    <div className="flex flex-col min-h-screen bg-brand-black text-white">
+      {/* TOP NAV — mobile friendly */}
+      <div className="border-b-4 border-white bg-brand-black sticky top-0 z-50">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div>
+            <div className="logo-text text-2xl flex flex-wrap leading-none">
+              <span className="text-brand-yellow">HAHA</span><span className="text-brand-cyan">HUB</span>
+            </div>
+            <p className="text-brand-pink text-[8px] font-black tracking-[0.2em] uppercase italic">Control Center</p>
           </div>
-          <p className="text-brand-pink text-[10px] font-black tracking-[0.2em] uppercase mt-2 italic">Control Center</p>
+          <button onClick={() => onNavigate('discovery')} className="text-white/40 hover:text-white transition-colors">
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
-        <nav className="flex-1 px-4 space-y-4 mt-16">
-          <button onClick={() => { setActiveTab('analytics'); loadUsers(); }} className={`flex items-center gap-4 w-full px-6 py-5 border-4 transition-all ${activeTab === 'analytics' ? 'bg-brand-cyan text-black border-white shadow-[6px_6px_0px_white]' : 'text-white/40 border-transparent hover:text-white'}`}>
-            <span className="material-symbols-outlined">analytics</span>
-            <span className="text-xs font-black uppercase tracking-widest italic">Hub Metrics</span>
+        <nav className="flex border-t-2 border-white/10 overflow-x-auto">
+          <button onClick={() => { setActiveTab('analytics'); loadUsers(); }} className={`flex items-center gap-2 px-4 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 ${activeTab === 'analytics' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white'}`}>
+            <span className="material-symbols-outlined text-sm">analytics</span>
+            <span className="text-[10px] font-black uppercase tracking-widest italic">Metrics</span>
           </button>
-          <button onClick={() => setActiveTab('access')} className={`flex items-center gap-4 w-full px-6 py-5 border-4 transition-all ${activeTab === 'access' ? 'bg-brand-yellow text-black border-white shadow-[6px_6px_0px_white]' : 'text-white/40 border-transparent hover:text-white'}`}>
-            <span className="material-symbols-outlined">mail</span>
-            <span className="text-xs font-black uppercase tracking-widest italic">Invite Dispatches</span>
+          <button onClick={() => setActiveTab('access')} className={`flex items-center gap-2 px-4 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 ${activeTab === 'access' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
+            <span className="material-symbols-outlined text-sm">mail</span>
+            <span className="text-[10px] font-black uppercase tracking-widest italic">Invites</span>
           </button>
-          <button onClick={() => setActiveTab('catalog')} className={`flex items-center gap-4 w-full px-6 py-5 border-4 transition-all ${activeTab === 'catalog' ? 'bg-brand-pink text-white border-white shadow-[6px_6px_0px_white]' : 'text-white/40 border-transparent hover:text-white'}`}>
-            <span className="material-symbols-outlined">gavel</span>
-            <span className="text-xs font-black uppercase tracking-widest italic">Archive Oversight</span>
+          <button onClick={() => setActiveTab('catalog')} className={`flex items-center gap-2 px-4 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 ${activeTab === 'catalog' ? 'bg-brand-pink text-white' : 'text-white/40 hover:text-white'}`}>
+            <span className="material-symbols-outlined text-sm">gavel</span>
+            <span className="text-[10px] font-black uppercase tracking-widest italic">Archive</span>
           </button>
           <div className="pt-20">
             <button onClick={onLogout} className="flex items-center gap-4 w-full px-6 py-4 text-brand-pink/60 hover:text-brand-pink italic transition-colors">
