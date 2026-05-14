@@ -332,8 +332,7 @@ const App: React.FC = () => {
   const renderPage = () => {
     // After loading, redirect paid users from landing to discovery
     const effectivePage = (() => {
-      if (currentPage === 'landing' && currentUser?.isPaid) return 'discovery'
-      if (currentPage === 'landing' && currentUser?.isAdmin) return 'discovery'
+      if (currentPage === 'landing' && currentUser) return 'discovery' // all logged in users go to catalog
       if ((currentPage === 'upload') && currentUser && !currentUser.isPaid && !currentUser.isAdmin) return 'landing'
       return currentPage
     })()
@@ -343,7 +342,7 @@ const App: React.FC = () => {
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} onViewProducer={(id) => setCurrentProducerId(id)} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
       case 'login': return <LoginPage 
-        onSuccess={(isPaid: boolean) => setCurrentPage(isPaid ? 'discovery' : 'landing')} 
+        onSuccess={(isPaid: boolean) => setCurrentPage('discovery')} 
         onBack={() => setCurrentPage('landing')} 
         setCurrentUser={setCurrentUser} 
       />

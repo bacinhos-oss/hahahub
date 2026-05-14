@@ -169,10 +169,16 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                       </button>
                     ) : user?.isPaid ? (
                       producer.email ? (
-                        <a href={`mailto:${producer.email}`}
-                          className="px-6 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-sm hover:bg-white transition-all shadow-[4px_4px_0px_black]">
-                          Tickle →
-                        </a>
+                        <div className="flex items-center gap-2 border-4 border-brand-yellow p-3 bg-brand-surface">
+                          <span className="text-white font-black italic text-xs truncate max-w-[160px]">{producer.email}</span>
+                          <button
+                            onClick={() => { navigator.clipboard.writeText(producer.email); }}
+                            className="flex-shrink-0 bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all flex items-center gap-1"
+                          >
+                            <span className="material-symbols-outlined text-sm">content_copy</span>
+                            Copy
+                          </button>
+                        </div>
                       ) : (
                         <span className="px-5 py-2 border-4 border-white/20 text-white/30 font-black uppercase italic text-xs">
                           No contact info
@@ -181,7 +187,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                     ) : !user ? (
                       <button onClick={() => onNavigate('login')}
                         className="px-5 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-xs hover:bg-white transition-all">
-                        Sign In to Contact →
+                        Sign In →
                       </button>
                     ) : (
                       <button onClick={() => onNavigate('pricing')}
