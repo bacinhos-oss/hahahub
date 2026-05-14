@@ -1396,17 +1396,26 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (!file) return;
-                            if (file.size > 500000) { alert('Max 500KB please'); return; }
-                            const reader = new FileReader();
-                            reader.onload = async () => {
-                              const base64 = reader.result as string;
+                            // Resize image before base64 to keep it small
+                            const img = new Image();
+                            const objectUrl = URL.createObjectURL(file);
+                            img.onload = async () => {
+                              const canvas = document.createElement('canvas');
+                              const MAX = 200;
+                              const ratio = Math.min(MAX / img.width, MAX / img.height);
+                              canvas.width = img.width * ratio;
+                              canvas.height = img.height * ratio;
+                              const ctx = canvas.getContext('2d');
+                              ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                              const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                              URL.revokeObjectURL(objectUrl);
                               setProfileForm(p => ({ ...p, avatar_url: base64 }));
-                              // Save immediately to Supabase
                               if (user?.id) {
-                                await supabase.from('profiles').update({ avatar_url: base64 }).eq('id', user.id);
+                                const { error } = await supabase.from('profiles').update({ avatar_url: base64 }).eq('id', user.id);
+                                if (error) console.error('Avatar save error:', error);
                               }
                             };
-                            reader.readAsDataURL(file);
+                            img.src = objectUrl;
                           }} />
                         </label>
                         <p className="text-white/20 text-[9px] italic mt-1">Max 500KB · JPG or PNG</p>

@@ -806,23 +806,42 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </h1>
             </div>
 
-            {/* STEFUNNY LINK */}
-            <button
-              onClick={() => onNavigate('stefunny')}
-              className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-5 shadow-neo-yellow hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all w-full text-left group"
-            >
-              <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
-                SF
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">MISS STEFUNNY</span>
-                  <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
+            {/* STEFUNNY — INLINE SEARCH */}
+            <div className="relative">
+              <div className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-5 shadow-neo-yellow focus-within:shadow-none focus-within:translate-x-1 focus-within:translate-y-1 transition-all">
+                <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
+                  SF
                 </div>
-                <p className="text-white/40 font-bold italic text-xs">Search by genre, country, cast, keywords →</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">MISS STEFUNNY</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Ask Stefunny... genre, country, cast size, keywords"
+                    className="w-full bg-transparent border-none text-white font-black text-sm md:text-base uppercase outline-none italic placeholder:text-white/20 placeholder:normal-case placeholder:not-italic"
+                  />
+                </div>
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
+                    <span className="material-symbols-outlined text-xl">close</span>
+                  </button>
+                )}
+                {!searchQuery && (
+                  <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0">search</span>
+                )}
               </div>
-              <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0 group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </button>
+              {searchQuery && (
+                <div className="mt-2 text-[10px] font-black uppercase italic text-white/40">
+                  {filteredShows.length > 0
+                    ? `Stefunny found ${filteredShows.length} show${filteredShows.length !== 1 ? 's' : ''} for you. 🥊`
+                    : `Stefunny found nothing. Try again.`}
+                </div>
+              )}
+            </div>
 
             {/* SORT + SHORTLIST */}
             <div className="flex flex-wrap items-center gap-4">
