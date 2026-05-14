@@ -253,7 +253,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
         </div>
       </div>
     </div>
-  </div>
   );
 
   const renderCatalogManagement = () => (
