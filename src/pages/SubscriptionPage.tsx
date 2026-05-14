@@ -1142,24 +1142,51 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     );
                   })()}
 
-                  {/* CATALOG BENCHMARK */}
+                  {/* CATALOG BENCHMARK — visual bars */}
                   <div className="border-4 border-white/20 p-6">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-4">📊 Your Average vs Catalog Average</p>
-                    <div className="grid grid-cols-3 gap-4">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-6">Your Average vs Catalog Average</p>
+                    <div className="space-y-5">
                       {[
-                        { label: 'Views', yours: Math.round(analyticsData.reduce((s,x) => s+(x.views_count||0),0)/analyticsData.length), avg: catalogAvg.views, color: 'text-brand-cyan' },
-                        { label: 'Likes', yours: Math.round(analyticsData.reduce((s,x) => s+(x.likes_count||0),0)/analyticsData.length), avg: catalogAvg.likes, color: 'text-brand-pink' },
-                        { label: 'Inquiries', yours: Math.round(analyticsData.reduce((s,x) => s+(x.inquiries_count||0),0)/analyticsData.length), avg: catalogAvg.inquiries, color: 'text-brand-yellow' },
-                      ].map((stat, i) => (
-                        <div key={i} className="bg-brand-black border-2 border-white/10 p-4">
-                          <p className="text-[9px] font-black uppercase italic text-white/30 mb-2">{stat.label}</p>
-                          <p className={`text-2xl font-black ${stat.color}`}>{stat.yours}</p>
-                          <p className="text-white/20 text-[9px] mt-1">Catalog avg: {stat.avg}</p>
-                          <div className={`text-[9px] font-black mt-1 ${stat.yours >= stat.avg ? 'text-green-400' : 'text-red-400'}`}>
-                            {stat.yours >= stat.avg ? `+${stat.yours - stat.avg} above avg` : `${stat.yours - stat.avg} below avg`}
+                        { label: 'Views', icon: 'visibility', yours: Math.round(analyticsData.reduce((s,x) => s+(x.views_count||0),0)/analyticsData.length), avg: catalogAvg.views, color: '#03DAC6' },
+                        { label: 'Likes', icon: 'favorite', yours: Math.round(analyticsData.reduce((s,x) => s+(x.likes_count||0),0)/analyticsData.length), avg: catalogAvg.likes, color: '#FF0266' },
+                        { label: 'Inquiries', icon: 'mail', yours: Math.round(analyticsData.reduce((s,x) => s+(x.inquiries_count||0),0)/analyticsData.length), avg: catalogAvg.inquiries, color: '#FFDE03' },
+                      ].map((stat, i) => {
+                        const max = Math.max(stat.yours, stat.avg, 1) * 1.2;
+                        const yoursW = Math.round((stat.yours / max) * 100);
+                        const avgW = Math.round((stat.avg / max) * 100);
+                        const isAbove = stat.yours >= stat.avg;
+                        return (
+                          <div key={i}>
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm" style={{color: stat.color}}>{stat.icon}</span>
+                                <span className="text-[10px] font-black uppercase italic text-white/60">{stat.label}</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-black italic text-white/30">avg: {stat.avg}</span>
+                                <span className={`text-sm font-black`} style={{color: stat.color}}>{stat.yours}</span>
+                                <span className={`text-[9px] font-black uppercase ${isAbove ? 'text-green-400' : 'text-red-400'}`}>
+                                  {isAbove ? `+${stat.yours - stat.avg}` : `${stat.yours - stat.avg}`}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[7px] text-white/20 uppercase italic w-8">You</span>
+                                <div className="flex-1 h-3 bg-white/5 border border-white/10">
+                                  <div className="h-full transition-all duration-500" style={{width: `${yoursW}%`, background: stat.color}}></div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[7px] text-white/20 uppercase italic w-8">Avg</span>
+                                <div className="flex-1 h-3 bg-white/5 border border-white/10">
+                                  <div className="h-full bg-white/20 transition-all duration-500" style={{width: `${avgW}%`}}></div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -1183,16 +1210,20 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         {/* Stats */}
                         <div className="grid grid-cols-3 gap-3 mb-4">
                           {[
-                            { icon: 'visibility', val: show.views_count || 0, label: 'Views', color: 'text-brand-cyan', vs: catalogAvg.views },
-                            { icon: 'favorite', val: show.likes_count || 0, label: 'Likes', color: 'text-brand-pink', vs: catalogAvg.likes },
-                            { icon: 'mail', val: show.inquiries_count || 0, label: 'Inquiries', color: 'text-brand-yellow', vs: catalogAvg.inquiries },
+                            { icon: 'visibility', val: show.views_count || 0, label: 'Views', color: '#03DAC6', vs: catalogAvg.views },
+                            { icon: 'favorite', val: show.likes_count || 0, label: 'Likes', color: '#FF0266', fill: true, vs: catalogAvg.likes },
+                            { icon: 'mail', val: show.inquiries_count || 0, label: 'Inquiries', color: '#FFDE03', vs: catalogAvg.inquiries },
                           ].map((s, j) => (
-                            <div key={j} className="bg-brand-black border-2 border-white/10 p-3 text-center">
-                              <span className={`material-symbols-outlined text-xl block mb-1 ${s.color}`} style={s.label==='Likes'?{fontVariationSettings:"'FILL' 1"}:{}}>{s.icon}</span>
-                              <p className={`text-xl font-black ${s.color}`}>{s.val}</p>
+                            <div key={j} className="bg-brand-black border-2 border-white/10 p-4 text-center relative overflow-hidden">
+                              {/* background bar */}
+                              <div className="absolute bottom-0 left-0 right-0 transition-all duration-700"
+                                style={{height: `${Math.min(100, (s.val / Math.max(s.val, s.vs, 1)) * 60)}%`, background: s.color, opacity: 0.08}}></div>
+                              <span className="material-symbols-outlined text-2xl block mb-2"
+                                style={{color: s.color, fontVariationSettings: s.fill ? "'FILL' 1" : "'FILL' 0"}}>{s.icon}</span>
+                              <p className="text-2xl font-black" style={{color: s.color}}>{s.val}</p>
                               <p className="text-[8px] font-black uppercase italic text-white/20 mt-0.5">{s.label}</p>
                               <p className={`text-[8px] font-black mt-1 ${s.val >= s.vs ? 'text-green-400' : 'text-red-400'}`}>
-                                {s.val >= s.vs ? '↑ above avg' : '↓ below avg'}
+                                {s.val >= s.vs ? '↑' : '↓'} vs avg
                               </p>
                             </div>
                           ))}
