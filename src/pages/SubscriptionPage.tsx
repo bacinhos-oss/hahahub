@@ -277,6 +277,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '', avatar_url: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -1455,6 +1459,44 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   }} disabled={profileSaving} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-white transition-all disabled:opacity-40">
                     {profileSaving ? 'Saving...' : profileSaved ? 'Saved! ✓' : 'Save Profile →'}
                   </button>
+
+                  {/* CHANGE PASSWORD */}
+                  <div className="border-t-4 border-white/10 pt-8 mt-4 space-y-4">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Change Password</p>
+                    <input
+                      type="password"
+                      placeholder="New password (min 6 chars)"
+                      value={newPassword}
+                      onChange={e => { setNewPassword(e.target.value); setPasswordMsg(''); }}
+                      className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm new password"
+                      value={confirmPassword}
+                      onChange={e => { setConfirmPassword(e.target.value); setPasswordMsg(''); }}
+                      className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
+                    />
+                    {passwordMsg && (
+                      <p className={`text-xs font-black italic ${passwordMsg.includes('✓') ? 'text-brand-cyan' : 'text-brand-pink'}`}>{passwordMsg}</p>
+                    )}
+                    <button
+                      onClick={async () => {
+                        if (newPassword.length < 6) { setPasswordMsg('⚠ Min 6 characters'); return; }
+                        if (newPassword !== confirmPassword) { setPasswordMsg('⚠ Passwords do not match'); return; }
+                        setPasswordSaving(true);
+                        const { error } = await supabase.auth.updateUser({ password: newPassword });
+                        if (error) { setPasswordMsg('⚠ ' + error.message); }
+                        else { setPasswordMsg('✓ Password updated!'); setNewPassword(''); setConfirmPassword(''); }
+                        setPasswordSaving(false);
+                      }}
+                      disabled={passwordSaving || !newPassword || !confirmPassword}
+                      className="border-4 border-white text-white px-8 py-3 font-black uppercase italic hover:bg-white hover:text-black transition-all disabled:opacity-30"
+                    >
+                      {passwordSaving ? 'Updating...' : 'Update Password →'}
+                    </button>
+                  </div>
+
                 </div>
               </section>
             )}

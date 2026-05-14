@@ -230,13 +230,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               <p className="text-brand-yellow text-[10px] font-black uppercase italic tracking-widest">New Invite →</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" placeholder="Producer Name" value={newName} onChange={e => setNewName(e.target.value)}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
                 <input type="email" placeholder="Email" value={newEmail} onChange={e => setNewEmail(e.target.value)}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
+                <div className="relative">
                 <input type="text" placeholder="Temp Password" value={password} onChange={e => setPassword(e.target.value)}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
-                <input type="text" placeholder="Note (optional)" value={newNote} onChange={e => setNewNote(e.target.value)}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
+                <textarea placeholder="Personal note..." value={newNote} onChange={e => setNewNote(e.target.value)} rows={3}
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
               </div>
               {/* Duration */}
               <div>
