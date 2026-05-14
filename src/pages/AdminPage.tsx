@@ -238,7 +238,20 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       const newExpiry = new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
                       await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);
                       setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: newExpiry, is_paid: true } : x));
-                      triggerMailLog('Extended ' + (u.name || u.email), 'Account extended 1 year until ' + newExpiry);
+                      // Send email to producer
+                      if (u.email) {
+                        try {
+                          await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              email: u.email, name: u.name || u.email,
+                              note: u.name + ". Your HahaHub membership has been extended for 1 year. Valid until " + newExpiry + ".\n\nBreak a Laffing Leg. 🦵\nhahahub.art",
+                              duration: '1 Year', plan: u.user_type || 'laff',
+                            })
+                          });
+                        } catch(e) { console.error(e); }
+                      }
+                      triggerMailLog('Extended ' + (u.name || u.email), 'Account extended until ' + newExpiry + '. Email sent.');
                     }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm">update</span>
                       +1 Year
