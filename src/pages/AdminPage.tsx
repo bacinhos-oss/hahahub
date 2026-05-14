@@ -234,6 +234,15 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <span className="material-symbols-outlined text-sm">star</span>
                       {u.is_founding ? 'Founding' : 'Found.'}
                     </button>
+                    <button onClick={async () => {
+                      const newExpiry = new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
+                      await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);
+                      setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: newExpiry, is_paid: true } : x));
+                      triggerMailLog('Extended ' + (u.name || u.email), 'Account extended 1 year until ' + newExpiry);
+                    }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">update</span>
+                      +1 Year
+                    </button>
                     <button onClick={() => deleteUser(u.id, u.name || u.email)}
                       className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1 ml-auto">
                       <span className="material-symbols-outlined text-sm">delete</span>
@@ -331,8 +340,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <p className="font-black uppercase italic text-white">{inv.recipient}</p>
                       <p className="text-white/30 text-xs italic truncate">{inv.email}</p>
                     </div>
-                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${inv.status === 'used' ? 'text-green-400 border-green-500/30' : inv.status === 'pending' ? 'text-brand-yellow border-brand-yellow/30' : 'text-red-400 border-red-500/30'}`}>
-                      {inv.status}
+                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${inv.status === 'used' ? 'text-green-400 border-green-500/30' : 'text-brand-yellow border-brand-yellow/30'}`}>
+                      {inv.status === 'used' ? '✓ Joined' : 'Sent'}
                     </span>
                   </div>
                   <div className="bg-brand-black border border-white/10 p-3 mb-3 font-mono">
@@ -340,15 +349,29 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                     <p className="text-[10px] text-brand-pink font-black">Pass: {inv.generatedPassword}</p>
                   </div>
                   <div className="flex items-center justify-between gap-3 flex-wrap">
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 flex-wrap">
                       <span className="text-[9px] font-black uppercase text-brand-yellow">{inv.duration}</span>
                       <span className="text-[9px] font-black uppercase text-brand-cyan">{inv.plan?.toUpperCase() || 'LAFF'}</span>
                     </div>
-                    <button onClick={() => deleteInvite(inv.id, inv.recipient)}
-                      className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                      Delete
-                    </button>
+                    <div className="flex gap-2">
+                      <button onClick={async () => {
+                        try {
+                          await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: inv.email, name: inv.recipient, password: inv.generatedPassword, duration: inv.duration, plan: inv.plan || 'laff', note: 'Resent credentials.' })
+                          });
+                          triggerMailLog('Resent to ' + inv.recipient, 'Credentials resent to ' + inv.email);
+                        } catch(e) { console.error(e); }
+                      }} className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">send</span>
+                        Resend
+                      </button>
+                      <button onClick={() => deleteInvite(inv.id, inv.recipient)}
+                        className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
