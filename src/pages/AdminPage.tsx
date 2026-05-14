@@ -205,12 +205,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <div className="flex gap-3 mt-1 flex-wrap">
                         <span className="text-white/20 text-[9px]">{u.uploaded_show_ids?.length || 0} shows</span>
                         {u.is_founding ? (
-                          <span className="text-[9px] text-brand-yellow font-bold">Founding — lifetime</span>
+                          <span className="text-[9px] text-brand-yellow font-black uppercase italic">⭐ Founding — Lifetime</span>
                         ) : u.subscription_expiry ? (
-                          <span className={`text-[9px] font-bold ${isExpired ? 'text-brand-pink' : 'text-white/20'}`}>
-                            {isExpired ? '⚠ EXPIRED' : `Exp: ${u.subscription_expiry}`}
+                          <span className={`text-[9px] font-black uppercase italic px-2 py-0.5 border ${isExpired ? 'text-brand-pink border-brand-pink/30 bg-brand-pink/10' : 'text-brand-cyan border-brand-cyan/20'}`}>
+                            {isExpired ? '⚠ EXPIRED' : `Valid until ${u.subscription_expiry}`}
                           </span>
-                        ) : null}
+                        ) : (
+                          <span className="text-[9px] text-white/20 italic">No expiry set</span>
+                        )}
                       </div>
                     </div>
                     <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${u.user_type === 'roar' ? 'text-brand-pink border-brand-pink/40' : u.user_type === 'laff' || u.is_paid ? 'text-green-400 border-green-500/30' : 'text-white/30 border-white/10'}`}>
@@ -362,8 +364,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <p className="font-black uppercase italic text-white">{inv.recipient}</p>
                       <p className="text-white/30 text-xs italic truncate">{inv.email}</p>
                     </div>
-                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${inv.status === 'used' ? 'text-green-400 border-green-500/30' : 'text-brand-yellow border-brand-yellow/30'}`}>
-                      {inv.status === 'used' ? '✓ Joined' : 'Sent'}
+                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase italic border ${inv.status === 'used' ? 'bg-brand-yellow text-black border-brand-yellow' : 'text-white/40 border-white/20'}`}>
+                      {inv.status === 'used' ? '🥊 Tickled' : 'Sent'}
                     </span>
                   </div>
                   <div className="bg-brand-black border border-white/10 p-3 mb-3 font-mono">
