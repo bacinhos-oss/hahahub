@@ -271,6 +271,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [shortlistCounts, setShortlistCounts] = useState<Record<string, number>>({});
+  const [inquiryStatuses, setInquiryStatuses] = useState<Record<string, string>>({});
+  const [inquiryNotes, setInquiryNotes] = useState<Record<string, string>>({});
+  const [editingNote, setEditingNote] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '', avatar_url: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
@@ -1222,26 +1225,105 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     ))}
                   </div>
 
-                  {/* INQUIRY DETAILS */}
+                  {/* INQUIRY CRM */}
                   {inquiries.length > 0 && (
                     <div className="space-y-4">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Recent Inquiries — Who Tickled You</p>
-                      <div className="space-y-3">
-                        {inquiries.slice(0, 10).map((inq: any, i: number) => (
-                          <div key={i} className="border-4 border-white/10 p-4 flex items-center justify-between gap-4">
-                            <div>
-                              <p className="font-black uppercase italic text-white text-sm">{inq.from_name}</p>
-                              <p className="text-white/30 text-[9px] italic">{inq.from_email}</p>
-                              <p className="text-brand-pink text-[8px] font-black uppercase italic mt-1">{inq.show_title}</p>
-                            </div>
-                            <div className="text-right flex-shrink-0">
-                              <p className="text-white/20 text-[9px] font-bold">{new Date(inq.created_at).toLocaleDateString('en-GB')}</p>
-                              <span className={`text-[8px] font-black uppercase italic px-2 py-0.5 mt-1 inline-block ${inq.is_read ? 'text-white/20 border border-white/10' : 'bg-brand-cyan text-black border border-black'}`}>
-                                {inq.is_read ? 'Replied' : 'New'}
-                              </span>
-                            </div>
-                          </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Inquiry CRM — Who Tickled You</p>
+                        <span className="text-[9px] font-black uppercase italic text-white/20">{inquiries.length} total</span>
+                      </div>
+
+                      {/* CRM STATUS LEGEND */}
+                      <div className="flex gap-2 flex-wrap">
+                        {[
+                          { s: 'new', label: 'New', color: 'bg-brand-cyan text-black' },
+                          { s: 'in-progress', label: 'In Progress', color: 'bg-brand-yellow text-black' },
+                          { s: 'negotiating', label: 'Negotiating', color: 'bg-brand-pink text-white' },
+                          { s: 'closed', label: 'Closed ✓', color: 'bg-green-500 text-white' },
+                          { s: 'declined', label: 'Declined', color: 'bg-white/10 text-white/40' },
+                        ].map(({ s, label, color }) => (
+                          <span key={s} className={`text-[8px] font-black uppercase italic px-2 py-0.5 border border-black ${color}`}>{label}</span>
                         ))}
+                      </div>
+
+                      <div className="space-y-3">
+                        {inquiries.map((inq: any) => {
+                          const status = inquiryStatuses[inq.id] || (inq.is_read ? 'in-progress' : 'new');
+                          const note = inquiryNotes[inq.id] || '';
+                          const statusColors: Record<string, string> = {
+                            'new': 'bg-brand-cyan text-black',
+                            'in-progress': 'bg-brand-yellow text-black',
+                            'negotiating': 'bg-brand-pink text-white',
+                            'closed': 'bg-green-500 text-white',
+                            'declined': 'bg-white/10 text-white/40',
+                          };
+                          return (
+                            <div key={inq.id} className={`border-4 p-5 transition-all ${status === 'new' ? 'border-brand-cyan' : status === 'negotiating' ? 'border-brand-pink' : status === 'closed' ? 'border-green-500' : 'border-white/20'}`}>
+                              <div className="flex items-start justify-between gap-4 mb-3">
+                                <div>
+                                  <p className="text-brand-pink text-[8px] font-black uppercase italic tracking-widest mb-1">{inq.show_title}</p>
+                                  <p className="font-black uppercase italic text-white text-sm">{inq.from_name}</p>
+                                  <a href={`mailto:${inq.from_email}`} className="text-brand-cyan text-[10px] hover:text-white transition-colors">{inq.from_email}</a>
+                                  {inq.message && <p className="text-white/40 text-xs italic mt-2 border-l-2 border-brand-yellow pl-2">{inq.message}</p>}
+                                </div>
+                                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                                  <p className="text-white/20 text-[9px]">{new Date(inq.created_at).toLocaleDateString('en-GB')}</p>
+                                  {/* Status dropdown */}
+                                  <select
+                                    value={status}
+                                    onChange={(e) => setInquiryStatuses(prev => ({ ...prev, [inq.id]: e.target.value }))}
+                                    className={`text-[8px] font-black uppercase italic px-2 py-1 border-2 border-black cursor-pointer ${statusColors[status]}`}
+                                  >
+                                    <option value="new">New</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="negotiating">Negotiating</option>
+                                    <option value="closed">Closed ✓</option>
+                                    <option value="declined">Declined</option>
+                                  </select>
+                                </div>
+                              </div>
+
+                              {/* Notes */}
+                              <div className="mt-3 border-t border-white/10 pt-3">
+                                {editingNote === inq.id ? (
+                                  <div className="space-y-2">
+                                    <textarea
+                                      value={note}
+                                      onChange={e => setInquiryNotes(prev => ({ ...prev, [inq.id]: e.target.value }))}
+                                      placeholder="Add notes — deal terms, follow-up date, producer info..."
+                                      className="w-full bg-brand-black border-2 border-brand-yellow text-white font-bold italic text-xs p-3 outline-none resize-none h-16 placeholder:text-white/20"
+                                    />
+                                    <button onClick={() => setEditingNote(null)}
+                                      className="text-[8px] font-black uppercase italic text-brand-yellow hover:text-white transition-colors">
+                                      Save Note ✓
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button onClick={() => setEditingNote(inq.id)}
+                                    className="text-[9px] font-black uppercase italic text-white/20 hover:text-brand-yellow transition-colors flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">edit_note</span>
+                                    {note ? note.substring(0, 60) + (note.length > 60 ? '...' : '') : 'Add note...'}
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Quick actions */}
+                              <div className="flex gap-3 mt-3">
+                                <a href={`mailto:${inq.from_email}?subject=Re: ${inq.show_title}&body=Dear ${inq.from_name},%0A%0A`}
+                                  onClick={() => { markAsRead(inq.id); setInquiryStatuses(prev => ({ ...prev, [inq.id]: 'in-progress' })); }}
+                                  className="text-[8px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-sm">reply</span>
+                                  Reply
+                                </a>
+                                <button onClick={() => { navigator.clipboard.writeText(inq.from_email); }}
+                                  className="text-[8px] font-black uppercase italic text-white/20 hover:text-brand-cyan transition-colors flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-sm">content_copy</span>
+                                  Copy Email
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
