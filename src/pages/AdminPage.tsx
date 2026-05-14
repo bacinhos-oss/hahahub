@@ -243,6 +243,15 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <span className="material-symbols-outlined text-sm">update</span>
                       +1 Year
                     </button>
+                    <button onClick={async () => {
+                      if (!u.email) return;
+                      const { error } = await supabase.auth.resetPasswordForEmail(u.email, { redirectTo: 'https://www.hahahub.art/login' });
+                      if (!error) triggerMailLog('Reset sent to ' + (u.name || u.email), 'Password reset link sent to ' + u.email);
+                      else triggerMailLog('Error', error.message);
+                    }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-yellow/30 text-brand-yellow hover:bg-brand-yellow hover:text-black transition-all flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">lock_reset</span>
+                      Reset PW
+                    </button>
                     <button onClick={() => deleteUser(u.id, u.name || u.email)}
                       className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1 ml-auto">
                       <span className="material-symbols-outlined text-sm">delete</span>
