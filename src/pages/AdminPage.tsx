@@ -103,6 +103,21 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     const expiryStr = isPaid ? new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0] : null;
     await supabase.from('profiles').update({ user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr }).eq('id', userId);
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr } : u));
+    // Send upgrade notification email
+    const u = users.find(x => x.id === userId);
+    if (u?.email && isPaid) {
+      try {
+        await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: u.email, name: u.name,
+            note: `Your HahaHub membership has been upgraded to ${plan.toUpperCase()}. Log in to access your new features. Break a Laffing Leg. 🦵`,
+            duration: '1 Year', plan,
+          })
+        });
+        triggerMailLog(`Upgrade sent to ${u.name}`, `${u.email} upgraded to ${plan.toUpperCase()}`);
+      } catch(e) { console.error(e); }
+    }
   };
 
   const toggleVerified = async (id: string, current: boolean) => {
@@ -177,7 +192,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             ) : users.length === 0 ? (
               <p className="text-white/20 font-black uppercase italic">No producers yet.</p>
             ) : users.map((u: any) => {
-              const isExpired = u.subscription_expiry && new Date(u.subscription_expiry) < new Date();
+              const isExpired = u.subscription_expiry && 
+                !u.is_founding &&
+                u.user_type !== 'roar' &&
+                new Date(u.subscription_expiry + 'T23:59:59') < new Date();
               return (
                 <div key={u.id} className={`border-4 p-4 transition-all ${isExpired ? 'border-red-500/30 opacity-60' : 'border-white/20 hover:border-brand-yellow'}`}>
                   <div className="flex items-start justify-between gap-3 mb-3">
@@ -186,7 +204,13 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <p className="text-white/30 text-xs italic truncate">{u.email}</p>
                       <div className="flex gap-3 mt-1 flex-wrap">
                         <span className="text-white/20 text-[9px]">{u.uploaded_show_ids?.length || 0} shows</span>
-                        {u.subscription_expiry && <span className={`text-[9px] font-bold ${isExpired ? 'text-brand-pink' : 'text-white/20'}`}>{isExpired ? '⚠ EXPIRED' : `Exp: ${u.subscription_expiry}`}</span>}
+                        {u.is_founding ? (
+                          <span className="text-[9px] text-brand-yellow font-bold">Founding — lifetime</span>
+                        ) : u.subscription_expiry ? (
+                          <span className={`text-[9px] font-bold ${isExpired ? 'text-brand-pink' : 'text-white/20'}`}>
+                            {isExpired ? '⚠ EXPIRED' : `Exp: ${u.subscription_expiry}`}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                     <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${u.user_type === 'roar' ? 'text-brand-pink border-brand-pink/40' : u.user_type === 'laff' || u.is_paid ? 'text-green-400 border-green-500/30' : 'text-white/30 border-white/10'}`}>
@@ -236,8 +260,31 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 <div className="relative">
                 <input type="text" placeholder="Temp Password" value={password} onChange={e => setPassword(e.target.value)}
                   className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
-                <textarea placeholder="Personal note..." value={newNote} onChange={e => setNewNote(e.target.value)} rows={3}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
+                <div className="relative">
+                  <textarea placeholder="Personal invite note..." value={newNote} onChange={e => setNewNote(e.target.value)} rows={4}
+                    className="w-full bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
+                  <button type="button"
+                    onClick={() => {
+                      const lines = [
+                        'Hey ' + (newName || '[Name]') + '! 🥊',
+                        '',
+                        "You're invited to The Laff Exchange — the first P2P comedy rights marketplace.",
+                        '',
+                        'Your login credentials:',
+                        'Email: ' + (newEmail || '[email]'),
+                        'Password: ' + (password || '[password]'),
+                        '',
+                        'Change your password after first login: My Hub → My Profile.',
+                        '',
+                        'Welcome to the Exchange. Break a Laffing Leg. 🦵',
+                        '— The HahaHub Team',
+                      ];
+                      setNewNote(lines.join('\n'));
+                    }}
+                    className="absolute bottom-2 right-2 text-[8px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-2 py-1 hover:bg-brand-yellow hover:text-black transition-all">
+                    Fill Template
+                  </button>
+                </div>
               </div>
               {/* Duration */}
               <div>
