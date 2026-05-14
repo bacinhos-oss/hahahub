@@ -307,6 +307,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               ))}
             </div>
           </div>
+          </div>
         )}
 
         {/* ARCHIVE TAB */}
