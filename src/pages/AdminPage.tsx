@@ -172,105 +172,85 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
           <h3 className="font-display text-xl uppercase tracking-tighter italic">All Producers</h3>
           <button onClick={loadUsers} className="text-[10px] font-black uppercase tracking-widest text-brand-cyan border-2 border-brand-cyan px-4 py-2 hover:bg-brand-cyan hover:text-black transition-all italic">Refresh</button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="space-y-3">
           {loadingUsers ? (
             <div className="p-12 text-center font-black uppercase italic text-brand-yellow text-2xl">LOADING...</div>
-          ) : (
-            <table className="w-full text-left italic">
-              <thead className="bg-black/40 text-[10px] uppercase text-brand-yellow font-black tracking-[0.2em] border-b-2 border-brand-border">
-                <tr>
-                  <th className="px-8 py-4">Name</th>
-                  <th className="px-8 py-4">Uploads</th>
-                  <th className="px-8 py-4">Status</th>
-                  <th className="px-8 py-4">Expires</th>
-                  <th className="px-8 py-4">Verified</th>
-                  <th className="px-8 py-4">Founding</th>
-                  <th className="px-8 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y-2 divide-brand-border">
-                {users.length === 0 ? (
-                  <tr><td colSpan={7} className="p-12 text-center text-white/20 font-black uppercase italic">No producers yet.</td></tr>
-                ) : users.map((u: any) => {
-                  const isExpired = u.subscription_expiry && new Date(u.subscription_expiry) < new Date();
-                  return (
-                  <tr key={u.id} className={`hover:bg-brand-yellow/5 transition-colors ${isExpired ? 'opacity-50' : ''}`}>
-                    <td className="px-8 py-5"><span className="font-black text-sm uppercase">{u.name || '—'}</span><br/><span className="text-[10px] text-white/30">{u.email}</span></td>
-                    <td className="px-8 py-5"><span className="text-xs font-bold">{u.uploaded_show_ids?.length || 0}</span></td>
-                    <td className="px-8 py-5">
-                      <span className={`inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase ${u.user_type === 'roar' ? 'bg-brand-pink/10 text-brand-pink border-brand-pink/30' : u.user_type === 'laff' || u.is_paid ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
-                        {u.user_type === 'roar' ? 'ROAR' : u.user_type === 'laff' || u.is_paid ? 'LAFF' : 'GIGL'}
-                      </span>
-                    </td>
-                    <td className="px-8 py-5">
-                      <span className={`text-[10px] font-bold ${isExpired ? 'text-brand-pink' : 'text-gray-500'}`}>
-                        {isExpired ? '⚠ EXPIRED' : (u.subscription_expiry || '—')}
-                      </span>
-                    </td>
-                    <td className="px-8 py-5">
-                      <button
-                        onClick={async () => {
-                          const newVal = !u.is_verified;
-                          await supabase.from('profiles').update({ is_verified: newVal }).eq('id', u.id);
-                          setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_verified: newVal } : x));
-                        }}
-                        className={`px-3 py-1 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_verified ? 'border-brand-cyan text-brand-cyan hover:bg-brand-pink hover:text-white hover:border-brand-pink' : 'border-white/20 text-white/30 hover:border-brand-cyan hover:text-brand-cyan'}`}
-                      >
-                        {u.is_verified ? '✓ Verified' : 'Verify'}
-                      </button>
-                    </td>
-                    <td className="px-8 py-5">
-                      <button
-                        onClick={async () => {
-                          const newVal = !u.is_founding;
-                          await supabase.from('profiles').update({ is_founding: newVal }).eq('id', u.id);
-                          setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_founding: newVal } : x));
-                        }}
-                        className={`px-3 py-1 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_founding ? 'border-brand-yellow text-brand-yellow' : 'border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow'}`}
-                      >
-                        {u.is_founding ? '🏆 Founding' : 'Set'}
-                      </button>
-                    </td>
-                    <td className="px-8 py-5 text-right flex items-center gap-2 justify-end">
-                      <select
-                        value={u.user_type || (u.is_paid ? 'laff' : 'gigl')}
-                        onChange={async (e) => {
-                          const plan = e.target.value;
-                          const isPaid = plan !== 'gigl';
-                          const expiryStr = isPaid ? new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0] : null;
-                          await supabase.from('profiles').update({ 
-                            user_type: plan, 
-                            is_paid: isPaid,
-                            subscription_expiry: expiryStr
-                          }).eq('id', u.id);
-                          setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr } : x));
-                        }}
-                        className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-white/20 bg-brand-black text-white hover:border-brand-yellow transition-all cursor-pointer"
-                      >
-                        <option value="gigl">GIGL (Free)</option>
-                        <option value="laff">LAFF (€99)</option>
-                        <option value="roar">ROAR (€189)</option>
-                      </select>
-                      {isExpired && (
-                        <button
-                          onClick={async () => {
-                            if (!confirm(`Remove ${u.name}? This cannot be undone.`)) return;
-                            await supabase.from('profiles').delete().eq('id', u.id);
-                            await supabase.auth.admin.deleteUser(u.id).catch(() => {});
-                            setUsers((prev: any[]) => prev.filter(x => x.id !== u.id));
-                          }}
-                          className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all"
-                        >
-                          Remove
-                        </button>
+          ) : users.length === 0 ? (
+            <div className="p-12 text-center text-white/20 font-black uppercase italic">No producers yet.</div>
+          ) : users.map((u: any) => {
+            const isExpired = u.subscription_expiry && new Date(u.subscription_expiry) < new Date();
+            return (
+              <div key={u.id} className={`border-4 p-4 md:p-5 transition-all ${isExpired ? 'opacity-50 border-red-500/30' : 'border-white/20 hover:border-brand-yellow'}`}>
+                {/* TOP ROW */}
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-black uppercase italic text-white text-sm truncate">{u.name || '—'}</p>
+                    <p className="text-white/30 text-xs italic truncate">{u.email}</p>
+                    <div className="flex items-center gap-3 mt-1 flex-wrap">
+                      <span className="text-white/20 text-[9px] italic">{u.uploaded_show_ids?.length || 0} shows</span>
+                      {u.subscription_expiry && (
+                        <span className={`text-[9px] font-bold italic ${isExpired ? 'text-brand-pink' : 'text-white/30'}`}>
+                          {isExpired ? '⚠ EXPIRED' : `Exp: ${u.subscription_expiry}`}
+                        </span>
                       )}
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
+                    </div>
+                  </div>
+                  <span className={`flex-shrink-0 px-2 py-1 text-[10px] font-black uppercase border ${u.user_type === 'roar' ? 'bg-brand-pink/10 text-brand-pink border-brand-pink/30' : u.user_type === 'laff' || u.is_paid ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
+                    {u.user_type === 'roar' ? 'ROAR' : u.user_type === 'laff' || u.is_paid ? 'LAFF' : 'GIGL'}
+                  </span>
+                </div>
+                {/* ACTIONS ROW */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <select
+                    value={u.user_type || (u.is_paid ? 'laff' : 'gigl')}
+                    onChange={async (e) => {
+                      const plan = e.target.value;
+                      const isPaid = plan !== 'gigl';
+                      const expiryStr = isPaid ? new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0] : null;
+                      await supabase.from('profiles').update({ user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr }).eq('id', u.id);
+                      setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr } : x));
+                    }}
+                    className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-white/20 bg-brand-black text-white hover:border-brand-yellow transition-all cursor-pointer"
+                  >
+                    <option value="gigl">GIGL — Free</option>
+                    <option value="laff">LAFF — €99</option>
+                    <option value="roar">ROAR — €189</option>
+                  </select>
+                  <button
+                    onClick={async () => {
+                      const newVal = !u.is_verified;
+                      await supabase.from('profiles').update({ is_verified: newVal }).eq('id', u.id);
+                      setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_verified: newVal } : x));
+                    }}
+                    className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_verified ? 'border-brand-cyan bg-brand-cyan text-black' : 'border-white/20 text-white/30 hover:border-brand-cyan'}`}>
+                    <span className="material-symbols-outlined text-sm align-middle mr-1">check</span>
+                    {u.is_verified ? 'Verified' : 'Verify'}
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const newVal = !u.is_founding;
+                      await supabase.from('profiles').update({ is_founding: newVal }).eq('id', u.id);
+                      setUsers((prev: any[]) => prev.map(x => x.id === u.id ? { ...x, is_founding: newVal } : x));
+                    }}
+                    className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${u.is_founding ? 'border-brand-yellow bg-brand-yellow text-black' : 'border-white/20 text-white/30 hover:border-brand-yellow'}`}>
+                    <span className="material-symbols-outlined text-sm align-middle mr-1">star</span>
+                    {u.is_founding ? 'Founding' : 'Found.'}
+                  </button>
+                  {isExpired && (
+                    <button
+                      onClick={async () => {
+                        if (!confirm(`Remove ${u.name}?`)) return;
+                        await supabase.from('profiles').delete().eq('id', u.id);
+                        setUsers((prev: any[]) => prev.filter(x => x.id !== u.id));
+                      }}
+                      className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
