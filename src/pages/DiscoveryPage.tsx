@@ -15,6 +15,33 @@ interface DiscoveryPageProps {
   onViewProducer?: (producerId: string) => void;
 }
 
+// Confetti burst 🎭
+function launchConfetti() {
+  const emojis = ['🥊', '🎭', '🦵', '😂', '⭐', '🎬', '👏'];
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('div');
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.cssText = `
+      position: fixed;
+      font-size: ${Math.random() * 20 + 14}px;
+      left: ${Math.random() * 100}vw;
+      top: -40px;
+      z-index: 99999;
+      pointer-events: none;
+      animation: confettiFall ${Math.random() * 2 + 1.5}s ease-in forwards;
+      animation-delay: ${Math.random() * 0.8}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+  if (!document.getElementById('confetti-style')) {
+    const style = document.createElement('style');
+    style.id = 'confetti-style';
+    style.textContent = `@keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity:1; } 100% { transform: translateY(110vh) rotate(720deg); opacity:0; } }`;
+    document.head.appendChild(style);
+  }
+}
+
 const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpdateStats, shows, onViewProducer }) => {
   const [selectedShowId, setSelectedShowId] = useState<string | null>(null);
   const [inquiryShowId, setInquiryShowId] = useState<string | null>(null);
@@ -582,7 +609,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           </button>
 
           {inquirySuccess ? (
-            <div className="text-center py-20 space-y-8 animate-in zoom-in">
+            <div className="text-center py-20 space-y-8 animate-in zoom-in" ref={el => { if (el) launchConfetti(); }}>
               <div className="w-24 h-24 bg-brand-cyan border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-neo-magenta">
                 <span className="material-symbols-outlined text-black text-6xl font-black">send</span>
               </div>
