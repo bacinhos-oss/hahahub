@@ -339,7 +339,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             }
           });
       }
-      supabase.from('profiles').select('bio, website, location_city, festivals').eq('id', user.id).maybeSingle().then(({ data }) => {
+      supabase.from('profiles').select('bio, website, location_city, festivals, avatar_url').eq('id', user.id).maybeSingle().then(({ data }) => {
         if (data) setProfileForm({ bio: data.bio || '', website: data.website || '', location_city: data.location_city || '', festivals: data.festivals || '', avatar_url: data.avatar_url || '' });
       });
     }
