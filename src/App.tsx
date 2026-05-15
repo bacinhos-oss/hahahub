@@ -96,22 +96,21 @@ const App: React.FC = () => {
   }
 
   const loadShows = async () => {
-    // En sam klic z JOIN — profiles podatki pridobljeni skupaj s showi
-    const { data } = await supabase
-      .from('shows')
-      .select('*, profiles(is_verified, is_founding, user_type)')
-      .order('created_at', { ascending: false })
+    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
     if (!data) return
-    const profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}
-    data.forEach((s: any) => {
-      if (s.user_id && s.profiles) {
-        profileMap[s.user_id] = {
-          is_verified: s.profiles.is_verified || false,
-          is_founding: s.profiles.is_founding || false,
-          user_type: s.profiles.user_type || 'gigl',
-        }
+    const userIds = [...new Set(data.map((s: any) => s.user_id).filter(Boolean))]
+    let profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, is_verified, is_founding, user_type')
+        .in('id', userIds)
+      if (profiles) {
+        profiles.forEach((p: any) => {
+          profileMap[p.id] = { is_verified: p.is_verified || false, is_founding: p.is_founding || false, user_type: p.user_type || 'gigl' }
+        })
       }
-    })
+    }
     mapAndSetShows(data, profileMap)
   }
 
@@ -234,20 +233,7 @@ const App: React.FC = () => {
     return (
       <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <div style={{ fontFamily: 'Bowlby One SC, cursive', fontSize: '3rem', color: '#FFDE03', textShadow: '3px 3px 0 #FF0266' }}>HAHAHUB</div>
-        <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '10px', color: 'rgba(255,255,255,0.2)', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 900 }}>
-          {[
-            'Tickling the vault...',
-            'Warming up the punchlines...',
-            'Bribing the doorman...',
-            'Ironing the rights contracts...',
-            'Asking the director nicely...',
-            'Counting the laughs...',
-            'Setting up the setup...',
-            'Comedy loading. Please stand by.',
-            'Checking if Beckett is available...',
-            'No intermission. Just loading.',
-          ][Math.floor(Math.random() * 10)]}
-        </div>
+        <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '10px', color: 'rgba(255,255,255,0.2)', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 900 }}>Tickling the vault...</div>
       </div>
     )
   }
