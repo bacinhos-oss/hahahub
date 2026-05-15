@@ -11,6 +11,7 @@ interface Invitation {
   generatedUsername: string;
   generatedPassword: string;
   plan?: string;
+  created_at?: string;
 }
 
 type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
@@ -22,6 +23,16 @@ interface AdminPageProps {
   shows: Show[];
   onDeleteShow: (id: string) => void;
   user?: User;
+}
+
+// Auto password generator: FirstName + EmailPrefix + 2 digits
+// e.g. Jure Bacinhos -> JureBacinhos42
+function generatePassword(name: string, email: string): string {
+  const firstName = name.trim().split(' ')[0] || 'User';
+  const emailPrefix = email.split('@')[0] || 'hub';
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  const digits = String(Math.floor(Math.random() * 90) + 10);
+  return capitalize(firstName) + capitalize(emailPrefix) + digits;
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
@@ -37,11 +48,19 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const [invitePlan, setInvitePlan] = useState<'gigl' | 'laff' | 'roar'>('laff');
   const [mailLog, setMailLog] = useState<{ title: string; msg: string } | null>(null);
   const [sending, setSending] = useState(false);
+  const [inviteSearch, setInviteSearch] = useState('');
 
   useEffect(() => {
     loadUsers();
     loadInvites();
   }, []);
+
+  // Auto-generate password when name or email changes
+  useEffect(() => {
+    if (newName && newEmail) {
+      setPassword(generatePassword(newName, newEmail));
+    }
+  }, [newName, newEmail]);
 
   const loadUsers = async () => {
     setLoadingUsers(true);
@@ -53,10 +72,11 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const loadInvites = async () => {
     const { data } = await supabase.from('invitations').select('*').order('created_at', { ascending: false });
     if (data) setInvites(data.map((inv: any) => ({
-      id: inv.id, recipient: inv.recipient, email: inv.email,
+      id: inv.id, recipient: inv.recipient || inv.name, email: inv.email,
       duration: inv.duration, status: inv.status,
       generatedUsername: inv.email, generatedPassword: inv.password || '—',
       plan: inv.plan || 'laff',
+      created_at: inv.created_at,
     })));
   };
 
@@ -68,13 +88,22 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const sendInvite = async () => {
     if (!newName || !newEmail || !password) return;
     setSending(true);
+
+    // Save to invitations table
     const { data } = await supabase.from('invitations').insert([{
       recipient: newName, email: newEmail, duration: selectedDuration,
       status: 'pending', password, note: newNote, plan: invitePlan,
     }]).select();
+
     if (data?.[0]) {
-      setInvites(prev => [{ id: data[0].id, recipient: newName, email: newEmail, duration: selectedDuration, status: 'pending', generatedUsername: newEmail, generatedPassword: password, plan: invitePlan }, ...prev]);
+      setInvites(prev => [{
+        id: data[0].id, recipient: newName, email: newEmail,
+        duration: selectedDuration, status: 'pending',
+        generatedUsername: newEmail, generatedPassword: password,
+        plan: invitePlan, created_at: data[0].created_at,
+      }, ...prev]);
     }
+
     try {
       await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -82,6 +111,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       });
       triggerMailLog(`Email Sent to ${newName}`, `Dispatched to: ${newEmail}\nPassword: ${password}\nPlan: ${invitePlan.toUpperCase()}\nDuration: ${selectedDuration}`);
     } catch (e) { console.error(e); }
+
     setNewName(''); setNewEmail(''); setNewNote(''); setPassword('');
     setSending(false);
   };
@@ -103,7 +133,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     const expiryStr = isPaid ? new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0] : null;
     await supabase.from('profiles').update({ user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr }).eq('id', userId);
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, user_type: plan, is_paid: isPaid, subscription_expiry: expiryStr } : u));
-    // Send upgrade notification email
     const u = users.find(x => x.id === userId);
     if (u?.email && isPaid) {
       try {
@@ -129,6 +158,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     await supabase.from('profiles').update({ is_founding: !current }).eq('id', id);
     setUsers(prev => prev.map(u => u.id === id ? { ...u, is_founding: !current } : u));
   };
+
+  // Filtered + sorted invites
+  const filteredInvites = invites
+    .filter(inv =>
+      inv.recipient?.toLowerCase().includes(inviteSearch.toLowerCase()) ||
+      inv.email?.toLowerCase().includes(inviteSearch.toLowerCase())
+    )
+    .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-black text-white">
@@ -192,7 +229,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             ) : users.length === 0 ? (
               <p className="text-white/20 font-black uppercase italic">No producers yet.</p>
             ) : users.map((u: any) => {
-              const isExpired = u.subscription_expiry && 
+              const isExpired = u.subscription_expiry &&
                 !u.is_founding &&
                 u.user_type !== 'roar' &&
                 new Date(u.subscription_expiry + 'T23:59:59') < new Date();
@@ -240,7 +277,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       const newExpiry = new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
                       await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);
                       setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: newExpiry, is_paid: true } : x));
-                      // Send email to producer
                       if (u.email) {
                         try {
                           await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
@@ -282,43 +318,48 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
         {/* INVITES TAB */}
         {activeTab === 'access' && (
           <div className="space-y-8">
+
             {/* SEND INVITE FORM */}
             <div className="border-4 border-brand-yellow p-6 space-y-4 shadow-neo-yellow">
               <p className="text-brand-yellow text-[10px] font-black uppercase italic tracking-widest">New Invite →</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" placeholder="Producer Name" value={newName} onChange={e => setNewName(e.target.value)}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
                 <input type="email" placeholder="Email" value={newEmail} onChange={e => setNewEmail(e.target.value)}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
-                <div className="relative">
-                <input type="text" placeholder="Temp Password" value={password} onChange={e => setPassword(e.target.value)}
-                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
-                <div className="relative">
-                  <textarea placeholder="Personal invite note..." value={newNote} onChange={e => setNewNote(e.target.value)} rows={4}
-                    className="w-full bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
-                  <button type="button"
-                    onClick={() => {
-                      const lines = [
-                        'Hey ' + (newName || '[Name]') + '! 🥊',
-                        '',
-                        "You're invited to The Laff Exchange — the first P2P comedy rights marketplace.",
-                        '',
-                        'Your login credentials:',
-                        'Email: ' + (newEmail || '[email]'),
-                        'Password: ' + (password || '[password]'),
-                        '',
-                        'Change your password after first login: My Hub → My Profile.',
-                        '',
-                        'Welcome to the Exchange. Break a Laffing Leg. 🦵',
-                        '— The HahaHub Team',
-                      ];
-                      setNewNote(lines.join('\n'));
-                    }}
-                    className="absolute bottom-2 right-2 text-[8px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-2 py-1 hover:bg-brand-yellow hover:text-black transition-all">
-                    Fill Template
-                  </button>
-                </div>
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm" />
               </div>
+              {/* Auto password — editable */}
+              <div>
+                <p className="text-[9px] font-black uppercase italic text-white/40 mb-1">Temp Password <span className="text-brand-cyan">(auto-generated, editable)</span></p>
+                <input type="text" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}
+                  className="w-full bg-brand-black border-2 border-brand-cyan/40 focus:border-brand-cyan text-brand-cyan font-mono font-bold p-3 outline-none text-sm" />
+              </div>
+              <div className="relative">
+                <textarea placeholder="Personal invite note..." value={newNote} onChange={e => setNewNote(e.target.value)} rows={4}
+                  className="w-full bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-3 outline-none text-sm resize-none" />
+                <button type="button"
+                  onClick={() => {
+                    const lines = [
+                      'Hey ' + (newName || '[Name]') + '! 🥊',
+                      '',
+                      "You're invited to join the HahaHub Crew — the first P2P comedy rights marketplace.",
+                      '',
+                      'Your login credentials:',
+                      'Email: ' + (newEmail || '[email]'),
+                      'Password: ' + (password || '[password]'),
+                      '',
+                      'Change your password after first login: My Hub → My Profile.',
+                      '',
+                      'Welcome to the HahaHub Crew. Break a Laffing Leg. 🦵',
+                      '— The HahaHub Team',
+                    ];
+                    setNewNote(lines.join('\n'));
+                  }}
+                  className="absolute bottom-2 right-2 text-[8px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-2 py-1 hover:bg-brand-yellow hover:text-black transition-all">
+                  Fill Template
+                </button>
+              </div>
+
               {/* Duration */}
               <div>
                 <p className="text-[9px] font-black uppercase italic text-white/40 mb-2">Duration</p>
@@ -331,6 +372,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   ))}
                 </div>
               </div>
+
               {/* Plan */}
               <div>
                 <p className="text-[9px] font-black uppercase italic text-white/40 mb-2">Plan</p>
@@ -346,6 +388,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   ))}
                 </div>
               </div>
+
               <button onClick={sendInvite} disabled={sending || !newName || !newEmail || !password}
                 className="bg-brand-yellow text-black px-8 py-3 font-black uppercase italic border-4 border-black hover:bg-white transition-all disabled:opacity-40 text-sm">
                 {sending ? 'Dispatching...' : 'Dispatch Invite →'}
@@ -354,15 +397,31 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
 
             {/* INVITE LIST */}
             <div className="space-y-3">
-              <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">{invites.length} invites dispatched</p>
-              {invites.length === 0 ? (
-                <p className="text-white/20 font-black uppercase italic">No invites yet.</p>
-              ) : invites.map(inv => (
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">{filteredInvites.length} invites dispatched</p>
+                {/* Search */}
+                <input
+                  type="text"
+                  placeholder="Search name or email..."
+                  value={inviteSearch}
+                  onChange={e => setInviteSearch(e.target.value)}
+                  className="bg-brand-black border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-2 outline-none text-xs w-64"
+                />
+              </div>
+
+              {filteredInvites.length === 0 ? (
+                <p className="text-white/20 font-black uppercase italic">No invites found.</p>
+              ) : filteredInvites.map(inv => (
                 <div key={inv.id} className="border-4 border-white/20 p-4 hover:border-brand-yellow transition-all">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0">
                       <p className="font-black uppercase italic text-white">{inv.recipient}</p>
                       <p className="text-white/30 text-xs italic truncate">{inv.email}</p>
+                      {inv.created_at && (
+                        <p className="text-white/20 text-[9px] mt-1">
+                          {new Date(inv.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </p>
+                      )}
                     </div>
                     <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase italic border ${inv.status === 'used' ? 'bg-brand-yellow text-black border-brand-yellow' : 'text-white/40 border-white/20'}`}>
                       {inv.status === 'used' ? '🥊 Tickled' : 'Sent'}
@@ -400,7 +459,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 </div>
               ))}
             </div>
-          </div>
           </div>
         )}
 
