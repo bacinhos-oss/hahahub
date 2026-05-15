@@ -812,6 +812,21 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </h1>
             </div>
 
+            {/* SURPRISE ME 🎲 */}
+            <button
+              onClick={() => {
+                const available = shows.filter(s => s.is_produced);
+                if (available.length === 0) return;
+                const random = available[Math.floor(Math.random() * available.length)];
+                handleShowSelect(random);
+              }}
+              className="w-full border-4 border-white/20 hover:border-brand-pink hover:bg-brand-pink/10 transition-all py-3 px-6 flex items-center justify-center gap-3 group"
+            >
+              <span className="text-xl group-hover:animate-spin">🎲</span>
+              <span className="font-black uppercase italic text-white/40 group-hover:text-brand-pink text-sm tracking-widest transition-colors">Surprise Me</span>
+              <span className="text-xl group-hover:animate-spin">🎲</span>
+            </button>
+
             {/* STEFUNNY — INLINE SEARCH */}
             <div className="relative">
               <div className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-5 shadow-neo-yellow focus-within:shadow-none focus-within:translate-x-1 focus-within:translate-y-1 transition-all">
