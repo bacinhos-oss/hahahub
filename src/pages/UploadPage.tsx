@@ -50,32 +50,37 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([null, null, null]);
 
   const [formData, setFormData] = useState({
-    title: '', author: '', director: '', directorNotes: '', originalProductionSolutions: '',
+    // CORE
+    title: '', author: '', director: '',
     producerName: user?.name || '', producerEmail: user?.email || '', rightsHolder: '',
-    genre: 'Comedy', subgenre: '', language: 'English', location: '',
-    maleRoles: '1', femaleRoles: '1', canMergeRoles: 'false', duration: '90',
-    hasIntermission: 'false', isDirectorMandatory: 'false',
-    creativeTeamAvailability: 'Optional',
-    productionScale: 'Medium', isTouringFriendly: 'true',
+    // CREATIVE
+    genre: 'Comedy', subgenre: '', language: '',
+    originalLanguage: '', translationsAvailable: '', scriptInEnglish: 'false',
+    location: '', humorType: 'Universal',
+    // PRODUCTION
+    maleRoles: '1', femaleRoles: '1', duration: '90',
+    hasIntermission: 'false', productionScale: 'Medium',
+    isTouringFriendly: 'true', stageType: 'Main Stage',
     technicalComplexity: 'Medium', costumeComplexity: 'Medium',
     setComplexity: 'Medium', adaptationFlexibility: 'Medium',
-    scalabilityNotes: '', stageType: 'Main Stage',
-    techStaffLighting: '1', techStaffSound: '1', techStaffPrompter: '0',
-    techStaffStagehands: '1', techStaffOther: '',
-    premiereDate: '', premiereLocation: '', productionYear: new Date().getFullYear().toString(),
-    performancesCount: '0', totalAudience: '0', locationsPlayed: '', buyoutLocations: '',
-    boxOfficeIndicator: 'Emerging', awards: '', audienceProfile: '',
-    rightsStatus: 'Available', territoriesAvailable: 'Global', licensedCountries: '',
-    licenseType: 'License', licensingModel: 'Royalty-based',
+    creativeTeamAvailability: 'Optional', budgetRange: 'Medium',
+    techStaffLighting: '1', techStaffSound: '1', techStaffStagehands: '1',
+    // HISTORY
+    premiereDate: '', premiereLocation: '',
+    productionYear: new Date().getFullYear().toString(),
+    performancesCount: '0', totalAudience: '0',
+    locationsPlayed: '', awards: '', audienceProfile: '',
+    boxOfficeIndicator: 'Emerging', internationalSuccessNotes: '',
+    // RIGHTS
+    rightsStatus: 'Available', territoriesAvailable: 'Global',
+    licensedCountries: '', licenseType: 'License', licensingModel: 'Royalty-based',
     exclusivityLevel: 'Exclusive', royaltyRange: '8-10%', advanceFee: '',
-    rightsClearingSpeed: 'Medium', decisionMakerType: 'Single',
-    riskProfile: 'Proven hit', breakEvenThreshold: 'Medium', breakEvenPerformances: '40',
-    budgetRange: 'Medium', humorType: 'Universal',
-    translationsAvailable: '', translationRightsIncluded: 'true',
+    rightsClearingSpeed: 'Medium', riskProfile: 'Proven hit',
+    breakEvenThreshold: 'Medium', breakEvenPerformances: '40',
     isSponsorFriendly: 'true', isGroupSalesFriendly: 'true',
-    exitScenarios: '', originatingProducerTrackRecord: '',
-    territoryConflicts: '', mediaConflicts: '', internationalSuccessNotes: '',
-    synopsis: '', scriptScenario: '',
+    translationRightsIncluded: 'true',
+    // CONTENT
+    synopsis: '', synopsisEn: '', directorNotes: '', scriptScenario: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -111,7 +116,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     if (!formData.title.trim()) errors.push('Production Title');
     if (!formData.rightsHolder.trim()) errors.push('Copyright Holder');
     if (!formData.location.trim()) errors.push('Origin Market');
-    if (!formData.synopsis.trim()) errors.push('Synopsis');
+    if (!formData.synopsisEn.trim()) errors.push('Synopsis in English');
     if (!imagePreview) errors.push('Poster Visual');
     if (errors.length > 0) { setValidationErrors(errors); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
 
@@ -144,7 +149,10 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     const newShow: Show = {
       title: formData.title, author: formData.author, director: formData.director,
       directorNotes: formData.directorNotes, originalProductionSolutions: formData.originalProductionSolutions,
-      synopsis: formData.synopsis, imageUrl: finalImageUrl,
+      synopsis: formData.synopsisEn || formData.synopsis,
+      synopsisOriginal: formData.synopsis,
+      originalLanguage: formData.originalLanguage,
+      scriptInEnglish: formData.scriptInEnglish, imageUrl: finalImageUrl,
       genre: formData.genre, subgenre: formData.subgenre, language: formData.language,
       location: formData.location, duration: parseInt(formData.duration),
       maleRoles: parseInt(formData.maleRoles), femaleRoles: parseInt(formData.femaleRoles),
@@ -276,8 +284,8 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   </div>
                   <div><label className={lbl}>Territories Available</label><input name="territoriesAvailable" value={formData.territoriesAvailable} onChange={handleInputChange} className={inp} placeholder="Global, Europe..." /></div>
                   <div><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Territory Conflicts</label><input name="territoryConflicts" value={formData.territoryConflicts} onChange={handleInputChange} className={inp} placeholder="None" /></div>
-                  <div><label className={lbl}>Media Conflicts</label><input name="mediaConflicts" value={formData.mediaConflicts} onChange={handleInputChange} className={inp} placeholder="Streaming, film rights..." /></div>
+
+
                 </div>
               </section>
 
@@ -290,7 +298,16 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Genre *</label><input name="genre" value={formData.genre} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Subgenre</label><input name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={inp} placeholder="Farce, Satire..." /></div>
-                  <div><label className={lbl}>Language</label><input name="language" value={formData.language} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
+                  <div><label className={lbl}>Performance Language</label><input name="language" value={formData.language} onChange={handleInputChange} className={inp} placeholder="English, German..." /></div>
+                  <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
+                  <div><label className={lbl}>Script in English</label>
+                    <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
+                      <option value="true">Yes — full script</option>
+                      <option value="partial">Yes — partial / synopsis only</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
                   <div><label className={lbl}>Origin Market *</label><input name="location" value={formData.location} onChange={handleInputChange} className={inp} placeholder="Slovenia, USA..." /></div>
                   <div><label className={lbl}>Humor Type</label>
                     <select name="humorType" value={formData.humorType} onChange={handleInputChange} className={sel}>
@@ -301,9 +318,16 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                     </select>
                   </div>
                   <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
-                  <div className="col-span-2"><label className={lbl}>Synopsis *</label><textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={5} className="w-full bg-brand-black border-2 border-white/10 p-6 text-white text-lg italic leading-relaxed outline-none focus:border-brand-pink"></textarea></div>
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">Synopsis in English *</label>
+                    <p className="text-white/30 text-xs italic mb-2">Required — this is what international producers will read first.</p>
+                    <textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={5} className="w-full bg-brand-black border-2 border-brand-yellow/30 p-6 text-white text-lg italic leading-relaxed outline-none focus:border-brand-yellow"></textarea>
+                  </div>
+                  <div className="col-span-2">
+                    <label className={lbl}>Synopsis (Original Language)</label>
+                    <textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={4} className="w-full bg-brand-black border-2 border-white/10 p-6 text-white italic leading-relaxed outline-none focus:border-brand-pink"></textarea>
+                  </div>
                   <div className="col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
-                  <div className="col-span-2"><label className={lbl}>Original Staging Solutions</label><textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={2} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-yellow"></textarea></div>
                   <div className="col-span-2"><label className={lbl}>International Success Notes</label><textarea name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} rows={2} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
 
                   <div className="col-span-2 bg-brand-black border-4 border-brand-yellow p-6 space-y-4">
@@ -324,11 +348,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div><label className={lbl}>Female Roles</label><input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Duration (min)</label><input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Can Merge Roles</label>
-                    <select name="canMergeRoles" value={formData.canMergeRoles} onChange={handleInputChange} className={sel}>
-                      <option value="true">Yes</option><option value="false">No</option>
-                    </select>
-                  </div>
+
                   <div><label className={lbl}>Intermission</label>
                     <select name="hasIntermission" value={formData.hasIntermission} onChange={handleInputChange} className={sel}>
                       <option value="false">No</option><option value="true">Yes</option>
@@ -385,7 +405,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
                     </select>
                   </div>
-                  <div className="col-span-2 md:col-span-4"><label className={lbl}>Scalability Notes</label><input name="scalabilityNotes" value={formData.scalabilityNotes} onChange={handleInputChange} className={inp} placeholder="Can scale down to 3 actors..." /></div>
+
                 </div>
                 <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-6">
                   <div><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
