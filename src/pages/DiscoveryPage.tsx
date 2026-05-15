@@ -99,6 +99,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     });
 
     return result.sort((a, b) => {
+      // ROAR/FEATURED vedno prvi
+      const aFeatured = (a as any).producer_plan === 'roar' ? 1 : 0;
+      const bFeatured = (b as any).producer_plan === 'roar' ? 1 : 0;
+      if (bFeatured !== aFeatured) return bFeatured - aFeatured;
+      // Potem normalni sort
       if (sortBy === 'Newest') return (b.productionYear || 0) - (a.productionYear || 0);
       if (sortBy === 'Popular') return (b.likesCount || 0) - (a.likesCount || 0);
       if (sortBy === 'Trending') return (b.viewsCount || 0) - (a.viewsCount || 0);
