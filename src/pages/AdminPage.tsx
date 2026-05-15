@@ -72,9 +72,13 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const loadInvites = async () => {
     const { data } = await supabase.from('invitations').select('*').order('created_at', { ascending: false });
     if (data) setInvites(data.map((inv: any) => ({
-      id: inv.id, recipient: inv.recipient || inv.name, email: inv.email,
-      duration: inv.duration, status: inv.status,
-      generatedUsername: inv.email, generatedPassword: inv.password || '—',
+      id: inv.id,
+      recipient: inv.recipient || inv.name || inv.generated_username?.split('_PRO_')[0]?.replace(/_/g, ' ') || inv.email,
+      email: inv.email || inv.generated_username,
+      duration: inv.duration || '1 Year',
+      status: inv.status,
+      generatedUsername: inv.email || inv.generated_username,
+      generatedPassword: inv.password || inv.generated_password || '—',
       plan: inv.plan || 'laff',
       created_at: inv.created_at,
     })));
