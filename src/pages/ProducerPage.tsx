@@ -86,7 +86,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
     <div className="flex flex-col min-h-screen bg-brand-black">
       <Navigation activePage="discovery" onNavigate={onNavigate} onLogout={onLogout} user={user} />
 
-      <main className="pt-20 pb-20 flex-1">
+      <main className="pt-16 pb-20 flex-1">
 
         {/* BACK */}
         <div className="px-4 md:px-8 pt-4 pb-2 max-w-4xl mx-auto w-full">
@@ -99,7 +99,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
         <div className="max-w-4xl mx-auto px-4 md:px-8">
 
           {/* PROFILE HEADER */}
-          <div className="relative -mt-10 md:-mt-12 mb-6">
+          <div className="relative mb-6">
             <div className="flex flex-col md:flex-row items-end gap-4 md:gap-6">
               {/* Avatar */}
               <div className="flex-shrink-0">
