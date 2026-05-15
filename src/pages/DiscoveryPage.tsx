@@ -89,7 +89,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                          (filterCast === 'Large (6+)' && totalCast >= 6);
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q || [
-        show.title, show.author, show.director, show.synopsis,
+        show.title, show.author, show.director, show.synopsis, (show as any).synopsis_en, (show as any).original_language, (show as any).script_in_english,
         show.genre, show.subgenre, show.location, show.language,
         show.humorType, show.rightsStatus, show.budgetRange,
         show.producerName, show.riskProfile,
@@ -228,7 +228,28 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* SYNOPSIS - MOVED HIGHER AS REQUESTED */}
                   <section className="space-y-6">
                     <h4 className="text-xl font-black uppercase italic text-brand-pink">SYNOPSIS</h4>
-                    <p className="text-gray-200 text-2xl leading-relaxed italic border-l-8 border-brand-pink pl-8 bg-white/5 py-4">{selectedShow.synopsis}</p>
+                    {(selectedShow as any).synopsis_en && (
+                      <div className="mb-4">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">English Synopsis</p>
+                        <p className="text-gray-200 text-xl leading-relaxed italic border-l-8 border-brand-yellow pl-8 bg-white/5 py-4">{(selectedShow as any).synopsis_en}</p>
+                      </div>
+                    )}
+                    {selectedShow.synopsis && (
+                      <div>
+                        {(selectedShow as any).synopsis_en && <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2 italic">Original Language Synopsis</p>}
+                        <p className="text-gray-200 text-xl leading-relaxed italic border-l-8 border-brand-pink pl-8 bg-white/5 py-4">{selectedShow.synopsis}</p>
+                      </div>
+                    )}
+                    {(selectedShow as any).original_language && (
+                      <div className="flex gap-4 mt-4 flex-wrap">
+                        <span className="text-[9px] font-black uppercase italic text-white/30">Original: <span className="text-white/60">{(selectedShow as any).original_language}</span></span>
+                        {(selectedShow as any).script_in_english && (selectedShow as any).script_in_english !== 'false' && (
+                          <span className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-2 py-0.5">
+                            Script in EN: {(selectedShow as any).script_in_english === 'true' ? '✓ Full' : 'Partial'}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </section>
 
                   {/* 00. RIGHTS & IDENTITY */}
@@ -721,7 +742,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   <div class="section">
     <div class="section-label">Overview</div>
     <div class="section-title">Synopsis</div>
-    <p class="synopsis">${show.synopsis || 'No synopsis provided.'}</p>
+    <p class="synopsis">${(show as any).synopsis_en || show.synopsis || 'No synopsis provided.'}</p>
   </div>
 
   <div class="section">

@@ -446,7 +446,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       const { error } = await supabase.from('shows').update({
         title: editForm.title, author: editForm.author, director: editForm.director,
         director_notes: editForm.directorNotes, original_production_solutions: editForm.originalProductionSolutions,
-        synopsis: editForm.synopsis, genre: editForm.genre, subgenre: editForm.subgenre,
+        synopsis: editForm.synopsis, synopsis_en: (editForm as any).synopsis_en, original_language: (editForm as any).original_language, script_in_english: (editForm as any).script_in_english, genre: editForm.genre, subgenre: editForm.subgenre,
         language: editForm.language, location: editForm.location,
         duration: Number(editForm.duration), male_roles: Number(editForm.maleRoles),
         female_roles: Number(editForm.femaleRoles), can_merge_roles: editForm.canMergeRoles,
@@ -563,7 +563,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {F('location', 'Origin Market')}
                   {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
                   {F('translationsAvailable', 'Translations Available')}
-                  {T('synopsis', 'Synopsis', 4)}
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">Synopsis in English *</label>
+                    <textarea name="synopsis_en" value={(editForm as any).synopsis_en || ''} onChange={handleEditChange} rows={5} className="w-full bg-brand-black border-2 border-brand-yellow/30 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-yellow" placeholder="English synopsis — required for international producers" />
+                  </div>
+                  {T('synopsis', 'Synopsis (Original Language)', 3)}
                   {T('directorNotes', "Director's Notes", 3)}
                   {T('originalProductionSolutions', 'Original Staging Solutions', 2)}
                   {T('internationalSuccessNotes', 'International Success Notes', 2)}
