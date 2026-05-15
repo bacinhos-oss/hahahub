@@ -658,7 +658,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <div key={i}>
                     <div
                       onClick={() => editPhotoRefs[i].current?.click()}
-                      className="w-full h-24 border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-black/40 relative group"
+                      className="w-full border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-black/40 relative group" style={{aspectRatio:"16/9"}}
                     >
                       {editPhotoPreviews[i] ? (
                         <>

@@ -151,7 +151,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan italic mb-3">Photos from Production</p>
                     <div className="space-y-2">
                       {[0, 1, 2].map(i => (
-                        <div key={i} className="w-full h-24 border-2 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center">
+                        <div key={i} className="w-full border-2 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center" style={{aspectRatio:"16/9"}}>
                           {selectedShow.productionPhotos && selectedShow.productionPhotos[i] ? (
                             <img src={selectedShow.productionPhotos[i]} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                           ) : (
