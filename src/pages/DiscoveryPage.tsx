@@ -186,50 +186,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </button>
                   </div>
 
-                  {/* TRANSPARENCY SCORE GAUGE */}
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-4 md:p-6 border-4 border-white/10 bg-white/5">
-                    <div className="flex-shrink-0">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-white/30 italic mb-2">Transparency Score</p>
-                      <div className="relative w-24 h-24">
-                        <svg viewBox="0 0 36 36" className="w-24 h-24 -rotate-90">
-                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1A1A1A" strokeWidth="3" />
-                          <circle
-                            cx="18" cy="18" r="15.9" fill="none"
-                            stroke={selectedShow.transparencyScore >= 80 ? '#03DAC6' : selectedShow.transparencyScore >= 50 ? '#FFDE03' : '#FF0266'}
-                            strokeWidth="3"
-                            strokeDasharray={`${selectedShow.transparencyScore} 100`}
-                            strokeLinecap="butt"
-                            className="transition-all duration-1000"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-2xl font-black text-white">{selectedShow.transparencyScore}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-black uppercase italic text-white mb-2">
-                        {selectedShow.transparencyScore >= 80 ? '✓ High Transparency' : selectedShow.transparencyScore >= 50 ? '~ Medium Transparency' : '⚠ Low Transparency'}
-                      </p>
-                      <p className="text-xs text-white/40 font-bold italic leading-relaxed">
-                        {selectedShow.transparencyScore >= 80
-                          ? 'This production has complete commercial data, rights info, and production history. Low-risk deal.'
-                          : selectedShow.transparencyScore >= 50
-                          ? 'Most key data is present. Some commercial details may need to be confirmed directly with the producer.'
-                          : 'Limited data available. Recommend direct contact to verify rights and commercial terms before proceeding.'}
-                      </p>
-                      <div className="mt-3 h-2 bg-white/10 w-full">
-                        <div
-                          className="h-full transition-all duration-1000"
-                          style={{
-                            width: `${selectedShow.transparencyScore}%`,
-                            background: selectedShow.transparencyScore >= 80 ? '#03DAC6' : selectedShow.transparencyScore >= 50 ? '#FFDE03' : '#FF0266'
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
                   {/* SYNOPSIS - MOVED HIGHER AS REQUESTED */}
                   <section className="space-y-6">
                     <h4 className="text-xl font-black uppercase italic text-brand-pink">SYNOPSIS</h4>
@@ -782,10 +738,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
   <div class="section">
     <div class="section-label">Quality</div>
-    <div class="section-title">Transparency Score</div>
-    <div style="font-size:48px;font-weight:900">${show.transparencyScore}<span style="font-size:18px;color:#999">/100</span></div>
-    <div class="score-bar"><div class="score-fill"></div></div>
-    <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:#999;margin-top:8px">Data completeness & commercial transparency rating</p>
+
   </div>
 
   <div class="section">
