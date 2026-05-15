@@ -519,7 +519,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div className="space-y-3">
                     {[0, 1, 2].map(i => (
                       <div key={i}>
-                        <div onClick={() => photoRefs[i].current?.click()} className="w-full h-24 border-2 border-dashed border-black/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-gray-50">
+                        <div onClick={() => photoRefs[i].current?.click()} className="w-full border-2 border-dashed border-black/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-gray-50" style={{aspectRatio:"16/9"}}>
                           {photoPreviews[i] ? <img src={photoPreviews[i]!} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/20 text-3xl">add_photo_alternate</span>}
                         </div>
                         <input type="file" ref={photoRefs[i]} onChange={handlePhotoChange(i)} className="hidden" accept="image/*" />
