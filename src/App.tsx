@@ -37,17 +37,10 @@ const App: React.FC = () => {
     }
 
     // Najprej preveri obstoječo session ob zagonu
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        loadProfile(session.user.id, session.user.email!)
-      } else {
-        setLoading(false)
-      }
-    })
-
     loadShows()
 
-    // Posluša vse spremembe auth stanja — login, logout, token refresh po page reload
+    // onAuthStateChange pokrije vse — initial session + login + logout + token refresh
+    // Ne rabimo ločenega getSession() klica
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         loadProfile(session.user.id, session.user.email!)
