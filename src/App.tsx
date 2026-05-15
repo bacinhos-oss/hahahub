@@ -35,29 +35,27 @@ const App: React.FC = () => {
       setLoading(false)
       return
     }
+
+    // Najprej preveri obstoječo session ob zagonu
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
         loadProfile(session.user.id, session.user.email!)
       } else {
-        const savedSession = localStorage.getItem('sb-jnilgukmyfukazwduuig-auth-token')
-        if (savedSession) {
-          try {
-            const parsed = JSON.parse(savedSession)
-            if (parsed?.user) {
-              loadProfile(parsed.user.id, parsed.user.email || parsed.user.email)
-            } else {
-              setLoading(false)
-            }
-          } catch {
-            setLoading(false)
-          }
-        } else {
-          setLoading(false)
-        }
+        setLoading(false)
       }
     })
+
     loadShows()
+
+    // Posluša vse spremembe auth stanja — login, logout, token refresh po page reload
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        loadProfile(session.user.id, session.user.email!)
+      } else {
+        setCurrentUser(null)
+        setLoading(false)
+      }
+    })
 
     const channel = supabase
       .channel('shows-realtime')
@@ -66,7 +64,10 @@ const App: React.FC = () => {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    return () => {
+      authSubscription.unsubscribe()
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   const loadProfile = async (userId: string, email: string) => {
@@ -179,7 +180,6 @@ const App: React.FC = () => {
   }
 
   const handleLogout = async () => {
-    localStorage.removeItem('sb-jnilgukmyfukazwduuig-auth-token')
     await supabase.auth.signOut()
     setCurrentUser(null)
     setIsAdminAuthenticated(false)
@@ -297,8 +297,6 @@ const App: React.FC = () => {
     if (data) setShows(prev => [{ ...newShow, id: data.id, user_id: currentUser?.id } as any, ...prev])
     else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
   }
-
-
 
   const sendEmail = async (type: string, to: string, data: any) => {
     try {
