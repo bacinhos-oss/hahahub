@@ -12,19 +12,32 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.hahahub.art">
 
+    <!-- Theme color — mobile browser bar -->
+    <meta name="theme-color" content="#050505">
+    <meta name="msapplication-TileColor" content="#FFDE03">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
     <!-- Open Graph -->
     <meta property="og:title" content="HahaHub | International Theatre Comedy Producers Platform">
     <meta property="og:description" content="The first producer-to-producer comedy rights marketplace. Tickle. Set Up. Punch.">
     <meta property="og:url" content="https://www.hahahub.art">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://www.hahahub.art/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="HahaHub">
+    <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="HahaHub | Comedy Rights Marketplace">
     <meta name="twitter:description" content="Tickle. Set Up. Punch. The first P2P comedy rights platform.">
-
-
+    <meta name="twitter:image" content="https://www.hahahub.art/og-image.jpg">
 
     <!-- FONT PRELOAD — prevents FOUT on all devices -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -42,12 +55,12 @@
                 extend: {
                     colors: {
                         brand: {
-                            yellow: '#FFDE03',   /* LOCKED */
-                            pink:   '#FF0266',   /* LOCKED */
-                            cyan:   '#03DAC6',   /* LOCKED */
-                            black:  '#050505',   /* LOCKED */
-                            surface:'#121212',   /* LOCKED */
-                            border: '#2E2E2E',   /* LOCKED */
+                            yellow: '#FFDE03',
+                            pink:   '#FF0266',
+                            cyan:   '#03DAC6',
+                            black:  '#050505',
+                            surface:'#121212',
+                            border: '#2E2E2E',
                         }
                     },
                     fontFamily: {
@@ -76,7 +89,6 @@
         }
     </script>
     <style type="text/tailwindcss">
-        /* FOUT PREVENTION — hide body until fonts are ready */
         @layer base {
             html { visibility: hidden; }
             html.fonts-loaded { visibility: visible; }
@@ -88,14 +100,12 @@
                 font-family: 'Space Grotesk', sans-serif;
             }
 
-            /* Force font render — prevents swap blinking */
             *, *::before, *::after {
                 -webkit-font-smoothing: antialiased;
                 -moz-osx-font-smoothing: grayscale;
             }
         }
 
-        /* Safe area padding for iPhone notch/home bar */
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
         .safe-top    { padding-top:    env(safe-area-inset-top, 0px); }
 
@@ -120,21 +130,18 @@
         }
     </style>
     <script>
-        /* Font load detection — removes visibility:hidden as soon as fonts ready */
         if (document.fonts && document.fonts.ready) {
             document.fonts.ready.then(() => {
                 document.documentElement.classList.add('fonts-loaded');
             });
         } else {
-            /* Fallback: show after 300ms max */
             setTimeout(() => document.documentElement.classList.add('fonts-loaded'), 300);
         }
     </script>
 </head>
     <!-- Google Analytics — disabled until cookie consent -->
     <script>
-      window['ga-disable-G-SEPT0657QY'] = true; // disabled by default
-      // Enable if user previously accepted
+      window['ga-disable-G-SEPT0657QY'] = true;
       if (localStorage.getItem('hahahub_cookies') === 'accepted') {
         window['ga-disable-G-SEPT0657QY'] = false;
       }
@@ -151,4 +158,3 @@
     <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
-
