@@ -186,7 +186,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
                 const show = myShows.find((s: any) => s.title === newPerf.show);
                 const subject = encodeURIComponent(`Tech Brief — ${newPerf.show} — ${newPerf.date}`);
                 const body = encodeURIComponent(`Dear Colleague,\n\nYou are confirmed for:\n\nShow: ${newPerf.show}\nDate: ${newPerf.date} at ${newPerf.time}\nVenue: ${newPerf.venue}, ${newPerf.city}\n\nShow details:\nGenre: ${show?.genre || '—'}\nDuration: ${show?.duration || '—'} min\nCast: ${show?.maleRoles || 0}M + ${show?.femaleRoles || 0}F\n\nFull dossier available at: https://hahahub.art\n\nBreak a Laffing Leg!\n${user.name}`);
-                window.open(`mailto:${newPerf.techEmail}?subject=${subject}&body=${body}`);
+                window.location.href = `mailto:${newPerf.techEmail}?subject=${subject}&body=${body}`;
               }
               setNewPerf({ date: '', time: '19:00', venue: '', city: '', show: '', techEmail: '', status: 'confirmed' });
               setPerfSaved(true); setTimeout(() => setPerfSaved(false), 3000);

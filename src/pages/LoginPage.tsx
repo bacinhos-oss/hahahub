@@ -210,7 +210,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         <div className="logo-text text-4xl uppercase mb-8 text-center">HAHAHUB</div>
         <h2 className="text-3xl font-black uppercase italic mb-4 text-brand-cyan">CHECK YOUR EMAIL</h2>
         <p className="font-bold italic text-gray-600 mb-8">We sent a password reset link to <strong>{email}</strong>.</p>
-        <button onClick={() => { setResetSent(false); setIsResetMode(false) }} className="w-full bg-black text-brand-cyan font-black py-5 uppercase border-4 border-black shadow-neo-cyan italic">Back to Sign In</button>
+        <button onClick={() => { setResetSent(false); setIsResetMode(false) }} className="w-full bg-black text-brand-cyan font-black py-5 uppercase border-4 border-black shadow-neo-cyan italic">Back to Log In</button>
       </div>
     </div>
   )
@@ -258,7 +258,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           <div className="flex border-4 border-black mb-8 p-1">
             {[false, true].map((val, i) => (
               <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
-                {i === 0 ? 'Tickle In' : 'Set Up Hub'}
+                {i === 0 ? 'LOG IN' : 'JOIN'}
               </button>
             ))}
           </div>
@@ -277,7 +277,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         )}
 
         <h2 className="text-black text-2xl font-black uppercase mb-8 italic">
-          {adminMode ? 'Control Center Access' : isNew ? 'Set Up Your Hub.' : 'Welcome back, legend. 🥊'}
+          {adminMode ? 'Control Center Access' : isNew ? 'Join HahaHub.' : 'Welcome back. 🥊'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -299,7 +299,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           {error && <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>}
 
           <button type="submit" disabled={loading} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic hover:bg-brand-pink transition-all">
-            {loading ? 'Tickling...' : adminMode ? 'ENTER HQ' : isNew ? 'Set It Up → Payment' : 'Tickle In →'}
+            {loading ? 'Tickling...' : adminMode ? 'ENTER HQ' : isNew ? 'JOIN →' : 'LOG IN →'}
           </button>
         </form>
 
