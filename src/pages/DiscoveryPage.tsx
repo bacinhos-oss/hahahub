@@ -29,11 +29,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   });
   const [showShortlistOnly, setShowShortlistOnly] = useState(false);
 
-  // Simulate loading skeleton — disappears when shows arrive
+  // Hide skeleton as soon as shows arrive
   useEffect(() => {
     if (shows.length > 0) {
-      const t = setTimeout(() => setIsLoading(false), 400);
-      return () => clearTimeout(t);
+      setIsLoading(false);
     }
   }, [shows]);
 
@@ -175,8 +174,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               ) : (
                 <div className="space-y-16">
                   {/* HEADER */}
-                  <div className="flex flex-row justify-between items-start gap-4">
-                    <div className="flex-1 min-w-0">
+                  <div className="flex flex-row justify-between items-start gap-3">
+                    <div className="flex-1 min-w-0 pr-2">
                       <span className="bg-brand-cyan text-black px-3 py-1 text-[10px] font-black uppercase italic mb-2 inline-block">PRODUCTION DOSSIER v{selectedShow.productionYear}</span>
                       <h2 className="text-4xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter italic break-words">{selectedShow.title}</h2>
                       <p className="text-base md:text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
@@ -218,7 +217,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">00. RIGHTS & IDENTITY</h4>
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div className="bg-brand-surface border-4 border-white p-4 shadow-neo-cyan overflow-hidden">
-                           <p className="text-[9px] font-black uppercase text-brand-cyan mb-2 tracking-widest italic">Producer / Company</p>
+                           <p className="text-[8px] font-black uppercase text-brand-cyan mb-2 tracking-widest">PRODUCER / COMPANY</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
                            {(selectedShow as any).user_id && (
                              <button
@@ -238,11 +237,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            </div>
                         </div>
                         <div className="bg-brand-surface border-4 border-white p-4 overflow-hidden">
-                           <p className="text-[9px] font-black uppercase text-brand-yellow mb-1 tracking-widest italic">Copyright Holder</p>
+                           <p className="text-[8px] font-black uppercase text-brand-yellow mb-1 tracking-widest">COPYRIGHT HOLDER</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.rightsHolder}</p>
                         </div>
                         <div className="bg-brand-surface border-4 border-white p-4 overflow-hidden">
-                           <p className="text-[9px] font-black uppercase text-brand-pink mb-1 tracking-widest italic">Rights Status</p>
+                           <p className="text-[8px] font-black uppercase text-brand-pink mb-1 tracking-widest">RIGHTS STATUS</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.rightsStatus}</p>
                         </div>
                         <div className="bg-brand-surface border-2 border-white/20 p-6">
