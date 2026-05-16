@@ -175,14 +175,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               ) : (
                 <div className="space-y-16">
                   {/* HEADER */}
-                  <div className="flex flex-col md:flex-row justify-between items-start gap-4 overflow-visible">
-                    <div className="max-w-3xl">
+                  <div className="flex flex-row justify-between items-start gap-4">
+                    <div className="flex-1 min-w-0">
                       <span className="bg-brand-cyan text-black px-3 py-1 text-[10px] font-black uppercase italic mb-2 inline-block">PRODUCTION DOSSIER v{selectedShow.productionYear}</span>
-                      <h2 className="text-5xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter italic">{selectedShow.title}</h2>
-                      <p className="text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
+                      <h2 className="text-4xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter italic break-words">{selectedShow.title}</h2>
+                      <p className="text-base md:text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
                     </div>
-                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-16 w-16 flex-shrink-0 flex items-center justify-center border-4 transition-all ${isFavorited ? 'bg-brand-pink text-white border-black shadow-neo-white' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
-                      <span className="material-symbols-outlined text-3xl font-black">favorite</span>
+                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-4 transition-all mt-8 ${isFavorited ? 'bg-brand-pink text-white border-black shadow-neo-white' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
+                      <span className="material-symbols-outlined text-2xl font-black">favorite</span>
                     </button>
                   </div>
 
