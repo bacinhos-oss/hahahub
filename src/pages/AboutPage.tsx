@@ -40,17 +40,17 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 border-t-8 border-white pt-12">
             <div className="lg:col-span-7 space-y-6 md:space-y-8">
               <p className="text-2xl md:text-5xl font-black leading-none text-white italic tracking-tighter uppercase">
-                YOUR HIT IS UNKNOWN IN <span className="text-brand-cyan">SWEDEN.</span> THEIR SHOW IS PERFECT FOR <span className="text-brand-yellow">YOUR STAGE.</span>
+                HAHAHUB IS THE FIRST <span className="text-brand-cyan">PRODUCER-TO-PRODUCER</span> COMEDY RIGHTS MARKETPLACE IN THE WORLD.
               </p>
               <div className="h-2 w-24 bg-brand-pink"></div>
               <p className="text-lg md:text-xl text-brand-yellow font-black leading-tight italic uppercase tracking-tighter">
                 TICKLE. SET UP. PUNCH.
               </p>
               <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic">
-                You have a gledališka comedy show that works. Somewhere, a producer needs exactly that for their next season. Or the other way around — they have the show, you have the stage.
+                Something's been rotting in your season lineup. Hunt it down. Or deploy your own. International. Raw. Funny as hell. Cut the agent. Kill the middleman. Direct line, producer to producer. Buy rights or sell them. Keep every cent.
               </p>
               <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic">
-                HahaHub is where that happens. Browse, inquire, license. No agents, no commissions, no waiting rooms. Just producers talking to producers.
+                Curtain up. Lights on. Your punchline. Their stage. Different language. Same laugh. That's international. That's HahaHub. Play it.
               </p>
               <p className="text-white/30 font-black uppercase text-xs tracking-widest italic">Rights are serious. Comedy is not. We handle both.</p>
             </div>
@@ -59,9 +59,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
               <h3 className="text-2xl md:text-3xl font-black uppercase italic text-brand-pink mb-6 md:mb-8 border-b-4 border-brand-pink pb-2">THE MOVES</h3>
               <ul className="space-y-6 md:space-y-8">
                 {[
-                  { t: 'TICKLE', d: 'You browse the catalog. A gledališka comedy from Slovenia catches your eye. Or Spain. Or Japan. You send an inquiry — directly to the producer.' },
-                  { t: 'SET UP', d: 'You talk. You agree on terms. License signed. No agent taking 15%. No waiting for someone to pass a message. Just two producers, a show, and a deal.' },
-                  { t: 'PUNCH', d: 'Curtain up. Their show, your stage. Your audience laughs. And somewhere, another producer is doing the same with yours.' },
+                  { t: 'TICKLE', d: 'Hunt it down or deploy your own. International. Raw. Funny as hell.' },
+                  { t: 'SET UP', d: 'Cut the agent. Direct line, producer to producer. No commission. No bullshit.' },
+                  { t: 'PUNCH', d: 'Curtain up. Lights on. Your punchline. Their stage. Same laugh.' },
                   { t: 'BREAK A LEG.', d: '🎭', special: true },
                 ].map((step, i) => (
                   <li key={i} className="flex gap-4">
@@ -81,7 +81,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
             <h2 className="text-4xl md:text-6xl font-black uppercase italic text-white">
               No <span className="text-brand-yellow">Competition.</span>
             </h2>
-            <p className="text-white/50 font-bold italic text-lg">Gledališka comedy rights. From one producer to another.</p>
+            <p className="text-white/50 font-bold italic text-lg">Direct competition doesn't exist. HahaHub is the first of its kind.</p>
             <div className="overflow-x-auto">
               <table className="w-full border-4 border-white text-sm">
                 <thead>
@@ -113,7 +113,56 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
             </div>
           </section>
 
+          {/* ROI KALKULATOR */}
+          <section className="bg-brand-surface border-4 border-brand-yellow p-6 md:p-10 shadow-neo-yellow">
+            <div className="flex items-center gap-4 mb-8">
+              <span className="material-symbols-outlined text-brand-yellow text-3xl">calculate</span>
+              <div>
+                <h2 className="text-2xl md:text-4xl font-black uppercase italic text-white">€99 <span className="text-brand-yellow">vs Agent Fee</span></h2>
+                <p className="text-white/30 text-xs font-black uppercase tracking-widest mt-1">How much do you save vs traditional agent (15%)?</p>
+              </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {[
+                { label: 'Ticket Price (€)', value: roiTicket, set: setRoiTicket, min: 5, max: 200, step: 5 },
+                { label: 'Seats per Show', value: roiSeats, set: setRoiSeats, min: 50, max: 2000, step: 50 },
+                { label: 'Occupancy (%)', value: roiOccupancy, set: setRoiOccupancy, min: 10, max: 100, step: 5 },
+                { label: 'Number of Shows', value: roiPerformances, set: setRoiPerformances, min: 1, max: 200, step: 1 },
+                { label: 'Royalty Rate (%)', value: roiRoyalty, set: setRoiRoyalty, min: 3, max: 20, step: 0.5 },
+              ].map((item, i) => (
+                <div key={i}>
+                  <div className="flex justify-between mb-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/50 italic">{item.label}</label>
+                    <span className="text-brand-yellow font-black text-sm">{item.value}{item.label.includes('%') ? '%' : item.label.includes('€') ? ' €' : ''}</span>
+                  </div>
+                  <input type="range" min={item.min} max={item.max} step={item.step} value={item.value}
+                    onChange={e => item.set(Number(e.target.value))}
+                    className="w-full accent-brand-yellow h-2 bg-white/10 cursor-pointer" />
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t-4 border-brand-yellow/30 pt-6">
+              <div className="bg-black/40 p-4 text-center">
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Total Gross</p>
+                <p className="text-lg md:text-xl font-black text-white">€{Math.round(roiGross).toLocaleString()}</p>
+              </div>
+              <div className="bg-red-900/30 border-2 border-red-500/30 p-4 text-center">
+                <p className="text-[9px] font-black uppercase tracking-widest text-red-400/60 mb-1">Agent Fee (15%)</p>
+                <p className="text-lg md:text-xl font-black text-red-400">-€{Math.round(roiAgentFee).toLocaleString()}</p>
+              </div>
+              <div className="bg-brand-yellow/10 border-2 border-brand-yellow/30 p-4 text-center">
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow/60 mb-1">HahaHub Fee</p>
+                <p className="text-lg md:text-xl font-black text-brand-yellow">€{roiHahahubFee}/yr</p>
+              </div>
+              <div className="bg-brand-cyan/10 border-4 border-brand-cyan p-4 text-center">
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan/60 mb-1">You Save</p>
+                <p className="text-lg md:text-2xl font-black text-brand-cyan">€{Math.round(roiSaved).toLocaleString()}</p>
+              </div>
+            </div>
+            <p className="text-white/20 text-[9px] font-bold italic mt-4 text-center">* Agent fee based on typical 15% of gross. Actual terms vary.</p>
+          </section>
 
           {/* FEE & RIGHTS */}
           <section className="space-y-8 md:space-y-12">
@@ -187,8 +236,17 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
           </section>
 
           {/* CTA */}
-          <section className="py-12 md:py-20 text-center border-t-4 border-white/10">
-            <p className="text-white/20 font-black uppercase text-xs tracking-widest italic">Break a Laffing Leg. 🦵</p>
+          <section className="py-12 md:py-20 text-center space-y-8 md:space-y-10 border-t-4 border-white/10">
+            <h2 className="text-4xl md:text-8xl font-black uppercase italic tracking-tighter text-white">READY TO <span className="text-transparent" style={{ WebkitTextStroke: '2px white' }}>SCALE?</span></h2>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
+              <button onClick={() => onNavigate('discovery')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 font-black uppercase text-lg md:text-xl border-4 border-white shadow-neo-magenta italic hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all">
+                🥊 Tickle It Now →
+              </button>
+              <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 md:px-12 py-5 md:py-6 font-black uppercase text-lg md:text-xl border-4 border-white shadow-neo-white italic hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all">
+                Set Up Your Show →
+              </button>
+            </div>
+            <p className="text-white/20 font-black uppercase text-xs tracking-widest italic mt-4">Break a Laffing Leg. 🦵</p>
           </section>
 
         </div>
