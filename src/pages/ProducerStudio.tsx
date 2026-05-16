@@ -80,6 +80,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
       <div>
         <h2 className="text-4xl font-black uppercase italic">🎬 Producer <span className="text-brand-pink">Studio</span></h2>
         <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Your production command center</p>
+        <p className="text-brand-yellow/60 text-[9px] font-black uppercase italic tracking-widest mt-2">⚠ Studio data is saved on this device only. Use the same browser to access your data.</p>
       </div>
 
       {/* STUDIO TABS */}
@@ -205,7 +206,12 @@ Full production dossier: https://hahahub.art
 
 Break a Laffing Leg!
 ${user.name}`);
-                window.location.href = `mailto:${newPerf.techEmail}?subject=${subject}&body=${body}`;
+                const a = document.createElement('a');
+                a.href = `mailto:${newPerf.techEmail}?subject=${subject}&body=${body}`;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
               }
 
               if (editPerfIdx !== null) {
