@@ -89,7 +89,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                          (filterCast === 'Large (6+)' && totalCast >= 6);
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q || [
-        show.title, show.author, show.director, show.synopsis, (show as any).synopsis_en, (show as any).original_language, (show as any).script_in_english,
+        show.title, show.author, show.director, show.synopsis,
         show.genre, show.subgenre, show.location, show.language,
         show.humorType, show.rightsStatus, show.budgetRange,
         show.producerName, show.riskProfile,
@@ -99,11 +99,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     });
 
     return result.sort((a, b) => {
-      // ROAR/FEATURED vedno prvi
-      const aFeatured = (a as any).producer_plan === 'roar' ? 1 : 0;
-      const bFeatured = (b as any).producer_plan === 'roar' ? 1 : 0;
-      if (bFeatured !== aFeatured) return bFeatured - aFeatured;
-      // Potem normalni sort
       if (sortBy === 'Newest') return (b.productionYear || 0) - (a.productionYear || 0);
       if (sortBy === 'Popular') return (b.likesCount || 0) - (a.likesCount || 0);
       if (sortBy === 'Trending') return (b.viewsCount || 0) - (a.viewsCount || 0);
@@ -151,7 +146,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan italic mb-3">Photos from Production</p>
                     <div className="space-y-2">
                       {[0, 1, 2].map(i => (
-                        <div key={i} className="w-full border-2 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center" style={{aspectRatio:"16/9"}}>
+                        <div key={i} className="w-full h-24 border-2 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center">
                           {selectedShow.productionPhotos && selectedShow.productionPhotos[i] ? (
                             <img src={selectedShow.productionPhotos[i]} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                           ) : (
@@ -186,31 +181,54 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </button>
                   </div>
 
+                  {/* TRANSPARENCY SCORE GAUGE */}
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-4 md:p-6 border-4 border-white/10 bg-white/5">
+                    <div className="flex-shrink-0">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-white/30 italic mb-2">Transparency Score</p>
+                      <div className="relative w-24 h-24">
+                        <svg viewBox="0 0 36 36" className="w-24 h-24 -rotate-90">
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1A1A1A" strokeWidth="3" />
+                          <circle
+                            cx="18" cy="18" r="15.9" fill="none"
+                            stroke={selectedShow.transparencyScore >= 80 ? '#03DAC6' : selectedShow.transparencyScore >= 50 ? '#FFDE03' : '#FF0266'}
+                            strokeWidth="3"
+                            strokeDasharray={`${selectedShow.transparencyScore} 100`}
+                            strokeLinecap="butt"
+                            className="transition-all duration-1000"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-2xl font-black text-white">{selectedShow.transparencyScore}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-black uppercase italic text-white mb-2">
+                        {selectedShow.transparencyScore >= 80 ? '✓ High Transparency' : selectedShow.transparencyScore >= 50 ? '~ Medium Transparency' : '⚠ Low Transparency'}
+                      </p>
+                      <p className="text-xs text-white/40 font-bold italic leading-relaxed">
+                        {selectedShow.transparencyScore >= 80
+                          ? 'This production has complete commercial data, rights info, and production history. Low-risk deal.'
+                          : selectedShow.transparencyScore >= 50
+                          ? 'Most key data is present. Some commercial details may need to be confirmed directly with the producer.'
+                          : 'Limited data available. Recommend direct contact to verify rights and commercial terms before proceeding.'}
+                      </p>
+                      <div className="mt-3 h-2 bg-white/10 w-full">
+                        <div
+                          className="h-full transition-all duration-1000"
+                          style={{
+                            width: `${selectedShow.transparencyScore}%`,
+                            background: selectedShow.transparencyScore >= 80 ? '#03DAC6' : selectedShow.transparencyScore >= 50 ? '#FFDE03' : '#FF0266'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* SYNOPSIS - MOVED HIGHER AS REQUESTED */}
                   <section className="space-y-6">
                     <h4 className="text-xl font-black uppercase italic text-brand-pink">SYNOPSIS</h4>
-                    {(selectedShow as any).synopsis_en && (
-                      <div className="mb-4">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">English Synopsis</p>
-                        <p className="text-gray-200 text-xl leading-relaxed italic border-l-8 border-brand-yellow pl-8 bg-white/5 py-4">{(selectedShow as any).synopsis_en}</p>
-                      </div>
-                    )}
-                    {selectedShow.synopsis && (
-                      <div>
-                        {(selectedShow as any).synopsis_en && <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2 italic">Original Language Synopsis</p>}
-                        <p className="text-gray-200 text-xl leading-relaxed italic border-l-8 border-brand-pink pl-8 bg-white/5 py-4">{selectedShow.synopsis}</p>
-                      </div>
-                    )}
-                    {(selectedShow as any).original_language && (
-                      <div className="flex gap-4 mt-4 flex-wrap">
-                        <span className="text-[9px] font-black uppercase italic text-white/30">Original: <span className="text-white/60">{(selectedShow as any).original_language}</span></span>
-                        {(selectedShow as any).script_in_english && (selectedShow as any).script_in_english !== 'false' && (
-                          <span className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-2 py-0.5">
-                            Script in EN: {(selectedShow as any).script_in_english === 'true' ? '✓ Full' : 'Partial'}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    <p className="text-gray-200 text-2xl leading-relaxed italic border-l-8 border-brand-pink pl-8 bg-white/5 py-4">{selectedShow.synopsis}</p>
                   </section>
 
                   {/* 00. RIGHTS & IDENTITY */}
@@ -703,7 +721,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   <div class="section">
     <div class="section-label">Overview</div>
     <div class="section-title">Synopsis</div>
-    <p class="synopsis">${(show as any).synopsis_en || show.synopsis || 'No synopsis provided.'}</p>
+    <p class="synopsis">${show.synopsis || 'No synopsis provided.'}</p>
   </div>
 
   <div class="section">
@@ -738,7 +756,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
   <div class="section">
     <div class="section-label">Quality</div>
-
+    <div class="section-title">Transparency Score</div>
+    <div style="font-size:48px;font-weight:900">${show.transparencyScore}<span style="font-size:18px;color:#999">/100</span></div>
+    <div class="score-bar"><div class="score-fill"></div></div>
+    <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:#999;margin-top:8px">Data completeness & commercial transparency rating</p>
   </div>
 
   <div class="section">
@@ -785,42 +806,23 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </h1>
             </div>
 
-            {/* STEFUNNY — INLINE SEARCH */}
-            <div className="relative">
-              <div className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-5 shadow-neo-yellow focus-within:shadow-none focus-within:translate-x-1 focus-within:translate-y-1 transition-all">
-                <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
-                  SF
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">MISS STEFUNNY</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ask Stefunny... genre, country, cast size, keywords"
-                    className="w-full bg-transparent border-none text-white font-black text-sm md:text-base uppercase outline-none italic placeholder:text-white/20 placeholder:normal-case placeholder:not-italic"
-                  />
-                </div>
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
-                    <span className="material-symbols-outlined text-xl">close</span>
-                  </button>
-                )}
-                {!searchQuery && (
-                  <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0">search</span>
-                )}
+            {/* STEFUNNY LINK */}
+            <button
+              onClick={() => onNavigate('stefunny')}
+              className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-5 shadow-neo-yellow hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all w-full text-left group"
+            >
+              <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
+                SF
               </div>
-              {searchQuery && (
-                <div className="mt-2 text-[10px] font-black uppercase italic text-white/40">
-                  {filteredShows.length > 0
-                    ? `Stefunny found ${filteredShows.length} show${filteredShows.length !== 1 ? 's' : ''} for you. 🥊`
-                    : `Stefunny found nothing. Try again.`}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">MISS STEFUNNY</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
                 </div>
-              )}
-            </div>
+                <p className="text-white/40 font-bold italic text-xs">Search by genre, country, cast, keywords →</p>
+              </div>
+              <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
 
             {/* SORT + SHORTLIST */}
             <div className="flex flex-wrap items-center gap-4">

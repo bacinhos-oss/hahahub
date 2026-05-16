@@ -14,10 +14,8 @@ interface PaymentModalProps {
 }
 
 const PLAN_AMOUNTS: Record<string, number> = {
-  'Annual Pass': 9900,
-  'Quarterly Pass': 5900,
-  'LAFF Annual': 9900,
-  'ROAR Annual': 18900,
+  'Annual Pass': 9900,      // v centih = €99.00
+  'Quarterly Pass': 5900,   // v centih = €59.00
 };
 
 const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, onClose, onSuccess, userEmail, userName }) => {
@@ -132,7 +130,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
   const generateInvoice = () => {
     const invoiceNum = 'HH-' + Date.now().toString().slice(-6);
     const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    const amount = (PLAN_AMOUNTS[planName] || parseInt(price.replace('€','')) * 100) / 100;
+    const amount = PLAN_AMOUNTS[planName] / 100;
     const vatRate = country === 'SI' ? 0.22 : vatNumber ? 0 : 0.22;
     const vatAmount = amount * vatRate;
     const total = amount + vatAmount;
@@ -230,12 +228,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
             {/* Plan summary */}
             <div className="bg-gray-100 p-5 border-4 border-black">
               <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-1">Selected Plan</p>
-              <h3 className="text-xl font-black uppercase">
-                {planName === 'LAFF Annual' ? 'LAFF — Pro · Production House' : planName === 'ROAR Annual' ? 'ROAR — Studio · Full Power' : planName}
-              </h3>
-              <p className="text-xs text-gray-500 font-bold italic mt-1">
-                {planName === 'LAFF Annual' ? 'Full catalog · 10 shows · Dossier · Producer Profile' : planName === 'ROAR Annual' ? 'Unlimited · FEATURED · VERIFIED · Live Wire · Analytics' : ''}
-              </p>
+              <h3 className="text-xl font-black uppercase">{planName}</h3>
               <div className="flex justify-between items-end border-t-2 border-black/10 pt-3 mt-3">
                 <span className="text-sm font-bold uppercase">Total</span>
                 <span className="text-3xl font-black">{price}</span>
@@ -342,7 +335,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
             </div>
             <div>
               <h2 className="text-4xl font-black uppercase italic mb-2">Punchline Delivered!</h2>
-              <p className="font-bold text-brand-pink uppercase tracking-[0.2em] text-sm">{planName === 'ROAR Annual' ? 'ROAR unlocked. Start Roaring.' : 'LAFF unlocked. Start Laffing.'} 🥊</p>
+              <p className="font-bold text-brand-pink uppercase tracking-[0.2em] text-sm">You're set up. Go hunt. 🎭</p>
             </div>
             <p className="text-sm font-medium text-gray-500">Invoice downloaded automatically. Check your downloads folder.</p>
             <p className="text-xs font-black uppercase tracking-widest text-gray-400">Break a Leg.</p>
