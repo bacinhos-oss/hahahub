@@ -175,7 +175,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               ) : (
                 <div className="space-y-16">
                   {/* HEADER */}
-                  <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+                  <div className="flex flex-col md:flex-row justify-between items-start gap-4 overflow-visible">
                     <div className="max-w-3xl">
                       <span className="bg-brand-cyan text-black px-3 py-1 text-[10px] font-black uppercase italic mb-2 inline-block">PRODUCTION DOSSIER v{selectedShow.productionYear}</span>
                       <h2 className="text-5xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter italic">{selectedShow.title}</h2>
@@ -216,8 +216,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 00. RIGHTS & IDENTITY */}
                   <section className="space-y-8">
                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">00. RIGHTS & IDENTITY</h4>
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="bg-brand-surface border-4 border-white p-4 shadow-neo-cyan overflow-hidden">
                            <p className="text-[9px] font-black uppercase text-brand-cyan mb-2 tracking-widest italic">Producer / Company</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
                            {(selectedShow as any).user_id && (
@@ -237,11 +237,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                              )}
                            </div>
                         </div>
-                        <div className="bg-brand-surface border-4 border-white p-6">
+                        <div className="bg-brand-surface border-4 border-white p-4 overflow-hidden">
                            <p className="text-[9px] font-black uppercase text-brand-yellow mb-1 tracking-widest italic">Copyright Holder</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.rightsHolder}</p>
                         </div>
-                        <div className="bg-brand-surface border-4 border-white p-6">
+                        <div className="bg-brand-surface border-4 border-white p-4 overflow-hidden">
                            <p className="text-[9px] font-black uppercase text-brand-pink mb-1 tracking-widest italic">Rights Status</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.rightsStatus}</p>
                         </div>
@@ -344,7 +344,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 02. TECHNICAL STACK */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. TECHNICAL STACK & PRODUCTION SCALE</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                        <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
                           <p className="text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
