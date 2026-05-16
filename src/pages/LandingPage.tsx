@@ -105,7 +105,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               International Comedy Theatre Producers Platform
             </p>
             <p className="text-base md:text-lg font-bold text-white/40 italic max-w-2xl mb-10 md:mb-12 leading-relaxed">
-              Your hit in Spain is unknown in Germany. HahaHub changes that. The first producer-to-producer TICKLE. SET UP. PUNCH.. Buy rights, sell rights. Direct. No agents. No middlemen.
+              Comedy theatre rights marketplace. Producer to producer. Direct.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
@@ -229,11 +229,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               <h2 className="text-4xl md:text-7xl font-black uppercase italic text-white mb-8">Built for <span className="text-brand-yellow">Producers.</span></h2>
               <div className="space-y-5">
                 {[
-                  { icon: 'verified', text: 'Verified rights holders only — every listing is authenticated' },
-                  { icon: 'description', text: 'Full commercial data — royalties, territories, box office history' },
-                  { icon: 'translate', text: 'Translation rights included where available' },
-                  { icon: 'support_agent', text: 'Direct contact with decision makers — no gatekeepers' },
-                  { icon: 'picture_as_pdf', text: '3-page script scenario in English for every production' },
+                  { icon: 'theater_comedy', text: 'Comedy theatre rights — buy or sell, directly' },
+                  { icon: 'description', text: 'Royalties, territories, cast size, script scenario — all in one place' },
+                  { icon: 'translate', text: 'Translation rights available where listed' },
+                  { icon: 'mail', text: 'Contact the producer directly — no middlemen' },
+                  { icon: 'picture_as_pdf', text: '3-page script in English for every production' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-4">
                     <span className="material-symbols-outlined text-brand-cyan text-2xl flex-shrink-0 mt-0.5">{item.icon}</span>
