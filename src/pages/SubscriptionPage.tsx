@@ -267,12 +267,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRef2 = React.useRef<HTMLInputElement>(null);
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics' | 'studio'>('assets');
+  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics'>('assets');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
-  const [studioShows, setStudioShows] = useState<any[]>([]);
-  const [royaltyCalc, setRoyaltyCalc] = useState({ percentage: '10', performances: '20', ticketPrice: '25', seats: '200' });
-  const [performances, setPerformances] = useState<{ date: string; venue: string; show: string }[]>([]);
-  const [newPerf, setNewPerf] = useState({ date: '', venue: '', show: '' });
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [shortlistCounts, setShortlistCounts] = useState<Record<string, number>>({});
   const [inquiryStatuses, setInquiryStatuses] = useState<Record<string, string>>({});
@@ -817,7 +813,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               {(['assets', 'inquiries', 'profile', ...((user as any)?.plan === 'roar' || user?.isAdmin ? ['analytics'] : [])] as const).map((tab: any) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                  {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : tab === 'analytics' ? '⚡ Analytics' : '🎬 Studio'}
+                  {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : '⚡ Analytics'}
                 </button>
               ))}
             </div>
@@ -1511,160 +1507,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
 
                 </div>
-              </section>
-            )}
-
-          </div>
-
-            {/* PRODUCER STUDIO — ROAR ONLY */}
-            {activeTab === 'studio' && (
-              <section className="space-y-10">
-                <div>
-                  <h2 className="text-4xl font-black uppercase italic">🎬 Producer <span className="text-brand-pink">Studio</span></h2>
-                  <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Your production command center</p>
-                </div>
-
-                {/* SHOW STATUS BOARD */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-black uppercase italic text-brand-yellow">Show Status Board</h3>
-                  {userUploads.length === 0 ? (
-                    <p className="text-white/20 italic">No shows uploaded yet.</p>
-                  ) : userUploads.map((show: any) => (
-                    <div key={show.id} className="border-4 border-white/20 p-4 flex items-center justify-between gap-4 hover:border-brand-yellow transition-all">
-                      <div>
-                        <p className="font-black uppercase italic text-white">{show.title}</p>
-                        <p className="text-white/30 text-xs">{show.genre} · {show.location}</p>
-                      </div>
-                      <select
-                        defaultValue="available"
-                        onChange={e => {
-                          const el = e.target;
-                          el.className = el.value === 'licensed' ? 'bg-brand-cyan text-black font-black uppercase italic text-xs px-3 py-2 border-2 border-brand-cyan outline-none' :
-                            el.value === 'negotiating' ? 'bg-brand-yellow text-black font-black uppercase italic text-xs px-3 py-2 border-2 border-brand-yellow outline-none' :
-                            'bg-brand-black text-white font-black uppercase italic text-xs px-3 py-2 border-2 border-white/20 outline-none';
-                        }}
-                        className="bg-brand-black text-white font-black uppercase italic text-xs px-3 py-2 border-2 border-white/20 outline-none"
-                      >
-                        <option value="available">Available</option>
-                        <option value="negotiating">In Negotiation</option>
-                        <option value="licensed">Licensed</option>
-                        <option value="paused">Paused</option>
-                      </select>
-                    </div>
-                  ))}
-                </div>
-
-                {/* ROYALTY CALCULATOR */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-black uppercase italic text-brand-cyan">Royalty Calculator</h3>
-                  <div className="border-4 border-brand-cyan/30 p-6 space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div>
-                        <label className="text-[9px] font-black uppercase text-white/40 italic">Royalty %</label>
-                        <input type="number" value={royaltyCalc.percentage} onChange={e => setRoyaltyCalc(p => ({...p, percentage: e.target.value}))}
-                          className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-black text-lg outline-none focus:border-brand-cyan mt-1" />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-black uppercase text-white/40 italic">Performances</label>
-                        <input type="number" value={royaltyCalc.performances} onChange={e => setRoyaltyCalc(p => ({...p, performances: e.target.value}))}
-                          className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-black text-lg outline-none focus:border-brand-cyan mt-1" />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-black uppercase text-white/40 italic">Ticket Price (€)</label>
-                        <input type="number" value={royaltyCalc.ticketPrice} onChange={e => setRoyaltyCalc(p => ({...p, ticketPrice: e.target.value}))}
-                          className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-black text-lg outline-none focus:border-brand-cyan mt-1" />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-black uppercase text-white/40 italic">Seats/Show</label>
-                        <input type="number" value={royaltyCalc.seats} onChange={e => setRoyaltyCalc(p => ({...p, seats: e.target.value}))}
-                          className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-black text-lg outline-none focus:border-brand-cyan mt-1" />
-                      </div>
-                    </div>
-                    <div className="border-t-4 border-brand-cyan/20 pt-4 grid grid-cols-3 gap-4">
-                      <div className="text-center">
-                        <p className="text-[9px] font-black uppercase text-white/40 italic">Per Performance</p>
-                        <p className="text-2xl font-black text-brand-cyan italic">€{Math.round(Number(royaltyCalc.ticketPrice) * Number(royaltyCalc.seats) * Number(royaltyCalc.percentage) / 100).toLocaleString()}</p>
-                      </div>
-                      <div className="text-center border-x-2 border-white/10">
-                        <p className="text-[9px] font-black uppercase text-white/40 italic">Total Royalties</p>
-                        <p className="text-2xl font-black text-brand-yellow italic">€{Math.round(Number(royaltyCalc.ticketPrice) * Number(royaltyCalc.seats) * Number(royaltyCalc.percentage) / 100 * Number(royaltyCalc.performances)).toLocaleString()}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-[9px] font-black uppercase text-white/40 italic">Box Office Total</p>
-                        <p className="text-2xl font-black text-white/60 italic">€{Math.round(Number(royaltyCalc.ticketPrice) * Number(royaltyCalc.seats) * Number(royaltyCalc.performances)).toLocaleString()}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* PERFORMANCE CALENDAR */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-black uppercase italic text-brand-pink">Performance Calendar</h3>
-                  <div className="border-4 border-white/10 p-4 space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <input type="date" value={newPerf.date} onChange={e => setNewPerf(p => ({...p, date: e.target.value}))}
-                        className="bg-brand-black border-2 border-white/20 p-2 text-white font-black outline-none focus:border-brand-pink" />
-                      <input placeholder="Venue / Theatre" value={newPerf.venue} onChange={e => setNewPerf(p => ({...p, venue: e.target.value}))}
-                        className="bg-brand-black border-2 border-white/20 p-2 text-white font-bold italic outline-none focus:border-brand-pink" />
-                      <input placeholder="Show Title" value={newPerf.show} onChange={e => setNewPerf(p => ({...p, show: e.target.value}))}
-                        className="bg-brand-black border-2 border-white/20 p-2 text-white font-bold italic outline-none focus:border-brand-pink" />
-                    </div>
-                    <button onClick={() => {
-                      if (!newPerf.date || !newPerf.venue || !newPerf.show) return;
-                      setPerformances(p => [...p, newPerf].sort((a,b) => a.date.localeCompare(b.date)));
-                      setNewPerf({ date: '', venue: '', show: '' });
-                    }} className="bg-brand-pink text-white px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white hover:text-black transition-all">
-                      + Add Performance
-                    </button>
-                  </div>
-                  {performances.length === 0 ? (
-                    <p className="text-white/20 italic text-sm">No performances scheduled yet.</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {performances.map((p, i) => (
-                        <div key={i} className="border-2 border-white/10 px-4 py-3 flex items-center justify-between gap-4 hover:border-brand-pink transition-all">
-                          <div className="flex items-center gap-4">
-                            <span className="text-brand-yellow font-black text-sm">{new Date(p.date).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}</span>
-                            <span className="text-white font-black italic">{p.show}</span>
-                            <span className="text-white/40 text-sm italic">{p.venue}</span>
-                          </div>
-                          <button onClick={() => setPerformances(prev => prev.filter((_,j) => j !== i))}
-                            className="text-white/20 hover:text-brand-pink transition-colors">
-                            <span className="material-symbols-outlined text-sm">close</span>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* QUICK EMAIL TEMPLATES */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-black uppercase italic text-brand-yellow">Quick Email Templates</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      { label: 'Call Sheet', icon: 'person', subject: 'Call Sheet', body: 'Call sheet details here.' },
-                      { label: 'Tech Brief', icon: 'settings', subject: 'Tech Brief', body: 'Tech brief details here.' },
-                      { label: 'Rights Follow-up', icon: 'mail', subject: 'Rights Follow-up', body: 'Following up on rights inquiry.' },
-                      { label: 'Deal Confirmation', icon: 'handshake', subject: 'Deal Confirmed', body: 'Rights agreement confirmed.' },
-                    ].map((tmpl, i) => (
-                      <div key={i} className="border-4 border-white/10 p-4 hover:border-brand-yellow transition-all">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="material-symbols-outlined text-brand-yellow">{tmpl.icon}</span>
-                          <p className="font-black uppercase italic text-sm text-white">{tmpl.label}</p>
-                        </div>
-                        <p className="text-white/30 text-xs italic mb-3 line-clamp-2">{tmpl.body.substring(0, 80)}...</p>
-                        <button onClick={() => {
-                          const mailto = 'mailto:?subject=' + encodeURIComponent(tmpl.subject) + '&body=' + encodeURIComponent(tmpl.body);
-                          window.open(mailto);
-                        }} className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-3 py-1 hover:bg-brand-yellow hover:text-black transition-all">
-                          Open in Mail →
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
               </section>
             )}
 
