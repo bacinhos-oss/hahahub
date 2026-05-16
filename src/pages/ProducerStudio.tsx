@@ -26,6 +26,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const [performances, setPerformances] = useState<any[]>(() => load('performances'));
   const [newPerf, setNewPerf] = useState({ date: '', time: '19:00', venue: '', city: '', show: '', techEmail: '', status: 'confirmed' });
   const [perfSaved, setPerfSaved] = useState(false);
+  const [editPerfIdx, setEditPerfIdx] = useState<number | null>(null);
 
   // CONTRACTS STATE
   const [contracts, setContracts] = useState<any[]>(() => load('contracts'));
@@ -107,7 +108,15 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
                     <p className="font-black uppercase italic text-white text-lg">{show.title}</p>
                     <p className="text-white/30 text-xs">{show.genre} · {show.location}</p>
                   </div>
-                  <select defaultValue="available"
+                  <select 
+                    value={(() => { try { return JSON.parse(localStorage.getItem('hahahub_studio_status') || '{}')[show.id] || 'available'; } catch { return 'available'; } })()}
+                    onChange={e => {
+                      try {
+                        const st = JSON.parse(localStorage.getItem('hahahub_studio_status') || '{}');
+                        st[show.id] = e.target.value;
+                        localStorage.setItem('hahahub_studio_status', JSON.stringify(st));
+                      } catch {}
+                    }}
                     className="bg-brand-black border-2 border-white/20 text-white font-black uppercase italic text-xs px-3 py-2 outline-none focus:border-brand-yellow">
                     <option value="available">Available</option>
                     <option value="negotiating">In Negotiation</option>
@@ -182,8 +191,9 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
               setNewPerf({ date: '', time: '19:00', venue: '', city: '', show: '', techEmail: '', status: 'confirmed' });
               setPerfSaved(true); setTimeout(() => setPerfSaved(false), 3000);
             }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-              + Add Performance {newPerf.techEmail ? '& Send Tech Brief' : ''}
+              + Add Performance {newPerf.techEmail ? '& Open Tech Brief Email' : ''}
             </button>
+            {newPerf.techEmail && <p className="text-white/30 text-[9px] font-black italic">✓ Your email client will open — click Send to dispatch the tech brief.</p>}
             {perfSaved && <p className="text-brand-cyan text-xs font-black italic">✓ Performance added!</p>}
           </div>
 
@@ -203,9 +213,14 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
                   <span className="text-white/40 text-xs">{p.city}</span>
                   <div className="flex items-center justify-between gap-2">
                     <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${p.status === 'confirmed' ? 'bg-brand-cyan text-black' : p.status === 'tentative' ? 'bg-brand-yellow text-black' : 'bg-red-500/30 text-red-400'}`}>{p.status}</span>
-                    <button onClick={() => setPerformances(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
-                      <span className="material-symbols-outlined text-sm">close</span>
-                    </button>
+                    <div className="flex gap-1">
+                      <button onClick={() => { setEditPerfIdx(i); setNewPerf({...p}); }} className="text-white/20 hover:text-brand-yellow transition-colors">
+                        <span className="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                      <button onClick={() => setPerformances(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
+                        <span className="material-symbols-outlined text-sm">close</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -283,8 +298,38 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
                   <span className="text-white font-black uppercase italic text-xs">{tmpl.label}</span>
                   <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">Template</span>
                 </div>
-                <button onClick={() => window.print()} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">
-                  View →
+                <button onClick={() => {
+                  const show = myShows[0];
+                  const today = new Date().toISOString().split('T')[0];
+                  const filled = tmpl.label === 'Licensing Agreement' 
+                    ? `THEATRICAL LICENSING AGREEMENT
+
+Date: ${today}
+Rights Holder: ${user.name}
+Show: ${show?.title || '[SHOW TITLE]'}
+Licensee: [LICENSEE NAME]
+Territory: [COUNTRY]
+Duration: [START] to [END]
+Performances: [NUMBER]
+Royalty: [X] pct of gross box office
+
+Rights Holder: ___________________ Date: _______
+Licensee: ___________________ Date: _______`
+                    : `${tmpl.label.toUpperCase()}
+
+Date: ${today}
+Party A: ${user.name}
+Party B: [OTHER PARTY]
+Show: ${show?.title || '[SHOW TITLE]'}
+
+[Fill in terms...]
+
+Party A: ___________________ Date: _______
+Party B: ___________________ Date: _______`;
+                  const w = window.open('', '_blank');
+                  if (w) { w.document.write('<pre style="font-family:monospace;padding:40px;font-size:14px;">' + filled + '</pre>'); w.print(); }
+                }} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">
+                  Fill & Print →
                 </button>
               </div>
             ))}
