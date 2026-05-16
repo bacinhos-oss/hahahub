@@ -1643,10 +1643,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <h3 className="text-xl font-black uppercase italic text-brand-yellow">Quick Email Templates</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      { label: 'Call Sheet — Actors', icon: 'person', subject: 'Call Sheet — [Show Title] — [Date]', body: 'Dear [Name],  This is your call sheet for [Show Title] on [Date] at [Venue].  Call time: [Time] Venue: [Venue] Dressing room: [Room]  Break a Leg! 🎭 [Producer]' },
+                      { label: 'Call Sheet — Actors', icon: 'person', subject: 'Call Sheet — [Show Title] — [Date]', body: 'Dear [Name],  This is your call sheet for [Show Title] on [Date] at [Venue].  Call time: [Time] Venue: [Venue] Dressing room: [Room]  Break a Leg! [Producer]' },
                       { label: 'Tech Brief — Crew', icon: 'settings', subject: 'Tech Brief — [Show Title] — [Date]', body: 'Dear [Name],  Tech setup for [Show Title] on [Date] at [Venue].  Load-in: [Time] Sound check: [Time] Lighting: [Notes]  See you there! [Producer]' },
                       { label: 'Rights Inquiry Follow-up', icon: 'mail', subject: 'Following up — [Show Title] Rights Inquiry', body: 'Dear [Name],  I am following up on my inquiry about the rights for [Show Title].  I would love to discuss next steps at your earliest convenience.  Best regards, [Producer]' },
-                      { label: 'Deal Confirmation', icon: 'handshake', subject: 'Rights Agreement Confirmed — [Show Title]', body: 'Dear [Name],  Thank you for confirming the rights agreement for [Show Title].  Licensed for: [Territory] Performances: [Number] Royalty: [%]  Looking forward to working together! [Producer]' },
+                      { label: 'Deal Confirmation', icon: 'handshake', subject: 'Rights Agreement Confirmed — [Show Title]', body: 'Dear [Name],  Thank you for confirming the rights agreement for [Show Title].  Licensed for: [Territory] Performances: [Number] Royalty: [X percent]  Looking forward to working together! [Producer]' },
                     ].map((tmpl, i) => (
                       <div key={i} className="border-4 border-white/10 p-4 hover:border-brand-yellow transition-all">
                         <div className="flex items-center gap-2 mb-3">
