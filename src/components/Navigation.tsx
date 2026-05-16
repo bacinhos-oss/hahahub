@@ -41,11 +41,11 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
 
         {/* DESKTOP NAV */}
         <nav className="hidden lg:flex items-center gap-10 italic">
-          {navBtn('discovery', 'THE LAFF EXCHANGE', 'brand-yellow')}
-          {navBtn('stefunny', 'MISS STEFUNNY', 'brand-pink')}
-          {user && navBtn('upload', 'SHOWLOAD', 'brand-cyan')}
+          {navBtn('discovery', 'CATALOG', 'brand-yellow')}
+          {navBtn('wire', 'THE LAFF WIRE', 'brand-pink')}
+          {navBtn('about', 'MISSION', 'white')}
           {navBtn('subscription', 'MY HUB', 'white')}
-          {navBtn('pricing', 'PRICING', 'brand-yellow')}
+          {user && navBtn('upload', 'SHOWLOAD', 'brand-cyan')}
           {isAdmin && navBtn('admin', 'ADMIN', 'brand-pink')}
         </nav>
 
@@ -92,22 +92,22 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         <div className="lg:hidden absolute top-full left-0 right-0 bg-brand-black border-b-4 border-white px-6 py-8 space-y-6 animate-in slide-in-from-top-2">
           <div className="flex flex-col gap-6">
             <button onClick={() => { onNavigate('discovery'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-yellow transition-colors">
-              THE LAFF EXCHANGE
+              CATALOG
             </button>
-            <button onClick={() => { onNavigate('stefunny'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-pink transition-colors">
-              MISS STEFUNNY
+            <button onClick={() => { onNavigate('wire'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-pink transition-colors">
+              THE LAFF WIRE
+            </button>
+            <button onClick={() => { onNavigate('about'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">
+              MISSION
+            </button>
+            <button onClick={() => { onNavigate('subscription'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">
+              MY HUB
             </button>
             {user && (
               <button onClick={() => { onNavigate('upload'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-cyan/70 hover:text-brand-cyan transition-colors">
                 SHOWLOAD
               </button>
             )}
-            <button onClick={() => { onNavigate('subscription'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">
-              MY HUB
-            </button>
-            <button onClick={() => { onNavigate('pricing'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-yellow transition-colors">
-              PRICING
-            </button>
             {isAdmin && (
               <button onClick={() => { onNavigate('admin'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-pink/70 hover:text-brand-pink transition-colors">
                 ADMIN
