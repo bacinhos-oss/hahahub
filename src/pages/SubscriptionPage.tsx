@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import ShareButton from '../components/ShareButton';
 import { supabase } from '../lib/supabase';
+import ProducerStudio from './ProducerStudio';
 import { Badge, getProfileBadges } from '../components/Badge';
 import { Page, User, Show } from '../types';
 
@@ -267,7 +268,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRef2 = React.useRef<HTMLInputElement>(null);
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics'>('assets');
+  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics' | 'studio'>('assets');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [shortlistCounts, setShortlistCounts] = useState<Record<string, number>>({});
@@ -810,10 +811,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             {/* TABS */}
             <div className="flex border-4 border-white/20 w-fit">
-              {(['assets', 'inquiries', 'profile', ...((user as any)?.plan === 'roar' || user?.isAdmin ? ['analytics'] : [])] as const).map((tab: any) => (
+              {(['assets', 'inquiries', 'profile', ...((user as any)?.plan === 'roar' || user?.isAdmin ? ['analytics', 'studio'] : [])] as const).map((tab: any) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                  {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : '⚡ Analytics'}
+                  {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : tab === 'analytics' ? '⚡ Analytics' : '🎬 Studio'}
                 </button>
               ))}
             </div>
@@ -1508,6 +1509,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
                 </div>
               </section>
+            )}
+
+          </div>
+
+            {activeTab === 'studio' && user && (
+              <ProducerStudio user={user} shows={shows} />
             )}
 
           </div>
