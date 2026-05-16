@@ -32,6 +32,9 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const [contracts, setContracts] = useState<any[]>(() => load('contracts'));
   const [showContractForm, setShowContractForm] = useState(false);
   const [newContract, setNewContract] = useState({ title: '', show: '', party: '', type: 'licensing', status: 'draft', date: '', notes: '' });
+  const [editContractIdx, setEditContractIdx] = useState<number | null>(null);
+  const [contractText, setContractText] = useState<string | null>(null);
+  const [contractTextIdx, setContractTextIdx] = useState<number | null>(null);
 
   // CALCULATOR STATE
   const [calc, setCalc] = useState({ performances: '20', ticketPrice: '25', seats: '200', occupancy: '80', royaltyPct: '10', actorFee: '200', actorCount: '5', techFee: '150', techCount: '3', otherFee: '0', otherCount: '0' });
@@ -180,18 +183,43 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
             </div>
             <button onClick={() => {
               if (!newPerf.date || !newPerf.venue || !newPerf.show) return;
-              const perf = { ...newPerf, id: Date.now().toString() };
-              setPerformances(prev => [...prev, perf].sort((a, b) => a.date.localeCompare(b.date)));
+              const show = myShows.find((s: any) => s.title === newPerf.show);
+              
+              // Send email immediately on save if tech email provided
               if (newPerf.techEmail) {
-                const show = myShows.find((s: any) => s.title === newPerf.show);
                 const subject = encodeURIComponent(`Tech Brief — ${newPerf.show} — ${newPerf.date}`);
-                const body = encodeURIComponent(`Dear Colleague,\n\nYou are confirmed for:\n\nShow: ${newPerf.show}\nDate: ${newPerf.date} at ${newPerf.time}\nVenue: ${newPerf.venue}, ${newPerf.city}\n\nShow details:\nGenre: ${show?.genre || '—'}\nDuration: ${show?.duration || '—'} min\nCast: ${show?.maleRoles || 0}M + ${show?.femaleRoles || 0}F\n\nFull dossier available at: https://hahahub.art\n\nBreak a Laffing Leg!\n${user.name}`);
+                const body = encodeURIComponent(`Dear Colleague,
+
+You are confirmed for:
+
+Show: ${newPerf.show}
+Date: ${newPerf.date} at ${newPerf.time}
+Venue: ${newPerf.venue}, ${newPerf.city}
+
+Show details:
+Genre: ${show?.genre || '—'}
+Duration: ${show?.duration || '—'} min
+Cast: ${show?.maleRoles || 0}M + ${show?.femaleRoles || 0}F
+
+Full production dossier: https://hahahub.art
+
+Break a Laffing Leg!
+${user.name}`);
                 window.location.href = `mailto:${newPerf.techEmail}?subject=${subject}&body=${body}`;
+              }
+
+              if (editPerfIdx !== null) {
+                // UPDATE existing
+                setPerformances(prev => prev.map((p, i) => i === editPerfIdx ? { ...newPerf, id: p.id } : p).sort((a, b) => a.date.localeCompare(b.date)));
+                setEditPerfIdx(null);
+              } else {
+                // ADD new
+                setPerformances(prev => [...prev, { ...newPerf, id: Date.now().toString() }].sort((a, b) => a.date.localeCompare(b.date)));
               }
               setNewPerf({ date: '', time: '19:00', venue: '', city: '', show: '', techEmail: '', status: 'confirmed' });
               setPerfSaved(true); setTimeout(() => setPerfSaved(false), 3000);
             }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-              + Add Performance {newPerf.techEmail ? '& Open Tech Brief Email' : ''}
+              {editPerfIdx !== null ? 'Update Performance' : `+ Add Performance${newPerf.techEmail ? ' & Send Dossier' : ''}`}
             </button>
             {newPerf.techEmail && <p className="text-white/30 text-[9px] font-black italic">✓ Your email client will open — click Send to dispatch the tech brief.</p>}
             {perfSaved && <p className="text-brand-cyan text-xs font-black italic">✓ Performance added!</p>}
@@ -339,17 +367,48 @@ Party B: ___________________ Date: _______`;
             <div className="space-y-2">
               <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">My Contracts</p>
               {contracts.map((c, i) => (
-                <div key={c.id || i} className="border-2 border-white/10 px-4 py-3 flex items-center justify-between gap-4 hover:border-brand-yellow transition-all">
-                  <div className="min-w-0">
-                    <p className="font-black uppercase italic text-white text-sm truncate">{c.title}</p>
-                    <p className="text-white/30 text-xs">{c.party} · {c.show} · {c.date}</p>
+                <div key={c.id || i} className="border-2 border-white/10 px-4 py-3 hover:border-brand-yellow transition-all">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="font-black uppercase italic text-white text-sm truncate">{c.title}</p>
+                      <p className="text-white/30 text-xs">{c.party} · {c.show} · {c.date}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${c.status === 'signed' ? 'bg-brand-cyan text-black' : c.status === 'sent' ? 'bg-brand-yellow text-black' : c.status === 'expired' ? 'bg-red-500/30 text-red-400' : 'border border-white/20 text-white/40'}`}>{c.status}</span>
+                      <button onClick={() => { setContractTextIdx(i); setContractText(c.body || c.notes || ''); }} className="text-white/20 hover:text-brand-yellow transition-colors" title="Edit document">
+                        <span className="material-symbols-outlined text-sm">edit_document</span>
+                      </button>
+                      <button onClick={() => setContracts(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${c.status === 'signed' ? 'bg-brand-cyan text-black' : c.status === 'sent' ? 'bg-brand-yellow text-black' : c.status === 'expired' ? 'bg-red-500/30 text-red-400' : 'border border-white/20 text-white/40'}`}>{c.status}</span>
-                    <button onClick={() => setContracts(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                  </div>
+                  {/* Inline contract editor */}
+                  {contractTextIdx === i && (
+                    <div className="mt-3 space-y-2">
+                      <textarea
+                        value={contractText || ''}
+                        onChange={e => setContractText(e.target.value)}
+                        rows={12}
+                        className="w-full bg-black border-2 border-brand-yellow/40 p-4 text-white/80 font-mono text-xs outline-none focus:border-brand-yellow resize-y"
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={() => {
+                          setContracts(prev => prev.map((x, j) => j === i ? { ...x, body: contractText } : x));
+                          setContractTextIdx(null);
+                          setContractText(null);
+                        }} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black">Save</button>
+                        <button onClick={() => {
+                          const blob = new Blob([contractText || ''], { type: 'text/plain' });
+                          const a = document.createElement('a');
+                          a.href = URL.createObjectURL(blob);
+                          a.download = (c.title || 'contract') + '.txt';
+                          a.click();
+                        }} className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">Download</button>
+                        <button onClick={() => { setContractTextIdx(null); setContractText(null); }} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
