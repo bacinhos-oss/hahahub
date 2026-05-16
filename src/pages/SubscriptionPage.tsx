@@ -36,7 +36,7 @@ Territory: [Country/Region] | Language: [Language]
 Duration: [START DATE] to [END DATE] | Max Performances: [NUMBER]
 
 2. FINANCIAL TERMS
-Royalty: [X]% of gross box office per performance
+Royalty: [X] pct of gross box office per performance
 Minimum Guarantee: EUR [AMOUNT] per performance
 Advance Payment: EUR [AMOUNT] (non-refundable, due upon signing)
 Payment: Within 30 days after each performance
@@ -105,12 +105,12 @@ CO-PRODUCER B: [Name/Company], [Country]
 PRODUCTION: "[SHOW TITLE]"
 
 1. FINANCIAL CONTRIBUTIONS
-Co-Producer A: [X]% = EUR [AMOUNT]
-Co-Producer B: [X]% = EUR [AMOUNT]
+Co-Producer A: [X] pct = EUR [AMOUNT]
+Co-Producer B: [X] pct = EUR [AMOUNT]
 Total Budget: EUR [TOTAL AMOUNT]
 
 2. REVENUE SHARING (after all production costs)
-Co-Producer A: [X]% | Co-Producer B: [X]%
+Co-Producer A: [X] pct | Co-Producer B: [X] pct
 
 3. CREATIVE RESPONSIBILITIES
 Co-Producer A: [e.g., artistic direction, casting, script]
@@ -155,8 +155,8 @@ Translation jointly owned by both parties.
 Neither may use it without the other's written consent.
 
 4. FINANCIAL TERMS
-Translation royalty: [X]% of gross box office
-Translator royalty: [X]% (included or additional)
+Translation royalty: [X] pct of gross box office
+Translator royalty: [X] pct (included or additional)
 
 5. QUALITY APPROVAL
 Rights Holder may review and approve final translation before production.
@@ -188,7 +188,7 @@ WORK: "[SHOW TITLE]"
 Additional venues require written approval.
 
 2. FINANCIAL TERMS
-Royalty: [X]% of gross box office per venue
+Royalty: [X] pct of gross box office per venue
 Minimum per venue: EUR [AMOUNT]
 Settlement: Within 14 days after final performance at each venue.
 
@@ -228,7 +228,7 @@ Estimated Performances: [NUMBER]
 Proposed Venue: [VENUE]
 
 Financial Proposal:
-- Royalty: [X]% of gross box office
+- Royalty: [X] pct of gross box office
 - Advance: EUR [AMOUNT]
 - Minimum guarantee: EUR [AMOUNT] per performance
 
