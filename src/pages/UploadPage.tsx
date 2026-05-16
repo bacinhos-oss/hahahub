@@ -80,7 +80,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     isSponsorFriendly: 'true', isGroupSalesFriendly: 'true',
     translationRightsIncluded: 'true',
     // CONTENT
-    synopsis: '', synopsisEn: '', directorNotes: '', scriptScenario: '',
+    synopsis: '', synopsisEn: '', directorNotes: '', scriptScenario: '', trailerUrl: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -150,6 +150,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       title: formData.title, author: formData.author, director: formData.director,
       directorNotes: formData.directorNotes, originalProductionSolutions: formData.originalProductionSolutions,
       synopsis: formData.synopsisEn || formData.synopsis,
+      trailerUrl: formData.trailerUrl || '',
       synopsisOriginal: formData.synopsis,
       originalLanguage: formData.originalLanguage,
       scriptInEnglish: formData.scriptInEnglish, imageUrl: finalImageUrl,
@@ -326,6 +327,11 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div className="col-span-2">
                     <label className={lbl}>Synopsis (Original Language)</label>
                     <textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={4} className="w-full bg-brand-black border-2 border-white/10 p-6 text-white italic leading-relaxed outline-none focus:border-brand-pink"></textarea>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-cyan mb-2 italic">🎬 Trailer / Teaser URL</label>
+                    <p className="text-white/30 text-xs italic mb-2">YouTube or Vimeo link — producers want to see the show before inquiring.</p>
+                    <input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-brand-cyan/30 p-4 text-white outline-none focus:border-brand-cyan" placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..." />
                   </div>
                   <div className="col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
                   <div className="col-span-2"><label className={lbl}>International Success Notes</label><textarea name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} rows={2} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>

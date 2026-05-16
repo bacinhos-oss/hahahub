@@ -185,6 +185,27 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </button>
                   </div>
 
+                  {/* TRAILER VIDEO */}
+                  {(selectedShow as any).trailer_url && (
+                    <section className="space-y-4">
+                      <h4 className="text-xl font-black uppercase italic text-brand-cyan">🎬 TRAILER</h4>
+                      <div className="relative w-full border-4 border-brand-cyan" style={{paddingBottom:'56.25%'}}>
+                        <iframe
+                          className="absolute inset-0 w-full h-full"
+                          src={(() => {
+                            const url = (selectedShow as any).trailer_url;
+                            if (url.includes('youtube.com/watch')) return url.replace('watch?v=', 'embed/');
+                            if (url.includes('youtu.be/')) return 'https://www.youtube.com/embed/' + url.split('youtu.be/')[1];
+                            if (url.includes('vimeo.com/')) return 'https://player.vimeo.com/video/' + url.split('vimeo.com/')[1];
+                            return url;
+                          })()}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    </section>
+                  )}
+
                   {/* SYNOPSIS - MOVED HIGHER AS REQUESTED */}
                   <section className="space-y-6">
                     <h4 className="text-xl font-black uppercase italic text-brand-pink">SYNOPSIS</h4>
@@ -588,7 +609,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <div className="space-y-4">
                 <h2 className="text-4xl font-black uppercase italic text-white">You Tickled<br/>the Laff! 🎭</h2>
                 <p className="text-brand-cyan font-bold uppercase tracking-[0.2em] text-sm italic">The producer has been notified of your interest.</p>
-                <p className="text-white/40 text-xs font-bold italic">Expect a reply within 2-5 business days.</p>
+                <div className="border-4 border-white/10 p-6 text-left space-y-3 mt-4">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">What happens next?</p>
+                  <div className="space-y-2">
+                    <p className="text-white/60 text-sm flex items-start gap-3"><span className="text-brand-cyan font-black">01</span> The rights holder receives your inquiry by email immediately.</p>
+                    <p className="text-white/60 text-sm flex items-start gap-3"><span className="text-brand-cyan font-black">02</span> Expect a reply within 2–5 business days.</p>
+                    <p className="text-white/60 text-sm flex items-start gap-3"><span className="text-brand-cyan font-black">03</span> If interested, they will send you a licensing proposal directly.</p>
+                  </div>
+                </div>
               </div>
               <button 
                 onClick={() => {
