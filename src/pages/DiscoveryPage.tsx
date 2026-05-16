@@ -953,6 +953,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     })()}
                   </div>
 
+                  {/* SHORTLIST BUTTON */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleShortlist(e, show.id); }}
+                    className={"absolute top-2 right-2 w-8 h-8 flex items-center justify-center border-2 transition-all " + (shortlist.includes(show.id) ? "bg-brand-yellow border-brand-yellow text-black" : "bg-black/60 border-white/40 text-white hover:border-brand-yellow hover:text-brand-yellow")}
+                  >
+                    <span className="material-symbols-outlined text-base" style={shortlist.includes(show.id) ? {fontVariationSettings:"'FILL' 1"} : {}}>bookmark</span>
+                  </button>
+
                   {/* BOTTOM INFO */}
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="text-brand-pink text-[9px] font-black uppercase italic tracking-widest mb-1">{show.genre}</p>
