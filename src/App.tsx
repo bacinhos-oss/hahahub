@@ -35,29 +35,27 @@ const App: React.FC = () => {
       setLoading(false)
       return
     }
+
+    // Najprej preveri obstoječo session ob zagonu
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        localStorage.setItem('sb-jnilgukmyfukazwduuig-auth-token', JSON.stringify(session))
         loadProfile(session.user.id, session.user.email!)
       } else {
-        const savedSession = localStorage.getItem('sb-jnilgukmyfukazwduuig-auth-token')
-        if (savedSession) {
-          try {
-            const parsed = JSON.parse(savedSession)
-            if (parsed?.user) {
-              loadProfile(parsed.user.id, parsed.user.email || parsed.user.email)
-            } else {
-              setLoading(false)
-            }
-          } catch {
-            setLoading(false)
-          }
-        } else {
-          setLoading(false)
-        }
+        setLoading(false)
       }
     })
+
     loadShows()
+
+    // Posluša vse spremembe auth stanja — login, logout, token refresh po page reload
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        loadProfile(session.user.id, session.user.email!)
+      } else {
+        setCurrentUser(null)
+        setLoading(false)
+      }
+    })
 
     const channel = supabase
       .channel('shows-realtime')
@@ -66,7 +64,10 @@ const App: React.FC = () => {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    return () => {
+      authSubscription.unsubscribe()
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   const loadProfile = async (userId: string, email: string) => {
@@ -97,7 +98,6 @@ const App: React.FC = () => {
   const loadShows = async () => {
     const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
     if (!data) return
-    // Fetch profiles to get is_verified + is_founding per producer
     const userIds = [...new Set(data.map((s: any) => s.user_id).filter(Boolean))]
     let profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}
     if (userIds.length > 0) {
@@ -125,6 +125,9 @@ const App: React.FC = () => {
       author: s.author || '',
       director: s.director || '',
       synopsis: s.synopsis || '',
+      synopsis_en: s.synopsis_en || '',
+      original_language: s.original_language || '',
+      script_in_english: s.script_in_english || 'false',
       imageUrl: s.image_url || '',
       genre: s.genre || '',
       language: s.language || '',
@@ -176,7 +179,6 @@ const App: React.FC = () => {
   }
 
   const handleLogout = async () => {
-    localStorage.removeItem('sb-jnilgukmyfukazwduuig-auth-token')
     await supabase.auth.signOut()
     setCurrentUser(null)
     setIsAdminAuthenticated(false)
@@ -240,7 +242,11 @@ const App: React.FC = () => {
     const { data, error } = await supabase.from('shows').insert([{
       title: newShow.title, author: newShow.author, director: newShow.director,
       director_notes: newShow.directorNotes, original_production_solutions: newShow.originalProductionSolutions,
-      synopsis: newShow.synopsis, image_url: newShow.imageUrl,
+      synopsis: newShow.synopsis,
+      synopsis_en: (newShow as any).synopsis_en || '',
+      original_language: (newShow as any).original_language || '',
+      script_in_english: (newShow as any).script_in_english || 'false',
+      image_url: newShow.imageUrl,
       genre: newShow.genre, subgenre: newShow.subgenre, language: newShow.language,
       location: newShow.location, duration: newShow.duration,
       male_roles: newShow.maleRoles, female_roles: newShow.femaleRoles,
@@ -291,8 +297,6 @@ const App: React.FC = () => {
     else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
   }
 
-
-
   const sendEmail = async (type: string, to: string, data: any) => {
     try {
       await fetch('/api/send-email', {
@@ -332,8 +336,7 @@ const App: React.FC = () => {
   const renderPage = () => {
     // After loading, redirect paid users from landing to discovery
     const effectivePage = (() => {
-      if (currentPage === 'landing' && currentUser?.isPaid) return 'discovery'
-      if (currentPage === 'landing' && currentUser?.isAdmin) return 'discovery'
+      if (currentPage === 'landing' && currentUser) return 'discovery' // all logged in users go to catalog
       if ((currentPage === 'upload') && currentUser && !currentUser.isPaid && !currentUser.isAdmin) return 'landing'
       return currentPage
     })()
@@ -341,9 +344,9 @@ const App: React.FC = () => {
     switch (effectivePage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} onViewProducer={(id) => setCurrentProducerId(id)} />
-      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} />
+      case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={(id) => setShows(prev => prev.filter(s => s.id !== id))} />
       case 'login': return <LoginPage 
-        onSuccess={(isPaid: boolean) => setCurrentPage(isPaid ? 'discovery' : 'landing')} 
+        onSuccess={(isPaid: boolean) => setCurrentPage('discovery')} 
         onBack={() => setCurrentPage('landing')} 
         setCurrentUser={setCurrentUser} 
       />

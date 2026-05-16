@@ -277,6 +277,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [profileForm, setProfileForm] = useState({ bio: '', website: '', location_city: '', festivals: '', avatar_url: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -335,7 +339,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             }
           });
       }
-      supabase.from('profiles').select('bio, website, location_city, festivals').eq('id', user.id).maybeSingle().then(({ data }) => {
+      supabase.from('profiles').select('bio, website, location_city, festivals, avatar_url').eq('id', user.id).maybeSingle().then(({ data }) => {
         if (data) setProfileForm({ bio: data.bio || '', website: data.website || '', location_city: data.location_city || '', festivals: data.festivals || '', avatar_url: data.avatar_url || '' });
       });
     }
@@ -442,7 +446,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       const { error } = await supabase.from('shows').update({
         title: editForm.title, author: editForm.author, director: editForm.director,
         director_notes: editForm.directorNotes, original_production_solutions: editForm.originalProductionSolutions,
-        synopsis: editForm.synopsis, genre: editForm.genre, subgenre: editForm.subgenre,
+        synopsis: editForm.synopsis, synopsis_en: (editForm as any).synopsis_en, original_language: (editForm as any).original_language, script_in_english: (editForm as any).script_in_english, genre: editForm.genre, subgenre: editForm.subgenre,
         language: editForm.language, location: editForm.location,
         duration: Number(editForm.duration), male_roles: Number(editForm.maleRoles),
         female_roles: Number(editForm.femaleRoles), can_merge_roles: editForm.canMergeRoles,
@@ -559,7 +563,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {F('location', 'Origin Market')}
                   {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
                   {F('translationsAvailable', 'Translations Available')}
-                  {T('synopsis', 'Synopsis', 4)}
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">Synopsis in English *</label>
+                    <textarea name="synopsis_en" value={(editForm as any).synopsis_en || ''} onChange={handleEditChange} rows={5} className="w-full bg-brand-black border-2 border-brand-yellow/30 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-yellow" placeholder="English synopsis — required for international producers" />
+                  </div>
+                  {T('synopsis', 'Synopsis (Original Language)', 3)}
                   {T('directorNotes', "Director's Notes", 3)}
                   {T('originalProductionSolutions', 'Original Staging Solutions', 2)}
                   {T('internationalSuccessNotes', 'International Success Notes', 2)}
@@ -650,7 +658,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <div key={i}>
                     <div
                       onClick={() => editPhotoRefs[i].current?.click()}
-                      className="w-full h-24 border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-black/40 relative group"
+                      className="w-full border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-black/40 relative group" style={{aspectRatio:"16/9"}}
                     >
                       {editPhotoPreviews[i] ? (
                         <>
@@ -1396,17 +1404,26 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (!file) return;
-                            if (file.size > 500000) { alert('Max 500KB please'); return; }
-                            const reader = new FileReader();
-                            reader.onload = async () => {
-                              const base64 = reader.result as string;
+                            // Resize image before base64 to keep it small
+                            const img = new Image();
+                            const objectUrl = URL.createObjectURL(file);
+                            img.onload = async () => {
+                              const canvas = document.createElement('canvas');
+                              const MAX = 200;
+                              const ratio = Math.min(MAX / img.width, MAX / img.height);
+                              canvas.width = img.width * ratio;
+                              canvas.height = img.height * ratio;
+                              const ctx = canvas.getContext('2d');
+                              ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                              const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                              URL.revokeObjectURL(objectUrl);
                               setProfileForm(p => ({ ...p, avatar_url: base64 }));
-                              // Save immediately to Supabase
                               if (user?.id) {
-                                await supabase.from('profiles').update({ avatar_url: base64 }).eq('id', user.id);
+                                const { error } = await supabase.from('profiles').update({ avatar_url: base64 }).eq('id', user.id);
+                                if (error) console.error('Avatar save error:', error);
                               }
                             };
-                            reader.readAsDataURL(file);
+                            img.src = objectUrl;
                           }} />
                         </label>
                         <p className="text-white/20 text-[9px] italic mt-1">Max 500KB · JPG or PNG</p>
@@ -1446,6 +1463,44 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   }} disabled={profileSaving} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-white transition-all disabled:opacity-40">
                     {profileSaving ? 'Saving...' : profileSaved ? 'Saved! ✓' : 'Save Profile →'}
                   </button>
+
+                  {/* CHANGE PASSWORD */}
+                  <div className="border-t-4 border-white/10 pt-8 mt-4 space-y-4">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Change Password</p>
+                    <input
+                      type="password"
+                      placeholder="New password (min 6 chars)"
+                      value={newPassword}
+                      onChange={e => { setNewPassword(e.target.value); setPasswordMsg(''); }}
+                      className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm new password"
+                      value={confirmPassword}
+                      onChange={e => { setConfirmPassword(e.target.value); setPasswordMsg(''); }}
+                      className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
+                    />
+                    {passwordMsg && (
+                      <p className={`text-xs font-black italic ${passwordMsg.includes('✓') ? 'text-brand-cyan' : 'text-brand-pink'}`}>{passwordMsg}</p>
+                    )}
+                    <button
+                      onClick={async () => {
+                        if (newPassword.length < 6) { setPasswordMsg('⚠ Min 6 characters'); return; }
+                        if (newPassword !== confirmPassword) { setPasswordMsg('⚠ Passwords do not match'); return; }
+                        setPasswordSaving(true);
+                        const { error } = await supabase.auth.updateUser({ password: newPassword });
+                        if (error) { setPasswordMsg('⚠ ' + error.message); }
+                        else { setPasswordMsg('✓ Password updated!'); setNewPassword(''); setConfirmPassword(''); }
+                        setPasswordSaving(false);
+                      }}
+                      disabled={passwordSaving || !newPassword || !confirmPassword}
+                      className="border-4 border-white text-white px-8 py-3 font-black uppercase italic hover:bg-white hover:text-black transition-all disabled:opacity-30"
+                    >
+                      {passwordSaving ? 'Updating...' : 'Update Password →'}
+                    </button>
+                  </div>
+
                 </div>
               </section>
             )}

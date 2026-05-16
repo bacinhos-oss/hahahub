@@ -44,16 +44,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
 
   const sliderShows = shows.slice(0, 6);
 
-  // Load real founding producer count from Supabase
+  // Load real founding producer count + punch count from Supabase
   useEffect(() => {
-    const loadFoundingCount = async () => {
-      const { count } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_paid', true);
-      setFoundingTaken(count || 0);
+    const loadStats = async () => {
+      const { count: paidCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true);
+      setFoundingTaken(paidCount || 0);
     };
-    loadFoundingCount();
+    loadStats();
   }, []);
 
   useEffect(() => {
@@ -119,6 +116,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               </button>
             </div>
           </div>
+
         </section>
 
         {/* SLIDER — top shows autoplay */}

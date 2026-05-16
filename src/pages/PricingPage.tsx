@@ -89,19 +89,19 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
                 <p className="text-white/20 text-xs font-bold italic mb-8">forever</p>
                 <ul className="space-y-3 mb-10">
                   {[
-                    '3 shows preview',
-                    'Basic catalog browse',
-                    '3 Laff Wire posts',
-                    'No contact access',
-                    'No uploads',
+                    { t: 'Browse 5 shows', ok: false },
+                    { t: 'Upload 1 show', ok: true },
+                    { t: 'Wire — read only', ok: false },
+                    { t: 'No contact access', ok: false },
+                    { t: 'No Dossier', ok: false },
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/30">
-                      <span className="material-symbols-outlined text-white/20 text-base">remove</span>{f}
+                    <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/60' : 'text-white/25'}`}>
+                      <span className={`material-symbols-outlined text-base ${f.ok ? 'text-brand-cyan' : 'text-white/20'}`}>{f.ok ? 'check' : 'remove'}</span>{f.t}
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => onNavigate('login')} className="w-full py-4 border-4 border-white/20 text-white/40 font-black uppercase text-sm italic hover:border-white hover:text-white transition-all">
-                  Start Free
+                <button onClick={() => { sessionStorage.setItem('selectedPlan','gigl'); onNavigate('login'); }} className="w-full py-4 border-4 border-white/20 text-white/40 font-black uppercase text-sm italic hover:border-white hover:text-white transition-all">
+                  Start for Free
                 </button>
               </div>
 
@@ -140,31 +140,31 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
               </div>
 
               {/* ROAR - Studio */}
-              <div className="bg-brand-surface border-4 border-brand-cyan p-6 md:p-8 shadow-neo-cyan">
-                <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-1">Studio</p>
+              <div className="bg-brand-surface border-4 border-brand-pink p-6 md:p-8 shadow-[8px_8px_0px_rgba(255,2,102,0.4)]">
+                <p className="text-brand-pink text-xs font-black uppercase tracking-widest italic mb-1">Studio · Full Power</p>
                 <h3 className="text-4xl font-black uppercase italic text-white mb-1">ROAR</h3>
-                <div className="text-6xl font-black text-brand-cyan mb-1">€189</div>
+                <div className="text-6xl font-black text-brand-pink mb-1">€189</div>
                 <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
                 <ul className="space-y-3 mb-10">
                   {[
-                    'Full catalog — unlimited',
+                    'Browse full catalog — unlimited',
                     'Upload unlimited shows',
                     'Direct contact with rights holders',
                     'The Dossier PDF download',
                     'FEATURED badge in catalog',
                     'Priority listing — always first',
                     'VERIFIED badge',
-                    'Laff Wire — live, real-time',
+                    'Laff Wire — live real-time',
                     'White-label Dossier',
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/70">
-                      <span className="material-symbols-outlined text-brand-cyan text-base">check_circle</span>{f}
+                    <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
+                      <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
                   ))}
                 </ul>
                 <button
-                  onClick={() => user ? setSelectedPlan({ name: 'ROAR Annual', price: '€189' }) : onNavigate('login')}
-                  className="w-full py-4 bg-brand-cyan text-black border-4 border-black font-black uppercase text-sm italic hover:bg-white transition-all"
+                  onClick={() => user ? setSelectedPlan({ name: 'ROAR Annual', price: '€189' }) : (sessionStorage.setItem('selectedPlan','roar'), onNavigate('login'))}
+                  className="w-full py-4 bg-brand-pink text-white border-4 border-black font-black uppercase text-sm italic hover:bg-white hover:text-black transition-all"
                 >
                   Start Roaring →
                 </button>
@@ -184,19 +184,19 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
                     <th className="text-left p-4 font-black uppercase italic text-white/40 text-xs tracking-widest">Feature</th>
                     <th className="p-4 font-black uppercase italic text-white/40 text-xs tracking-widest text-center">GIGL</th>
                     <th className="p-4 font-black uppercase italic text-brand-pink text-xs tracking-widest text-center bg-white/5">LAFF</th>
-                    <th className="p-4 font-black uppercase italic text-brand-cyan text-xs tracking-widest text-center">ROAR</th>
+                    <th className="p-4 font-black uppercase italic text-brand-pink text-xs tracking-widest text-center">ROAR</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { f: 'Browse catalog', gigl: '3 shows', laff: 'Unlimited', roar: 'Unlimited + Priority' },
-                    { f: 'Upload shows', gigl: '✗', laff: 'Unlimited', roar: 'Unlimited' },
+                    { f: 'Browse catalog', gigl: '5 shows', laff: 'Unlimited', roar: 'Unlimited + Priority' },
+                    { f: 'Upload shows', gigl: '1 show', laff: '10 shows', roar: 'Unlimited' },
                     { f: 'Contact rights holders', gigl: '✗', laff: '✓', roar: '✓' },
                     { f: 'The Dossier PDF', gigl: '✗', laff: '✓', roar: '✓' },
                     { f: 'Contract templates', gigl: '✗', laff: '✓', roar: '✓' },
                     { f: 'The Laff Wire', gigl: '3 posts only', laff: '7 days', roar: 'Live · Real-time' },
                     { f: 'Post to Laff Wire', gigl: '✗', laff: '✓', roar: '✓' },
-                    { f: 'Producer Profile', gigl: '✗', laff: '✗', roar: '✓' },
+                    { f: 'Producer Profile', gigl: '✗', laff: '✓', roar: '✓' },
                     { f: 'VERIFIED badge', gigl: '✗', laff: '✗', roar: '✓' },
                     { f: 'Priority listing', gigl: '✗', laff: '✗', roar: '✓' },
                     { f: 'Multi-user (3 seats)', gigl: '✗', laff: '✗', roar: '✓' },
@@ -206,7 +206,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
                       <td className="p-4 font-bold text-white/60 italic">{row.f}</td>
                       <td className="p-4 text-center font-black text-white/30">{row.gigl}</td>
                       <td className="p-4 text-center font-black text-white bg-white/5">{row.laff}</td>
-                      <td className="p-4 text-center font-black text-brand-cyan">{row.roar}</td>
+                      <td className="p-4 text-center font-black text-brand-pink">{row.roar}</td>
                     </tr>
                   ))}
                 </tbody>

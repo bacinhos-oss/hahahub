@@ -86,27 +86,12 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
     <div className="flex flex-col min-h-screen bg-brand-black">
       <Navigation activePage="discovery" onNavigate={onNavigate} onLogout={onLogout} user={user} />
 
-      <main className="pt-20 pb-20 flex-1">
+      <main className="pt-16 pb-20 flex-1">
 
-        {/* COVER */}
-        <div className="relative h-48 md:h-64 bg-brand-surface border-b-4 border-white overflow-hidden">
-          {producer.avatar_url ? (
-            <img src={producer.avatar_url} alt="" className="w-full h-full object-cover opacity-30 blur-sm scale-110" />
-          ) : (
-            <div className="w-full h-full" style={{
-              background: `linear-gradient(135deg, #050505 0%, #1a1a1a 50%, #050505 100%)`,
-              backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,222,3,0.03) 20px, rgba(255,222,3,0.03) 21px)`
-            }}>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[120px] md:text-[200px] font-black uppercase text-white/5 italic tracking-tighter select-none">
-                  {producer.name?.[0]}
-                </span>
-              </div>
-            </div>
-          )}
-          {/* Back button */}
+        {/* BACK */}
+        <div className="px-4 md:px-8 pt-4 pb-2 max-w-4xl mx-auto w-full">
           <button onClick={() => onNavigate('discovery')}
-            className="absolute top-4 left-4 bg-black/60 text-white px-4 py-2 font-black uppercase italic text-xs border-2 border-white/20 hover:border-white transition-all backdrop-blur-sm">
+            className="text-white/40 hover:text-white font-black uppercase italic text-xs transition-all">
             ← Back
           </button>
         </div>
@@ -114,8 +99,8 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
         <div className="max-w-4xl mx-auto px-4 md:px-8">
 
           {/* PROFILE HEADER */}
-          <div className="relative -mt-12 md:-mt-16 mb-6">
-            <div className="flex flex-col md:flex-row items-start md:items-end gap-4 md:gap-6">
+          <div className="relative mb-6">
+            <div className="flex flex-col md:flex-row items-end gap-4 md:gap-6">
               {/* Avatar */}
               <div className="flex-shrink-0">
                 <div className="relative">
@@ -167,15 +152,32 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                         className="px-5 py-2 border-4 border-white text-white font-black uppercase italic text-xs hover:bg-white hover:text-black transition-all">
                         Edit Profile
                       </button>
-                    ) : user?.isPaid && producer.email ? (
-                      <a href={`mailto:${producer.email}`}
-                        className="px-6 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-sm hover:bg-white transition-all shadow-[4px_4px_0px_black]">
-                        Tickle →
-                      </a>
+                    ) : user?.isPaid ? (
+                      producer.email ? (
+                        <div className="flex items-center gap-2 border-4 border-brand-yellow p-3 bg-brand-surface">
+                          <span className="text-white font-black italic text-xs truncate max-w-[160px]">{producer.email}</span>
+                          <button
+                            onClick={() => { navigator.clipboard.writeText(producer.email); }}
+                            className="flex-shrink-0 bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all flex items-center gap-1"
+                          >
+                            <span className="material-symbols-outlined text-sm">content_copy</span>
+                            Copy
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="px-5 py-2 border-4 border-white/20 text-white/30 font-black uppercase italic text-xs">
+                          No contact info
+                        </span>
+                      )
+                    ) : !user ? (
+                      <button onClick={() => onNavigate('login')}
+                        className="px-5 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-xs hover:bg-white transition-all">
+                        Sign In →
+                      </button>
                     ) : (
                       <button onClick={() => onNavigate('pricing')}
                         className="px-5 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-xs hover:bg-white transition-all">
-                        Unlock Contact
+                        LAFF+ to Contact →
                       </button>
                     )}
                   </div>
