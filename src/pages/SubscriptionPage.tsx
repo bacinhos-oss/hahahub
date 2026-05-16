@@ -1643,10 +1643,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <h3 className="text-xl font-black uppercase italic text-brand-yellow">Quick Email Templates</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      { label: 'Call Sheet', icon: 'person', subject: 'Call Sheet - Show Title - Date', body: 'Dear Name, This is your call sheet. Call time: Time. Venue: Venue. Break a Leg! Producer' },
-                      { label: 'Tech Brief', icon: 'settings', subject: 'Tech Brief - Show Title - Date', body: 'Dear Name, Tech setup details. Load-in: Time. Sound check: Time. See you there! Producer' },
-                      { label: 'Rights Follow-up', icon: 'mail', subject: 'Following up - Show Title Rights', body: 'Dear Name, Following up on my rights inquiry. I would love to discuss next steps. Best regards, Producer' },
-                      { label: 'Deal Confirmation', icon: 'handshake', subject: 'Rights Agreement Confirmed - Show Title', body: 'Dear Name, Thank you for confirming the rights agreement. Licensed for: Territory. Performances: Number. Looking forward to working together! Producer' },
+                      { label: 'Call Sheet', icon: 'person', subject: 'Call Sheet', body: 'Call sheet details here.' },
+                      { label: 'Tech Brief', icon: 'settings', subject: 'Tech Brief', body: 'Tech brief details here.' },
+                      { label: 'Rights Follow-up', icon: 'mail', subject: 'Rights Follow-up', body: 'Following up on rights inquiry.' },
+                      { label: 'Deal Confirmation', icon: 'handshake', subject: 'Deal Confirmed', body: 'Rights agreement confirmed.' },
                     ].map((tmpl, i) => (
                       <div key={i} className="border-4 border-white/10 p-4 hover:border-brand-yellow transition-all">
                         <div className="flex items-center gap-2 mb-3">
