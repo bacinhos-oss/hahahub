@@ -13,12 +13,26 @@ interface LaffWirePageProps {
 }
 
 const POST_TYPES: Record<string, { label: string; bg: string; text: string }> = {
-  new_show:      { label: 'NEW SHOW',        bg: '#FFDE03', text: '#000' },
+  deal:          { label: '🥊 DEAL CLOSED',   bg: '#FF0266', text: '#fff' },
+  new_show:      { label: 'NEW SHOW',         bg: '#FFDE03', text: '#000' },
   discount:      { label: 'DISCOUNT',         bg: '#FF0266', text: '#fff' },
   co_production: { label: 'CO-PRODUCTION',    bg: '#03DAC6', text: '#000' },
   news:          { label: 'NEWS',             bg: '#fff',    text: '#000' },
   rights:        { label: 'RIGHTS',           bg: '#FFDE03', text: '#000' },
 };
+
+// Extract YouTube/Vimeo URL from text
+function extractVideoUrl(text: string): string | null {
+  const match = text.match(/(https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|vimeo\.com\/)[\w\-?=&]+)/);
+  return match ? match[0] : null;
+}
+
+function getEmbedUrl(url: string): string {
+  if (url.includes('youtube.com/watch')) return url.replace('watch?v=', 'embed/').split('&')[0];
+  if (url.includes('youtu.be/')) return 'https://www.youtube.com/embed/' + url.split('youtu.be/')[1].split('?')[0];
+  if (url.includes('vimeo.com/')) return 'https://player.vimeo.com/video/' + url.split('vimeo.com/')[1].split('?')[0];
+  return url;
+}
 
 
 
@@ -240,6 +254,30 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
 
                         {/* Content */}
                         <p className="text-white/80 font-bold italic leading-relaxed text-sm">{post.content}</p>
+
+                        {/* Video embed if URL in content */}
+                        {(() => {
+                          const videoUrl = extractVideoUrl(post.content);
+                          if (!videoUrl) return null;
+                          return (
+                            <div className="relative w-full mt-3 border-2 border-white/20" style={{paddingBottom:'56.25%'}}>
+                              <iframe
+                                className="absolute inset-0 w-full h-full"
+                                src={getEmbedUrl(videoUrl)}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              />
+                            </div>
+                          );
+                        })()}
+
+                        {/* Deal badge */}
+                        {post.type === 'deal' && (
+                          <div className="mt-3 border-2 border-brand-pink/40 bg-brand-pink/10 px-4 py-3 flex items-center gap-3">
+                            <span className="material-symbols-outlined text-brand-pink text-2xl">handshake</span>
+                            <p className="text-brand-pink text-[10px] font-black uppercase italic tracking-widest">Deal Announced — Rights Licensed</p>
+                          </div>
+                        )}
 
                         {/* Actions */}
                         <div className="flex items-center gap-5 mt-3">
