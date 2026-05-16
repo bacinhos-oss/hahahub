@@ -536,7 +536,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
 
                 <div className="pt-4 border-t-4 border-black">
                   <button onClick={handleLaunch} className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl">
-                    List Your Show
+                    Showload
                   </button>
                 </div>
               </div>
