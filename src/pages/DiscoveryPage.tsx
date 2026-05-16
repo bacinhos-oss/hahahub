@@ -998,22 +998,37 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </div>
 
                 {/* BOTTOM BAR */}
-                <div className="border-t-4 border-white/20 group-hover:border-brand-yellow/30 px-3 py-2 flex items-center justify-between gap-2 transition-all">
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">
-                      <span className="material-symbols-outlined text-sm text-brand-cyan">visibility</span>
-                      {show.viewsCount || 0}
-                    </span>
-                    <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">
-                      <span className="material-symbols-outlined text-sm text-brand-pink" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
-                      {show.likesCount || 0}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-white/30 text-[9px] font-black italic">{show.location}</span>
-                    <span className="text-white/20 text-[9px]">·</span>
-                    <span className="text-white/30 text-[9px] font-black italic">{show.productionYear}</span>
-                    {getProfileBadges(show).slice(0,1).map(b => <Badge key={b} type={b} size="xs" />)}
+                <div className="border-t-4 border-white/20 group-hover:border-brand-yellow/30 px-3 py-2 space-y-1.5 transition-all">
+                  {/* ROI — royalty range */}
+                  {show.royaltyRange && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8px] font-black uppercase text-brand-yellow italic">Royalty</span>
+                      <span className="text-[9px] font-black text-brand-yellow italic">{show.royaltyRange}</span>
+                    </div>
+                  )}
+                  {show.licensingModel && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8px] font-black uppercase text-white/30 italic">Model</span>
+                      <span className="text-[9px] font-black text-white/50 italic">{show.licensingModel}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/10">
+                    <div className="flex items-center gap-2">
+                      <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">
+                        <span className="material-symbols-outlined text-sm text-brand-cyan">visibility</span>
+                        {show.viewsCount || 0}
+                      </span>
+                      <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">
+                        <span className="material-symbols-outlined text-sm text-brand-pink" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
+                        {show.likesCount || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-white/30 text-[9px] font-black italic">{show.location}</span>
+                      <span className="text-white/20 text-[9px]">·</span>
+                      <span className="text-white/30 text-[9px] font-black italic">{show.productionYear}</span>
+                      {getProfileBadges(show).slice(0,1).map(b => <Badge key={b} type={b} size="xs" />)}
+                    </div>
                   </div>
                 </div>
               </div>
