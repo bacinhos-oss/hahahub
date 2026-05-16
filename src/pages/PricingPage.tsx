@@ -143,8 +143,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
               <div className="bg-brand-surface border-4 border-brand-pink p-6 md:p-8 shadow-[8px_8px_0px_rgba(255,2,102,0.4)]">
                 <p className="text-brand-pink text-xs font-black uppercase tracking-widest italic mb-1">Studio · Full Power</p>
                 <h3 className="text-4xl font-black uppercase italic text-white mb-1">ROAR</h3>
-                <div className="text-6xl font-black text-brand-pink mb-1">€189</div>
-                <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
+                <div className="text-6xl font-black text-brand-pink mb-1">€199</div>
+                <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€17/month</p>
                 <ul className="space-y-3 mb-10">
                   {[
                     'Browse full catalog — unlimited',
@@ -156,6 +156,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
                     'VERIFIED badge',
                     'Laff Wire — live real-time',
                     'White-label Dossier',
+                    'Producer Studio — full command center',
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
@@ -163,7 +164,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
                   ))}
                 </ul>
                 <button
-                  onClick={() => user ? setSelectedPlan({ name: 'ROAR Annual', price: '€189' }) : (sessionStorage.setItem('selectedPlan','roar'), onNavigate('login'))}
+                  onClick={() => user ? setSelectedPlan({ name: 'ROAR Annual', price: '€199' }) : (sessionStorage.setItem('selectedPlan','roar'), onNavigate('login'))}
                   className="w-full py-4 bg-brand-pink text-white border-4 border-black font-black uppercase text-sm italic hover:bg-white hover:text-black transition-all"
                 >
                   Start Roaring →
