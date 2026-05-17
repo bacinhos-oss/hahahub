@@ -962,8 +962,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       <div className="flex flex-col gap-2 flex-shrink-0">
                         <button onClick={() => { markAsRead(inq.id); setReplyingTo(replyingTo === inq.id ? null : inq.id); setReplyText(''); }}
                           className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "border-white/20 text-white/40 hover:border-brand-yellow hover:text-brand-yellow" : "bg-brand-yellow text-black border-black hover:bg-white")}>
-                          {replyingTo === inq.id ? 'Cancel' : inq.is_read ? 'REPLY AGAIN →' : 'REPLY →'}
+                          {replyingTo === inq.id ? 'CANCEL' : 'REPLY →'}
                         </button>
+                        {inq.status !== 'deal' && (
+                          <button onClick={() => {
+                            setDealInquiry(inq);
+                            setDealForm({ royalty_pct: '', years: '', territory: 'Europe', performances: '', notes: '', signed_date: new Date().toISOString().split('T')[0] });
+                            setReplyingTo(null);
+                          }} className="text-[9px] font-black uppercase px-4 py-2 border-2 border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all italic">
+                            DEAL
+                          </button>
+                        )}
                       </div>
                       {/* INLINE REPLY BOX */}
                       {replyingTo === inq.id && (
@@ -1011,13 +1020,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                               className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs hover:border-white transition-all">
                               Cancel
                             </button>
-                            <button onClick={() => {
-                              setDealInquiry(inq);
-                              setDealForm({ royalty_pct: '', years: '', territory: 'Europe', performances: '', notes: '', signed_date: new Date().toISOString().split('T')[0] });
-                              setReplyingTo(null);
-                            }} className="border-2 border-brand-cyan text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
-                              DEAL
-                            </button>
+
                           </div>
                         </div>
                       )}
