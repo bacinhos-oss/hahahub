@@ -418,6 +418,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   };
 
   const markAsRead = async (inquiryId: string) => {
+    // Update status to 'read' when producer opens
     // Optimistic update first — instant UI feedback
     setInquiries(prev => prev.map(inq => inq.id === inquiryId ? { ...inq, is_read: true } : inq));
     // Then persist to Supabase
@@ -938,7 +939,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   ) : inquiries.map((inq: any) => (
                     <div key={inq.id} className={"border-4 p-5 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan shadow-neo-cyan")}>
                       <div className="flex-1 min-w-0">
-                        {!inq.is_read && <span className="text-[8px] font-black uppercase bg-brand-cyan text-black px-2 py-0.5 mb-2 inline-block">NEW</span>}
+                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 mb-2 inline-block border ${
+                          inq.status === 'deal' ? 'bg-brand-cyan text-black border-brand-cyan' :
+                          inq.status === 'replied' ? 'bg-brand-yellow text-black border-brand-yellow' :
+                          inq.status === 'read' ? 'border-white/30 text-white/40' :
+                          'bg-brand-pink text-white border-brand-pink'
+                        }`}>{
+                          inq.status === 'deal' ? '🤝 DEAL' :
+                          inq.status === 'replied' ? 'REPLIED' :
+                          inq.status === 'read' ? 'READ' : 'NEW'
+                        }</span>
                         <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
                         <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
                         <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
@@ -985,7 +995,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                                 const json = await res.json();
                                 if (json.success) {
                                   markAsRead(inq.id);
-                                  await supabase.from('inquiries').update({ replied: true }).eq('id', inq.id);
+                                  await supabase.from('inquiries').update({ replied: true, status: 'replied' }).eq('id', inq.id);
                                 }
                               } catch(e) { console.error('Reply error:', e); }
                               setReplyingTo(null);
@@ -996,6 +1006,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                             <button onClick={() => { setReplyingTo(null); setReplyText(''); }}
                               className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs hover:border-white transition-all">
                               Cancel
+                            </button>
+                            <button onClick={async () => {
+                              await supabase.from('inquiries').update({ status: 'deal' }).eq('id', inq.id);
+                              setInquiries(prev => prev.map(i => i.id === inq.id ? {...i, status: 'deal'} : i));
+                              setReplyingTo(null);
+                            }} className="border-2 border-brand-cyan text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
+                              DEAL 🤝
                             </button>
                           </div>
                         </div>
@@ -1022,8 +1039,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         <p className="text-white/60 font-bold italic text-sm mt-2">{inq.message}</p>
                         <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
-                      <div className="flex-shrink-0">
-                        <span className="text-[8px] font-black uppercase px-2 py-1 border border-white/20 text-white/30">Sent</span>
+                      <div className="flex-shrink-0 space-y-1">
+                        <span className={`text-[8px] font-black uppercase px-2 py-1 border block text-center ${
+                          inq.status === 'deal' ? 'bg-brand-cyan text-black border-brand-cyan' :
+                          inq.status === 'replied' ? 'bg-brand-yellow text-black border-brand-yellow' :
+                          inq.status === 'read' ? 'border-white/40 text-white/50' :
+                          'border-white/20 text-white/30'
+                        }`}>{
+                          inq.status === 'deal' ? '🤝 DEAL' :
+                          inq.status === 'replied' ? 'REPLIED ✓' :
+                          inq.status === 'read' ? 'SEEN' : 'SENT'
+                        }</span>
                       </div>
                     </div>
                   ))}
