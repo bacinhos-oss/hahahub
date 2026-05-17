@@ -831,17 +831,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* STATS BAR — all plans */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Views', value: myStats.views, icon: 'visibility', color: 'text-brand-cyan' },
-                { label: 'Likes', value: myStats.likes, icon: 'favorite', color: 'text-brand-pink' },
-                { label: 'Inquiries', value: myStats.inquiries, icon: 'mail', color: 'text-brand-yellow' },
-                { label: 'My Shows', value: userUploads.length, icon: 'theater_comedy', color: 'text-white' },
+                { label: 'Views', value: myStats.views, sym: '👁', color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
+                { label: 'Likes', value: myStats.likes, sym: '♥', color: 'text-brand-pink', border: 'border-brand-pink/30' },
+                { label: 'Inquiries', value: myStats.inquiries, sym: '✉', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
+                { label: 'My Shows', value: userUploads.length, sym: '🎭', color: 'text-white', border: 'border-white/20' },
               ].map((s, i) => (
-                <div key={i} className="border-4 border-white/10 p-4 flex items-center gap-3">
-                  <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
-                  <div>
-                    <p className="text-2xl font-black text-white">{s.value}</p>
-                    <p className="text-[9px] font-black uppercase italic text-white/30">{s.label}</p>
-                  </div>
+                <div key={i} className={`border-4 ${s.border} p-4`}>
+                  <p className={`text-3xl font-black ${s.color}`}>{s.value}</p>
+                  <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">{s.sym} {s.label}</p>
                 </div>
               ))}
             </div>
@@ -968,22 +965,29 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <div className="flex gap-3">
                             <button onClick={async () => {
                               if (!replyText.trim()) return;
+                              const toEmail = inq.from_email || inq.email;
+                              if (!toEmail) { alert('No email found for this inquiry.'); return; }
                               try {
-                                await fetch('/api/send-email', {
+                                const res = await fetch('/api/send-email', {
                                   method: 'POST',
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({
                                     type: 'inquiry_reply',
-                                    to: inq.from_email,
+                                    to: toEmail,
                                     data: {
                                       producerName: user.name,
-                                      buyerName: inq.from_name,
-                                      showTitle: inq.show_title,
+                                      buyerName: inq.from_name || 'Producer',
+                                      showTitle: inq.show_title || 'your inquiry',
                                       message: replyText,
                                     }
                                   })
                                 });
-                              } catch {}
+                                const json = await res.json();
+                                if (json.success) {
+                                  markAsRead(inq.id);
+                                  await supabase.from('inquiries').update({ replied: true }).eq('id', inq.id);
+                                }
+                              } catch(e) { console.error('Reply error:', e); }
                               setReplyingTo(null);
                               setReplyText('');
                             }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
@@ -1514,10 +1518,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       const show = shows.find((s: any) => s.id === id);
                       if (!show) return null;
                       return (
-                        <button key={id} onClick={() => onNavigate('discovery')}
+                        <button key={id} onClick={() => { onUpdateStats && onUpdateStats(show.id, 'view'); onNavigate('discovery'); }}
                           className="w-full flex items-center justify-between border-b border-white/10 pb-2 hover:opacity-70 transition-opacity text-left">
                           <p className="font-black uppercase italic text-white text-sm">{show.title}</p>
-                          <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5 flex-shrink-0">→ VIEW</span>
+                          <span className="text-[8px] font-black uppercase border border-brand-cyan text-brand-cyan px-2 py-0.5 flex-shrink-0">VIEW →</span>
                         </button>
                       );
                     })}
