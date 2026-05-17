@@ -376,9 +376,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <p className="text-brand-pink text-xs font-black uppercase tracking-widest italic mb-2">Studio · Full Power</p>
                 <h3 className="text-4xl font-black uppercase italic text-white mb-1">ROAR</h3>
                 <div className="text-5xl font-black text-brand-pink mb-1">€189</div>
-                <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€17/month</p>
+                <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Browse full catalog — unlimited', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge in catalog', 'Priority listing — always first', 'VERIFIED badge', 'Laff Wire — live real-time'].map((f, i) => (
+                  {['Browse full catalog — unlimited', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge + Priority listing', 'VERIFIED badge', 'Laff Wire — live real-time', 'Producer Studio — Dashboard, Schedule, Contracts', 'Royalty Calculator + Show Analytics', 'Performance Calendar + Contacts', 'Deal tracking + Contract templates'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
