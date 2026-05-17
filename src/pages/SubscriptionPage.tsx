@@ -288,6 +288,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [sentInquiries, setSentInquiries] = useState<any[]>([]);
   const [inquiryView, setInquiryView] = useState<'received' | 'sent'>('received');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [dealInquiry, setDealInquiry] = useState<any | null>(null);
+  const [dealForm, setDealForm] = useState({ royalty_pct: '', years: '', territory: '', performances: '', notes: '', signed_date: new Date().toISOString().split('T')[0] });
+  const [dealSaved, setDealSaved] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [tickledToast, setTickledToast] = useState<{show: boolean, showTitle: string}>({show: false, showTitle: ''});
 
@@ -939,16 +942,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   ) : inquiries.map((inq: any) => (
                     <div key={inq.id} className={"border-4 p-5 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan shadow-neo-cyan")}>
                       <div className="flex-1 min-w-0">
-                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 mb-2 inline-block border ${
-                          inq.status === 'deal' ? 'bg-brand-cyan text-black border-brand-cyan' :
-                          inq.status === 'replied' ? 'bg-brand-yellow text-black border-brand-yellow' :
-                          inq.status === 'read' ? 'border-white/30 text-white/40' :
-                          'bg-brand-pink text-white border-brand-pink'
-                        }`}>{
-                          inq.status === 'deal' ? '🤝 DEAL' :
-                          inq.status === 'replied' ? 'REPLIED' :
-                          inq.status === 'read' ? 'READ' : 'NEW'
-                        }</span>
+                        {(() => {
+                          const st = inq.status || (inq.is_read ? 'read' : 'new');
+                          const cfg: Record<string, {bg: string, label: string}> = {
+                            deal:    { bg: 'bg-brand-cyan text-black border-brand-cyan', label: 'DEAL' },
+                            replied: { bg: 'bg-brand-yellow text-black border-brand-yellow', label: 'REPLIED' },
+                            read:    { bg: 'border-white/30 text-white/40', label: 'READ' },
+                            new:     { bg: 'bg-brand-pink text-white border-brand-pink', label: 'NEW' },
+                          };
+                          const c = cfg[st] || cfg.new;
+                          return <span className={`text-[8px] font-black uppercase px-3 py-1 mb-2 inline-block border ${c.bg}`}>{c.label}</span>;
+                        })()}
                         <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
                         <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
                         <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
@@ -1007,12 +1011,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                               className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs hover:border-white transition-all">
                               Cancel
                             </button>
-                            <button onClick={async () => {
-                              await supabase.from('inquiries').update({ status: 'deal' }).eq('id', inq.id);
-                              setInquiries(prev => prev.map(i => i.id === inq.id ? {...i, status: 'deal'} : i));
+                            <button onClick={() => {
+                              setDealInquiry(inq);
+                              setDealForm({ royalty_pct: '', years: '', territory: 'Europe', performances: '', notes: '', signed_date: new Date().toISOString().split('T')[0] });
                               setReplyingTo(null);
                             }} className="border-2 border-brand-cyan text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
-                              DEAL 🤝
+                              DEAL
                             </button>
                           </div>
                         </div>
@@ -1046,7 +1050,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           inq.status === 'read' ? 'border-white/40 text-white/50' :
                           'border-white/20 text-white/30'
                         }`}>{
-                          inq.status === 'deal' ? '🤝 DEAL' :
+                          inq.status === 'deal' ? 'DEAL' :
                           inq.status === 'replied' ? 'REPLIED ✓' :
                           inq.status === 'read' ? 'SEEN' : 'SENT'
                         }</span>
@@ -1740,6 +1744,89 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
           </div>
         </main>
       </div>
+      {/* DEAL MODAL */}
+      {dealInquiry && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/90" onClick={() => setDealInquiry(null)}></div>
+          <div className="relative bg-brand-black border-8 border-brand-cyan w-full max-w-2xl p-8 shadow-neo-cyan text-white z-10">
+            <button onClick={() => setDealInquiry(null)} className="absolute top-4 right-4 text-white/40 hover:text-white">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+
+            <div className="mb-6">
+              <span className="bg-brand-cyan text-black px-3 py-1 text-[9px] font-black uppercase tracking-widest">DEAL CLOSED</span>
+              <h2 className="text-3xl font-black uppercase italic mt-3">{dealInquiry.show_title}</h2>
+              <p className="text-white/40 text-sm italic mt-1">Buyer: {dealInquiry.from_name} · {dealInquiry.from_email}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Royalty %</label>
+                <input value={dealForm.royalty_pct} onChange={e => setDealForm(p => ({...p, royalty_pct: e.target.value}))}
+                  placeholder="e.g. 10" className="w-full bg-black border-2 border-white/20 p-3 text-white font-black outline-none focus:border-brand-cyan" />
+              </div>
+              <div>
+                <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">License Years</label>
+                <input value={dealForm.years} onChange={e => setDealForm(p => ({...p, years: e.target.value}))}
+                  placeholder="e.g. 3" className="w-full bg-black border-2 border-white/20 p-3 text-white font-black outline-none focus:border-brand-cyan" />
+              </div>
+              <div>
+                <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Territory</label>
+                <input value={dealForm.territory} onChange={e => setDealForm(p => ({...p, territory: e.target.value}))}
+                  placeholder="e.g. Slovenia, Croatia" className="w-full bg-black border-2 border-white/20 p-3 text-white font-black outline-none focus:border-brand-cyan" />
+              </div>
+              <div>
+                <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Max Performances</label>
+                <input value={dealForm.performances} onChange={e => setDealForm(p => ({...p, performances: e.target.value}))}
+                  placeholder="e.g. 20" className="w-full bg-black border-2 border-white/20 p-3 text-white font-black outline-none focus:border-brand-cyan" />
+              </div>
+              <div>
+                <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Signed Date</label>
+                <input type="date" value={dealForm.signed_date} onChange={e => setDealForm(p => ({...p, signed_date: e.target.value}))}
+                  className="w-full bg-black border-2 border-white/20 p-3 text-white font-black outline-none focus:border-brand-cyan" />
+              </div>
+              <div>
+                <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Notes</label>
+                <input value={dealForm.notes} onChange={e => setDealForm(p => ({...p, notes: e.target.value}))}
+                  placeholder="Special conditions..." className="w-full bg-black border-2 border-white/20 p-3 text-white font-black outline-none focus:border-brand-cyan" />
+              </div>
+            </div>
+
+            {dealSaved && <p className="text-brand-cyan text-xs font-black uppercase italic mb-4">✓ Deal saved!</p>}
+
+            <div className="flex gap-3">
+              <button onClick={async () => {
+                try {
+                  await supabase.from('deals').insert({
+                    inquiry_id: dealInquiry.id,
+                    show_id: dealInquiry.show_id,
+                    show_title: dealInquiry.show_title,
+                    seller_id: user.id,
+                    buyer_name: dealInquiry.from_name,
+                    buyer_email: dealInquiry.from_email || dealInquiry.email,
+                    royalty_pct: dealForm.royalty_pct,
+                    years: Number(dealForm.years) || null,
+                    territory: dealForm.territory,
+                    performances: Number(dealForm.performances) || null,
+                    notes: dealForm.notes,
+                    signed_date: dealForm.signed_date,
+                  });
+                  await supabase.from('inquiries').update({ status: 'deal' }).eq('id', dealInquiry.id);
+                  setInquiries(prev => prev.map(i => i.id === dealInquiry.id ? {...i, status: 'deal'} : i));
+                  setDealSaved(true);
+                  setTimeout(() => { setDealSaved(false); setDealInquiry(null); }, 2000);
+                } catch(e) { console.error(e); }
+              }} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase italic border-2 border-black hover:bg-white transition-all">
+                Save Deal →
+              </button>
+              <button onClick={() => setDealInquiry(null)} className="border-2 border-white/20 text-white/40 px-6 py-3 font-black uppercase italic hover:border-white transition-all">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </React.Fragment>
   );
 };
