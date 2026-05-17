@@ -286,6 +286,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [sentInquiries, setSentInquiries] = useState<any[]>([]);
+  const [laffRoyaltyReports, setLaffRoyaltyReports] = useState<any[]>([]);
+  const [laffIncomingReports, setLaffIncomingReports] = useState<any[]>([]);
+  const [laffNewReport, setLaffNewReport] = useState({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
+  const [laffReportSaved, setLaffReportSaved] = useState(false);
+  const [laffLicensedShows, setLaffLicensedShows] = useState<any[]>([]);
   const [deals, setDeals] = useState<any[]>([]);
   const [inquiryView, setInquiryView] = useState<'received' | 'sent'>('received');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -310,7 +315,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   useEffect(() => {
     if (user?.id) {
       // Load everything in parallel
-      Promise.all([loadMyRealStats(), loadInquiries(), loadDeals()]);
+      Promise.all([loadMyRealStats(), loadInquiries(), loadDeals(), loadLaffRoyalties()]);
       // Load analytics for ROAR/Admin
       if ((user as any)?.plan === 'roar' || (user as any)?.isAdmin) {
         // My shows analytics
@@ -353,6 +358,25 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       });
     }
   }, [user]);
+
+  const loadLaffRoyalties = async () => {
+    if (!user?.id) return;
+    // My logged reports (as buyer)
+    const { data: myReports } = await supabase.from('royalty_reports')
+      .select('*').eq('buyer_id', user.id).order('date', { ascending: false });
+    if (myReports) setLaffRoyaltyReports(myReports);
+    // Incoming reports on my shows (as seller)
+    const myShowIds = shows.filter((s: any) => s.user_id === user.id).map((s: any) => s.id);
+    if (myShowIds.length > 0) {
+      const { data: incoming } = await supabase.from('royalty_reports')
+        .select('*').in('show_id', myShowIds).order('date', { ascending: false });
+      if (incoming) setLaffIncomingReports(incoming);
+    }
+    // Licensed shows from deals
+    const { data: deals } = await supabase.from('deals')
+      .select('show_title, royalty_pct, show_id').eq('buyer_email', user.email);
+    if (deals) setLaffLicensedShows(deals);
+  };
 
   const loadDeals = async () => {
     if (!user?.id) return;
@@ -932,6 +956,129 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             )}
 
             {/* 2. INQUIRIES */}
+            {/* ROYALTY TRACKER — LAFF+ */}
+            {activeTab === 'assets' && (
+              <div className="mt-8 space-y-8 border-t-4 border-white/10 pt-8">
+
+                {/* LOG PERFORMANCE */}
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-black uppercase italic text-brand-yellow">Royalty Tracker</h3>
+                  <p className="text-white/40 text-sm italic">Log performances for shows you have licensed.</p>
+                  <div className="border-4 border-brand-yellow/30 p-4 space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Date</label>
+                        <input type="date" value={laffNewReport.date} onChange={e => setLaffNewReport(p => ({...p, date: e.target.value}))}
+                          className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm" />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Licensed Show</label>
+                        <select value={laffNewReport.show} onChange={e => setLaffNewReport(p => ({...p, show: e.target.value}))}
+                          className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm">
+                          <option value="">Select show...</option>
+                          {laffLicensedShows.map((s: any, i: number) => <option key={i} value={s.show_title}>{s.show_title}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Venue</label>
+                        <input value={laffNewReport.venue} onChange={e => setLaffNewReport(p => ({...p, venue: e.target.value}))}
+                          placeholder="Theatre name" className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm" />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Tickets Sold</label>
+                        <input type="number" value={laffNewReport.tickets} onChange={e => setLaffNewReport(p => ({...p, tickets: e.target.value}))}
+                          placeholder="e.g. 180" className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm" />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Ticket Price (€)</label>
+                        <input type="number" value={laffNewReport.price} onChange={e => setLaffNewReport(p => ({...p, price: e.target.value}))}
+                          placeholder="e.g. 25" className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm" />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-black uppercase text-white/40 italic mb-1 block">Royalty %</label>
+                        <input type="number" value={laffNewReport.royaltyPct} onChange={e => setLaffNewReport(p => ({...p, royaltyPct: e.target.value}))}
+                          placeholder="e.g. 10" className="w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm" />
+                      </div>
+                    </div>
+                    {laffNewReport.tickets && laffNewReport.price && laffNewReport.royaltyPct && (
+                      <div className="bg-brand-black border-4 border-brand-cyan p-4 flex gap-8">
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-white/30 italic">Gross</p>
+                          <p className="text-2xl font-black text-white">€{Math.round(Number(laffNewReport.tickets) * Number(laffNewReport.price)).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-brand-yellow italic">Royalty Due</p>
+                          <p className="text-2xl font-black text-brand-yellow">€{Math.round(Number(laffNewReport.tickets) * Number(laffNewReport.price) * Number(laffNewReport.royaltyPct) / 100).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    )}
+                    <button onClick={async () => {
+                      if (!laffNewReport.date || !laffNewReport.show || !laffNewReport.tickets) return;
+                      const royaltyAmount = Math.round(Number(laffNewReport.tickets) * Number(laffNewReport.price) * Number(laffNewReport.royaltyPct) / 100);
+                      const gross = Math.round(Number(laffNewReport.tickets) * Number(laffNewReport.price));
+                      const deal = laffLicensedShows.find((s: any) => s.show_title === laffNewReport.show);
+                      await supabase.from('royalty_reports').insert({
+                        show_id: deal?.show_id,
+                        show_title: laffNewReport.show,
+                        buyer_id: user.id,
+                        buyer_name: user.name,
+                        date: laffNewReport.date,
+                        venue: laffNewReport.venue,
+                        tickets: Number(laffNewReport.tickets),
+                        ticket_price: Number(laffNewReport.price),
+                        royalty_pct: Number(laffNewReport.royaltyPct),
+                        royalty_amount: royaltyAmount,
+                        gross,
+                      });
+                      await loadLaffRoyalties();
+                      setLaffNewReport({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
+                      setLaffReportSaved(true); setTimeout(() => setLaffReportSaved(false), 3000);
+                    }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+                      + Log Performance
+                    </button>
+                    {laffReportSaved && <p className="text-brand-cyan text-xs font-black italic">Performance logged!</p>}
+                  </div>
+                  {laffRoyaltyReports.length > 0 && (
+                    <div className="space-y-2">
+                      {laffRoyaltyReports.map((r: any, i: number) => (
+                        <div key={i} className="border-2 border-white/10 px-4 py-3 flex items-center justify-between hover:border-brand-yellow transition-all">
+                          <div className="flex gap-4 items-center">
+                            <span className="text-brand-yellow font-black text-sm">{r.date ? new Date(r.date).toLocaleDateString('en-GB', {day:'numeric',month:'short'}) : '—'}</span>
+                            <span className="text-white font-black italic text-sm">{r.show_title}</span>
+                            <span className="text-white/40 text-xs">{r.venue}</span>
+                          </div>
+                          <span className="text-brand-yellow font-black">€{(r.royalty_amount || 0).toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* INCOMING ROYALTIES */}
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-black uppercase italic text-brand-pink">Incoming Royalties</h3>
+                  <p className="text-white/40 text-sm italic">Royalties due from producers who licensed your shows.</p>
+                  {laffIncomingReports.length === 0 ? (
+                    <p className="text-white/20 italic text-sm">No reports yet.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {laffIncomingReports.map((r: any, i: number) => (
+                        <div key={i} className="border-2 border-brand-pink/20 px-4 py-3 flex items-center justify-between hover:border-brand-pink transition-all">
+                          <div className="flex gap-4 items-center">
+                            <span className="text-brand-yellow font-black text-sm">{r.date ? new Date(r.date).toLocaleDateString('en-GB', {day:'numeric',month:'short'}) : '—'}</span>
+                            <span className="text-white font-black italic text-sm">{r.show_title}</span>
+                            <span className="text-white/40 text-xs">{r.buyer_name}</span>
+                          </div>
+                          <span className="text-brand-pink font-black">€{(r.royalty_amount || 0).toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            )}
+
             {activeTab === 'inquiries' && (
             <section className="space-y-6">
               <div className="flex items-center justify-between flex-wrap gap-4">
