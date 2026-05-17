@@ -286,6 +286,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [sentInquiries, setSentInquiries] = useState<any[]>([]);
+  const [deals, setDeals] = useState<any[]>([]);
   const [inquiryView, setInquiryView] = useState<'received' | 'sent'>('received');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [dealInquiry, setDealInquiry] = useState<any | null>(null);
@@ -308,8 +309,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
   useEffect(() => {
     if (user?.id) {
-      loadMyRealStats();
-      loadInquiries();
+      // Load everything in parallel
+      Promise.all([loadMyRealStats(), loadInquiries(), loadDeals()]);
       // Load analytics for ROAR/Admin
       if ((user as any)?.plan === 'roar' || (user as any)?.isAdmin) {
         // My shows analytics
@@ -352,6 +353,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       });
     }
   }, [user]);
+
+  const loadDeals = async () => {
+    if (!user?.id) return;
+    const { data } = await supabase
+      .from('deals')
+      .select('*')
+      .eq('seller_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setDeals(data);
+  };
 
   const loadMyRealStats = async () => {
     if (!user?.id) return;
@@ -925,11 +936,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 <div className="flex border-4 border-white/20">
                   <button onClick={() => setInquiryView('received')}
                     className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + (inquiryView === 'received' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
-                    Received {inquiries.filter(i => !i.is_read).length > 0 && <span className="ml-1 bg-brand-pink text-white text-[8px] px-1.5 py-0.5 rounded-full">{inquiries.filter(i => !i.is_read).length}</span>}
+                    RECEIVED {inquiries.filter(i => !i.is_read).length > 0 && <span className="ml-1 bg-brand-pink text-white text-[8px] px-2 py-0.5">{inquiries.filter(i => !i.is_read).length}</span>}
                   </button>
                   <button onClick={() => setInquiryView('sent')}
                     className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + (inquiryView === 'sent' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
-                    Sent ({sentInquiries.length})
+                    SENT ({sentInquiries.length})
+                  </button>
+                  <button onClick={() => setInquiryView('deals' as any)}
+                    className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + ((inquiryView as any) === 'deals' ? 'bg-brand-pink text-white' : 'text-white/40 hover:text-white')}>
+                    DEALS ({deals.length})
                   </button>
                 </div>
               </div>
@@ -1030,7 +1045,44 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               )}
 
               {/* SENT */}
-              {/* DEALS tab placeholder */}
+              {/* DEALS */}
+              {(inquiryView as any) === 'deals' && (
+                <div className="space-y-3">
+                  {deals.length === 0 ? (
+                    <p className="text-white/20 italic text-sm">No deals yet. Mark an inquiry as DEAL to record it here.</p>
+                  ) : deals.map((deal: any) => (
+                    <div key={deal.id} className="border-4 border-brand-cyan/40 p-5 hover:border-brand-cyan transition-all">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div>
+                          <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-3 py-1 inline-block mb-2">PUNCHED</span>
+                          <p className="text-xl font-black uppercase italic text-white">{deal.show_title}</p>
+                          <p className="text-white/40 text-xs mt-1">Buyer: {deal.buyer_name} · {deal.buyer_email}</p>
+                          <p className="text-white/30 text-[9px] mt-1">{deal.signed_date}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="border-l-4 border-brand-yellow pl-3">
+                          <p className="text-[9px] font-black uppercase text-white/30 italic">Royalty</p>
+                          <p className="text-white font-black">{deal.royalty_pct || '—'} %</p>
+                        </div>
+                        <div className="border-l-4 border-brand-cyan pl-3">
+                          <p className="text-[9px] font-black uppercase text-white/30 italic">Years</p>
+                          <p className="text-white font-black">{deal.years || '—'}</p>
+                        </div>
+                        <div className="border-l-4 border-brand-pink pl-3">
+                          <p className="text-[9px] font-black uppercase text-white/30 italic">Territory</p>
+                          <p className="text-white font-black">{deal.territory || '—'}</p>
+                        </div>
+                        <div className="border-l-4 border-white/20 pl-3">
+                          <p className="text-[9px] font-black uppercase text-white/30 italic">Performances</p>
+                          <p className="text-white font-black">{deal.performances || '—'}</p>
+                        </div>
+                      </div>
+                      {deal.notes && <p className="text-white/40 text-sm italic mt-3 border-l-2 border-white/10 pl-3">{deal.notes}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {inquiryView === 'sent' && (
                 <div className="space-y-3">
