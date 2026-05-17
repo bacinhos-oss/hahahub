@@ -287,6 +287,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [sentInquiries, setSentInquiries] = useState<any[]>([]);
   const [inquiryView, setInquiryView] = useState<'received' | 'sent'>('received');
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
   const [tickledToast, setTickledToast] = useState<{show: boolean, showTitle: string}>({show: false, showTitle: ''});
 
   // Royalty Calculator state
@@ -947,16 +949,53 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
                       <div className="flex flex-col gap-2 flex-shrink-0">
-                        <a href={"mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title) + "&body=" + encodeURIComponent("\n\n---\nOriginal message from " + inq.from_name + ":\n" + (inq.message || ''))}
-                          onClick={() => markAsRead(inq.id)}
-                          className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic text-center " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black border-black hover:bg-white")}>
-                          {inq.is_read ? "Reply Again →" : "Reply 🎭"}
-                        </a>
-                        <button onClick={() => { navigator.clipboard.writeText(inq.from_email); markAsRead(inq.id); }}
-                          className="text-[8px] font-bold italic text-white/30 hover:text-brand-cyan transition-colors underline text-center">
-                          Copy email
+                        <button onClick={() => { markAsRead(inq.id); setReplyingTo(replyingTo === inq.id ? null : inq.id); setReplyText(''); }}
+                          className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "border-white/20 text-white/40 hover:border-brand-yellow hover:text-brand-yellow" : "bg-brand-yellow text-black border-black hover:bg-white")}>
+                          {replyingTo === inq.id ? 'Cancel' : inq.is_read ? 'Reply Again →' : 'Reply 🎭'}
                         </button>
                       </div>
+                      {/* INLINE REPLY BOX */}
+                      {replyingTo === inq.id && (
+                        <div className="mt-4 border-t-2 border-white/10 pt-4 space-y-3">
+                          <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Reply to {inq.from_name}</p>
+                          <textarea
+                            value={replyText}
+                            onChange={e => setReplyText(e.target.value)}
+                            rows={4}
+                            placeholder="Type your reply..."
+                            className="w-full bg-brand-black border-2 border-brand-yellow/30 p-3 text-white font-bold italic text-sm outline-none focus:border-brand-yellow resize-none"
+                          />
+                          <div className="flex gap-3">
+                            <button onClick={async () => {
+                              if (!replyText.trim()) return;
+                              try {
+                                await fetch('/api/send-email', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    type: 'inquiry_reply',
+                                    to: inq.from_email,
+                                    data: {
+                                      producerName: user.name,
+                                      buyerName: inq.from_name,
+                                      showTitle: inq.show_title,
+                                      message: replyText,
+                                    }
+                                  })
+                                });
+                              } catch {}
+                              setReplyingTo(null);
+                              setReplyText('');
+                            }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+                              Send Reply →
+                            </button>
+                            <button onClick={() => { setReplyingTo(null); setReplyText(''); }}
+                              className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs hover:border-white transition-all">
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
