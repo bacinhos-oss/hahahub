@@ -1795,7 +1795,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
 
             {activeTab === 'studio' && user && (
-              <ProducerStudio user={user} shows={shows} />
+              <div className="text-white">
+                <ProducerStudio user={user} shows={shows} />
+              </div>
             )}
 
           </div>
