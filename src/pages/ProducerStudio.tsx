@@ -7,7 +7,7 @@ interface ProducerStudioProps {
   shows: Show[];
 }
 
-type StudioTab = 'dashboard' | 'royalty' | 'contracts' | 'calculator' | 'contacts' | 'log';
+type StudioTab = 'dashboard' | 'royalty' | 'incoming' | 'contracts' | 'calculator' | 'contacts' | 'log';
 
 const STORAGE_KEY = 'hahahub_studio_';
 
@@ -26,6 +26,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   // ROYALTY TRACKER STATE
   const [royaltyReports, setRoyaltyReports] = useState<any[]>([]);
   const [sellerReports, setSellerReports] = useState<any[]>([]);
+  const [licensedShows, setLicensedShows] = useState<any[]>([]);
   const [newReport, setNewReport] = useState({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
   const [reportSaved, setReportSaved] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
@@ -65,6 +66,13 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const totalCosts = actors + techs + other;
   const net = royalty - totalCosts;
 
+  // Load shows I have licensed (from deals where I am buyer)
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase.from('deals').select('show_title, royalty_pct, show_id').eq('buyer_email', (user as any).email)
+      .then(({ data }) => { if (data) setLicensedShows(data); });
+  }, [user]);
+
   // Load buyer reports (my own logged performances)
   const loadRoyaltyData = async () => {
     if (!user?.id) return;
@@ -101,6 +109,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const tabs: { key: StudioTab; label: string; icon: string }[] = [
     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { key: 'royalty', label: 'Royalty Tracker', icon: 'receipt_long' },
+    { key: 'incoming', label: 'Incoming Royalties', icon: 'savings' },
     { key: 'contracts', label: 'Contracts', icon: 'description' },
     { key: 'calculator', label: 'Calculator', icon: 'calculate' },
     { key: 'contacts', label: 'Contacts', icon: 'contacts' },
@@ -197,10 +206,14 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
             <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Log Performance</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div><label className={lbl}>Date</label><input type="date" value={newReport.date} onChange={e => setNewReport(p => ({...p, date: e.target.value}))} className={inp} /></div>
-              <div><label className={lbl}>Show</label>
-                <select value={newReport.show} onChange={e => setNewReport(p => ({...p, show: e.target.value}))} className={inp}>
-                  <option value="">Select show...</option>
-                  {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
+              <div><label className={lbl}>Show <span className="text-brand-cyan">(licensed)</span></label>
+                <select value={newReport.show} onChange={e => {
+                  const sel = licensedShows.find((s: any) => s.show_title === e.target.value);
+                  setNewReport(p => ({...p, show: e.target.value, royaltyPct: sel?.royalty_pct || p.royaltyPct}));
+                }} className={inp}>
+                  <option value="">Select licensed show...</option>
+                  {licensedShows.map((s: any, i: number) => <option key={i} value={s.show_title}>{s.show_title}</option>)}
+                  {licensedShows.length === 0 && myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
                 </select>
               </div>
               <div><label className={lbl}>Venue</label><input placeholder="Theatre name" value={newReport.venue} onChange={e => setNewReport(p => ({...p, venue: e.target.value}))} className={inp} /></div>
