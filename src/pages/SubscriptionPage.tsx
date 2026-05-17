@@ -347,18 +347,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   }, [user]);
 
   const loadMyRealStats = async () => {
-    // Also load basic stats for stats bar
-    if (myShows && myShows.length > 0) {
-      setRealStats({
-        totalViews: myShows.reduce((sum, s) => sum + (s.views_count || 0), 0),
-        totalInquiries: myShows.reduce((sum, s) => sum + (s.inquiries_count || 0), 0),
-        totalLikes: myShows.reduce((sum, s) => sum + (s.likes_count || 0), 0),
-      });
-      setMyStats({
-        views: myShows.reduce((s: number, x: any) => s + (x.views_count || 0), 0),
-        likes: myShows.reduce((s: number, x: any) => s + (x.likes_count || 0), 0),
-        inquiries: myShows.reduce((s: number, x: any) => s + (x.inquiries_count || 0), 0),
-      });
+    if (!user?.id) return;
+    const { data } = await supabase
+      .from('shows')
+      .select('views_count, likes_count, inquiries_count')
+      .eq('user_id', user.id);
+    if (data && data.length > 0) {
+      const views = data.reduce((s, x) => s + (x.views_count || 0), 0);
+      const likes = data.reduce((s, x) => s + (x.likes_count || 0), 0);
+      const inquiries = data.reduce((s, x) => s + (x.inquiries_count || 0), 0);
+      setRealStats({ totalViews: views, totalInquiries: inquiries, totalLikes: likes });
+      setMyStats({ views, likes, inquiries });
     }
   };
 
