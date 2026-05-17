@@ -99,8 +99,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
           {myShows.length === 0 ? (
             <p className="text-white/20 italic">No shows uploaded yet.</p>
           ) : myShows.map((show: any) => {
-            const showPerfs = performances.filter(p => p.show === show.title);
-            const nextPerf = showPerfs.filter(p => new Date(p.date) >= new Date()).sort((a, b) => a.date.localeCompare(b.date))[0];
+            const showPerfs = royaltyReports.filter((p: any) => p.show === show.title);
+            const nextPerf = showPerfs.slice(-1)[0];
             const showContracts = contracts.filter(c => c.show === show.title);
             const showLogs = logs.filter(l => l.show === show.title);
             const totalAtt = showLogs.reduce((s: number, l: any) => s + (Number(l.attendance) || 0), 0);
@@ -134,7 +134,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
                     <p className="text-2xl font-black text-brand-yellow">{showPerfs.length}</p>
                   </div>
                   <div className="p-4 border-r border-white/10">
-                    <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Next Show</p>
+                    <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Last Show</p>
                     <p className="text-sm font-black text-white">{nextPerf ? new Date(nextPerf.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'}</p>
                     <p className="text-[9px] text-white/30 italic">{nextPerf?.venue || ''}</p>
                   </div>
