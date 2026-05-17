@@ -223,6 +223,54 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
             </div>
           )}
 
+          {/* SELLER VIEW — reports from buyers for my shows */}
+          <div className="border-t-4 border-white/10 pt-6 space-y-4">
+            <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Rights Holder View — Reports on Your Shows</p>
+            {myShows.length === 0 ? (
+              <p className="text-white/20 italic text-sm">No shows uploaded yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {myShows.map((show: any) => {
+                  const showReports = royaltyReports.filter((r: any) => r.show === show.title);
+                  const totalRoyalty = showReports.reduce((s: number, r: any) => s + (r.royaltyAmount || 0), 0);
+                  const totalGross = showReports.reduce((s: number, r: any) => s + (r.gross || 0), 0);
+                  return (
+                    <div key={show.id} className="border-4 border-white/10 p-4 hover:border-brand-pink transition-all">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="font-black uppercase italic text-white">{show.title}</p>
+                        <span className="text-brand-pink font-black text-lg">€{totalRoyalty.toLocaleString()} due</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3 text-center">
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-white/30 italic">Performances</p>
+                          <p className="text-xl font-black text-white">{showReports.length}</p>
+                        </div>
+                        <div className="border-x border-white/10">
+                          <p className="text-[9px] font-black uppercase text-white/30 italic">Box Office</p>
+                          <p className="text-xl font-black text-brand-cyan">€{totalGross.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-brand-pink italic">Royalties</p>
+                          <p className="text-xl font-black text-brand-pink">€{totalRoyalty.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      {showReports.length > 0 && (
+                        <div className="mt-3 space-y-1">
+                          {showReports.map((r: any, i: number) => (
+                            <div key={i} className="flex items-center justify-between text-xs border-t border-white/5 pt-1">
+                              <span className="text-white/40">{new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · {r.venue}</span>
+                              <span className="text-brand-yellow font-black">€{(r.royaltyAmount || 0).toLocaleString()}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           {/* REPORTS LIST */}
           {royaltyReports.length === 0 ? (
             <p className="text-white/20 italic text-sm">No performances logged yet.</p>
