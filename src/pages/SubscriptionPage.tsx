@@ -941,7 +941,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   ) : inquiries.map((inq: any) => (
                     <div key={inq.id} className={"border-4 p-5 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan shadow-neo-cyan")}>
                       <div className="flex-1 min-w-0">
-                        {!inq.is_read && <span className="text-[8px] font-black uppercase bg-brand-cyan text-black px-2 py-0.5 mb-2 inline-block">🔴 NEW</span>}
+                        {!inq.is_read && <span className="text-[8px] font-black uppercase bg-brand-cyan text-black px-2 py-0.5 mb-2 inline-block">NEW</span>}
                         <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
                         <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
                         <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
@@ -951,7 +951,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       <div className="flex flex-col gap-2 flex-shrink-0">
                         <button onClick={() => { markAsRead(inq.id); setReplyingTo(replyingTo === inq.id ? null : inq.id); setReplyText(''); }}
                           className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "border-white/20 text-white/40 hover:border-brand-yellow hover:text-brand-yellow" : "bg-brand-yellow text-black border-black hover:bg-white")}>
-                          {replyingTo === inq.id ? 'Cancel' : inq.is_read ? 'Reply Again →' : 'Reply 🎭'}
+                          {replyingTo === inq.id ? 'Cancel' : inq.is_read ? 'REPLY AGAIN →' : 'REPLY →'}
                         </button>
                       </div>
                       {/* INLINE REPLY BOX */}
@@ -1514,10 +1514,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       const show = shows.find((s: any) => s.id === id);
                       if (!show) return null;
                       return (
-                        <div key={id} className="flex items-center justify-between border-b border-white/10 pb-2">
+                        <button key={id} onClick={() => onNavigate('discovery')}
+                          className="w-full flex items-center justify-between border-b border-white/10 pb-2 hover:opacity-70 transition-opacity text-left">
                           <p className="font-black uppercase italic text-white text-sm">{show.title}</p>
-                          <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">Saved</span>
-                        </div>
+                          <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5 flex-shrink-0">→ VIEW</span>
+                        </button>
                       );
                     })}
                     <p className="text-[9px] text-white/20 italic">{(user.favorites || []).length} shows on your list</p>
@@ -1529,15 +1530,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     {inquiries.length === 0 ? (
                       <p className="text-white/20 italic text-sm">No inquiries yet.</p>
                     ) : inquiries.slice(0, 3).map((inq: any) => (
-                      <div key={inq.id} className="flex items-center justify-between border-b border-white/10 pb-2">
-                        <div>
-                          <p className="font-black uppercase italic text-white text-sm truncate max-w-[180px]">{inq.from_name}</p>
-                          <p className="text-white/30 text-xs italic">{inq.message?.substring(0, 40)}...</p>
+                      <button key={inq.id} onClick={() => { markAsRead(inq.id); setActiveTab('inquiries'); }}
+                        className="w-full flex items-center justify-between border-b border-white/10 pb-2 hover:opacity-70 transition-opacity text-left">
+                        <div className="min-w-0">
+                          <p className="font-black uppercase italic text-white text-sm truncate">{inq.from_name}</p>
+                          <p className="text-white/30 text-xs italic truncate">{inq.message?.substring(0, 40)}...</p>
                         </div>
-                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${inq.is_read ? 'text-white/30 border border-white/20' : 'bg-brand-pink text-white'}`}>
-                          {inq.is_read ? 'Read' : 'New'}
+                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 flex-shrink-0 ml-2 ${inq.is_read ? 'text-white/30 border border-white/20' : 'bg-brand-pink text-white'}`}>
+                          {inq.is_read ? 'Read' : 'NEW'}
                         </span>
-                      </div>
+                      </button>
                     ))}
                     <button onClick={() => setActiveTab('inquiries')} className="text-[9px] font-black uppercase italic text-brand-pink border border-brand-pink/30 px-3 py-1 hover:bg-brand-pink hover:text-white transition-all">
                       All Inquiries →
