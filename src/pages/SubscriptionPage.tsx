@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
-import ShareButton from '../components/ShareButton';
 import { supabase } from '../lib/supabase';
 import ProducerStudio from './ProducerStudio';
 import { Badge, getProfileBadges } from '../components/Badge';
@@ -270,6 +269,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics' | 'studio'>('assets');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+  const [myStats, setMyStats] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [shortlistCounts, setShortlistCounts] = useState<Record<string, number>>({});
   const [inquiryStatuses, setInquiryStatuses] = useState<Record<string, string>>({});
@@ -347,6 +347,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   }, [user]);
 
   const loadMyRealStats = async () => {
+    // Also load basic stats for stats bar
+    const { data: myShows } = await supabase.from('shows').select('views_count, likes_count, inquiries_count').eq('user_id', user?.id);
+    if (myShows) {
+      setMyStats({
+        views: myShows.reduce((s: number, x: any) => s + (x.views_count || 0), 0),
+        likes: myShows.reduce((s: number, x: any) => s + (x.likes_count || 0), 0),
+        inquiries: myShows.reduce((s: number, x: any) => s + (x.inquiries_count || 0), 0),
+      });
+    }
     const { data: myShows } = await supabase.from('shows').select('views_count, inquiries_count, likes_count').eq('user_id', user?.id);
     if (myShows && myShows.length > 0) {
       setRealStats({
@@ -753,7 +762,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <section className="flex flex-col md:flex-row items-end justify-between gap-10">
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">My <span className="text-brand-pink">Hub</span></h1>
               <div className="flex items-center gap-6">
-                <ShareButton title="My HAHAHUB Profile" text="Check out my comedy catalog!" url={window.location.href} />
                 <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
                   <p className="text-xl font-black uppercase italic">{user.name}</p>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -809,14 +817,42 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
             )}
 
-            {/* TABS */}
-            <div className="flex border-4 border-white/20 w-fit">
-              {(['assets', 'inquiries', 'profile', ...((user as any)?.plan === 'roar' || user?.isAdmin ? ['analytics', 'studio'] : [])] as const).map((tab: any) => (
-                <button key={tab} onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 font-black uppercase italic text-xs tracking-widest transition-all ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                  {tab === 'assets' ? 'My Assets' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : tab === 'analytics' ? '⚡ Analytics' : '🎬 Studio'}
-                </button>
+            {/* STATS BAR — all plans */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: 'Views', value: myStats.views, icon: 'visibility', color: 'text-brand-cyan' },
+                { label: 'Likes', value: myStats.likes, icon: 'favorite', color: 'text-brand-pink' },
+                { label: 'Inquiries', value: myStats.inquiries, icon: 'mail', color: 'text-brand-yellow' },
+                { label: 'My Shows', value: userUploads.length, icon: 'theater_comedy', color: 'text-white' },
+              ].map((s, i) => (
+                <div key={i} className="border-4 border-white/10 p-4 flex items-center gap-3">
+                  <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
+                  <div>
+                    <p className="text-2xl font-black text-white">{s.value}</p>
+                    <p className="text-[9px] font-black uppercase italic text-white/30">{s.label}</p>
+                  </div>
+                </div>
               ))}
+            </div>
+
+            {/* TABS — by plan */}
+            <div className="flex border-4 border-white/20 w-fit overflow-x-auto">
+              {(() => {
+                const plan = (user as any)?.plan;
+                const isRoar = plan === 'roar' || user?.isAdmin;
+                const isLaff = plan === 'laff' || isRoar;
+                const tabs = [
+                  'profile',
+                  ...(isLaff ? ['assets', 'inquiries'] : []),
+                  ...(isRoar ? ['analytics', 'studio'] : []),
+                ];
+                return tabs.map((tab: any) => (
+                  <button key={tab} onClick={() => setActiveTab(tab)}
+                    className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
+                    {tab === 'assets' ? 'My Shows' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : tab === 'analytics' ? '⚡ Analytics' : '🎬 Studio'}
+                  </button>
+                ));
+              })()}
             </div>
 
             {/* 1. MY ASSETS */}
