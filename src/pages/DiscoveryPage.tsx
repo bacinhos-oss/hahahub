@@ -673,6 +673,23 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       }),
                     });
                   } catch {}
+                  
+                  // Save sent inquiry to Supabase
+                  try {
+                    const { supabase } = await import('../lib/supabase');
+                    await supabase.from('inquiries').insert({
+                      show_id: inquiryShow?.id,
+                      producer_id: user?.id,
+                      from_name: inquiryName,
+                      from_email: inquiryEmail,
+                      message: inquiryMessage,
+                      show_title: inquiryShow?.title,
+                      recipient_id: inquiryShow?.user_id,
+                      type: 'sent',
+                      is_read: false,
+                    });
+                  } catch {}
+                  
                   setInquirySuccess(true);
                   onUpdateStats(inquiryShowId || '', 'inquiry');
                 }}

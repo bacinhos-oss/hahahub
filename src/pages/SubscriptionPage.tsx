@@ -285,6 +285,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const [sentInquiries, setSentInquiries] = useState<any[]>([]);
+  const [inquiryView, setInquiryView] = useState<'received' | 'sent'>('received');
   const [tickledToast, setTickledToast] = useState<{show: boolean, showTitle: string}>({show: false, showTitle: ''});
 
   // Royalty Calculator state
@@ -362,12 +364,24 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   };
 
   const loadInquiries = async () => {
+    // PREJETE — inquiries on my shows (recipient_id = me OR show is mine)
+    const myShowIds = shows.filter((s: any) => s.user_id === user?.id).map((s: any) => s.id);
     const { data } = await supabase
       .from('inquiries')
       .select('*')
-      .eq('producer_id', user?.id)
+      .in('show_id', myShowIds.length > 0 ? myShowIds : ['none'])
       .order('created_at', { ascending: false })
       .limit(20);
+
+    // POSLANE — inquiries I sent (producer_id = me, type = sent)
+    const { data: sent } = await supabase
+      .from('inquiries')
+      .select('*')
+      .eq('producer_id', user?.id)
+      .eq('type', 'sent')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (sent) setSentInquiries(sent);
     if (data) {
       setInquiries(data);
       const unread = data.filter((inq: any) => !inq.is_read);
@@ -903,62 +917,75 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* 2. INQUIRIES */}
             {activeTab === 'inquiries' && (
             <section className="space-y-6">
-            {inquiries.length > 0 && (
-              <section className="space-y-4">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <h2 className="text-4xl font-black uppercase italic">You've Been <span className="text-brand-cyan">Tickled</span></h2>
-                    {inquiries.filter(i => !i.is_read).length > 0 && (
-                      <span className="bg-brand-cyan text-black text-[9px] font-black px-3 py-1 uppercase font-black px-3 py-1 uppercase">{inquiries.filter(i => !i.is_read).length} UNREAD</span>
-                    )}
-                  </div>
-                  <p className="text-[9px] font-black uppercase text-white/30 italic">{inquiries.length} total inquiries</p>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <h2 className="text-4xl font-black uppercase italic">Inquiries</h2>
+                <div className="flex border-4 border-white/20">
+                  <button onClick={() => setInquiryView('received')}
+                    className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + (inquiryView === 'received' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
+                    Received {inquiries.filter(i => !i.is_read).length > 0 && <span className="ml-1 bg-brand-pink text-white text-[8px] px-1.5 py-0.5 rounded-full">{inquiries.filter(i => !i.is_read).length}</span>}
+                  </button>
+                  <button onClick={() => setInquiryView('sent')}
+                    className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + (inquiryView === 'sent' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
+                    Sent ({sentInquiries.length})
+                  </button>
                 </div>
-                {inquiries.map((inq) => (
-                  <div key={inq.id} className={"bg-brand-surface border-4 p-6 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan")}>
-                    <div className="flex-1">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
-                      <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
-                      <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
-                      {inq.message && <p className="text-sm text-white/70 mt-3 italic border-l-4 border-brand-yellow pl-3">{inq.message}</p>}
-                    </div>
-                    <div className="flex flex-col gap-2 md:items-end justify-between">
-                      <p className="text-[8px] text-white/30 font-bold uppercase">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                      <div className="flex flex-col gap-2 items-end">
-                        <a
-                          href={"mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title) + "&body=" + encodeURIComponent("\n\n---\nOriginal message from " + inq.from_name + ":\n" + (inq.message || ''))}
+              </div>
+
+              {/* RECEIVED */}
+              {inquiryView === 'received' && (
+                <div className="space-y-3">
+                  {inquiries.length === 0 ? (
+                    <p className="text-white/20 italic text-sm">No inquiries received yet.</p>
+                  ) : inquiries.map((inq: any) => (
+                    <div key={inq.id} className={"border-4 p-5 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan shadow-neo-cyan")}>
+                      <div className="flex-1 min-w-0">
+                        {!inq.is_read && <span className="text-[8px] font-black uppercase bg-brand-cyan text-black px-2 py-0.5 mb-2 inline-block">🔴 NEW</span>}
+                        <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
+                        <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
+                        <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
+                        {inq.message && <p className="text-sm text-white/60 mt-3 italic border-l-4 border-brand-yellow pl-3">{inq.message}</p>}
+                        <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                      </div>
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <a href={"mailto:" + inq.from_email + "?subject=" + encodeURIComponent("Re: " + inq.show_title) + "&body=" + encodeURIComponent("\n\n---\nOriginal message from " + inq.from_name + ":\n" + (inq.message || ''))}
                           onClick={() => markAsRead(inq.id)}
-                          className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black hover:bg-white border-black")}
-                        >
-                          {inq.is_read ? "Tickle Back Again →" : "Tickle Back 🎭"}
+                          className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic text-center " + (inq.is_read ? "bg-white/10 text-white/40 border-white/20 hover:bg-brand-yellow hover:text-black hover:border-black" : "bg-brand-yellow text-black border-black hover:bg-white")}>
+                          {inq.is_read ? "Reply Again →" : "Reply 🎭"}
                         </a>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(inq.from_email);
-                            markAsRead(inq.id);
-                          }}
-                          className="text-[8px] font-bold italic text-white/30 hover:text-brand-cyan transition-colors underline"
-                        >
-                          {inq.from_email}
+                        <button onClick={() => { navigator.clipboard.writeText(inq.from_email); markAsRead(inq.id); }}
+                          className="text-[8px] font-bold italic text-white/30 hover:text-brand-cyan transition-colors underline text-center">
+                          Copy email
                         </button>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </section>
-            )}
-
-            {/* 3. STATS */}
-            <section className="grid grid-cols-2 xl:grid-cols-4 gap-8">
-              {stats.map((stat, i) => (
-                <div key={i} className="bg-brand-surface border-4 border-white p-8 shadow-neo-white">
-                  <span className={'material-symbols-outlined text-4xl mb-6 block text-' + stat.color}>{stat.icon}</span>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1 italic">{stat.label}</p>
-                  <p className="text-4xl font-black uppercase italic">{stat.value}</p>
+                  ))}
                 </div>
-              ))}
-            </section>
+              )}
 
+              {/* SENT */}
+              {inquiryView === 'sent' && (
+                <div className="space-y-3">
+                  {sentInquiries.length === 0 ? (
+                    <div className="space-y-2">
+                      <p className="text-white/20 italic text-sm">No inquiries sent yet.</p>
+                      <button onClick={() => onNavigate('discovery')} className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/30 px-3 py-1 hover:bg-brand-yellow hover:text-black transition-all">
+                        Browse Catalog →
+                      </button>
+                    </div>
+                  ) : sentInquiries.map((inq: any) => (
+                    <div key={inq.id} className="border-4 border-white/20 p-5 flex flex-col md:flex-row gap-4 justify-between hover:border-brand-yellow transition-all">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[8px] font-black uppercase tracking-widest text-brand-yellow mb-1 italic">To: {inq.show_title}</p>
+                        <p className="text-white/60 font-bold italic text-sm mt-2">{inq.message}</p>
+                        <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <span className="text-[8px] font-black uppercase px-2 py-1 border border-white/20 text-white/30">Sent</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
             )}
 
