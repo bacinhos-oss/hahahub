@@ -835,14 +835,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* STATS BAR — all plans */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Views', value: myStats.views, sym: '👁', color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
-                { label: 'Likes', value: myStats.likes, sym: '♥', color: 'text-brand-pink', border: 'border-brand-pink/30' },
-                { label: 'Inquiries', value: myStats.inquiries, sym: '✉', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
-                { label: 'My Shows', value: userUploads.length, sym: '🎭', color: 'text-white', border: 'border-white/20' },
+                { label: 'VIEWS', value: myStats.views, color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
+                { label: 'LIKES', value: myStats.likes, color: 'text-brand-pink', border: 'border-brand-pink/30' },
+                { label: 'INQUIRIES', value: myStats.inquiries, color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
+                { label: 'MY SHOWS', value: userUploads.length, color: 'text-white', border: 'border-white/20' },
               ].map((s, i) => (
                 <div key={i} className={`border-4 ${s.border} p-4`}>
                   <p className={`text-3xl font-black ${s.color}`}>{s.value}</p>
-                  <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">{s.sym} {s.label}</p>
+                  <p className="text-[9px] font-black uppercase italic text-white/30 mt-1 tracking-widest">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -862,7 +862,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 return tabs.map((tab: any) => (
                   <button key={tab} onClick={() => setActiveTab(tab)}
                     className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                    {tab === 'dashboard' ? '📊 Dashboard' : tab === 'assets' ? 'My Shows' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : tab === 'analytics' ? '⚡ Analytics' : '🎬 Studio'}
+                    {tab === 'dashboard' ? 'DASHBOARD' : tab === 'assets' ? 'MY SHOWS' : tab === 'inquiries' ? 'INQUIRIES' : tab === 'profile' ? 'MY PROFILE' : tab === 'analytics' ? 'ANALYTICS' : 'STUDIO'}
                   </button>
                 ));
               })()}
@@ -964,7 +964,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "border-white/20 text-white/40 hover:border-brand-yellow hover:text-brand-yellow" : "bg-brand-yellow text-black border-black hover:bg-white")}>
                           {replyingTo === inq.id ? 'CANCEL' : 'REPLY →'}
                         </button>
-                        {inq.status !== 'deal' && (
+                        {inq.status !== 'deal' && inq.status !== 'replied' && (
                           <button onClick={() => {
                             setDealInquiry(inq);
                             setDealForm({ royalty_pct: '', years: '', territory: 'Europe', performances: '', notes: '', signed_date: new Date().toISOString().split('T')[0] });
@@ -1030,6 +1030,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               )}
 
               {/* SENT */}
+              {/* DEALS tab placeholder */}
+
               {inquiryView === 'sent' && (
                 <div className="space-y-3">
                   {sentInquiries.length === 0 ? (
@@ -1053,7 +1055,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           inq.status === 'read' ? 'border-white/40 text-white/50' :
                           'border-white/20 text-white/30'
                         }`}>{
-                          inq.status === 'deal' ? 'DEAL' :
+                          inq.status === 'deal' ? 'PUNCHED' :
                           inq.status === 'replied' ? 'REPLIED ✓' :
                           inq.status === 'read' ? 'SEEN' : 'SENT'
                         }</span>
@@ -1267,7 +1269,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {activeTab === 'analytics' && (
               <section className="space-y-10">
                 <div>
-                  <h2 className="text-4xl font-black uppercase italic">⚡ Show <span className="text-brand-pink">Analytics</span></h2>
+                  <h2 className="text-4xl font-black uppercase italic">Show <span className="text-brand-pink">Analytics</span></h2>
                   <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Real data from The Laff Exchange</p>
                 </div>
 
@@ -1516,7 +1518,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* DASHBOARD — LAFF+ */}
             {activeTab === 'dashboard' && (
               <section className="space-y-8">
-                <h2 className="text-4xl font-black uppercase italic">📊 <span className="text-brand-yellow">Dashboard</span></h2>
+                <h2 className="text-4xl font-black uppercase italic">MY <span className="text-brand-yellow">Dashboard</span></h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -1532,7 +1534,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <p className="text-white/30 text-xs">{show.genre} · {show.rightsStatus || 'Available'}</p>
                         </div>
                         <div className="flex gap-3 text-[10px] text-white/30">
-                          <span>👁 {show.viewsCount || 0}</span>
+                          <span className="text-brand-cyan text-[10px] font-black">VIEWS {show.viewsCount || 0}</span>
                           <span>📩 {show.inquiriesCount || 0}</span>
                         </div>
                       </div>
