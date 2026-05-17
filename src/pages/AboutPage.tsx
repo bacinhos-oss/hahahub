@@ -113,6 +113,66 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
             </div>
           </section>
 
+          {/* HOW TO PLAY */}
+          <section className="space-y-0">
+            <div className="mb-16">
+              <span className="bg-brand-yellow text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6">How it works</span>
+              <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none">
+                HOW TO<br/><span className="text-brand-yellow">PLAY.</span>
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t-4 border-white">
+
+              {/* SELLING COLUMN */}
+              <div className="border-r-0 md:border-r-4 border-white">
+                <div className="p-8 border-b-4 border-white bg-brand-surface">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink mb-1">You have a show</p>
+                  <p className="text-white/40 text-sm italic font-bold">You're selling rights</p>
+                </div>
+                {[
+                  { n: '01', title: 'SHOWLOAD', color: 'text-brand-yellow', body: 'Upload your theatre comedy show. Synopsis, cast, royalty terms. Your dossier is your pitch deck.' },
+                  { n: '02', title: 'WAIT FOR THE TICKLE', color: 'text-white', body: 'A producer from Warsaw or Tokyo finds your show. They send an inquiry. You get an email.' },
+                  { n: '03', title: 'REPLY DIRECT', color: 'text-white', body: 'My Hub → Inquiries → Reply. No agents. Just two producers talking.' },
+                  { n: '04', title: 'DEAL', color: 'text-brand-cyan', body: 'Agree on terms. Mark it as Deal. Contract template fills in Studio.' },
+                  { n: '05', title: 'ROYALTIES COME IN', color: 'text-brand-pink', body: 'Every time they perform your show — they log it. You see it live in Incoming Royalties. That's your money.' },
+                ].map((step, i) => (
+                  <div key={i} className="p-8 border-b-4 border-white/10 hover:bg-brand-surface/50 transition-all">
+                    <span className="text-[64px] font-black text-white/5 leading-none block mb-[-12px]">{step.n}</span>
+                    <h3 className={`text-xl font-black uppercase italic tracking-tighter mb-3 ${step.color}`}>{step.title}</h3>
+                    <p className="text-gray-400 font-bold italic text-sm leading-relaxed">{step.body}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* BUYING COLUMN */}
+              <div>
+                <div className="p-8 border-b-4 border-white bg-brand-surface">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan mb-1">You need a show</p>
+                  <p className="text-white/40 text-sm italic font-bold">You're buying rights</p>
+                </div>
+                {[
+                  { n: '01', title: 'TICKLE', color: 'text-brand-yellow', body: 'Browse the catalog. Find a theatre comedy show that works for your stage. Send an inquiry.' },
+                  { n: '02', title: 'NEGOTIATE', color: 'text-white', body: 'The rights holder replies. Talk directly. Agree on royalty %, territory, number of performances.' },
+                  { n: '03', title: 'DEAL', color: 'text-brand-cyan', body: 'Mark it as Deal in My Hub. Done. Contract template fills automatically.' },
+                  { n: '04', title: 'LOG YOUR SHOWS', color: 'text-white', body: 'After every performance — Studio → Royalty Tracker → log tickets, price, royalty %. System calculates what you owe.' },
+                  { n: '05', title: 'RIGHTS HOLDER SEES IT', color: 'text-brand-pink', body: 'Instantly. In their Incoming Royalties. Transparent. No surprises.' },
+                ].map((step, i) => (
+                  <div key={i} className="p-8 border-b-4 border-white/10 hover:bg-brand-surface/50 transition-all">
+                    <span className="text-[64px] font-black text-white/5 leading-none block mb-[-12px]">{step.n}</span>
+                    <h3 className={`text-xl font-black uppercase italic tracking-tighter mb-3 ${step.color}`}>{step.title}</h3>
+                    <p className="text-gray-400 font-bold italic text-sm leading-relaxed">{step.body}</p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+            <div className="border-t-4 border-white/10 p-8 text-center">
+              <p className="text-white/30 font-bold italic text-sm">Theatre comedy travels. This is how.</p>
+            </div>
+          </section>
+
           {/* COPYRIGHT & RIGHTS */}
           <section className="space-y-8 bg-brand-surface border-4 border-white/20 p-6 md:p-12 shadow-neo-cyan">
             <h2 className="text-3xl md:text-4xl font-black uppercase italic text-brand-cyan border-b-2 border-brand-cyan/20 pb-4">Copyright and Licensing</h2>

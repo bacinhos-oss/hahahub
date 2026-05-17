@@ -320,6 +320,53 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
+        {/* HOW TO PLAY — short version */}
+        <section className="py-16 border-t-4 border-white/10">
+          <div className="mb-10">
+            <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">How it works</span>
+            <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white leading-none mt-2">How to Play.</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink">You have a show — sell rights</p>
+              {[
+                { n: '01', t: 'SHOWLOAD', b: 'Upload your show. Your dossier is your pitch.' },
+                { n: '02', t: 'WAIT FOR THE TICKLE', b: 'A producer from abroad sends an inquiry.' },
+                { n: '03', t: 'DEAL + INCOMING ROYALTIES', b: 'Agree, sign, collect. Watch the money come in.' },
+              ].map((s, i) => (
+                <div key={i} className="flex items-start gap-4 border-l-4 border-brand-pink/30 pl-4">
+                  <span className="text-brand-pink font-black text-sm flex-shrink-0">{s.n}</span>
+                  <div>
+                    <p className="font-black uppercase italic text-white text-sm">{s.t}</p>
+                    <p className="text-white/40 text-xs italic font-bold mt-1">{s.b}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-4">
+              <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan">You need a show — buy rights</p>
+              {[
+                { n: '01', t: 'TICKLE', b: 'Browse catalog. Find the show. Send inquiry.' },
+                { n: '02', t: 'NEGOTIATE + DEAL', b: 'Talk direct. Agree on terms. Done.' },
+                { n: '03', t: 'LOG + PAY ROYALTIES', b: 'Log every performance. Rights holder sees it live.' },
+              ].map((s, i) => (
+                <div key={i} className="flex items-start gap-4 border-l-4 border-brand-cyan/30 pl-4">
+                  <span className="text-brand-cyan font-black text-sm flex-shrink-0">{s.n}</span>
+                  <div>
+                    <p className="font-black uppercase italic text-white text-sm">{s.t}</p>
+                    <p className="text-white/40 text-xs italic font-bold mt-1">{s.b}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-8 text-center">
+            <button onClick={() => onNavigate('about')} className="text-[9px] font-black uppercase italic text-white/30 border border-white/20 px-4 py-2 hover:border-white hover:text-white transition-all tracking-widest">
+              Full Guide on Mission →
+            </button>
+          </div>
+        </section>
+
         {/* PRICING — 3 tieri */}
         <section className="px-4 md:px-12 py-16 md:py-32" id="pricing">
           <div className="max-w-7xl mx-auto">
