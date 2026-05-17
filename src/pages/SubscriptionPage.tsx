@@ -267,7 +267,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRef2 = React.useRef<HTMLInputElement>(null);
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assets' | 'inquiries' | 'profile' | 'analytics' | 'studio'>('assets');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'assets' | 'inquiries' | 'profile' | 'analytics' | 'studio'>('dashboard');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [myStats, setMyStats] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
@@ -348,20 +348,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
   const loadMyRealStats = async () => {
     // Also load basic stats for stats bar
-    const { data: myShows } = await supabase.from('shows').select('views_count, likes_count, inquiries_count').eq('user_id', user?.id);
-    if (myShows) {
-      setMyStats({
-        views: myShows.reduce((s: number, x: any) => s + (x.views_count || 0), 0),
-        likes: myShows.reduce((s: number, x: any) => s + (x.likes_count || 0), 0),
-        inquiries: myShows.reduce((s: number, x: any) => s + (x.inquiries_count || 0), 0),
-      });
-    }
-    const { data: myShows } = await supabase.from('shows').select('views_count, inquiries_count, likes_count').eq('user_id', user?.id);
     if (myShows && myShows.length > 0) {
       setRealStats({
         totalViews: myShows.reduce((sum, s) => sum + (s.views_count || 0), 0),
         totalInquiries: myShows.reduce((sum, s) => sum + (s.inquiries_count || 0), 0),
         totalLikes: myShows.reduce((sum, s) => sum + (s.likes_count || 0), 0),
+      });
+      setMyStats({
+        views: myShows.reduce((s: number, x: any) => s + (x.views_count || 0), 0),
+        likes: myShows.reduce((s: number, x: any) => s + (x.likes_count || 0), 0),
+        inquiries: myShows.reduce((s: number, x: any) => s + (x.inquiries_count || 0), 0),
       });
     }
   };
@@ -842,6 +838,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 const isRoar = plan === 'roar' || user?.isAdmin;
                 const isLaff = plan === 'laff' || isRoar;
                 const tabs = [
+                  ...(isLaff ? ['dashboard'] : []),
                   'profile',
                   ...(isLaff ? ['assets', 'inquiries'] : []),
                   ...(isRoar ? ['analytics', 'studio'] : []),
@@ -849,7 +846,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 return tabs.map((tab: any) => (
                   <button key={tab} onClick={() => setActiveTab(tab)}
                     className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                    {tab === 'assets' ? 'My Shows' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : tab === 'analytics' ? '⚡ Analytics' : '🎬 Studio'}
+                    {tab === 'dashboard' ? '📊 Dashboard' : tab === 'assets' ? 'My Shows' : tab === 'inquiries' ? 'Inquiries' : tab === 'profile' ? 'My Profile' : tab === 'analytics' ? '⚡ Analytics' : '🎬 Studio'}
                   </button>
                 ));
               })()}
@@ -1414,6 +1411,97 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             )}
 
             {/* MY PROFILE TAB */}
+            {/* DASHBOARD — LAFF+ */}
+            {activeTab === 'dashboard' && (
+              <section className="space-y-8">
+                <h2 className="text-4xl font-black uppercase italic">📊 <span className="text-brand-yellow">Dashboard</span></h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                  {/* MY SHOWS */}
+                  <div className="border-4 border-white/20 p-5 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">My Shows</p>
+                    {userUploads.length === 0 ? (
+                      <p className="text-white/20 italic text-sm">No shows yet. Go to SHOWLOAD.</p>
+                    ) : userUploads.slice(0, 3).map((show: any) => (
+                      <div key={show.id} className="flex items-center justify-between border-b border-white/10 pb-2">
+                        <div>
+                          <p className="font-black uppercase italic text-white text-sm">{show.title}</p>
+                          <p className="text-white/30 text-xs">{show.genre} · {show.rightsStatus || 'Available'}</p>
+                        </div>
+                        <div className="flex gap-3 text-[10px] text-white/30">
+                          <span>👁 {show.viewsCount || 0}</span>
+                          <span>📩 {show.inquiriesCount || 0}</span>
+                        </div>
+                      </div>
+                    ))}
+                    <button onClick={() => setActiveTab('assets')} className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/30 px-3 py-1 hover:bg-brand-yellow hover:text-black transition-all">
+                      All Shows →
+                    </button>
+                  </div>
+
+                  {/* TICKLE LIST */}
+                  <div className="border-4 border-white/20 p-5 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Tickle List</p>
+                    {shortlist.length === 0 ? (
+                      <p className="text-white/20 italic text-sm">No shows saved yet.</p>
+                    ) : shortlist.slice(0, 3).map((id: string) => {
+                      const show = shows.find((s: any) => s.id === id);
+                      if (!show) return null;
+                      return (
+                        <div key={id} className="flex items-center justify-between border-b border-white/10 pb-2">
+                          <p className="font-black uppercase italic text-white text-sm">{show.title}</p>
+                          <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">Saved</span>
+                        </div>
+                      );
+                    })}
+                    <p className="text-[9px] text-white/20 italic">{shortlist.length} shows on your list</p>
+                  </div>
+
+                  {/* RECENT INQUIRIES */}
+                  <div className="border-4 border-white/20 p-5 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Recent Inquiries</p>
+                    {inquiries.length === 0 ? (
+                      <p className="text-white/20 italic text-sm">No inquiries yet.</p>
+                    ) : inquiries.slice(0, 3).map((inq: any) => (
+                      <div key={inq.id} className="flex items-center justify-between border-b border-white/10 pb-2">
+                        <div>
+                          <p className="font-black uppercase italic text-white text-sm truncate max-w-[180px]">{inq.from_name}</p>
+                          <p className="text-white/30 text-xs italic">{inq.message?.substring(0, 40)}...</p>
+                        </div>
+                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${inq.is_read ? 'text-white/30 border border-white/20' : 'bg-brand-pink text-white'}`}>
+                          {inq.is_read ? 'Read' : 'New'}
+                        </span>
+                      </div>
+                    ))}
+                    <button onClick={() => setActiveTab('inquiries')} className="text-[9px] font-black uppercase italic text-brand-pink border border-brand-pink/30 px-3 py-1 hover:bg-brand-pink hover:text-white transition-all">
+                      All Inquiries →
+                    </button>
+                  </div>
+
+                  {/* QUICK ACTIONS */}
+                  <div className="border-4 border-white/20 p-5 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">Quick Actions</p>
+                    <div className="space-y-2">
+                      <button onClick={() => onNavigate('upload')} className="w-full text-left px-4 py-3 border-2 border-white/10 hover:border-brand-cyan text-white/60 hover:text-white font-black uppercase italic text-xs transition-all flex items-center gap-3">
+                        <span className="material-symbols-outlined text-brand-cyan text-sm">upload</span>
+                        SHOWLOAD — Upload a Show
+                      </button>
+                      <button onClick={() => onNavigate('discovery')} className="w-full text-left px-4 py-3 border-2 border-white/10 hover:border-brand-yellow text-white/60 hover:text-white font-black uppercase italic text-xs transition-all flex items-center gap-3">
+                        <span className="material-symbols-outlined text-brand-yellow text-sm">search</span>
+                        Browse Catalog
+                      </button>
+                      <button onClick={() => onNavigate('wire')} className="w-full text-left px-4 py-3 border-2 border-white/10 hover:border-brand-pink text-white/60 hover:text-white font-black uppercase italic text-xs transition-all flex items-center gap-3">
+                        <span className="material-symbols-outlined text-brand-pink text-sm">dynamic_feed</span>
+                        LaffWire
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+            )}
+
             {activeTab === 'profile' && (
               <section className="space-y-8">
                 <div className="flex items-center justify-between">
