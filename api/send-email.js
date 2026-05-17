@@ -49,7 +49,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="footer">
     <p>HahaHub — The Comedy Rights Marketplace</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>
@@ -57,7 +57,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 
   welcome: ({ name, email }) => ({
-    subject: `You're Set Up. Break a Leg. 🎭 — HahaHub`,
+    subject: `You're Set Up. Break a Laffing Leg. 🦵 — HahaHub`,
     html: `
 <!DOCTYPE html>
 <html>
@@ -81,11 +81,11 @@ h1 { font-size: 40px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="step">
     <div class="step-num">01</div>
-    <div><strong style="text-transform:uppercase;font-style:italic;">Tickle</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Browse international comedy productions. Shortlist what excites you.</span></div>
+    <div><strong style="text-transform:uppercase;font-style:italic;">Tickle</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Browse international comedy productions. Tickle List what excites you.</span></div>
   </div>
   <div class="step">
     <div class="step-num">02</div>
-    <div><strong style="text-transform:uppercase;font-style:italic;">Set Up</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Deploy your show or contact rights holders directly. No agents.</span></div>
+    <div><strong style="text-transform:uppercase;font-style:italic;">Set Up</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Drop your show or contact rights holders directly. No agents.</span></div>
   </div>
   <div class="step">
     <div class="step-num">03</div>
@@ -96,7 +96,7 @@ h1 { font-size: 40px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="footer">
     <p>HahaHub — The Comedy Rights Marketplace | info@hahahub.art</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>
@@ -139,11 +139,51 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <div class="footer">
     <p>HahaHub | info@hahahub.art | Ljubljana, Slovenia</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>
 </html>`
+  }),
+
+  inquiry_reply: ({ producerName, buyerName, showTitle, message }) => ({
+    subject: `Reply from ${producerName} — ${showTitle}`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
+.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
+.badge { background: #03DAC6; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
+h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
+.show { background: #111; border: 2px solid #FFDE03; padding: 16px 20px; margin: 24px 0; }
+.show-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #FFDE03; }
+.reply { background: #111; border-left: 4px solid #03DAC6; padding: 20px 24px; margin: 16px 0; font-style: italic; color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.7; }
+.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
+.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
+</style></head>
+<body>
+<div class="container">
+  <div class="logo">HAHAHUB</div>
+  <div class="slogan">Tickle. Set Up. Punch.</div>
+  <div class="badge">💬 Reply Received</div>
+  <h1>${buyerName},<br/>You Got a Reply.</h1>
+  <p style="color:rgba(255,255,255,0.5);font-style:italic;">${producerName} has responded to your inquiry.</p>
+  <div class="show">
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Show</div>
+    <div class="show-title">${showTitle}</div>
+  </div>
+  <div class="reply">${message}</div>
+  <a href="https://hahahub.art" class="cta">🥊 Go to My Hub →</a>
+  <div class="footer">
+    <p>HahaHub — Theatre Comedy Rights Marketplace</p>
+    <p>Break a Laffing Leg. 🦵</p>
+  </div>
+</div>
+</body>
+</html>\`
   }),
 
   subscription_reminder: ({ name, expiry, daysLeft }) => ({
@@ -171,7 +211,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <a href="mailto:info@hahahub.art?subject=Renew Subscription" class="cta">Renew My Pass →</a>
   <div class="footer">
     <p>HahaHub | info@hahahub.art</p>
-    <p>Break a Leg. 🎭</p>
+    <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
 </body>
