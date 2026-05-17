@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Show } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface ProducerStudioProps {
   user: User;
@@ -23,9 +24,11 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const myShows = shows.filter((s: any) => s.user_id === user.id);
 
   // ROYALTY TRACKER STATE
-  const [royaltyReports, setRoyaltyReports] = useState<any[]>(() => load('royalty_reports'));
+  const [royaltyReports, setRoyaltyReports] = useState<any[]>([]);
+  const [sellerReports, setSellerReports] = useState<any[]>([]);
   const [newReport, setNewReport] = useState({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
   const [reportSaved, setReportSaved] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
 
   // CONTRACTS STATE
   const [contracts, setContracts] = useState<any[]>(() => load('contracts'));
@@ -48,7 +51,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const [newLog, setNewLog] = useState({ date: new Date().toISOString().split('T')[0], show: '', venue: '', attendance: '', notes: '' });
 
   // Save to localStorage on change
-  useEffect(() => { save('royalty_reports', royaltyReports); }, [royaltyReports]);
+
   useEffect(() => { save('contracts', contracts); }, [contracts]);
   useEffect(() => { save('contacts', contacts); }, [contacts]);
   useEffect(() => { save('logs', logs); }, [logs]);
@@ -61,6 +64,36 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const other = Number(calc.otherFee) * Number(calc.otherCount) * Number(calc.performances);
   const totalCosts = actors + techs + other;
   const net = royalty - totalCosts;
+
+  // Load buyer reports (my own logged performances)
+  const loadRoyaltyData = async () => {
+    if (!user?.id) return;
+    setReportLoading(true);
+    
+    // Buyer view - reports I logged
+    const { data: buyerData } = await supabase
+      .from('royalty_reports')
+      .select('*')
+      .eq('buyer_id', user.id)
+      .order('date', { ascending: false });
+    if (buyerData) setRoyaltyReports(buyerData);
+
+    // Seller view - reports on my shows
+    const myShowIds = myShows.map((s: any) => s.id).filter(Boolean);
+    if (myShowIds.length > 0) {
+      const { data: sellerData } = await supabase
+        .from('royalty_reports')
+        .select('*')
+        .in('show_id', myShowIds)
+        .order('date', { ascending: false });
+      if (sellerData) setSellerReports(sellerData);
+    }
+    setReportLoading(false);
+  };
+
+  useEffect(() => {
+    if (myShows.length > 0 || user?.id) loadRoyaltyData();
+  }, [myShows]);
 
   const inp = 'w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm';
   const lbl = 'text-[9px] font-black uppercase tracking-widest text-white/40 italic mb-1 block';
@@ -191,12 +224,26 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
               </div>
             )}
 
-            <button onClick={() => {
+            <button onClick={async () => {
               if (!newReport.date || !newReport.show || !newReport.tickets) return;
               const royaltyAmount = Math.round(Number(newReport.tickets) * Number(newReport.price) * Number(newReport.royaltyPct) / 100);
               const gross = Math.round(Number(newReport.tickets) * Number(newReport.price));
-              const report = { ...newReport, id: Date.now().toString(), royaltyAmount, gross };
-              setRoyaltyReports(prev => [report, ...prev]);
+              const show = myShows.find((s: any) => s.title === newReport.show);
+              await supabase.from('royalty_reports').insert({
+                show_id: show?.id,
+                show_title: newReport.show,
+                buyer_id: user.id,
+                buyer_name: user.name,
+                date: newReport.date,
+                venue: newReport.venue,
+                tickets: Number(newReport.tickets),
+                ticket_price: Number(newReport.price),
+                royalty_pct: Number(newReport.royaltyPct),
+                royalty_amount: royaltyAmount,
+                gross,
+                notes: newReport.notes,
+              });
+              await loadRoyaltyData();
               setNewReport({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
               setReportSaved(true); setTimeout(() => setReportSaved(false), 3000);
             }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
@@ -231,8 +278,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
             ) : (
               <div className="space-y-3">
                 {myShows.map((show: any) => {
-                  const showReports = royaltyReports.filter((r: any) => r.show === show.title);
-                  const totalRoyalty = showReports.reduce((s: number, r: any) => s + (r.royaltyAmount || 0), 0);
+                  const showReports = sellerReports.filter((r: any) => r.show_id === show.id);
+                  const totalRoyalty = showReports.reduce((s: number, r: any) => s + (r.royalty_amount || 0), 0);
                   const totalGross = showReports.reduce((s: number, r: any) => s + (r.gross || 0), 0);
                   return (
                     <div key={show.id} className="border-4 border-white/10 p-4 hover:border-brand-pink transition-all">
@@ -258,8 +305,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
                         <div className="mt-3 space-y-1">
                           {showReports.map((r: any, i: number) => (
                             <div key={i} className="flex items-center justify-between text-xs border-t border-white/5 pt-1">
-                              <span className="text-white/40">{new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · {r.venue}</span>
-                              <span className="text-brand-yellow font-black">€{(r.royaltyAmount || 0).toLocaleString()}</span>
+                              <span className="text-white/40">{r.date ? new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'} · {r.venue || '—'} · {r.buyer_name || 'Buyer'}</span>
+                              <span className="text-brand-yellow font-black">€{(r.royalty_amount || 0).toLocaleString()}</span>
                             </div>
                           ))}
                         </div>
