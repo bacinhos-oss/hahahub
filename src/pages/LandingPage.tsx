@@ -360,7 +360,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
                 <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Browse full catalog — unlimited', 'Upload up to 10 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Contract templates', 'Laff Wire — 7 days + post', 'Producer Profile'].map((f, i) => (
+                  {['Full catalog — unlimited browsing', 'Upload up to 10 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Inquiry history — sent & received', 'Deal tracking', 'Royalty Tracker — log & calculate', 'Laff Wire — 7 days + post', 'Producer Profile + Dashboard'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
@@ -378,7 +378,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <div className="text-5xl font-black text-brand-pink mb-1">€189</div>
                 <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Browse full catalog — unlimited', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge + Priority listing', 'VERIFIED badge', 'Laff Wire — live real-time', 'Producer Studio — Dashboard, Schedule, Contracts', 'Royalty Calculator + Show Analytics', 'Performance Calendar + Contacts', 'Deal tracking + Contract templates'].map((f, i) => (
+                  {['Full catalog — unlimited + Priority', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge + VERIFIED badge', 'Laff Wire — live real-time', 'Producer Studio — full command center', 'Royalty Tracker — log, calculate, report', 'Show Analytics — views, inquiries, likes', 'Contracts, Contacts, Show Log', 'Deal tracking + rights holder reports'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
