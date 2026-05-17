@@ -6,7 +6,7 @@ interface ProducerStudioProps {
   shows: Show[];
 }
 
-type StudioTab = 'dashboard' | 'schedule' | 'contracts' | 'calculator' | 'contacts' | 'log';
+type StudioTab = 'dashboard' | 'royalty' | 'contracts' | 'calculator' | 'contacts' | 'log';
 
 const STORAGE_KEY = 'hahahub_studio_';
 
@@ -22,11 +22,10 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
 
   const myShows = shows.filter((s: any) => s.user_id === user.id);
 
-  // SCHEDULE STATE
-  const [performances, setPerformances] = useState<any[]>(() => load('performances'));
-  const [newPerf, setNewPerf] = useState({ date: '', time: '19:00', venue: '', city: '', show: '', techEmail: '', status: 'confirmed' });
-  const [perfSaved, setPerfSaved] = useState(false);
-  const [editPerfIdx, setEditPerfIdx] = useState<number | null>(null);
+  // ROYALTY TRACKER STATE
+  const [royaltyReports, setRoyaltyReports] = useState<any[]>(() => load('royalty_reports'));
+  const [newReport, setNewReport] = useState({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
+  const [reportSaved, setReportSaved] = useState(false);
 
   // CONTRACTS STATE
   const [contracts, setContracts] = useState<any[]>(() => load('contracts'));
@@ -49,7 +48,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   const [newLog, setNewLog] = useState({ date: new Date().toISOString().split('T')[0], show: '', venue: '', attendance: '', notes: '' });
 
   // Save to localStorage on change
-  useEffect(() => { save('performances', performances); }, [performances]);
+  useEffect(() => { save('royalty_reports', royaltyReports); }, [royaltyReports]);
   useEffect(() => { save('contracts', contracts); }, [contracts]);
   useEffect(() => { save('contacts', contacts); }, [contacts]);
   useEffect(() => { save('logs', logs); }, [logs]);
@@ -68,7 +67,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
 
   const tabs: { key: StudioTab; label: string; icon: string }[] = [
     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { key: 'schedule', label: 'Schedule', icon: 'calendar_month' },
+    { key: 'royalty', label: 'Royalty Tracker', icon: 'receipt_long' },
     { key: 'contracts', label: 'Contracts', icon: 'description' },
     { key: 'calculator', label: 'Calculator', icon: 'calculate' },
     { key: 'contacts', label: 'Contacts', icon: 'contacts' },
@@ -155,106 +154,95 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
       )}
 
       {/* ── SCHEDULE ── */}
-      {tab === 'schedule' && (
+      {/* ── ROYALTY TRACKER ── */}
+      {tab === 'royalty' && (
         <div className="space-y-6">
+          <p className="text-white/40 font-bold italic text-sm">Log each performance. The rights holder sees your reports automatically.</p>
+
+          {/* ADD REPORT FORM */}
           <div className="border-4 border-brand-yellow/30 p-4 space-y-4">
-            <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Add Performance</p>
+            <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Log Performance</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <div><label className={lbl}>Date</label><input type="date" value={newPerf.date} onChange={e => setNewPerf(p => ({...p, date: e.target.value}))} className={inp} /></div>
-              <div><label className={lbl}>Time</label><input type="time" value={newPerf.time} onChange={e => setNewPerf(p => ({...p, time: e.target.value}))} className={inp} /></div>
+              <div><label className={lbl}>Date</label><input type="date" value={newReport.date} onChange={e => setNewReport(p => ({...p, date: e.target.value}))} className={inp} /></div>
               <div><label className={lbl}>Show</label>
-                <select value={newPerf.show} onChange={e => setNewPerf(p => ({...p, show: e.target.value}))} className={inp}>
+                <select value={newReport.show} onChange={e => setNewReport(p => ({...p, show: e.target.value}))} className={inp}>
                   <option value="">Select show...</option>
                   {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
                 </select>
               </div>
-              <div><label className={lbl}>Venue</label><input placeholder="Theatre name" value={newPerf.venue} onChange={e => setNewPerf(p => ({...p, venue: e.target.value}))} className={inp} /></div>
-              <div><label className={lbl}>City</label><input placeholder="City" value={newPerf.city} onChange={e => setNewPerf(p => ({...p, city: e.target.value}))} className={inp} /></div>
-              <div><label className={lbl}>Status</label>
-                <select value={newPerf.status} onChange={e => setNewPerf(p => ({...p, status: e.target.value}))} className={inp}>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="tentative">Tentative</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
-              <div className="col-span-2 md:col-span-3">
-                <label className={lbl}>Tech/Crew Email <span className="text-brand-cyan">(receives show dossier automatically)</span></label>
-                <input type="email" placeholder="technician@theatre.com" value={newPerf.techEmail} onChange={e => setNewPerf(p => ({...p, techEmail: e.target.value}))} className={inp} />
-              </div>
+              <div><label className={lbl}>Venue</label><input placeholder="Theatre name" value={newReport.venue} onChange={e => setNewReport(p => ({...p, venue: e.target.value}))} className={inp} /></div>
+              <div><label className={lbl}>Tickets Sold</label><input type="number" placeholder="e.g. 180" value={newReport.tickets} onChange={e => setNewReport(p => ({...p, tickets: e.target.value}))} className={inp} /></div>
+              <div><label className={lbl}>Ticket Price (€)</label><input type="number" placeholder="e.g. 25" value={newReport.price} onChange={e => setNewReport(p => ({...p, price: e.target.value}))} className={inp} /></div>
+              <div><label className={lbl}>Royalty %</label><input type="number" placeholder="e.g. 10" value={newReport.royaltyPct} onChange={e => setNewReport(p => ({...p, royaltyPct: e.target.value}))} className={inp} /></div>
+              <div className="col-span-2 md:col-span-3"><label className={lbl}>Notes</label><input placeholder="Optional notes..." value={newReport.notes} onChange={e => setNewReport(p => ({...p, notes: e.target.value}))} className={inp} /></div>
             </div>
+
+            {/* LIVE CALC */}
+            {newReport.tickets && newReport.price && newReport.royaltyPct && (
+              <div className="bg-brand-black border-4 border-brand-cyan p-4 flex items-center gap-8">
+                <div>
+                  <p className="text-[9px] font-black uppercase text-white/30 italic">Gross Box Office</p>
+                  <p className="text-2xl font-black text-white">€{Math.round(Number(newReport.tickets) * Number(newReport.price)).toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black uppercase text-brand-yellow italic">Royalty Due</p>
+                  <p className="text-2xl font-black text-brand-yellow">€{Math.round(Number(newReport.tickets) * Number(newReport.price) * Number(newReport.royaltyPct) / 100).toLocaleString()}</p>
+                </div>
+              </div>
+            )}
+
             <button onClick={() => {
-              if (!newPerf.date || !newPerf.venue || !newPerf.show) return;
-              const show = myShows.find((s: any) => s.title === newPerf.show);
-              
-              // Send email immediately on save if tech email provided
-              if (newPerf.techEmail) {
-                const subject = encodeURIComponent(`Tech Brief — ${newPerf.show} — ${newPerf.date}`);
-                const body = encodeURIComponent(`Dear Colleague,
-
-You are confirmed for:
-
-Show: ${newPerf.show}
-Date: ${newPerf.date} at ${newPerf.time}
-Venue: ${newPerf.venue}, ${newPerf.city}
-
-Show details:
-Genre: ${show?.genre || '—'}
-Duration: ${show?.duration || '—'} min
-Cast: ${show?.maleRoles || 0}M + ${show?.femaleRoles || 0}F
-
-Full production dossier: https://hahahub.art
-
-Break a Laffing Leg!
-${user.name}`);
-                const a = document.createElement('a');
-                a.href = `mailto:${newPerf.techEmail}?subject=${subject}&body=${body}`;
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-              }
-
-              if (editPerfIdx !== null) {
-                // UPDATE existing
-                setPerformances(prev => prev.map((p, i) => i === editPerfIdx ? { ...newPerf, id: p.id } : p).sort((a, b) => a.date.localeCompare(b.date)));
-                setEditPerfIdx(null);
-              } else {
-                // ADD new
-                setPerformances(prev => [...prev, { ...newPerf, id: Date.now().toString() }].sort((a, b) => a.date.localeCompare(b.date)));
-              }
-              setNewPerf({ date: '', time: '19:00', venue: '', city: '', show: '', techEmail: '', status: 'confirmed' });
-              setPerfSaved(true); setTimeout(() => setPerfSaved(false), 3000);
+              if (!newReport.date || !newReport.show || !newReport.tickets) return;
+              const royaltyAmount = Math.round(Number(newReport.tickets) * Number(newReport.price) * Number(newReport.royaltyPct) / 100);
+              const gross = Math.round(Number(newReport.tickets) * Number(newReport.price));
+              const report = { ...newReport, id: Date.now().toString(), royaltyAmount, gross };
+              setRoyaltyReports(prev => [report, ...prev]);
+              setNewReport({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
+              setReportSaved(true); setTimeout(() => setReportSaved(false), 3000);
             }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-              {editPerfIdx !== null ? 'Update Performance' : `+ Add Performance${newPerf.techEmail ? ' & Send Dossier' : ''}`}
+              + Log Performance
             </button>
-            {newPerf.techEmail && <p className="text-white/30 text-[9px] font-black italic">✓ Your email client will open — click Send to dispatch the tech brief.</p>}
-            {perfSaved && <p className="text-brand-cyan text-xs font-black italic">✓ Performance added!</p>}
+            {reportSaved && <p className="text-brand-cyan text-xs font-black italic">✓ Performance logged!</p>}
           </div>
 
-          {performances.length === 0 ? (
-            <p className="text-white/20 italic text-sm">No performances scheduled.</p>
+          {/* SUMMARY */}
+          {royaltyReports.length > 0 && (
+            <div className="border-4 border-white/10 p-4 grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-[9px] font-black uppercase text-white/30 italic">Total Performances</p>
+                <p className="text-3xl font-black text-white">{royaltyReports.length}</p>
+              </div>
+              <div className="text-center border-x border-white/10">
+                <p className="text-[9px] font-black uppercase text-white/30 italic">Total Box Office</p>
+                <p className="text-3xl font-black text-brand-cyan">€{royaltyReports.reduce((s, r) => s + (r.gross || 0), 0).toLocaleString()}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-[9px] font-black uppercase text-brand-yellow italic">Total Royalties Due</p>
+                <p className="text-3xl font-black text-brand-yellow">€{royaltyReports.reduce((s, r) => s + (r.royaltyAmount || 0), 0).toLocaleString()}</p>
+              </div>
+            </div>
+          )}
+
+          {/* REPORTS LIST */}
+          {royaltyReports.length === 0 ? (
+            <p className="text-white/20 italic text-sm">No performances logged yet.</p>
           ) : (
             <div className="space-y-2">
               <div className="grid grid-cols-6 gap-2 text-[9px] font-black uppercase italic text-white/30 px-4 pb-2">
-                <span>Date</span><span>Time</span><span>Show</span><span>Venue</span><span>City</span><span>Status</span>
+                <span>Date</span><span>Show</span><span>Venue</span><span>Tickets</span><span>Gross</span><span>Royalty Due</span>
               </div>
-              {performances.map((p, i) => (
-                <div key={p.id || i} className={`border-2 px-4 py-3 grid grid-cols-6 gap-2 items-center transition-all ${p.status === 'cancelled' ? 'border-red-500/20 opacity-40' : p.status === 'tentative' ? 'border-brand-yellow/30' : 'border-white/10 hover:border-brand-yellow'}`}>
-                  <span className="text-brand-yellow font-black text-sm">{new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>
-                  <span className="text-white/60 text-sm">{p.time}</span>
-                  <span className="text-white font-black italic text-xs truncate">{p.show}</span>
-                  <span className="text-white/60 text-xs truncate">{p.venue}</span>
-                  <span className="text-white/40 text-xs">{p.city}</span>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${p.status === 'confirmed' ? 'bg-brand-cyan text-black' : p.status === 'tentative' ? 'bg-brand-yellow text-black' : 'bg-red-500/30 text-red-400'}`}>{p.status}</span>
-                    <div className="flex gap-1">
-                      <button onClick={() => { setEditPerfIdx(i); setNewPerf({...p}); }} className="text-white/20 hover:text-brand-yellow transition-colors">
-                        <span className="material-symbols-outlined text-sm">edit</span>
-                      </button>
-                      <button onClick={() => setPerformances(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
-                        <span className="material-symbols-outlined text-sm">close</span>
-                      </button>
-                    </div>
+              {royaltyReports.map((r, i) => (
+                <div key={r.id || i} className="border-2 border-white/10 px-4 py-3 grid grid-cols-6 gap-2 items-center hover:border-brand-yellow transition-all">
+                  <span className="text-brand-yellow font-black text-sm">{new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                  <span className="text-white font-black italic text-xs truncate">{r.show}</span>
+                  <span className="text-white/40 text-xs truncate">{r.venue}</span>
+                  <span className="text-white/60 text-sm">{r.tickets}</span>
+                  <span className="text-brand-cyan font-black text-sm">€{(r.gross || 0).toLocaleString()}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-brand-yellow font-black text-sm">€{(r.royaltyAmount || 0).toLocaleString()}</span>
+                    <button onClick={() => setRoyaltyReports(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
+                      <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -263,8 +251,7 @@ ${user.name}`);
         </div>
       )}
 
-      {/* ── CONTRACTS ── */}
-      {tab === 'contracts' && (
+            {tab === 'contracts' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contracts.length} contracts</p>
