@@ -846,14 +846,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* STATS BAR — all plans */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'VIEWS', value: myStats.views, color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
-                { label: 'LIKES', value: myStats.likes, color: 'text-brand-pink', border: 'border-brand-pink/30' },
-                { label: 'INQUIRIES', value: myStats.inquiries, color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
-                { label: 'MY SHOWS', value: userUploads.length, color: 'text-white', border: 'border-white/20' },
+                { label: 'VIEWS', value: myStats.views, icon: 'visibility', color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
+                { label: 'LIKES', value: myStats.likes, icon: 'favorite', color: 'text-brand-pink', border: 'border-brand-pink/30' },
+                { label: 'INQUIRIES', value: myStats.inquiries, icon: 'mail', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
+                { label: 'MY SHOWS', value: userUploads.length, icon: 'theater_comedy', color: 'text-white', border: 'border-white/20' },
               ].map((s, i) => (
-                <div key={i} className={`border-4 ${s.border} p-4`}>
-                  <p className={`text-3xl font-black ${s.color}`}>{s.value}</p>
-                  <p className="text-[9px] font-black uppercase italic text-white/30 mt-1 tracking-widest">{s.label}</p>
+                <div key={i} className={`border-4 ${s.border} p-4 flex items-center gap-3`}>
+                  <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
+                  <div>
+                    <p className={`text-3xl font-black ${s.color}`}>{s.value}</p>
+                    <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{s.label}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1586,7 +1589,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <p className="text-white/30 text-xs">{show.genre} · {show.rightsStatus || 'Available'}</p>
                         </div>
                         <div className="flex gap-3 text-[10px] text-white/30">
-                          <span className="text-brand-cyan text-[10px] font-black">VIEWS {show.viewsCount || 0}</span>
+                          <span className="flex items-center gap-1 text-[10px] text-brand-cyan font-black"><span className="material-symbols-outlined text-sm">visibility</span>{show.viewsCount || 0}</span>
                           <span>📩 {show.inquiriesCount || 0}</span>
                         </div>
                       </div>
@@ -1795,7 +1798,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
 
             {activeTab === 'studio' && user && (
-              <div className="text-white">
+              <div className="text-white bg-brand-black min-h-[600px] p-0">
                 <ProducerStudio user={user} shows={shows} />
               </div>
             )}

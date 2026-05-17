@@ -75,7 +75,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows }) => {
   ];
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 text-white">
       <div>
         <h2 className="text-4xl font-black uppercase italic">Producer <span className="text-brand-pink">Studio</span></h2>
         <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Your production command center</p>
