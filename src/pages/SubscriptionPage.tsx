@@ -1443,9 +1443,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {/* TICKLE LIST */}
                   <div className="border-4 border-white/20 p-5 space-y-3">
                     <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Tickle List</p>
-                    {shortlist.length === 0 ? (
+                    {(user.favorites || []).length === 0 ? (
                       <p className="text-white/20 italic text-sm">No shows saved yet.</p>
-                    ) : shortlist.slice(0, 3).map((id: string) => {
+                    ) : (user.favorites || []).slice(0, 3).map((id: string) => {
                       const show = shows.find((s: any) => s.id === id);
                       if (!show) return null;
                       return (
@@ -1455,7 +1455,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         </div>
                       );
                     })}
-                    <p className="text-[9px] text-white/20 italic">{shortlist.length} shows on your list</p>
+                    <p className="text-[9px] text-white/20 italic">{(user.favorites || []).length} shows on your list</p>
                   </div>
 
                   {/* RECENT INQUIRIES */}
