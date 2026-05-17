@@ -135,7 +135,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
                   { n: '02', title: 'WAIT FOR THE TICKLE', color: 'text-white', body: 'A producer from Warsaw or Tokyo finds your show. They send an inquiry. You get an email.' },
                   { n: '03', title: 'REPLY DIRECT', color: 'text-white', body: 'My Hub → Inquiries → Reply. No agents. Just two producers talking.' },
                   { n: '04', title: 'DEAL', color: 'text-brand-cyan', body: 'Agree on terms. Mark it as Deal. Contract template fills in Studio.' },
-                  { n: '05', title: 'ROYALTIES COME IN', color: 'text-brand-pink', body: 'Every time they perform your show — they log it. You see it live in Incoming Royalties. That's your money.' },
+                  { n: '05', title: 'ROYALTIES COME IN', color: 'text-brand-pink', body: 'Every time they perform your show — they log it. You see it live in Incoming Royalties. That is your money.' },
                 ].map((step, i) => (
                   <div key={i} className="p-8 border-b-4 border-white/10 hover:bg-brand-surface/50 transition-all">
                     <span className="text-[64px] font-black text-white/5 leading-none block mb-[-12px]">{step.n}</span>
