@@ -1,4 +1,5 @@
 
+import { supabase } from '../lib/supabase';
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import { Page, Show, User } from '../types';
@@ -676,7 +677,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   
                   // Save sent inquiry to Supabase
                   try {
-                    const { supabase } = await import('../lib/supabase');
                     await supabase.from('inquiries').insert({
                       show_id: inquiryShow?.id,
                       producer_id: user?.id,
@@ -687,8 +687,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       recipient_id: inquiryShow?.user_id,
                       type: 'sent',
                       is_read: false,
+                      status: 'sent',
                     });
-                  } catch {}
+                  } catch(e) { console.error('Inquiry save error:', e); }
                   
                   setInquirySuccess(true);
                   onUpdateStats(inquiryShowId || '', 'inquiry');
