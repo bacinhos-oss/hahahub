@@ -24,6 +24,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [inquiryName, setInquiryName] = useState('');
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryMessage, setInquiryMessage] = useState('');
+  const [inquiryRateLimit, setInquiryRateLimit] = useState<number | null>(null); // koliko inquiries je poslal ta mesec (GIGL)
   const [isLoading, setIsLoading] = useState(true);
   const [shortlist, setShortlist] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('hahahub_shortlist') || '[]'); } catch { return []; }
@@ -653,8 +654,31 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </div>
               </div>
 
-              <button 
+              {/* GIGL rate limit opozorilo */}
+              {user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 3 && (
+                <div className="bg-brand-yellow text-black p-4 border-4 border-black font-black uppercase text-sm italic mb-2">
+                  ⚡ GIGL plan: 3 inquiries per month used. Upgrade to LAFF for unlimited.
+                  <button onClick={() => onNavigate('pricing')} className="ml-2 underline">Upgrade →</button>
+                </div>
+              )}
+
+              <button
+                disabled={!!(user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 3)}
                 onClick={async () => {
+                  // Rate limit check za GIGL — max 3 inquiries na mesec
+                  if (user && user.plan === 'gigl') {
+                    const now = new Date();
+                    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+                    const { count } = await supabase
+                      .from('inquiries')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('producer_id', user.id)
+                      .gte('created_at', firstOfMonth);
+                    const monthCount = count || 0;
+                    setInquiryRateLimit(monthCount);
+                    if (monthCount >= 3) return;
+                  }
+
                   try {
                     await fetch('https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-inquiry', {
                       method: 'POST',
@@ -677,7 +701,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   
                   // Save sent inquiry to Supabase
                   try {
-                    await supabase.from('inquiries').insert({
+                    const { error: inquiryErr } = await supabase.from('inquiries').insert({
                       show_id: inquiryShow?.id,
                       producer_id: user?.id,
                       from_name: inquiryName,
@@ -689,12 +713,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       is_read: false,
                       status: 'sent',
                     });
+                    if (inquiryErr) console.error('Inquiry save error:', inquiryErr);
+                    // Posodobimo lokalni rate limit counter
+                    if (user?.plan === 'gigl') setInquiryRateLimit(prev => (prev || 0) + 1);
                   } catch(e) { console.error('Inquiry save error:', e); }
                   
                   setInquirySuccess(true);
                   onUpdateStats(inquiryShowId || '', 'inquiry');
                 }}
-                className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-yellow hover:bg-black transition-all italic tracking-[0.2em] text-xl"
+                className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-yellow hover:bg-black transition-all italic tracking-[0.2em] text-xl disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Send Inquiry 🥊
               </button>
