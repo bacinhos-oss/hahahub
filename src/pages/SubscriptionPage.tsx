@@ -3,6 +3,7 @@ import Navigation from '../components/Navigation';
 import { supabase } from '../lib/supabase';
 import ProducerStudio from './ProducerStudio';
 import { Badge, getProfileBadges } from '../components/Badge';
+import DealsPipelinePage from './DealsPipelinePage';
 import { Page, User, Show } from '../types';
 
 interface SubscriptionPageProps {
@@ -267,7 +268,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRef2 = React.useRef<HTMLInputElement>(null);
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'assets' | 'inquiries' | 'profile' | 'analytics' | 'studio' | 'laff_studio'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'assets' | 'pipeline' | 'profile' | 'analytics' | 'studio' | 'laff_studio'>('dashboard');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [myStats, setMyStats] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
@@ -894,14 +895,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 const tabs = [
                   ...(isLaff ? ['dashboard'] : []),
                   'profile',
-                  ...(isLaff ? ['assets', 'inquiries'] : []),
+                  ...(isLaff ? ['assets', 'pipeline'] : []),
                   ...(isLaff && !isRoar ? ['laff_studio'] : []),
                   ...(isRoar ? ['analytics', 'studio'] : []),
                 ];
                 return tabs.map((tab: any) => (
                   <button key={tab} onClick={() => setActiveTab(tab)}
                     className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                    {tab === 'dashboard' ? 'DASHBOARD' : tab === 'assets' ? 'MY SHOWS' : tab === 'inquiries' ? 'INQUIRIES' : tab === 'profile' ? 'MY PROFILE' : tab === 'analytics' ? 'ANALYTICS' : tab === 'laff_studio' ? 'STUDIO' : 'STUDIO'}
+                    {tab === 'dashboard' ? 'DASHBOARD' : tab === 'assets' ? 'MY SHOWS' : tab === 'pipeline' ? 'PIPELINE' : tab === 'profile' ? 'MY PROFILE' : tab === 'analytics' ? 'ANALYTICS' : tab === 'laff_studio' ? 'STUDIO' : 'STUDIO'}
                   </button>
                 ));
               })()}
@@ -956,206 +957,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             )}
 
-            {/* 2. INQUIRIES */}
-            {activeTab === 'inquiries' && (
-            <section className="space-y-6">
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <h2 className="text-4xl font-black uppercase italic">Inquiries</h2>
-                <div className="flex border-4 border-white/20">
-                  <button onClick={() => setInquiryView('received')}
-                    className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + (inquiryView === 'received' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
-                    RECEIVED {inquiries.filter(i => !i.is_read).length > 0 && <span className="ml-1 bg-brand-pink text-white text-[8px] px-2 py-0.5">{inquiries.filter(i => !i.is_read).length}</span>}
-                  </button>
-                  <button onClick={() => setInquiryView('sent')}
-                    className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + (inquiryView === 'sent' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
-                    SENT ({sentInquiries.length})
-                  </button>
-                  <button onClick={() => setInquiryView('deals' as any)}
-                    className={"px-5 py-2 font-black uppercase italic text-xs transition-all " + ((inquiryView as any) === 'deals' ? 'bg-brand-pink text-white' : 'text-white/40 hover:text-white')}>
-                    DEALS ({deals.length})
-                  </button>
-                </div>
-              </div>
-
-              {/* RECEIVED */}
-              {inquiryView === 'received' && (
-                <div className="space-y-3">
-                  {inquiries.length === 0 ? (
-                    <p className="text-white/20 italic text-sm">No inquiries received yet.</p>
-                  ) : inquiries.map((inq: any) => (
-                    <div key={inq.id} className={"border-4 p-5 flex flex-col md:flex-row gap-4 justify-between " + (inq.is_read ? "border-white/20" : "border-brand-cyan shadow-neo-cyan")}>
-                      <div className="flex-1 min-w-0">
-                        {(() => {
-                          const st = inq.status || (inq.is_read ? 'read' : 'new');
-                          const cfg: Record<string, {bg: string, label: string}> = {
-                            deal:    { bg: 'bg-brand-cyan text-black border-brand-cyan', label: 'DEAL' },
-                            replied: { bg: 'bg-brand-yellow text-black border-brand-yellow', label: 'REPLIED' },
-                            read:    { bg: 'border-white/30 text-white/40', label: 'READ' },
-                            new:     { bg: 'bg-brand-pink text-white border-brand-pink', label: 'NEW' },
-                          };
-                          const c = cfg[st] || cfg.new;
-                          return <span className={`text-[8px] font-black uppercase px-3 py-1 mb-2 inline-block border ${c.bg}`}>{c.label}</span>;
-                        })()}
-                        <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan mb-1 italic">{inq.show_title}</p>
-                        <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
-                        <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
-                        {inq.message && <p className="text-sm text-white/60 mt-3 italic border-l-4 border-brand-yellow pl-3">{inq.message}</p>}
-                        {inq.attachment_url && (
-                          <a href={inq.attachment_url} target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 mt-3 text-[9px] font-black uppercase px-3 py-2 border border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all italic">
-                            📎 VIEW ATTACHMENT →
-                          </a>
-                        )}
-                        <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                      </div>
-                      <div className="flex flex-col gap-2 flex-shrink-0">
-                        <button onClick={() => { markAsRead(inq.id); setReplyingTo(replyingTo === inq.id ? null : inq.id); setReplyText(''); }}
-                          className={"text-[9px] font-black uppercase px-4 py-2 border-2 transition-all italic " + (inq.is_read ? "border-white/20 text-white/40 hover:border-brand-yellow hover:text-brand-yellow" : "bg-brand-yellow text-black border-black hover:bg-white")}>
-                          {replyingTo === inq.id ? 'CANCEL' : 'REPLY →'}
-                        </button>
-                        {inq.status !== 'deal' && inq.status !== 'replied' && (
-                          <button onClick={() => {
-                            setDealInquiry(inq);
-                            setDealForm({ royalty_pct: '', years: '', territory: 'Europe', performances: '', notes: '', signed_date: new Date().toISOString().split('T')[0] });
-                            setReplyingTo(null);
-                          }} className="text-[9px] font-black uppercase px-4 py-2 border-2 border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all italic">
-                            DEAL
-                          </button>
-                        )}
-                      </div>
-                      {/* INLINE REPLY BOX */}
-                      {replyingTo === inq.id && (
-                        <div className="mt-4 border-t-2 border-white/10 pt-4 space-y-3">
-                          <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Reply to {inq.from_name}</p>
-                          <textarea
-                            value={replyText}
-                            onChange={e => setReplyText(e.target.value)}
-                            rows={4}
-                            placeholder="Type your reply..."
-                            className="w-full bg-brand-black border-2 border-brand-yellow/30 p-3 text-white font-bold italic text-sm outline-none focus:border-brand-yellow resize-none"
-                          />
-                          <div className="flex gap-3">
-                            <button onClick={async () => {
-                              if (!replyText.trim()) return;
-                              const toEmail = inq.from_email || inq.email;
-                              if (!toEmail) { alert('No email found for this inquiry.'); return; }
-                              try {
-                                const res = await fetch('/api/send-email', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({
-                                    type: 'inquiry_reply',
-                                    to: toEmail,
-                                    data: {
-                                      producerName: user.name,
-                                      buyerName: inq.from_name || 'Producer',
-                                      showTitle: inq.show_title || 'your inquiry',
-                                      message: replyText,
-                                    }
-                                  })
-                                });
-                                const json = await res.json();
-                                if (json.success) {
-                                  markAsRead(inq.id);
-                                  await supabase.from('inquiries').update({ replied: true, status: 'replied' }).eq('id', inq.id);
-                                }
-                              } catch(e) { console.error('Reply error:', e); }
-                              setReplyingTo(null);
-                              setReplyText('');
-                            }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-                              Send Reply →
-                            </button>
-                            <button onClick={() => { setReplyingTo(null); setReplyText(''); }}
-                              className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs hover:border-white transition-all">
-                              Cancel
-                            </button>
-
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* SENT */}
-              {/* DEALS */}
-              {(inquiryView as any) === 'deals' && (
-                <div className="space-y-3">
-                  {deals.length === 0 ? (
-                    <p className="text-white/20 italic text-sm">No deals yet. Mark an inquiry as DEAL to record it here.</p>
-                  ) : deals.map((deal: any) => (
-                    <div key={deal.id} className="border-4 border-brand-cyan/40 p-5 hover:border-brand-cyan transition-all">
-                      <div className="flex items-start justify-between gap-4 mb-4">
-                        <div>
-                          <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-3 py-1 inline-block mb-2">PUNCHED</span>
-                          <p className="text-xl font-black uppercase italic text-white">{deal.show_title}</p>
-                          <p className="text-white/40 text-xs mt-1">Buyer: {deal.buyer_name} · {deal.buyer_email}</p>
-                          <p className="text-white/30 text-[9px] mt-1">{deal.signed_date}</p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="border-l-4 border-brand-yellow pl-3">
-                          <p className="text-[9px] font-black uppercase text-white/30 italic">Royalty</p>
-                          <p className="text-white font-black">{deal.royalty_pct || '—'} %</p>
-                        </div>
-                        <div className="border-l-4 border-brand-cyan pl-3">
-                          <p className="text-[9px] font-black uppercase text-white/30 italic">Years</p>
-                          <p className="text-white font-black">{deal.years || '—'}</p>
-                        </div>
-                        <div className="border-l-4 border-brand-pink pl-3">
-                          <p className="text-[9px] font-black uppercase text-white/30 italic">Territory</p>
-                          <p className="text-white font-black">{deal.territory || '—'}</p>
-                        </div>
-                        <div className="border-l-4 border-white/20 pl-3">
-                          <p className="text-[9px] font-black uppercase text-white/30 italic">Performances</p>
-                          <p className="text-white font-black">{deal.performances || '—'}</p>
-                        </div>
-                      </div>
-                      {deal.notes && <p className="text-white/40 text-sm italic mt-3 border-l-2 border-white/10 pl-3">{deal.notes}</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {inquiryView === 'sent' && (
-                <div className="space-y-3">
-                  {sentInquiries.length === 0 ? (
-                    <div className="space-y-2">
-                      <p className="text-white/20 italic text-sm">No inquiries sent yet.</p>
-                      <button onClick={() => onNavigate('discovery')} className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/30 px-3 py-1 hover:bg-brand-yellow hover:text-black transition-all">
-                        Browse Catalog →
-                      </button>
-                    </div>
-                  ) : sentInquiries.map((inq: any) => (
-                    <div key={inq.id} className="border-4 border-white/20 p-5 flex flex-col md:flex-row gap-4 justify-between hover:border-brand-yellow transition-all">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-brand-yellow mb-1 italic">To: {inq.show_title}</p>
-                        <p className="text-white/60 font-bold italic text-sm mt-2">{inq.message}</p>
-                        {inq.attachment_url && (
-                          <a href={inq.attachment_url} target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 mt-2 text-[9px] font-black uppercase px-3 py-1 border border-brand-cyan/40 text-brand-cyan/60 hover:border-brand-cyan hover:text-brand-cyan transition-all italic">
-                            📎 ATTACHMENT →
-                          </a>
-                        )}
-                        <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                      </div>
-                      <div className="flex-shrink-0 space-y-1">
-                        <span className={`text-[8px] font-black uppercase px-2 py-1 border block text-center ${
-                          inq.status === 'deal' ? 'bg-brand-cyan text-black border-brand-cyan' :
-                          inq.status === 'replied' ? 'bg-brand-yellow text-black border-brand-yellow' :
-                          inq.status === 'read' ? 'border-white/40 text-white/50' :
-                          'border-white/20 text-white/30'
-                        }`}>{
-                          inq.status === 'deal' ? 'PUNCHED' :
-                          inq.status === 'replied' ? 'REPLIED ✓' :
-                          inq.status === 'read' ? 'SEEN' : 'SENT'
-                        }</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            {/* 2. PIPELINE */}
+            {activeTab === 'pipeline' && user && (
+            <section>
+              <DealsPipelinePage user={user} onNavigate={onNavigate} />
             </section>
             )}
 
