@@ -183,7 +183,78 @@ h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: i
   </div>
 </div>
 </body>
-</html>\`
+</html>`
+  }),
+
+
+  deal_signed_producer: ({ show_title, buyer, territory, signed_date }) => ({
+    subject: `✓ Deal Signed — ${show_title} · ${territory}`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
+.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
+.badge { background: #4ade80; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
+h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
+.info { background: #111; border: 2px solid #4ade80; padding: 20px; margin: 24px 0; }
+.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
+.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
+</style></head>
+<body>
+<div class="container">
+  <div class="logo">HAHAHUB</div>
+  <div class="slogan">Tickle. Set Up. Punch.</div>
+  <div class="badge">✓ Deal Signed!</div>
+  <h1>Punchline<br/>Landed.</h1>
+  <div class="info">
+    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Show</span><br/><strong style="color:#FFDE03;font-size:18px;text-transform:uppercase;">${show_title}</strong></div>
+    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Buyer</span><br/><strong>${buyer}</strong></div>
+    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Territory</span><br/><strong>${territory}</strong></div>
+    <div><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Signed</span><br/><strong>${signed_date}</strong></div>
+  </div>
+  <a href="https://hahahub.art" class="cta">Go to Pipeline →</a>
+  <div class="footer"><p>HahaHub — Theatre Comedy Rights Marketplace</p><p>Break a Laffing Leg. 🦵</p></div>
+</div>
+</body>
+</html>`
+  }),
+
+  deal_signed_buyer: ({ show_title, producer, territory, signed_date }) => ({
+    subject: `✓ Contract Confirmed — ${show_title} · ${territory}`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
+.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
+.badge { background: #4ade80; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
+h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
+.info { background: #111; border: 2px solid #4ade80; padding: 20px; margin: 24px 0; }
+.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
+.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
+</style></head>
+<body>
+<div class="container">
+  <div class="logo">HAHAHUB</div>
+  <div class="slogan">Tickle. Set Up. Punch.</div>
+  <div class="badge">✓ Contract Confirmed!</div>
+  <h1>You're In.<br/>Curtain Up.</h1>
+  <div class="info">
+    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Show</span><br/><strong style="color:#FFDE03;font-size:18px;text-transform:uppercase;">${show_title}</strong></div>
+    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Rights Holder</span><br/><strong>${producer}</strong></div>
+    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Territory</span><br/><strong>${territory}</strong></div>
+    <div><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Signed</span><br/><strong>${signed_date}</strong></div>
+  </div>
+  <a href="https://hahahub.art" class="cta">Go to My Hub →</a>
+  <div class="footer"><p>HahaHub — Theatre Comedy Rights Marketplace</p><p>Break a Laffing Leg. 🦵</p></div>
+</div>
+</body>
+</html>`
   }),
 
   subscription_reminder: ({ name, expiry, daysLeft }) => ({
