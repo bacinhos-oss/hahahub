@@ -25,6 +25,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryMessage, setInquiryMessage] = useState('');
   const [inquiryRateLimit, setInquiryRateLimit] = useState<number | null>(null); // koliko inquiries je poslal ta mesec (GIGL)
+  const [inquiryFile, setInquiryFile] = useState<File | null>(null);
+  const [inquirySending, setInquirySending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [shortlist, setShortlist] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('hahahub_shortlist') || '[]'); } catch { return []; }
@@ -652,6 +654,24 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <label className="text-[10px] font-black uppercase text-gray-500 italic">Message / Production Pitch</label>
                   <textarea rows={5} value={inquiryMessage} onChange={e => setInquiryMessage(e.target.value)} placeholder="Tell the rights holder about your planned production, venue, and dates..." className="w-full bg-brand-black border-2 border-white/20 p-6 text-white italic outline-none focus:border-brand-pink"></textarea>
                 </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-gray-500 italic">Attachment <span className="text-white/20 normal-case font-normal">(optional — PDF, max 5MB)</span></label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={e => setInquiryFile(e.target.files?.[0] || null)}
+                      className="w-full bg-brand-black border-2 border-white/20 p-3 text-white/60 text-sm font-bold outline-none focus:border-brand-cyan file:bg-brand-yellow file:text-black file:font-black file:uppercase file:text-[9px] file:px-3 file:py-1 file:border-0 file:mr-3 cursor-pointer"
+                    />
+                    {inquiryFile && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-1">✓ ATTACHED</span>
+                        <span className="text-white/40 text-xs">{inquiryFile.name}</span>
+                        <button onClick={() => setInquiryFile(null)} className="text-white/20 hover:text-brand-pink text-xs">✕</button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* GIGL rate limit opozorilo */}
@@ -663,7 +683,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               )}
 
               <button
-                disabled={!!(user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 3)}
+                disabled={!!(user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 3) || inquirySending}
                 onClick={async () => {
                   // Rate limit check za GIGL — max 3 inquiries na mesec
                   if (user && user.plan === 'gigl') {
@@ -677,6 +697,26 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     const monthCount = count || 0;
                     setInquiryRateLimit(monthCount);
                     if (monthCount >= 3) return;
+                  }
+
+                  setInquirySending(true);
+                  let attachmentUrl = '';
+
+                  // Upload attachment če obstaja
+                  if (inquiryFile) {
+                    try {
+                      const ext = inquiryFile.name.split('.').pop();
+                      const path = `inquiries/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+                      const { data: uploadData } = await supabase.storage
+                        .from('inquiry-attachments')
+                        .upload(path, inquiryFile, { contentType: inquiryFile.type });
+                      if (uploadData) {
+                        const { data: urlData } = supabase.storage
+                          .from('inquiry-attachments')
+                          .getPublicUrl(uploadData.path);
+                        attachmentUrl = urlData?.publicUrl || '';
+                      }
+                    } catch(e) { console.error('Attachment upload error:', e); }
                   }
 
                   try {
@@ -712,18 +752,40 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       type: 'sent',
                       is_read: false,
                       status: 'sent',
+                      attachment_url: attachmentUrl || null,
                     });
                     if (inquiryErr) console.error('Inquiry save error:', inquiryErr);
                     // Posodobimo lokalni rate limit counter
                     if (user?.plan === 'gigl') setInquiryRateLimit(prev => (prev || 0) + 1);
                   } catch(e) { console.error('Inquiry save error:', e); }
-                  
+
+                  // Confirmation email pošiljatelju
+                  try {
+                    await fetch('/api/send-email', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        type: 'inquiry_confirmation',
+                        to: inquiryEmail || user?.email,
+                        data: {
+                          buyerName: inquiryName || user?.name,
+                          showTitle: inquiryShow?.title,
+                          producerName: inquiryShow?.producerName || 'Rights Holder',
+                          message: inquiryMessage,
+                          hasAttachment: !!attachmentUrl,
+                        }
+                      })
+                    });
+                  } catch(e) { console.error('Confirmation email error:', e); }
+
+                  setInquiryFile(null);
+                  setInquirySending(false);
                   setInquirySuccess(true);
                   onUpdateStats(inquiryShowId || '', 'inquiry');
                 }}
                 className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-yellow hover:bg-black transition-all italic tracking-[0.2em] text-xl disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Send Inquiry 🥊
+                {inquirySending ? 'SENDING...' : 'Send Inquiry 🥊'}
               </button>
             </div>
           )}

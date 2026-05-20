@@ -1000,6 +1000,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         <p className="text-lg font-black uppercase italic text-white leading-none">{inq.from_name}</p>
                         <p className="text-xs text-white/40 font-bold mt-1">{inq.from_email}</p>
                         {inq.message && <p className="text-sm text-white/60 mt-3 italic border-l-4 border-brand-yellow pl-3">{inq.message}</p>}
+                        {inq.attachment_url && (
+                          <a href={inq.attachment_url} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 mt-3 text-[9px] font-black uppercase px-3 py-2 border border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all italic">
+                            📎 VIEW ATTACHMENT →
+                          </a>
+                        )}
                         <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
                       <div className="flex flex-col gap-2 flex-shrink-0">
@@ -1126,6 +1132,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       <div className="flex-1 min-w-0">
                         <p className="text-[8px] font-black uppercase tracking-widest text-brand-yellow mb-1 italic">To: {inq.show_title}</p>
                         <p className="text-white/60 font-bold italic text-sm mt-2">{inq.message}</p>
+                        {inq.attachment_url && (
+                          <a href={inq.attachment_url} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 mt-2 text-[9px] font-black uppercase px-3 py-1 border border-brand-cyan/40 text-brand-cyan/60 hover:border-brand-cyan hover:text-brand-cyan transition-all italic">
+                            📎 ATTACHMENT →
+                          </a>
+                        )}
                         <p className="text-[9px] text-white/20 font-bold uppercase mt-2">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
                       <div className="flex-shrink-0 space-y-1">
@@ -2050,6 +2062,32 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   });
                   await supabase.from('inquiries').update({ status: 'deal' }).eq('id', dealInquiry.id);
                   setInquiries(prev => prev.map(i => i.id === dealInquiry.id ? {...i, status: 'deal'} : i));
+
+                  // Deal closed email — pošljemo obema
+                  try {
+                    const dealEmailData = {
+                      sellerName: user?.name || 'Rights Holder',
+                      buyerName: dealInquiry?.from_name || 'Producer',
+                      showTitle: dealInquiry?.show_title || '',
+                      royalty: dealForm.royalty_pct,
+                      years: dealForm.years,
+                      territory: dealForm.territory,
+                      performances: dealForm.performances,
+                    };
+                    await fetch('/api/send-email', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ type: 'deal_closed', to: user?.email, data: { ...dealEmailData, isseller: true } })
+                    });
+                    if (dealInquiry?.from_email || dealInquiry?.email) {
+                      await fetch('/api/send-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'deal_closed', to: dealInquiry.from_email || dealInquiry.email, data: { ...dealEmailData, isseller: false } })
+                      });
+                    }
+                  } catch(e) { console.error('Deal email error:', e); }
+
                   setDealSaved(true);
                   setTimeout(() => { setDealSaved(false); setDealInquiry(null); }, 2000);
                 } catch(e) { console.error(e); }

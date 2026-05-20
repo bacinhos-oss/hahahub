@@ -17,6 +17,7 @@ import LaffWirePage from './pages/LaffWirePage'
 import ProducerPage from './pages/ProducerPage'
 import StefunnyPage from './pages/StefunnyPage'
 import { Analytics } from "@vercel/analytics/next"
+import DealsPipelinePage from './pages/DealsPipelinePage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
@@ -356,6 +357,10 @@ const App: React.FC = () => {
       case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onViewProducer={(id) => { setCurrentProducerId(id); setCurrentPage('producer'); }} />
       case 'stefunny': return <StefunnyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} shows={shows} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} />
       case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} />
+      case 'pipeline':
+        return currentUser
+          ? <DealsPipelinePage user={currentUser} onNavigate={(p) => setCurrentPage(p as Page)} />
+          : <LoginPage onSuccess={() => setCurrentPage('pipeline')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
       default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />
     }
   }
