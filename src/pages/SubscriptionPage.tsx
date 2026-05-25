@@ -1414,72 +1414,156 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* MY PROFILE TAB */}
             {/* DASHBOARD — LAFF+ */}
             {activeTab === 'dashboard' && (
-              <section className="space-y-8">
-                <h2 className="text-4xl font-black uppercase italic">MY <span className="text-brand-yellow">Dashboard</span></h2>
+              <section className="space-y-6">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div>
+                    <h2 className="text-4xl font-black uppercase italic">MY <span className="text-brand-yellow">HUB</span></h2>
+                    <p className="text-white/30 font-bold italic text-xs uppercase tracking-widest mt-1">Your command center</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => onNavigate('upload')} className="bg-brand-yellow text-black px-5 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all">
+                      + SHOWLOAD
+                    </button>
+                    <button onClick={() => onNavigate('discovery')} className="border-4 border-white/20 text-white/40 px-5 py-2 font-black uppercase italic text-xs hover:border-white hover:text-white transition-all">
+                      BROWSE →
+                    </button>
+                  </div>
+                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* ACTION CENTER */}
+                {(() => {
+                  const unreadInquiries = inquiries.filter((i: any) => !i.is_read);
+                  const waitingContract = inquiries.filter((i: any) => (i.deal_status === 'contract_sent') && Math.floor((Date.now() - new Date(i.last_activity_at || i.created_at).getTime()) / 86400000) >= 7);
+                  const newDeals = inquiries.filter((i: any) => i.deal_status === 'new' && !i.replied);
+                  const actions = [
+                    ...unreadInquiries.map((i: any) => ({ type: 'inquiry', deal: i, priority: 'red', label: 'NEW INQUIRY', sub: `${i.from_name} · ${i.show_title}`, btn: 'Reply →', tab: 'pipeline' })),
+                    ...waitingContract.map((i: any) => ({ type: 'contract', deal: i, priority: 'yellow', label: 'CONTRACT WAITING', sub: `${i.from_name} · ${i.show_title} · ${Math.floor((Date.now() - new Date(i.last_activity_at || i.created_at).getTime()) / 86400000)}d`, btn: 'Send Reminder →', tab: 'pipeline' })),
+                    ...newDeals.filter((i: any) => !unreadInquiries.find((u: any) => u.id === i.id)).map((i: any) => ({ type: 'deal', deal: i, priority: 'cyan', label: 'AWAITING REPLY', sub: `${i.from_name} · ${i.show_title}`, btn: 'Respond →', tab: 'pipeline' })),
+                  ];
+
+                  return actions.length > 0 ? (
+                    <div className="space-y-3">
+                      <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">⚡ ACTION REQUIRED</p>
+                      {actions.slice(0, 5).map((action: any, idx: number) => (
+                        <button key={idx} onClick={() => setActiveTab(action.tab)}
+                          className={"w-full flex items-center justify-between p-4 border-4 hover:opacity-80 transition-all text-left " + (action.priority === 'red' ? 'border-brand-pink bg-brand-pink/5' : action.priority === 'yellow' ? 'border-brand-yellow bg-brand-yellow/5' : 'border-brand-cyan bg-brand-cyan/5')}>
+                          <div>
+                            <span className={"text-[8px] font-black uppercase px-2 py-0.5 mr-3 " + (action.priority === 'red' ? 'bg-brand-pink text-white' : action.priority === 'yellow' ? 'bg-brand-yellow text-black' : 'bg-brand-cyan text-black')}>
+                              {action.label}
+                            </span>
+                            <span className="text-white font-black italic text-sm">{action.sub}</span>
+                          </div>
+                          <span className={"font-black uppercase italic text-xs flex-shrink-0 ml-4 " + (action.priority === 'red' ? 'text-brand-pink' : action.priority === 'yellow' ? 'text-brand-yellow' : 'text-brand-cyan')}>
+                            {action.btn}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="border-4 border-green-400/30 bg-green-400/5 p-5 flex items-center gap-4">
+                      <span className="text-3xl">✅</span>
+                      <div>
+                        <p className="font-black uppercase italic text-green-400">All clear!</p>
+                        <p className="text-white/30 text-xs italic">No pending actions. You're on top of everything.</p>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* STATS ROW */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { label: 'Active Deals', value: inquiries.filter((i: any) => !['completed'].includes(i.deal_status)).length, color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
+                    { label: 'My Shows', value: userUploads.length, color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
+                    { label: 'Tickle List', value: (user?.favorites || []).length, color: 'text-brand-pink', border: 'border-brand-pink/30' },
+                    { label: 'Total Views', value: realStats?.totalViews || 0, color: 'text-white', border: 'border-white/10' },
+                  ].map((stat, i) => (
+                    <div key={i} className={"border-4 p-4 " + stat.border}>
+                      <p className={"text-3xl font-black " + stat.color}>{stat.value}</p>
+                      <p className="text-[9px] font-black uppercase italic text-white/30 mt-1">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* TWO COLUMNS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                   {/* MY SHOWS */}
                   <div className="border-4 border-white/20 p-5 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">My Shows</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">My Shows</p>
+                      <button onClick={() => setActiveTab('assets')} className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/30 px-3 py-1 hover:bg-brand-yellow hover:text-black transition-all">All →</button>
+                    </div>
                     {userUploads.length === 0 ? (
-                      <p className="text-white/20 italic text-sm">No shows yet. Go to SHOWLOAD.</p>
-                    ) : userUploads.slice(0, 3).map((show: any) => (
+                      <div>
+                        <p className="text-white/20 italic text-sm mb-3">No shows yet.</p>
+                        <button onClick={() => onNavigate('upload')} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">+ Showload</button>
+                      </div>
+                    ) : userUploads.slice(0, 4).map((show: any) => (
                       <div key={show.id} className="flex items-center justify-between border-b border-white/10 pb-2">
-                        <div>
-                          <p className="font-black uppercase italic text-white text-sm">{show.title}</p>
-                          <p className="text-white/30 text-xs">{show.genre} · {show.rightsStatus || 'Available'}</p>
+                        <div className="flex items-center gap-3 min-w-0">
+                          {show.imageUrl && <img src={show.imageUrl} alt="" className="w-8 h-8 object-cover border border-white/20 flex-shrink-0" />}
+                          <div className="min-w-0">
+                            <p className="font-black uppercase italic text-white text-sm truncate">{show.title}</p>
+                            <p className="text-white/30 text-xs">{show.genre}</p>
+                          </div>
                         </div>
-                        <div className="flex gap-3 text-[10px] text-white/30">
-                          <span className="flex items-center gap-1 text-[10px] text-brand-cyan font-black"><span className="material-symbols-outlined text-sm">visibility</span>{show.viewsCount || 0}</span>
-                          <span>📩 {show.inquiriesCount || 0}</span>
+                        <div className="flex gap-2 text-[10px] text-white/30 flex-shrink-0">
+                          <span className="text-brand-cyan font-black">👁 {show.viewsCount || 0}</span>
+                          <span className="text-brand-pink font-black">📩 {show.inquiriesCount || 0}</span>
                         </div>
                       </div>
                     ))}
-                    <button onClick={() => setActiveTab('assets')} className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/30 px-3 py-1 hover:bg-brand-yellow hover:text-black transition-all">
-                      All Shows →
-                    </button>
+                  </div>
+
+                  {/* PIPELINE PREVIEW */}
+                  <div className="border-4 border-white/20 p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Pipeline</p>
+                      <button onClick={() => setActiveTab('pipeline')} className="text-[9px] font-black uppercase italic text-brand-pink border border-brand-pink/30 px-3 py-1 hover:bg-brand-pink hover:text-white transition-all">All →</button>
+                    </div>
+                    {inquiries.length === 0 ? (
+                      <p className="text-white/20 italic text-sm">No deals yet.</p>
+                    ) : inquiries.slice(0, 4).map((inq: any) => {
+                      const status = inq.deal_status || 'new';
+                      const colors: Record<string, string> = { new: 'bg-brand-pink text-white', contacted: 'bg-brand-cyan text-black', negotiating: 'bg-brand-yellow text-black', contract_sent: 'bg-purple-400 text-black', signed: 'bg-green-400 text-black', royalties: 'bg-orange-400 text-black', completed: 'bg-white/20 text-white' };
+                      return (
+                        <button key={inq.id} onClick={() => { markAsRead(inq.id); setActiveTab('pipeline'); }}
+                          className="w-full flex items-center justify-between border-b border-white/10 pb-2 hover:opacity-70 transition-opacity text-left">
+                          <div className="min-w-0">
+                            <p className="font-black uppercase italic text-white text-sm truncate">{inq.from_name}</p>
+                            <p className="text-white/30 text-xs truncate">{inq.show_title}</p>
+                          </div>
+                          <span className={"text-[8px] font-black uppercase px-2 py-0.5 flex-shrink-0 ml-2 " + (colors[status] || 'bg-brand-pink text-white')}>
+                            {status.replace('_', ' ').toUpperCase()}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
 
                   {/* TICKLE LIST */}
                   <div className="border-4 border-white/20 p-5 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Tickle List</p>
-                    {(user.favorites || []).length === 0 ? (
+                    <div className="flex items-center justify-between">
+                      <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Tickle List</p>
+                      <button onClick={() => onNavigate('discovery')} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">Browse →</button>
+                    </div>
+                    {(user?.favorites || []).length === 0 ? (
                       <p className="text-white/20 italic text-sm">No shows saved yet.</p>
-                    ) : (user.favorites || []).slice(0, 3).map((id: string) => {
+                    ) : (user?.favorites || []).slice(0, 4).map((id: string) => {
                       const show = shows.find((s: any) => s.id === id);
                       if (!show) return null;
                       return (
-                        <button key={id} onClick={() => { onUpdateStats && onUpdateStats(show.id, 'view'); onNavigate('discovery'); }}
+                        <button key={id} onClick={() => onNavigate('discovery')}
                           className="w-full flex items-center justify-between border-b border-white/10 pb-2 hover:opacity-70 transition-opacity text-left">
-                          <p className="font-black uppercase italic text-white text-sm">{show.title}</p>
+                          <div className="flex items-center gap-3 min-w-0">
+                            {show.imageUrl && <img src={show.imageUrl} alt="" className="w-8 h-8 object-cover border border-white/20 flex-shrink-0" />}
+                            <p className="font-black uppercase italic text-white text-sm truncate">{show.title}</p>
+                          </div>
                           <span className="text-[8px] font-black uppercase border border-brand-cyan text-brand-cyan px-2 py-0.5 flex-shrink-0">VIEW →</span>
                         </button>
                       );
                     })}
-                    <p className="text-[9px] text-white/20 italic">{(user.favorites || []).length} shows on your list</p>
-                  </div>
-
-                  {/* RECENT INQUIRIES */}
-                  <div className="border-4 border-white/20 p-5 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Recent Inquiries</p>
-                    {inquiries.length === 0 ? (
-                      <p className="text-white/20 italic text-sm">No inquiries yet.</p>
-                    ) : inquiries.slice(0, 3).map((inq: any) => (
-                      <button key={inq.id} onClick={() => { markAsRead(inq.id); setActiveTab('inquiries'); }}
-                        className="w-full flex items-center justify-between border-b border-white/10 pb-2 hover:opacity-70 transition-opacity text-left">
-                        <div className="min-w-0">
-                          <p className="font-black uppercase italic text-white text-sm truncate">{inq.from_name}</p>
-                          <p className="text-white/30 text-xs italic truncate">{inq.message?.substring(0, 40)}...</p>
-                        </div>
-                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 flex-shrink-0 ml-2 ${inq.is_read ? 'text-white/30 border border-white/20' : 'bg-brand-pink text-white'}`}>
-                          {inq.is_read ? 'Read' : 'NEW'}
-                        </span>
-                      </button>
-                    ))}
-                    <button onClick={() => setActiveTab('inquiries')} className="text-[9px] font-black uppercase italic text-brand-pink border border-brand-pink/30 px-3 py-1 hover:bg-brand-pink hover:text-white transition-all">
-                      All Inquiries →
-                    </button>
                   </div>
 
                   {/* QUICK ACTIONS */}
@@ -1494,6 +1578,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         <span className="material-symbols-outlined text-brand-yellow text-sm">search</span>
                         Browse Catalog
                       </button>
+                      <button onClick={() => setActiveTab('pipeline')} className="w-full text-left px-4 py-3 border-2 border-white/10 hover:border-brand-pink text-white/60 hover:text-white font-black uppercase italic text-xs transition-all flex items-center gap-3">
+                        <span className="material-symbols-outlined text-brand-pink text-sm">account_tree</span>
+                        Deal Pipeline
+                      </button>
                       <button onClick={() => onNavigate('wire')} className="w-full text-left px-4 py-3 border-2 border-white/10 hover:border-brand-pink text-white/60 hover:text-white font-black uppercase italic text-xs transition-all flex items-center gap-3">
                         <span className="material-symbols-outlined text-brand-pink text-sm">dynamic_feed</span>
                         LaffWire
@@ -1505,7 +1593,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
             )}
 
-            {activeTab === 'profile' && (
+                        {activeTab === 'profile' && (
               <section className="space-y-8">
                 <div className="flex items-center justify-between">
                   <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
