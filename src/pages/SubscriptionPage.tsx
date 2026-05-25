@@ -975,7 +975,253 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
               {studioTab === 'pipeline' && <DealsPipelinePage user={user} onNavigate={onNavigate} />}
               {studioTab === 'royalties' && <ProducerStudio user={user} shows={shows} />}
-              {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} />}
+              {studioTab === 'analytics' && (
+<section className="space-y-10">
+                <div>
+                  <h2 className="text-4xl font-black uppercase italic">Show <span className="text-brand-pink">Analytics</span></h2>
+                  <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Real data from The Laff Exchange</p>
+                </div>
+
+                {analyticsData.length === 0 ? (
+                  <p className="text-white/20 font-bold italic">No shows to analyze yet. Upload a show first.</p>
+                ) : (<>
+
+                  {/* BEST PERFORMER */}
+                  {(() => {
+                    const best = [...analyticsData].sort((a, b) => (b.inquiries_count || 0) - (a.inquiries_count || 0))[0];
+                    return (
+                      <div className="bg-brand-yellow border-4 border-black p-6 shadow-neo-magenta">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-black/50 mb-1">⭐ Best Performer</p>
+                        <h3 className="text-2xl font-black uppercase italic text-black">{best.title}</h3>
+                        <div className="flex gap-6 mt-3">
+                          <span className="text-black font-black text-sm">{best.views_count || 0} views</span>
+                          <span className="text-black font-black text-sm">{best.inquiries_count || 0} inquiries</span>
+                          <span className="text-black font-black text-sm">{shortlistCounts[best.id] || 0} on shortlists</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* CATALOG BENCHMARK — visual bars */}
+                  <div className="border-4 border-white/20 p-6">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-6">Your Average vs Catalog Average</p>
+                    <div className="space-y-5">
+                      {[
+                        { label: 'Views', icon: 'visibility', yours: Math.round(analyticsData.reduce((s,x) => s+(x.views_count||0),0)/analyticsData.length), avg: catalogAvg.views, color: '#03DAC6' },
+                        { label: 'Likes', icon: 'favorite', yours: Math.round(analyticsData.reduce((s,x) => s+(x.likes_count||0),0)/analyticsData.length), avg: catalogAvg.likes, color: '#FF0266' },
+                        { label: 'Inquiries', icon: 'mail', yours: Math.round(analyticsData.reduce((s,x) => s+(x.inquiries_count||0),0)/analyticsData.length), avg: catalogAvg.inquiries, color: '#FFDE03' },
+                      ].map((stat, i) => {
+                        const max = Math.max(stat.yours, stat.avg, 1) * 1.2;
+                        const yoursW = Math.round((stat.yours / max) * 100);
+                        const avgW = Math.round((stat.avg / max) * 100);
+                        const isAbove = stat.yours >= stat.avg;
+                        return (
+                          <div key={i}>
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm" style={{color: stat.color}}>{stat.icon}</span>
+                                <span className="text-[10px] font-black uppercase italic text-white/60">{stat.label}</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-black italic text-white/30">avg: {stat.avg}</span>
+                                <span className={`text-sm font-black`} style={{color: stat.color}}>{stat.yours}</span>
+                                <span className={`text-[9px] font-black uppercase ${isAbove ? 'text-green-400' : 'text-red-400'}`}>
+                                  {isAbove ? `+${stat.yours - stat.avg}` : `${stat.yours - stat.avg}`}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[7px] text-white/20 uppercase italic w-8">You</span>
+                                <div className="flex-1 h-3 bg-white/5 border border-white/10">
+                                  <div className="h-full transition-all duration-500" style={{width: `${yoursW}%`, background: stat.color}}></div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[7px] text-white/20 uppercase italic w-8">Avg</span>
+                                <div className="flex-1 h-3 bg-white/5 border border-white/10">
+                                  <div className="h-full bg-white/20 transition-all duration-500" style={{width: `${avgW}%`}}></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* PER SHOW BREAKDOWN */}
+                  <div className="space-y-4">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Per Show Breakdown</p>
+                    {analyticsData.map((show: any, i: number) => (
+                      <div key={i} className="border-4 border-white/20 p-6 hover:border-brand-pink transition-all">
+                        <div className="flex items-start justify-between gap-4 mb-5">
+                          <div>
+                            <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">{show.genre} · {show.location}</p>
+                            <h3 className="text-xl font-black uppercase italic text-white">{show.title}</h3>
+                          </div>
+                          {shortlistCounts[show.id] > 0 && (
+                            <span className="bg-brand-cyan text-black px-3 py-1 text-[9px] font-black uppercase italic border-2 border-black flex-shrink-0">
+                              {shortlistCounts[show.id]} on shortlist
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                          {[
+                            { icon: 'visibility', val: show.views_count || 0, label: 'Views', color: '#03DAC6', vs: catalogAvg.views },
+                            { icon: 'favorite', val: show.likes_count || 0, label: 'Likes', color: '#FF0266', fill: true, vs: catalogAvg.likes },
+                            { icon: 'mail', val: show.inquiries_count || 0, label: 'Inquiries', color: '#FFDE03', vs: catalogAvg.inquiries },
+                          ].map((s, j) => (
+                            <div key={j} className="bg-brand-black border-2 border-white/10 p-4 text-center relative overflow-hidden">
+                              {/* background bar */}
+                              <div className="absolute bottom-0 left-0 right-0 transition-all duration-700"
+                                style={{height: `${Math.min(100, (s.val / Math.max(s.val, s.vs, 1)) * 60)}%`, background: s.color, opacity: 0.08}}></div>
+                              <span className="material-symbols-outlined text-2xl block mb-2"
+                                style={{color: s.color, fontVariationSettings: s.fill ? "'FILL' 1" : "'FILL' 0"}}>{s.icon}</span>
+                              <p className="text-2xl font-black" style={{color: s.color}}>{s.val}</p>
+                              <p className="text-[8px] font-black uppercase italic text-white/20 mt-0.5">{s.label}</p>
+                              <p className={`text-[8px] font-black mt-1 ${s.val >= s.vs ? 'text-green-400' : 'text-red-400'}`}>
+                                {s.val >= s.vs ? '↑' : '↓'} vs avg
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Conversion bar */}
+                        {(show.views_count || 0) > 0 && (
+                          <div>
+                            <div className="flex justify-between mb-1">
+                              <p className="text-[9px] font-black uppercase italic text-white/30">Conversion Rate</p>
+                              <span className="text-brand-yellow font-black text-xs">
+                                {(((show.inquiries_count || 0) / (show.views_count || 1)) * 100).toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="h-2 bg-white/10">
+                              <div className="h-2 bg-brand-yellow transition-all"
+                                style={{ width: `${Math.min(100, ((show.inquiries_count || 0) / (show.views_count || 1)) * 500)}%` }}></div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Countries */}
+                        {show.licensed_countries && (
+                          <div className="mt-4 border-t border-white/10 pt-3">
+                            <p className="text-[9px] font-black uppercase italic text-white/20 mb-1">Licensed Countries</p>
+                            <p className="text-white/50 text-xs font-bold italic">{show.licensed_countries}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* INQUIRY CRM */}
+                  {inquiries.length > 0 && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Inquiry CRM — Who Tickled You</p>
+                        <span className="text-[9px] font-black uppercase italic text-white/20">{inquiries.length} total</span>
+                      </div>
+
+                      {/* CRM STATUS LEGEND */}
+                      <div className="flex gap-2 flex-wrap">
+                        {[
+                          { s: 'new', label: 'New', color: 'bg-brand-cyan text-black' },
+                          { s: 'in-progress', label: 'In Progress', color: 'bg-brand-yellow text-black' },
+                          { s: 'negotiating', label: 'Negotiating', color: 'bg-brand-pink text-white' },
+                          { s: 'closed', label: 'Closed ✓', color: 'bg-green-500 text-white' },
+                          { s: 'declined', label: 'Declined', color: 'bg-white/10 text-white/40' },
+                        ].map(({ s, label, color }) => (
+                          <span key={s} className={`text-[8px] font-black uppercase italic px-2 py-0.5 border border-black ${color}`}>{label}</span>
+                        ))}
+                      </div>
+
+                      <div className="space-y-3">
+                        {inquiries.map((inq: any) => {
+                          const status = inquiryStatuses[inq.id] || (inq.is_read ? 'in-progress' : 'new');
+                          const note = inquiryNotes[inq.id] || '';
+                          const statusColors: Record<string, string> = {
+                            'new': 'bg-brand-cyan text-black',
+                            'in-progress': 'bg-brand-yellow text-black',
+                            'negotiating': 'bg-brand-pink text-white',
+                            'closed': 'bg-green-500 text-white',
+                            'declined': 'bg-white/10 text-white/40',
+                          };
+                          return (
+                            <div key={inq.id} className={`border-4 p-5 transition-all ${status === 'new' ? 'border-brand-cyan' : status === 'negotiating' ? 'border-brand-pink' : status === 'closed' ? 'border-green-500' : 'border-white/20'}`}>
+                              <div className="flex items-start justify-between gap-4 mb-3">
+                                <div>
+                                  <p className="text-brand-pink text-[8px] font-black uppercase italic tracking-widest mb-1">{inq.show_title}</p>
+                                  <p className="font-black uppercase italic text-white text-sm">{inq.from_name}</p>
+                                  <a href={`mailto:${inq.from_email}`} className="text-brand-cyan text-[10px] hover:text-white transition-colors">{inq.from_email}</a>
+                                  {inq.message && <p className="text-white/40 text-xs italic mt-2 border-l-2 border-brand-yellow pl-2">{inq.message}</p>}
+                                </div>
+                                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                                  <p className="text-white/20 text-[9px]">{new Date(inq.created_at).toLocaleDateString('en-GB')}</p>
+                                  {/* Status dropdown */}
+                                  <select
+                                    value={status}
+                                    onChange={(e) => setInquiryStatuses(prev => ({ ...prev, [inq.id]: e.target.value }))}
+                                    className={`text-[8px] font-black uppercase italic px-2 py-1 border-2 border-black cursor-pointer ${statusColors[status]}`}
+                                  >
+                                    <option value="new">New</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="negotiating">Negotiating</option>
+                                    <option value="closed">Closed ✓</option>
+                                    <option value="declined">Declined</option>
+                                  </select>
+                                </div>
+                              </div>
+
+                              {/* Notes */}
+                              <div className="mt-3 border-t border-white/10 pt-3">
+                                {editingNote === inq.id ? (
+                                  <div className="space-y-2">
+                                    <textarea
+                                      value={note}
+                                      onChange={e => setInquiryNotes(prev => ({ ...prev, [inq.id]: e.target.value }))}
+                                      placeholder="Add notes — deal terms, follow-up date, producer info..."
+                                      className="w-full bg-brand-black border-2 border-brand-yellow text-white font-bold italic text-xs p-3 outline-none resize-none h-16 placeholder:text-white/20"
+                                    />
+                                    <button onClick={() => setEditingNote(null)}
+                                      className="text-[8px] font-black uppercase italic text-brand-yellow hover:text-white transition-colors">
+                                      Save Note ✓
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button onClick={() => setEditingNote(inq.id)}
+                                    className="text-[9px] font-black uppercase italic text-white/20 hover:text-brand-yellow transition-colors flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-sm">edit_note</span>
+                                    {note ? note.substring(0, 60) + (note.length > 60 ? '...' : '') : 'Add note...'}
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Quick actions */}
+                              <div className="flex gap-3 mt-3">
+                                <a href={`mailto:${inq.from_email}?subject=Re: ${inq.show_title}&body=Dear ${inq.from_name},%0A%0A`}
+                                  onClick={() => { markAsRead(inq.id); setInquiryStatuses(prev => ({ ...prev, [inq.id]: 'in-progress' })); }}
+                                  className="text-[8px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-sm">reply</span>
+                                  Reply
+                                </a>
+                                <button onClick={() => { navigator.clipboard.writeText(inq.from_email); }}
+                                  className="text-[8px] font-black uppercase italic text-white/20 hover:text-brand-cyan transition-colors flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-sm">content_copy</span>
+                                  Copy Email
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                </>)}
+              </section>
+              )}
               {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} />}
             </section>
             )}
