@@ -138,7 +138,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             {t.label}
           </button>
         ))}
-      </div>
+      </div>}
 
       {/* ── DASHBOARD ── */}
       {tab === 'dashboard' && (
