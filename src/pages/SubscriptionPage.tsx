@@ -268,8 +268,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRef2 = React.useRef<HTMLInputElement>(null);
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assets' | 'studio' | 'profile'>('studio');
-  const [studioTab, setStudioTab] = useState<'pipeline' | 'royalties' | 'analytics' | 'contracts'>('pipeline');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'assets' | 'pipeline' | 'profile' | 'analytics' | 'studio' | 'laff_studio'>('dashboard');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [myStats, setMyStats] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
@@ -890,14 +889,20 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* TABS — by plan */}
             <div className="flex border-4 border-white/20 w-fit overflow-x-auto">
               {(() => {
-                const unread = inquiries.filter((i: any) => !i.is_read).length;
-                return (['assets', 'studio', 'profile'] as const).map((tab) => (
+                const plan = (user as any)?.plan;
+                const isRoar = plan === 'roar' || user?.isAdmin;
+                const isLaff = plan === 'laff' || isRoar;
+                const tabs = [
+                  ...(isLaff ? ['dashboard'] : []),
+                  'profile',
+                  ...(isLaff ? ['assets', 'pipeline'] : []),
+                  ...(isLaff && !isRoar ? ['laff_studio'] : []),
+                  ...(isRoar ? ['analytics', 'studio'] : []),
+                ];
+                return tabs.map((tab: any) => (
                   <button key={tab} onClick={() => setActiveTab(tab)}
-                    className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                    {tab === 'assets' ? 'MY SHOWS' : tab === 'studio' ? 'STUDIO' : 'MY PROFILE'}
-                    {tab === 'studio' && unread > 0 && (
-                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full ${activeTab === 'studio' ? 'bg-black text-brand-yellow' : 'bg-brand-pink text-white'}`}>{unread}</span>
-                    )}
+                    className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
+                    {tab === 'dashboard' ? 'DASHBOARD' : tab === 'assets' ? 'MY SHOWS' : tab === 'pipeline' ? 'PIPELINE' : tab === 'profile' ? 'MY PROFILE' : tab === 'analytics' ? 'ANALYTICS' : tab === 'laff_studio' ? 'STUDIO' : 'STUDIO'}
                   </button>
                 ));
               })()}
@@ -952,31 +957,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             )}
 
-            {/* 2. STUDIO */}
-            {activeTab === 'studio' && user && (
-            <section className="space-y-6">
-              <div>
-                <h2 className="text-4xl font-black uppercase italic">PRODUCER <span className="text-brand-pink">STUDIO</span></h2>
-                <p className="text-white/30 font-bold italic text-xs mt-1 uppercase tracking-widest">Your business command center</p>
-              </div>
-              <div className="flex gap-0 border-b-4 border-white/10 overflow-x-auto">
-                {([
-                  { key: 'pipeline', label: 'PIPELINE', badge: inquiries.filter((i: any) => !i.is_read).length },
-                  { key: 'royalties', label: 'ROYALTIES', badge: 0 },
-                  { key: 'analytics', label: 'ANALYTICS', badge: 0 },
-                  { key: 'contracts', label: 'CONTRACTS', badge: 0 },
-                ] as {key: string; label: string; badge: number}[]).map(t => (
-                  <button key={t.key} onClick={() => setStudioTab(t.key as any)}
-                    className={"px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap flex items-center gap-2 border-b-4 -mb-1 " + (studioTab === t.key ? 'border-brand-yellow text-brand-yellow' : 'border-transparent text-white/30 hover:text-white')}>
-                    {t.label}
-                    {t.badge > 0 && <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full bg-brand-pink text-white">{t.badge}</span>}
-                  </button>
-                ))}
-              </div>
-              {studioTab === 'pipeline' && <DealsPipelinePage user={user} onNavigate={onNavigate} />}
-              {studioTab === 'royalties' && <ProducerStudio user={user} shows={shows} />}
-              {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} />}
-              {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} />}
+            {/* 2. PIPELINE */}
+            {activeTab === 'pipeline' && user && (
+            <section>
+              <DealsPipelinePage user={user} onNavigate={onNavigate} />
             </section>
             )}
 
@@ -1179,7 +1163,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
           </>)}
 
             {/* ANALYTICS TAB — ROAR only */}
-            {activeTab === 'analytics_disabled' && (
+            {activeTab === 'analytics' && (
               <section className="space-y-10">
                 <div>
                   <h2 className="text-4xl font-black uppercase italic">Show <span className="text-brand-pink">Analytics</span></h2>
@@ -1429,7 +1413,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             {/* MY PROFILE TAB */}
             {/* DASHBOARD — LAFF+ */}
-            {activeTab === 'dashboard_disabled' && (
+            {activeTab === 'dashboard' && (
               <section className="space-y-6">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
@@ -1744,7 +1728,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
 
             {/* LAFF MINI STUDIO */}
-            {activeTab === 'laff_studio_disabled' && user && (
+            {activeTab === 'laff_studio' && user && (
               <section className="space-y-8">
                 <h2 className="text-4xl font-black uppercase italic">Producer <span className="text-brand-yellow">Studio</span></h2>
 
@@ -1893,7 +1877,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
             )}
 
-            {activeTab === 'studio_disabled' && user && (
+            {activeTab === 'studio' && user && (
               <div className="text-white bg-brand-black min-h-[600px] p-0">
                 <ProducerStudio user={user} shows={shows} />
               </div>
