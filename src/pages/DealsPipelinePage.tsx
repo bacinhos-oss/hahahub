@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { openDealThread, postToThread } from './LaffWirePage';
 import { supabase } from '../lib/supabase';
 import { User } from '../types';
 
@@ -72,8 +73,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [replyText, setReplyText] = useState('');
+  const [openingThread, setOpeningThread] = useState<string | null>(null);
   const [showSignForm, setShowSignForm] = useState(false);
   const [showRoyaltyForm, setShowRoyaltyForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState<DealStatus | 'all'>('all');
@@ -100,20 +100,41 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     await supabase.from('inquiries').update({ deal_status: newStatus, last_activity_at: new Date().toISOString() }).eq('id', deal.id);
     setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, deal_status: newStatus } : d));
     if (selectedDeal?.id === deal.id) setSelectedDeal(prev => prev ? { ...prev, deal_status: newStatus } : null);
+    // Post status update to LaffWire thread
+    try {
+      const { data: threadData } = await supabase.from('posts')
+        .select('thread_id, participants').eq('deal_id', deal.id).eq('is_private', true).limit(1).single();
+      if (threadData?.thread_id) {
+        await postToThread(threadData.thread_id, user.id || '', threadData.participants[0], threadData.participants[1], deal.id,
+          `📌 Status → ${STATUS_CFG[newStatus].label}`, true);
+      }
+    } catch {}
     showToast('STATUS → ' + STATUS_CFG[newStatus].label);
   };
 
-  const sendReply = async (deal: Deal) => {
-    if (!replyText.trim()) return;
+  const openLaffWireThread = async (deal: Deal) => {
+    setOpeningThread(deal.id);
     try {
-      await fetch('/api/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'inquiry_reply', to: deal.from_email, data: { producerName: user.name, buyerName: deal.from_name, showTitle: deal.show_title, message: replyText } }) });
-      await supabase.from('inquiries').update({ replied: true, status: 'replied', deal_status: 'contacted', last_activity_at: new Date().toISOString() }).eq('id', deal.id);
+      const buyerId = deal.recipient_id || deal.producer_id;
+      const producerId = user.id || '';
+      const threadId = await openDealThread(
+        deal.id,
+        deal.show_title,
+        producerId,
+        buyerId,
+        `New inquiry for "${deal.show_title}" from ${deal.from_name}`
+      );
+      await postToThread(threadId, producerId, producerId, buyerId, deal.id,
+        `📌 Status → CONTACTED`, true);
+      await supabase.from('inquiries').update({
+        replied: true, deal_status: 'contacted', last_activity_at: new Date().toISOString()
+      }).eq('id', deal.id);
       setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, replied: true, deal_status: 'contacted' } : d));
       if (selectedDeal?.id === deal.id) setSelectedDeal(prev => prev ? { ...prev, replied: true, deal_status: 'contacted' } : null);
-      setReplyingTo(null); setReplyText('');
-      showToast('REPLY SENT →');
-    } catch { showToast('Error sending.'); }
+      showToast('LAFFWIRE THREAD OPENED →');
+      onNavigate('wire');
+    } catch (e) { showToast('Error opening thread.'); }
+    setOpeningThread(null);
   };
 
   const markSigned = async () => {
@@ -306,8 +327,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                   <div className="flex flex-col gap-2 flex-shrink-0" onClick={e => e.stopPropagation()}>
                     {status === 'new' && (
                       <>
-                        <button onClick={() => { setSelectedDeal(deal); setReplyingTo(deal.id); setShowSignForm(false); }}
-                          className={btnYellow}>REPLY →</button>
+                        <button onClick={() => openLaffWireThread(deal)}
+                          className={btnYellow}>{openingThread === deal.id ? 'Opening...' : 'REPLY via LaffWire →'}</button>
                         <button onClick={() => updateStatus(deal, 'negotiating')}
                           className={btnGhost}>DEAL →</button>
                       </>
@@ -385,23 +406,16 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                       />
                     </div>
 
-                    {/* REPLY FORM */}
-                    {replyingTo === deal.id && (
-                      <div className="space-y-3">
-                        <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Reply to {deal.from_name}</p>
-                        <textarea
-                          value={replyText}
-                          onChange={e => setReplyText(e.target.value)}
-                          rows={5}
-                          placeholder={`Dear ${deal.from_name},\n\nThank you for your interest in ${deal.show_title}...`}
-                          className="w-full bg-black border-2 border-brand-yellow/30 p-3 text-white font-bold italic text-sm outline-none focus:border-brand-yellow resize-none"
-                        />
-                        <div className="flex gap-3">
-                          <button onClick={() => sendReply(deal)} className={btnYellow}>Send Reply →</button>
-                          <button onClick={() => { setReplyingTo(null); setReplyText(''); }} className={btnGhost}>Cancel</button>
-                        </div>
+                    {/* LAFFWIRE THREAD LINK */}
+                    <div className="border-2 border-brand-cyan/30 p-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">Communication</p>
+                        <p className="text-white/40 text-xs italic mt-1">All messages via LaffWire private thread</p>
                       </div>
-                    )}
+                      <button onClick={() => openLaffWireThread(deal)} className={btnCyan}>
+                        {openingThread === deal.id ? 'Opening...' : 'Open Thread →'}
+                      </button>
+                    </div>
 
                     {/* SIGN FORM */}
                     {showSignForm && selectedDeal?.id === deal.id && (
