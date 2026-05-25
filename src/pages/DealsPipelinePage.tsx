@@ -74,6 +74,10 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [toast, setToast] = useState('');
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
   const [openingThread, setOpeningThread] = useState<string | null>(null);
+  const [dealThreads, setDealThreads] = useState<Record<string, any[]>>({});
+  const [threadMsg, setThreadMsg] = useState('');
+  const [sendingMsg, setSendingMsg] = useState(false);
+  const [expandedThread, setExpandedThread] = useState<string | null>(null);
   const [showSignForm, setShowSignForm] = useState(false);
   const [showRoyaltyForm, setShowRoyaltyForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState<DealStatus | 'all'>('all');
@@ -94,6 +98,42 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     const { data: rr } = await supabase.from('royalty_reports').select('*').order('date', { ascending: false });
     if (rr) setRoyaltyReports(rr as RoyaltyReport[]);
     setLoading(false);
+  };
+
+  const loadThreadForDeal = async (dealId: string) => {
+    const { data } = await supabase.from('posts')
+      .select('*, profiles(name)')
+      .eq('deal_id', dealId)
+      .eq('is_private', true)
+      .order('created_at', { ascending: true });
+    if (data) setDealThreads(prev => ({ ...prev, [dealId]: data }));
+  };
+
+  const sendThreadMessage = async (deal: Deal) => {
+    if (!threadMsg.trim()) return;
+    setSendingMsg(true);
+    try {
+      const { data: threadData } = await supabase.from('posts')
+        .select('thread_id, participants').eq('deal_id', deal.id).eq('is_private', true).limit(1).single();
+      if (threadData?.thread_id) {
+        await supabase.from('posts').insert({
+          user_id: user.id,
+          type: 'news',
+          content: threadMsg.trim(),
+          likes_count: 0,
+          is_private: true,
+          thread_id: threadData.thread_id,
+          participants: threadData.participants,
+          deal_id: deal.id,
+          is_system: false,
+          show_title: deal.show_title,
+        });
+        setThreadMsg('');
+        loadThreadForDeal(deal.id);
+        showToast('MESSAGE SENT →');
+      }
+    } catch { showToast('Error sending.'); }
+    setSendingMsg(false);
   };
 
   const updateStatus = async (deal: Deal, newStatus: DealStatus) => {
@@ -406,15 +446,71 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                       />
                     </div>
 
-                    {/* LAFFWIRE THREAD LINK */}
-                    <div className="border-2 border-brand-cyan/30 p-3 flex items-center justify-between">
-                      <div>
-                        <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">Communication</p>
-                        <p className="text-white/40 text-xs italic mt-1">All messages via LaffWire private thread</p>
+                    {/* INLINE LAFFWIRE THREAD */}
+                    <div className="border-4 border-brand-cyan/40 overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2 border-b-2 border-brand-cyan/20">
+                        <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">🔒 LaffWire Thread</p>
+                        <div className="flex gap-2">
+                          <button onClick={() => { setExpandedThread(expandedThread === deal.id ? null : deal.id); loadThreadForDeal(deal.id); }}
+                            className={btnSm}>
+                            {expandedThread === deal.id ? 'Collapse ↑' : 'Expand ↓'}
+                          </button>
+                          <button onClick={() => onNavigate('wire')} className={btnCyan}>Open in LaffWire →</button>
+                        </div>
                       </div>
-                      <button onClick={() => openLaffWireThread(deal)} className={btnCyan}>
-                        {openingThread === deal.id ? 'Opening...' : 'Open Thread →'}
-                      </button>
+
+                      {/* TIMELINE — always visible */}
+                      <div className="px-4 py-3 space-y-2 max-h-40 overflow-y-auto">
+                        {(dealThreads[deal.id] || []).length === 0 ? (
+                          <div className="text-center py-3">
+                            <p className="text-white/20 text-xs italic">No messages yet.</p>
+                            <button onClick={() => openLaffWireThread(deal)} className={"mt-2 " + btnYellow}>
+                              {openingThread === deal.id ? 'Opening...' : 'Start Thread →'}
+                            </button>
+                          </div>
+                        ) : (dealThreads[deal.id] || []).map((post: any) => {
+                          const isMe = post.user_id === user.id;
+                          const isSystem = post.is_system;
+                          if (isSystem) return (
+                            <div key={post.id} className="text-center">
+                              <span className="text-[8px] font-black uppercase italic text-white/20 border border-white/10 px-2 py-0.5">
+                                {post.content}
+                              </span>
+                            </div>
+                          );
+                          return (
+                            <div key={post.id} className={"flex gap-2 " + (isMe ? 'flex-row-reverse' : '')}>
+                              <div className={"w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[8px] font-black border-2 " + (isMe ? 'bg-brand-yellow text-black border-black' : 'bg-brand-cyan text-black border-black')}>
+                                {(post.profiles?.name || 'U')[0]}
+                              </div>
+                              <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
+                                <div className={"border-2 px-2 py-1 " + (isMe ? 'border-brand-yellow/40' : 'border-white/20')}>
+                                  <p className="text-white font-bold italic text-xs">{post.content}</p>
+                                </div>
+                                <p className="text-white/20 text-[8px] mt-0.5">{post.profiles?.name} · {new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* MESSAGE INPUT — always visible if thread exists */}
+                      {(dealThreads[deal.id] || []).length > 0 && (
+                        <div className="border-t-2 border-brand-cyan/20 p-3 flex gap-2">
+                          <input
+                            type="text"
+                            value={threadMsg}
+                            onChange={e => setThreadMsg(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') sendThreadMessage(deal); }}
+                            placeholder="Type a message..."
+                            className="flex-1 bg-black border-2 border-white/20 px-3 py-1.5 text-white font-bold italic text-xs outline-none focus:border-brand-cyan"
+                          />
+                          <button onClick={() => sendThreadMessage(deal)} disabled={sendingMsg || !threadMsg.trim()}
+                            className={"disabled:opacity-30 " + btnCyan}>
+                            Send →
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     {/* SIGN FORM */}
