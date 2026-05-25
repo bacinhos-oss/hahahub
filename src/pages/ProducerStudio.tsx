@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 interface ProducerStudioProps {
   user: User;
   shows: Show[];
-  initialTab?: StudioTab;
+  initialTab?: 'dashboard' | 'royalty' | 'incoming' | 'contracts' | 'calculator' | 'contacts' | 'log';
   hideHeader?: boolean;
   hideTabs?: boolean;
 }
