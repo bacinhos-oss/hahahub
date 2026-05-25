@@ -890,20 +890,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* TABS — by plan */}
             <div className="flex border-4 border-white/20 w-fit overflow-x-auto">
               {(() => {
-                const plan = (user as any)?.plan;
-                const isRoar = plan === 'roar' || user?.isAdmin;
-                const isLaff = plan === 'laff' || isRoar;
-                const tabs = [
-                  ...(isLaff ? ['dashboard'] : []),
-                  'profile',
-                  ...(isLaff ? ['assets', 'pipeline'] : []),
-                  ...(isLaff && !isRoar ? ['laff_studio'] : []),
-                  ...(isRoar ? ['analytics', 'studio'] : []),
-                ];
-                return tabs.map((tab: any) => (
+                const unread = inquiries.filter((i: any) => !i.is_read).length;
+                return (['assets', 'studio', 'profile'] as const).map((tab) => (
                   <button key={tab} onClick={() => setActiveTab(tab)}
-                    className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
+                    className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
                     {tab === 'assets' ? 'MY SHOWS' : tab === 'studio' ? 'STUDIO' : 'MY PROFILE'}
+                    {tab === 'studio' && unread > 0 && (
+                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full ${activeTab === 'studio' ? 'bg-black text-brand-yellow' : 'bg-brand-pink text-white'}`}>{unread}</span>
+                    )}
                   </button>
                 ));
               })()}
@@ -959,7 +953,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             )}
 
             {/* 2. STUDIO */}
-            {activeTab === 'studio_x' && user && (
+            {activeTab === 'studio' && user && (
             <section className="space-y-6">
               <div>
                 <h2 className="text-4xl font-black uppercase italic">PRODUCER <span className="text-brand-pink">STUDIO</span></h2>
