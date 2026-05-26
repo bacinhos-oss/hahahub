@@ -79,6 +79,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [view, setView] = useState<'tickled' | 'tickler'>('tickled');
   const [viewMode, setViewMode] = useState<'shows' | 'list'>('shows');
   const [deals, setDeals] = useState<Deal[]>([]);
+  const [tickledCount, setTickledCount] = useState(0);
+  const [ticklerCount, setTicklerCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
@@ -95,9 +97,18 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const threadEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { loadData(); }, [user, view]);
+  useEffect(() => { loadCounts(); }, [user]);
   useEffect(() => { threadEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [threadPosts]);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const loadCounts = async () => {
+    if (!user?.id) return;
+    const { count: tc } = await supabase.from('inquiries').select('*', { count: 'exact', head: true }).eq('producer_id', user.id);
+    const { count: lc } = await supabase.from('inquiries').select('*', { count: 'exact', head: true }).eq('recipient_id', user.id);
+    setTickledCount(tc || 0);
+    setTicklerCount(lc || 0);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -234,8 +245,16 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         </div>
         <div className="flex gap-3 flex-wrap">
           <div className="flex border-4 border-white/20">
-            <button onClick={() => { setView('tickled'); setActiveDealId(null); }} className={"px-4 py-2 font-black uppercase italic text-xs transition-all " + (view === 'tickled' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>Tickled</button>
-            <button onClick={() => { setView('tickler'); setActiveDealId(null); }} className={"px-4 py-2 font-black uppercase italic text-xs transition-all " + (view === 'tickler' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>Tickler</button>
+            <button onClick={() => { setView('tickled'); setActiveDealId(null); setThreadPosts([]); }}
+              className={"px-4 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickled' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
+              🎭 TICKLED
+              {deals.length > 0 && <span className={"text-[8px] font-black px-1.5 py-0.5 rounded-full " + (view === 'tickled' ? 'bg-black text-brand-yellow' : 'bg-white/10 text-white')}>{view === 'tickled' ? deals.length : ''}</span>}
+            </button>
+            <button onClick={() => { setView('tickler'); setActiveDealId(null); setThreadPosts([]); }}
+              className={"px-4 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickler' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
+              🎪 TICKLER
+              {deals.length > 0 && <span className={"text-[8px] font-black px-1.5 py-0.5 rounded-full " + (view === 'tickler' ? 'bg-black text-brand-cyan' : 'bg-white/10 text-white')}>{view === 'tickler' ? deals.length : ''}</span>}
+            </button>
           </div>
           <div className="flex border-4 border-white/20">
             <button onClick={() => setViewMode('shows')} className={"px-4 py-2 font-black uppercase italic text-xs transition-all " + (viewMode === 'shows' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white')}>By Show</button>
@@ -269,7 +288,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
           {/* LEFT — DEALS */}
-          <div className="space-y-4">
+          <div className="space-y-4 min-h-96">
             {viewMode === 'shows' ? (
               Object.entries(showGroups).map(([showTitle, showDeals]) => {
                 const showRoyalties = royaltyReports.filter(r => r.show_title === showTitle).reduce((s, r) => s + Number(r.royalty_amount), 0);
