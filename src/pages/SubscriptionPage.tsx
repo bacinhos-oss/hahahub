@@ -1895,11 +1895,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
             )}
 
-            {activeTab === 'studio' && user && (
-              <div className="text-white bg-brand-black min-h-[600px] p-0">
-                <ProducerStudio user={user} shows={shows} />
-              </div>
-            )}
+            {/* studio duplicate removed */}
 
           </div>
         </main>
