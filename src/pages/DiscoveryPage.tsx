@@ -743,12 +743,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   try {
                     const { error: inquiryErr } = await supabase.from('inquiries').insert({
                       show_id: inquiryShow?.id,
-                      producer_id: user?.id,
+                      producer_id: inquiryShow?.user_id,
                       from_name: inquiryName,
                       from_email: inquiryEmail,
                       message: inquiryMessage,
                       show_title: inquiryShow?.title,
-                      recipient_id: inquiryShow?.user_id,
+                      recipient_id: user?.id,
                       type: 'sent',
                       is_read: false,
                       status: 'sent',
