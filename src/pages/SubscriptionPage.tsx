@@ -953,7 +953,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             )}
 
             {/* 2. PIPELINE */}
-            {activeTab === 'studio_old' && user && (
+            {activeTab === 'studio' && user && (
             <section className="space-y-6">
               <div>
                 <h2 className="text-4xl font-black uppercase italic">PRODUCER <span className="text-brand-pink">STUDIO</span></h2>
@@ -1895,7 +1895,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
             )}
 
-            {activeTab === 'studio_old' && user && (
+            {activeTab === 'studio' && user && (
               <div className="text-white bg-brand-black min-h-[600px] p-0">
                 <ProducerStudio user={user} shows={shows} />
               </div>
