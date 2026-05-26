@@ -975,10 +975,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 ))}
               </div>
               {studioTab === 'pipeline' && <DealsPipelinePage user={user} onNavigate={onNavigate} />}
-              {studioTab === 'royalties' && <ProducerStudio user={user} shows={shows} initialTab="royalty" hideHeader hideTabs />}
-              {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} initialTab="dashboard" hideHeader hideTabs />}
-              {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} initialTab="contracts" hideHeader hideTabs />}
-              {studioTab === 'calculator' && <ProducerStudio user={user} shows={shows} initialTab="calculator" hideHeader hideTabs />}
+              {studioTab === 'royalties' && <ProducerStudio user={user} shows={shows} initialTab='royalty' hideHeader hideTabs />}
+              {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} initialTab='dashboard' hideHeader hideTabs />}
+              {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} initialTab='contracts' hideHeader hideTabs />}
+              {studioTab === 'calculator' && <ProducerStudio user={user} shows={shows} initialTab='calculator' hideHeader hideTabs />}
             </section>
             )}
 

@@ -21,8 +21,8 @@ function save(key: string, data: any) {
   localStorage.setItem(STORAGE_KEY + key, JSON.stringify(data));
 }
 
-const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab = 'dashboard', hideHeader = false, hideTabs = false }) => {
-  const [tab, setTab] = useState<StudioTab>(initialTab);
+const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab, hideHeader = false, hideTabs = false }) => {
+  const [tab, setTab] = useState<StudioTab>(initialTab || 'dashboard');
 
   const myShows = shows.filter((s: any) => s.user_id === user.id);
 
@@ -121,14 +121,16 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
   return (
     <section className="space-y-6 text-white">
+      {!hideHeader && (
       <div>
         <h2 className="text-4xl font-black uppercase italic">Producer <span className="text-brand-pink">Studio</span></h2>
         <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Your production command center</p>
         <p className="text-brand-yellow/60 text-[9px] font-black uppercase italic tracking-widest mt-2">Studio data is saved on this device only. Use the same browser to access your data.</p>
       </div>
+      )}
 
       {/* STUDIO TABS */}
-      <div className="flex gap-2 flex-wrap border-b-2 border-white/10 pb-4">
+      {!hideTabs && <div className="flex gap-2 flex-wrap border-b-2 border-white/10 pb-4">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase italic transition-all border-2 ${tab === t.key ? 'bg-brand-pink text-white border-brand-pink' : 'border-white/20 text-white/40 hover:border-white hover:text-white'}`}>
@@ -136,7 +138,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             {t.label}
           </button>
         ))}
-      </div>
+      </div>}
 
       {/* ── DASHBOARD ── */}
       {tab === 'dashboard' && (
