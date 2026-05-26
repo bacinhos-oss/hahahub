@@ -78,9 +78,8 @@ const daysUntil = (d?: string) => d ? Math.floor((new Date(d).getTime() - Date.n
 const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [view, setView] = useState<'tickled' | 'tickler'>('tickled');
   const [viewMode, setViewMode] = useState<'shows' | 'list'>('shows');
-  const [deals, setDeals] = useState<Deal[]>([]);
-  const [tickledCount, setTickledCount] = useState(0);
-  const [ticklerCount, setTicklerCount] = useState(0);
+  const [allTickled, setAllTickled] = useState<Deal[]>([]);
+  const [allTickler, setAllTickler] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
@@ -96,32 +95,25 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [royaltyForm, setRoyaltyForm] = useState({ date: '', venue: '', tickets: '', ticket_price: '', notes: '' });
   const threadEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { loadData(); }, [user, view]);
-  useEffect(() => { loadCounts(); }, [user]);
+  useEffect(() => { loadData(); }, [user]);
   useEffect(() => { threadEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [threadPosts]);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
-  const loadCounts = async () => {
-    if (!user?.id) return;
-    const { count: tc } = await supabase.from('inquiries').select('*', { count: 'exact', head: true }).eq('producer_id', user.id);
-    const { count: lc } = await supabase.from('inquiries').select('*', { count: 'exact', head: true }).eq('recipient_id', user.id);
-    setTickledCount(tc || 0);
-    setTicklerCount(lc || 0);
-  };
-
   const loadData = async () => {
     setLoading(true);
-    let q = supabase.from('inquiries').select('*').order('created_at', { ascending: false });
-    if (view === 'tickled') q = q.eq('producer_id', user.id);
-    else q = q.eq('recipient_id', user.id);
-    const { data } = await q;
-    if (data) setDeals(data as Deal[]);
-    const { data: rr } = await supabase.from('royalty_reports').select('*').order('date', { ascending: false });
-    if (rr) setRoyaltyReports(rr as RoyaltyReport[]);
+    const [tickledRes, ticklerRes, rrRes] = await Promise.all([
+      supabase.from('inquiries').select('*').eq('producer_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('inquiries').select('*').eq('recipient_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('royalty_reports').select('*').order('date', { ascending: false }),
+    ]);
+    if (tickledRes.data) setAllTickled(tickledRes.data as Deal[]);
+    if (ticklerRes.data) setAllTickler(ticklerRes.data as Deal[]);
+    if (rrRes.data) setRoyaltyReports(rrRes.data as RoyaltyReport[]);
     setLoading(false);
   };
 
+  const deals = view === 'tickled' ? allTickled : allTickler;
   const activeDeal = deals.find(d => d.id === activeDealId) || null;
 
   const openDeal = async (deal: Deal) => {
@@ -132,7 +124,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     setThreadMsg('');
     if (!deal.is_read) {
       await supabase.from('inquiries').update({ is_read: true }).eq('id', deal.id);
-      setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
+      if (view === 'tickled') setAllTickled(prev => prev.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
+      else setAllTickler(prev => prev.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
     }
     setThreadLoading(true);
     const { data } = await supabase.from('posts').select('*, profiles(name)').eq('deal_id', deal.id).eq('is_private', true).order('created_at', { ascending: true });
@@ -142,7 +135,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
 
   const updateStatus = async (deal: Deal, newStatus: DealStatus) => {
     await supabase.from('inquiries').update({ deal_status: newStatus, last_activity_at: new Date().toISOString() }).eq('id', deal.id);
-    setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, deal_status: newStatus } : d));
+    if (view === 'tickled') setAllTickled(prev => prev.map(d => d.id === deal.id ? { ...d, deal_status: newStatus } : d));
+    else setAllTickler(prev => prev.map(d => d.id === deal.id ? { ...d, deal_status: newStatus } : d));
     try {
       const { data: td } = await supabase.from('posts').select('thread_id, participants').eq('deal_id', deal.id).eq('is_private', true).limit(1).single();
       if (td?.thread_id) {
