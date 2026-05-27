@@ -544,47 +544,129 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     );
                   })()}
 
-                  {/* CTA SECTION */}
-                  <div className="bg-brand-surface border-8 border-brand-cyan p-6 md:p-12 text-center space-y-6 shadow-neo-magenta">
-                      <div className="space-y-2">
-                        <h4 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter leading-tight">Initiate Rights<br/>Clearing</h4>
-                        <p className="text-xs md:text-sm font-black uppercase italic text-brand-cyan leading-relaxed">
-                          Estimated Advance: {selectedShow.advanceFee || "€0"}<br className="md:hidden"/> • Clearing Speed: {selectedShow.rightsClearingSpeed}
-                        </p>
-                      </div>
-                      <div className="flex flex-col md:flex-row gap-4 justify-center">
-                        <button 
-                          onClick={() => {
-                            setInquiryShowId(selectedShowId);
-                            setSelectedShowId(null);
-                            setInquiryName(user?.name || '');
-                            setInquiryEmail(user?.email || '');
-                            setInquiryMessage('');
-                            setInquirySuccess(false);
-                            setIsInquiryOpen(true);
-                          }}
-                          className="w-full md:w-auto bg-brand-yellow text-black px-8 md:px-16 py-5 md:py-8 font-black uppercase border-4 border-black shadow-[8px_8px_0px_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all italic tracking-[0.2em] md:tracking-[0.4em] text-lg md:text-2xl"
-                        >
-                          Tickle It
+                  {/* CTA SECTION — PACKAGE SELECTOR */}
+                  <div className="bg-brand-surface border-8 border-brand-cyan p-6 md:p-10 space-y-6 shadow-neo-magenta">
+                    <div className="text-center">
+                      <h4 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter">Select Package &amp; Tickle</h4>
+                      <p className="text-white/30 text-xs italic mt-1">Choose your licensing package. Royalty is calculated per performance.</p>
+                    </div>
+
+                    {/* PACKAGES */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* SCRIPT */}
+                      {(selectedShow as any).has_script_package !== false && (
+                        <div className={"border-4 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-brand-yellow/60')}
+                          onClick={() => setSelectedPackage('script')}>
+                          <div className="flex items-center justify-between">
+                            <p className="font-black uppercase italic text-white text-lg">🎭 SCRIPT</p>
+                            {selectedPackage === 'script' && <span className="text-[8px] font-black uppercase bg-brand-yellow text-black px-2 py-0.5">✓ SELECTED</span>}
+                          </div>
+                          <p className="text-white/40 text-xs italic">Script only — your production, your vision.</p>
+                          <div className="border-t border-white/10 pt-3 space-y-1">
+                            <p className="text-brand-yellow font-black text-2xl">
+                              {(selectedShow as any).script_royalty_pct || selectedShow.royaltyRange?.split('-')[0] || '10'}%
+                              <span className="text-white/30 text-xs font-bold ml-1">of gross box office</span>
+                            </p>
+                            {(selectedShow as any).script_advance_fee > 0 && (
+                              <p className="text-white/40 text-xs">+ €{(selectedShow as any).script_advance_fee} advance</p>
+                            )}
+                          </div>
+                          {selectedPackage === 'script' && (
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                setInquiryShowId(selectedShowId);
+                                setSelectedShowId(null);
+                                setInquiryName(user?.name || '');
+                                setInquiryEmail(user?.email || '');
+                                setInquiryMessage('');
+                                setInquirySuccess(false);
+                                setIsInquiryOpen(true);
+                              }}
+                              className="w-full bg-brand-yellow text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white transition-all">
+                              Tickle It — Script →
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* FULL PUNCH */}
+                      {(selectedShow as any).has_full_punch_package && (
+                        <div className={"border-4 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-brand-pink/60')}
+                          onClick={() => setSelectedPackage('full_punch')}>
+                          <div className="flex items-center justify-between">
+                            <p className="font-black uppercase italic text-white text-lg">🥊 FULL PUNCH</p>
+                            {selectedPackage === 'full_punch' && <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5">✓ SELECTED</span>}
+                          </div>
+                          <p className="text-white/40 text-xs italic">Script + know-how: director notes, set/costume reference, video, music.</p>
+                          {(selectedShow as any).full_punch_includes && (
+                            <p className="text-brand-pink text-[9px] italic">Includes: {(selectedShow as any).full_punch_includes}</p>
+                          )}
+                          <div className="border-t border-white/10 pt-3 space-y-1">
+                            <p className="text-brand-pink font-black text-2xl">
+                              {(selectedShow as any).full_punch_royalty_pct || '15'}%
+                              <span className="text-white/30 text-xs font-bold ml-1">of gross box office</span>
+                            </p>
+                            {(selectedShow as any).full_punch_advance_fee > 0 && (
+                              <p className="text-white/40 text-xs">+ €{(selectedShow as any).full_punch_advance_fee} advance</p>
+                            )}
+                            <p className="text-[8px] text-white/20 italic">Video + music royalties included</p>
+                          </div>
+                          {selectedPackage === 'full_punch' && (
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                setInquiryShowId(selectedShowId);
+                                setSelectedShowId(null);
+                                setInquiryName(user?.name || '');
+                                setInquiryEmail(user?.email || '');
+                                setInquiryMessage('');
+                                setInquirySuccess(false);
+                                setIsInquiryOpen(true);
+                              }}
+                              className="w-full bg-brand-pink text-white py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white hover:text-black transition-all">
+                              Tickle It — Full Punch →
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Fallback if no packages set */}
+                      {(selectedShow as any).has_script_package === false && !(selectedShow as any).has_full_punch_package && (
+                        <div className="md:col-span-2">
+                          <button
+                            onClick={() => {
+                              setInquiryShowId(selectedShowId);
+                              setSelectedShowId(null);
+                              setInquiryName(user?.name || '');
+                              setInquiryEmail(user?.email || '');
+                              setInquiryMessage('');
+                              setInquirySuccess(false);
+                              setIsInquiryOpen(true);
+                            }}
+                            className="w-full bg-brand-yellow text-black py-5 font-black uppercase italic text-xl border-4 border-black hover:bg-white transition-all">
+                            Tickle It →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* DOSSIER BUTTON */}
+                    <div className="border-t border-white/10 pt-4 flex justify-center">
+                      {user?.isPaid || user?.isAdmin ? (
+                        <button onClick={() => downloadDossier(selectedShow)}
+                          className="bg-transparent text-white px-8 py-3 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic text-sm flex items-center gap-3">
+                          <span className="material-symbols-outlined text-xl">download</span>
+                          The Dossier
                         </button>
-                        {user?.isPaid || user?.isAdmin ? (
-                          <button
-                            onClick={() => downloadDossier(selectedShow)}
-                            className="w-full md:w-auto bg-transparent text-white px-8 md:px-12 py-5 md:py-8 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic tracking-[0.2em] text-sm md:text-base flex items-center justify-center gap-3"
-                          >
-                            <span className="material-symbols-outlined text-xl">download</span>
-                            The Dossier
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => onNavigate('pricing')}
-                            className="w-full md:w-auto bg-transparent text-white/30 px-8 md:px-12 py-5 md:py-8 font-black uppercase border-4 border-white/20 hover:border-brand-yellow hover:text-brand-yellow transition-all italic tracking-[0.2em] text-sm md:text-base flex items-center justify-center gap-3"
-                          >
-                            <span className="material-symbols-outlined text-xl">lock</span>
-                            Dossier — LAFF+
-                          </button>
-                        )}
-                      </div>
+                      ) : (
+                        <button onClick={() => onNavigate('pricing')}
+                          className="bg-transparent text-white/30 px-8 py-3 font-black uppercase border-4 border-white/20 hover:border-brand-yellow hover:text-brand-yellow transition-all italic text-sm flex items-center gap-3">
+                          <span className="material-symbols-outlined text-xl">lock</span>
+                          Dossier — LAFF+
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
