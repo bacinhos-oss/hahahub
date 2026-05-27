@@ -84,6 +84,11 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     translationRightsIncluded: 'true',
     // CONTENT
     synopsis: '', synopsisEn: '', directorNotes: '', scriptScenario: '', trailerUrl: '',
+    // CREATIVE ASSETS - NEW
+    musicAuthor: '', hasOriginalMusic: 'false',
+    videoAuthor: '', hasVideoProjections: 'false', videoDescription: '',
+    canMergeRoles: 'false', isDirectorMandatory: 'false', scalabilityNotes: '',
+    techStaffPrompter: '0', originalProductionSolutions: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -216,6 +221,11 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       internationalSuccessNotes: formData.internationalSuccessNotes,
       scriptScenario: formData.scriptScenario,
       programmingCompatibility: ['Commercial'],
+      music_author: formData.musicAuthor,
+      has_original_music: formData.hasOriginalMusic === 'true',
+      video_author: formData.videoAuthor,
+      has_video_projections: formData.hasVideoProjections === 'true',
+      video_description: formData.videoDescription,
       transparencyScore: 80, likesCount: 0, viewsCount: 0, inquiriesCount: 0,
       productionPhotos: uploadedPhotos, is_produced: true,
     } as Show;
@@ -277,14 +287,171 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            <div className="lg:col-span-8 space-y-16">
+            <div className="lg:col-span-8 space-y-10">
 
-              {/* 00. RIGHTS & IDENTITY */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
-                <h3 className="text-2xl font-black uppercase italic text-brand-cyan mb-8">00. Rights & Identity</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div><label className={lbl}>Production Company</label><input name="producerName" value={formData.producerName} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Producer Email</label><input name="producerEmail" value={formData.producerEmail} onChange={handleInputChange} className={inp} /></div>
+              {/* 00. BASIC INFO */}
+              <section className="bg-brand-surface border-4 border-white p-8 shadow-neo-cyan space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-cyan">00. Basic Info</h3>
+                  <p className="text-white/30 text-xs italic mt-1">The essentials — what your show is about.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="col-span-2"><label className={lbl}>Production Title *</label><input name="title" value={formData.title} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-6 py-5 text-white font-bold uppercase text-2xl focus:border-brand-yellow outline-none" placeholder="SHOW TITLE" /></div>
+                  <div><label className={lbl}>English Title (if different)</label><input name="englishTitle" value={(formData as any).englishTitle || ''} onChange={handleInputChange} className={inp} placeholder="English version" /></div>
+                  <div><label className={lbl}>Author / Playwright *</label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Genre *</label><input name="genre" value={formData.genre} onChange={handleInputChange} className={inp} placeholder="Comedy, Dark Comedy..." /></div>
+                  <div><label className={lbl}>Subgenre</label><input name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={inp} placeholder="Farce, Satire, Absurdist..." /></div>
+                  <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
+                  <div><label className={lbl}>Humor Type</label>
+                    <select name="humorType" value={formData.humorType} onChange={handleInputChange} className={sel}>
+                      <option value="Universal">Universal</option>
+                      <option value="Language-based">Language-based</option>
+                      <option value="Local Politics">Local Politics</option>
+                      <option value="Physical Comedy">Physical Comedy</option>
+                    </select>
+                  </div>
+                  <div><label className={lbl}>Origin City / Country *</label><input name="location" value={formData.location} onChange={handleInputChange} className={inp} placeholder="Ljubljana, Slovenia" /></div>
+                  <div><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Awards</label><input name="awards" value={formData.awards} onChange={handleInputChange} className={inp} placeholder="Best Comedy, Best Director..." /></div>
+                  <div className="col-span-2"><label className={lbl}>Synopsis in English * <span className="text-white/20 normal-case font-normal">(for international buyers)</span></label><textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={4} className={inp} placeholder="Write a compelling synopsis in English..." /></div>
+                  <div className="col-span-2"><label className={lbl}>International Success Notes</label><input name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} className={inp} placeholder="Won at festival X, toured Y countries..." /></div>
+                  <div className="col-span-2"><label className={lbl}>Trailer URL</label><input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className={inp} placeholder="https://youtube.com/..." /></div>
+                </div>
+              </section>
+
+              {/* 01. PRODUCTION */}
+              <section className="bg-brand-surface border-4 border-white p-8 shadow-neo-magenta space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-pink">01. Production</h3>
+                  <p className="text-white/30 text-xs italic mt-1">Cast, technical requirements and stage specifications.</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div><label className={lbl}>Male Roles</label><input name="maleRoles" type="number" value={formData.maleRoles} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Female Roles</label><input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Duration (min)</label><input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Intermission</label>
+                    <select name="hasIntermission" value={formData.hasIntermission} onChange={handleInputChange} className={sel}>
+                      <option value="false">No</option><option value="true">Yes</option>
+                    </select>
+                  </div>
+                  <div><label className={lbl}>Scale</label>
+                    <select name="productionScale" value={formData.productionScale} onChange={handleInputChange} className={sel}>
+                      <option value="Small">Small</option><option value="Medium">Medium</option><option value="Large">Large</option>
+                    </select>
+                  </div>
+                  <div><label className={lbl}>Stage Type</label>
+                    <select name="stageType" value={formData.stageType} onChange={handleInputChange} className={sel}>
+                      <option value="Main Stage">Main Stage</option><option value="Black Box">Black Box</option><option value="Arena">Arena</option><option value="Open Air">Open Air</option>
+                    </select>
+                  </div>
+                  <div><label className={lbl}>Touring Friendly</label>
+                    <select name="isTouringFriendly" value={formData.isTouringFriendly} onChange={handleInputChange} className={sel}>
+                      <option value="true">Yes</option><option value="false">No</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div><label className={lbl}>Lighting staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Sound staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Stagehands</label><input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Technical</label>
+                    <select name="technicalComplexity" value={formData.technicalComplexity} onChange={handleInputChange} className={sel}>
+                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Adaptation Flexibility</label>
+                    <select name="adaptationFlexibility" value={formData.adaptationFlexibility} onChange={handleInputChange} className={sel}>
+                      <option value="High">High — easy to adapt</option><option value="Medium">Medium</option><option value="Low">Low — keep as is</option>
+                    </select>
+                  </div>
+                </div>
+                <div><label className={lbl}>Director's Notes (optional)</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className={inp} placeholder="Vision, approach, key staging decisions..." /></div>
+              </section>
+
+              {/* 02. CREATIVE ASSETS */}
+              <section className="bg-brand-surface border-4 border-white p-8 shadow-neo-yellow space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-yellow">02. Creative Assets</h3>
+                  <p className="text-white/30 text-xs italic mt-1">Music, video and script materials available for licensing.</p>
+                </div>
+                <div className="border-2 border-white/20 p-5 space-y-4">
+                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">🎵 Music</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label className={lbl}>Music Author / Composer</label><input name="musicAuthor" value={formData.musicAuthor} onChange={handleInputChange} className={inp} placeholder="Name of composer" /></div>
+                    <div><label className={lbl}>Original Music</label>
+                      <select name="hasOriginalMusic" value={formData.hasOriginalMusic} onChange={handleInputChange} className={sel}>
+                        <option value="false">No — licensed/existing music</option>
+                        <option value="true">Yes — original composition</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p className="text-white/20 text-xs italic">Original music royalties are included in the Full Punch royalty rate if that package is offered.</p>
+                </div>
+                <div className="border-2 border-white/20 p-5 space-y-4">
+                  <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">📽 Video & AV</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label className={lbl}>Video / AV Author</label><input name="videoAuthor" value={formData.videoAuthor} onChange={handleInputChange} className={inp} placeholder="Name of video artist" /></div>
+                    <div><label className={lbl}>Has Video Projections</label>
+                      <select name="hasVideoProjections" value={formData.hasVideoProjections} onChange={handleInputChange} className={sel}>
+                        <option value="false">No</option>
+                        <option value="true">Yes — original video content</option>
+                      </select>
+                    </div>
+                    {formData.hasVideoProjections === 'true' && (
+                      <div className="col-span-2"><label className={lbl}>Video Description</label><input name="videoDescription" value={formData.videoDescription} onChange={handleInputChange} className={inp} placeholder="e.g. 4 back projections, 20min total, abstract animations" /></div>
+                    )}
+                  </div>
+                  <p className="text-white/20 text-xs italic">Buyer gets usage rights for video material in Full Punch package. Original files remain yours.</p>
+                </div>
+                <div className="border-2 border-white/20 p-5 space-y-4">
+                  <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">📄 Script</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label className={lbl}>Script in English</label>
+                      <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
+                        <option value="false">No</option>
+                        <option value="partial">Yes — synopsis only</option>
+                        <option value="true">Yes — full script</option>
+                      </select>
+                    </div>
+                    <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
+                  </div>
+                  <div><label className={lbl}>Script Excerpt / Scenario (3 pages in English)</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={4} className={inp} placeholder="Paste a short excerpt or scene description..." /></div>
+                </div>
+              </section>
+
+              {/* 03. MARKET PERFORMANCE */}
+              <section className="bg-brand-surface border-4 border-white p-8 shadow-neo-cyan space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-cyan">03. Market Performance</h3>
+                  <p className="text-white/30 text-xs italic mt-1">Track record — where and how well the show has performed.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div><label className={lbl}>Premiere Date</label><input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Premiere Location</label><input name="premiereLocation" value={formData.premiereLocation} onChange={handleInputChange} className={inp} placeholder="Theatre name, City" /></div>
+                  <div><label className={lbl}>Total Performances</label><input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Total Audience</label><input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Locations Played</label><input name="locationsPlayed" value={formData.locationsPlayed} onChange={handleInputChange} className={inp} placeholder="Ljubljana, Berlin, London..." /></div>
+                  <div><label className={lbl}>Box Office</label>
+                    <select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className={sel}>
+                      <option value="High">High — sold out regularly</option>
+                      <option value="Medium">Medium — consistent</option>
+                      <option value="Emerging">Emerging — early stage</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+
+              {/* 04. RIGHTS */}
+              <section className="bg-brand-surface border-4 border-white p-8 shadow-neo-magenta space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-pink">04. Rights & Identity</h3>
+                  <p className="text-white/30 text-xs italic mt-1">Who owns the rights and where they are available.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div><label className={lbl}>Copyright Holder *</label><input name="rightsHolder" value={formData.rightsHolder} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-brand-yellow font-bold outline-none focus:border-brand-yellow" /></div>
                   <div><label className={lbl}>Rights Status</label>
                     <select name="rightsStatus" value={formData.rightsStatus} onChange={handleInputChange} className={sel}>
@@ -294,298 +461,75 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                     </select>
                   </div>
                   <div><label className={lbl}>Territories Available</label><input name="territoriesAvailable" value={formData.territoriesAvailable} onChange={handleInputChange} className={inp} placeholder="Global, Europe..." /></div>
-                  <div><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} /></div>
-
-
-                </div>
-              </section>
-
-              {/* 01. CREATIVE ENGINE */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
-                <h3 className="text-2xl font-black uppercase italic text-brand-pink mb-8">01. Creative Engine</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="col-span-2"><label className={lbl}>Production Title *</label><input name="title" value={formData.title} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-6 py-5 text-white font-bold uppercase text-2xl focus:border-brand-yellow outline-none" /></div>
-                  <div><label className={lbl}>Author / Playwright</label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Genre *</label><input name="genre" value={formData.genre} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Subgenre</label><input name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={inp} placeholder="Farce, Satire..." /></div>
-                  <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
-                  <div><label className={lbl}>Performance Language</label><input name="language" value={formData.language} onChange={handleInputChange} className={inp} placeholder="English, German..." /></div>
-                  <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
-                  <div><label className={lbl}>Script in English</label>
-                    <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
-                      <option value="true">Yes — full script</option>
-                      <option value="partial">Yes — partial / synopsis only</option>
-                      <option value="false">No</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Origin Market *</label><input name="location" value={formData.location} onChange={handleInputChange} className={inp} placeholder="Slovenia, USA..." /></div>
-                  <div><label className={lbl}>Humor Type</label>
-                    <select name="humorType" value={formData.humorType} onChange={handleInputChange} className={sel}>
-                      <option value="Universal">Universal</option>
-                      <option value="Language-based">Language-based</option>
-                      <option value="Local Politics">Local Politics</option>
-                      <option value="Physical Comedy">Physical Comedy</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
-                  <div className="col-span-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">Synopsis in English *</label>
-                    <p className="text-white/30 text-xs italic mb-2">Required — this is what international producers will read first.</p>
-                    <textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={5} className="w-full bg-brand-black border-2 border-brand-yellow/30 p-6 text-white text-lg italic leading-relaxed outline-none focus:border-brand-yellow"></textarea>
-                  </div>
-                  <div className="col-span-2">
-                    <label className={lbl}>Synopsis (Original Language)</label>
-                    <textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={4} className="w-full bg-brand-black border-2 border-white/10 p-6 text-white italic leading-relaxed outline-none focus:border-brand-pink"></textarea>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-cyan mb-2 italic">🎬 Trailer / Teaser URL</label>
-                    <p className="text-white/30 text-xs italic mb-2">YouTube or Vimeo link — producers want to see the show before inquiring.</p>
-                    <input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-brand-cyan/30 p-4 text-white outline-none focus:border-brand-cyan" placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..." />
-                  </div>
-                  <div className="col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
-                  <div className="col-span-2"><label className={lbl}>International Success Notes</label><textarea name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} rows={2} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
-
-                  <div className="col-span-2 bg-brand-black border-4 border-brand-yellow p-6 space-y-4">
-                    <div>
-                      <label className="block text-[10px] font-black uppercase text-brand-yellow mb-1 italic tracking-widest">Script Scenario — 3 Pages in English *</label>
-                      <p className="text-[9px] text-gray-500 italic mb-4">Public preview visible to all producers. Paste the first 3 pages of the script in English.</p>
-                      <textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={18} className="w-full bg-black border-2 border-white/10 p-6 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow"></textarea>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* 02. PRODUCTION & CAST */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-yellow">
-                <h3 className="text-2xl font-black uppercase italic text-brand-yellow mb-8">02. Production & Cast</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                  <div><label className={lbl}>Male Roles</label><input name="maleRoles" type="number" value={formData.maleRoles} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Female Roles</label><input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Duration (min)</label><input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
-
-                  <div><label className={lbl}>Intermission</label>
-                    <select name="hasIntermission" value={formData.hasIntermission} onChange={handleInputChange} className={sel}>
-                      <option value="false">No</option><option value="true">Yes</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Production Scale</label>
-                    <select name="productionScale" value={formData.productionScale} onChange={handleInputChange} className={sel}>
-                      <option value="Small">Small</option><option value="Medium">Medium</option><option value="Large">Large</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Stage Type</label>
-                    <select name="stageType" value={formData.stageType} onChange={handleInputChange} className={sel}>
-                      <option value="Main Stage">Main Stage</option><option value="Black Box">Black Box</option>
-                      <option value="Arena">Arena</option><option value="Open Air">Open Air</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Touring Friendly</label>
-                    <select name="isTouringFriendly" value={formData.isTouringFriendly} onChange={handleInputChange} className={sel}>
-                      <option value="true">Yes</option><option value="false">No</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Technical Complexity</label>
-                    <select name="technicalComplexity" value={formData.technicalComplexity} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Costume Complexity</label>
-                    <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Set Complexity</label>
-                    <select name="setComplexity" value={formData.setComplexity} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Adaptation Flexibility</label>
-                    <select name="adaptationFlexibility" value={formData.adaptationFlexibility} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Director Mandatory</label>
-                    <select name="isDirectorMandatory" value={formData.isDirectorMandatory} onChange={handleInputChange} className={sel}>
-                      <option value="false">No</option><option value="true">Yes</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Creative Team</label>
-                    <select name="creativeTeamAvailability" value={formData.creativeTeamAvailability} onChange={handleInputChange} className={sel}>
-                      <option value="Optional">Optional</option><option value="Required">Required</option><option value="Not required">Not required</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Budget Range</label>
-                    <select name="budgetRange" value={formData.budgetRange} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-
-                </div>
-                <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-6">
-                  <div><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Sound Staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Prompter</label><input name="techStaffPrompter" type="number" value={formData.techStaffPrompter} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Stagehands</label><input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Other Tech</label><input name="techStaffOther" value={formData.techStaffOther} onChange={handleInputChange} className={inp} placeholder="SFX, Video..." /></div>
-                </div>
-              </section>
-
-              {/* 03. MARKET PERFORMANCE */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
-                <h3 className="text-2xl font-black uppercase italic text-brand-cyan mb-8">03. Market Performance</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div><label className={lbl}>Premiere Date</label><input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Premiere Location</label><input name="premiereLocation" value={formData.premiereLocation} onChange={handleInputChange} className={inp} placeholder="Theatre name, City" /></div>
-                  <div><label className={lbl}>Total Performances</label><input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Total Audience</label><input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Locations Played</label><input name="locationsPlayed" value={formData.locationsPlayed} onChange={handleInputChange} className={inp} placeholder="London, Berlin, NYC..." /></div>
-                  <div><label className={lbl}>Buyout Locations</label><input name="buyoutLocations" value={formData.buyoutLocations} onChange={handleInputChange} className={inp} placeholder="None" /></div>
-                  <div><label className={lbl}>Box Office</label>
-                    <select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className={sel}>
-                      <option value="High">High</option><option value="Medium">Medium</option><option value="Emerging">Emerging</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Risk Profile</label>
-                    <select name="riskProfile" value={formData.riskProfile} onChange={handleInputChange} className={sel}>
-                      <option value="Proven hit">Proven Hit</option><option value="Moderate risk">Moderate Risk</option><option value="Experimental">Experimental</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Break Even Threshold</label>
-                    <select name="breakEvenThreshold" value={formData.breakEvenThreshold} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Break Even Performances</label><input name="breakEvenPerformances" type="number" value={formData.breakEvenPerformances} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Awards</label><input name="awards" value={formData.awards} onChange={handleInputChange} className={inp} placeholder="Fringe First 2024..." /></div>
-                  <div><label className={lbl}>Audience Profile</label><input name="audienceProfile" value={formData.audienceProfile} onChange={handleInputChange} className={inp} placeholder="Ages 25-65, Urban..." /></div>
-                  <div><label className={lbl}>Producer Track Record</label><input name="originatingProducerTrackRecord" value={formData.originatingProducerTrackRecord} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Exit Scenarios</label><input name="exitScenarios" value={formData.exitScenarios} onChange={handleInputChange} className={inp} placeholder="Standard termination..." /></div>
-                </div>
-              </section>
-
-              {/* 04. COMMERCIAL BIBLE */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
-                <h3 className="text-2xl font-black uppercase italic text-brand-pink mb-8">04. Commercial Bible</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div><label className={lbl}>License Type</label>
-                    <select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className={sel}>
-                      <option value="License">License</option><option value="Option">Option</option><option value="Co-production">Co-production</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Licensing Model</label>
-                    <select name="licensingModel" value={formData.licensingModel} onChange={handleInputChange} className={sel}>
-                      <option value="Royalty-based">Royalty-based</option><option value="Flat fee">Flat fee</option><option value="Hybrid">Hybrid</option>
-                    </select>
-                  </div>
+                  <div><label className={lbl}>Licensed Countries (if any)</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Exclusivity</label>
                     <select name="exclusivityLevel" value={formData.exclusivityLevel} onChange={handleInputChange} className={sel}>
-                      <option value="Exclusive">Exclusive</option><option value="Semi-exclusive">Semi-exclusive</option><option value="Non-exclusive">Non-exclusive</option>
+                      <option value="Exclusive">Exclusive per territory</option>
+                      <option value="Semi-exclusive">Semi-exclusive</option>
+                      <option value="Non-exclusive">Non-exclusive</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Rights Clearing Speed</label>
-                    <select name="rightsClearingSpeed" value={formData.rightsClearingSpeed} onChange={handleInputChange} className={sel}>
-                      <option value="Fast">Fast</option><option value="Medium">Medium</option><option value="Slow">Slow</option>
+                  <div><label className={lbl}>License Type</label>
+                    <select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className={sel}>
+                      <option value="License">License</option>
+                      <option value="Option">Option</option>
+                      <option value="Co-production">Co-production</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Decision Maker</label>
-                    <select name="decisionMakerType" value={formData.decisionMakerType} onChange={handleInputChange} className={sel}>
-                      <option value="Single">Single</option><option value="Committee">Committee</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Royalty Range</label><input name="royaltyRange" value={formData.royaltyRange} onChange={handleInputChange} className={inp} placeholder="8-10% GBO" /></div>
-                  <div><label className={lbl}>Advance Fee</label><input name="advanceFee" value={formData.advanceFee} onChange={handleInputChange} className={inp} placeholder="€2,000" /></div>
                 </div>
+              </section>
 
-                {/* ── PACKAGES ── */}
-                <div className="border-4 border-brand-yellow/30 p-5 space-y-5">
-                  <div>
-                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">Licensing Packages</p>
-                    <p className="text-white/30 text-xs italic">Define what you offer and at what price. Buyers will select a package when they send an inquiry.</p>
+              {/* 05. PACKAGES */}
+              <section className="bg-brand-surface border-4 border-brand-yellow p-8 shadow-neo-yellow space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic text-brand-yellow">05. Licensing Packages</h3>
+                  <p className="text-white/30 text-xs italic mt-1">Define what you offer and at what price. Buyers will choose when they send an inquiry.</p>
+                </div>
+                <div className={"border-4 p-5 space-y-4 " + (formData.hasScriptPackage ? "border-brand-yellow/60" : "border-white/10")}>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage} onChange={e => setFormData((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
+                    <label htmlFor="hasScript" className="font-black uppercase italic text-white text-base cursor-pointer">🎭 SCRIPT</label>
                   </div>
-
-                  {/* SCRIPT PACKAGE */}
-                  <div className={"border-2 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/60" : "border-white/10")}>
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
-                        onChange={e => setFormData((p: any) => ({...p, hasScriptPackage: e.target.checked}))}
-                        className="w-4 h-4 accent-brand-yellow" />
-                      <label htmlFor="hasScript" className="font-black uppercase italic text-white text-sm cursor-pointer">
-                        🎭 SCRIPT — Script only license
-                      </label>
+                  <p className="text-white/30 text-xs italic pl-7">Script only license. Buyer produces independently with their own creative team.</p>
+                  {formData.hasScriptPackage && (
+                    <div className="grid grid-cols-2 gap-4 pl-7">
+                      <div>
+                        <label className={lbl}>Royalty %</label>
+                        <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="10" />
+                        <p className="text-white/20 text-[9px] italic mt-1">% of gross box office per performance</p>
+                      </div>
+                      <div>
+                        <label className={lbl}>Advance Fee (EUR)</label>
+                        <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
+                        <p className="text-white/20 text-[9px] italic mt-1">One-time upfront (optional)</p>
+                      </div>
                     </div>
-                    <p className="text-white/30 text-xs italic pl-7">Buyer gets the script and produces independently. Lower royalty, maximum creative freedom for buyer.</p>
-                    {formData.hasScriptPackage && (
-                      <div className="grid grid-cols-2 gap-3 pl-7">
+                  )}
+                </div>
+                <div className={"border-4 p-5 space-y-4 " + (formData.hasFullPunchPackage ? "border-brand-pink/60" : "border-white/10")}>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="hasFullPunch" checked={!!formData.hasFullPunchPackage} onChange={e => setFormData((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))} className="w-4 h-4 accent-brand-pink" />
+                    <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white text-base cursor-pointer">🥊 FULL PUNCH</label>
+                  </div>
+                  <p className="text-white/30 text-xs italic pl-7">Script + complete know-how: director notes, set/costume design reference, video material and music. Buyer decides what to use — all royalties in one rate.</p>
+                  {formData.hasFullPunchPackage && (
+                    <div className="space-y-4 pl-7">
+                      <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className={lbl}>Royalty %</label>
-                          <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="e.g. 10" />
-                          <p className="text-white/20 text-[9px] italic mt-1">% of gross box office per performance</p>
+                          <input type="number" name="fullPunchRoyaltyPct" value={formData.fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="15" />
+                          <p className="text-white/20 text-[9px] italic mt-1">Includes video + music royalties</p>
                         </div>
                         <div>
                           <label className={lbl}>Advance Fee (EUR)</label>
-                          <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="e.g. 1000" />
-                          <p className="text-white/20 text-[9px] italic mt-1">One-time upfront payment (optional)</p>
+                          <input type="number" name="fullPunchAdvanceFee" value={formData.fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
                         </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* FULL PUNCH PACKAGE */}
-                  <div className={"border-2 p-4 space-y-3 " + (formData.hasFullPunchPackage ? "border-brand-pink/60" : "border-white/10")}>
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="hasFullPunch" checked={!!formData.hasFullPunchPackage}
-                        onChange={e => setFormData((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))}
-                        className="w-4 h-4 accent-brand-pink" />
-                      <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white text-sm cursor-pointer">
-                        🥊 FULL PUNCH — Complete know-how package
-                      </label>
+                      <div><label className={lbl}>What's Included (optional)</label><input name="fullPunchIncludes" value={formData.fullPunchIncludes} onChange={handleInputChange} className={inp} placeholder="e.g. 4 video projections, original score by..." /></div>
                     </div>
-                    <p className="text-white/30 text-xs italic pl-7">Script + production know-how: director's notes, set design reference, costume design reference, lighting/sound plan, original video material (back projections, AV content), original music. Buyer decides what to use.</p>
-                    {formData.hasFullPunchPackage && (
-                      <div className="space-y-3 pl-7">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className={lbl}>Royalty %</label>
-                            <input type="number" name="fullPunchRoyaltyPct" value={formData.fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="e.g. 15" />
-                            <p className="text-white/20 text-[9px] italic mt-1">Includes video + music royalties</p>
-                          </div>
-                          <div>
-                            <label className={lbl}>Advance Fee (EUR)</label>
-                            <input type="number" name="fullPunchAdvanceFee" value={formData.fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="e.g. 3000" />
-                          </div>
-                        </div>
-                        <div>
-                          <label className={lbl}>What's included (optional detail)</label>
-                          <input name="fullPunchIncludes" value={formData.fullPunchIncludes} onChange={handleInputChange} className={inp} placeholder="e.g. 4 video projections, original score by..." />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="flex gap-6">
-                    <div className="flex-1"><label className={lbl}>Sponsor Friendly</label>
-                      <select name="isSponsorFriendly" value={formData.isSponsorFriendly} onChange={handleInputChange} className={sel}>
-                        <option value="true">Yes</option><option value="false">No</option>
-                      </select>
-                    </div>
-                    <div className="flex-1"><label className={lbl}>Group Sales</label>
-                      <select name="isGroupSalesFriendly" value={formData.isGroupSalesFriendly} onChange={handleInputChange} className={sel}>
-                        <option value="true">Yes</option><option value="false">No</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div><label className={lbl}>Translation Rights</label>
-                    <select name="translationRightsIncluded" value={formData.translationRightsIncluded} onChange={handleInputChange} className={sel}>
-                      <option value="true">Included</option><option value="false">Separate</option>
-                    </select>
-                  </div>
+                  )}
                 </div>
               </section>
-
             </div>
 
             {/* SIDEBAR */}
