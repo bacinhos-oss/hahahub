@@ -269,7 +269,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const editPhotoRefs = [editPhotoRef0, editPhotoRef1, editPhotoRef2];
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'studio' | 'assets' | 'profile'>('studio');
-  const [studioTab, setStudioTab] = useState<'pipeline' | 'royalties' | 'analytics' | 'contracts' | 'calculator'>('pipeline');
+  const [studioTab, setStudioTab] = useState<'pipeline' | 'royalties' | 'incoming' | 'analytics' | 'contracts' | 'calculator'>('pipeline');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [myStats, setMyStats] = useState({ views: 0, likes: 0, inquiries: 0 });
   const [catalogAvg, setCatalogAvg] = useState({ views: 0, likes: 0, inquiries: 0 });
@@ -963,6 +963,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 {([
                   { key: 'pipeline', label: 'PIPELINE', badge: inquiries.filter((i: any) => !i.is_read).length },
                   { key: 'royalties', label: 'ROYALTIES', badge: 0 },
+                  { key: 'incoming', label: 'INCOMING', badge: 0 },
                   { key: 'analytics', label: 'ANALYTICS', badge: 0 },
                   { key: 'contracts', label: 'CONTRACTS', badge: 0 },
                   { key: 'calculator', label: 'CALCULATOR', badge: 0 },
@@ -976,6 +977,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
               {studioTab === 'pipeline' && <DealsPipelinePage user={user} onNavigate={onNavigate} />}
               {studioTab === 'royalties' && <ProducerStudio user={user} shows={shows} initialTab='royalty' hideHeader hideTabs />}
+              {studioTab === 'incoming' && <ProducerStudio user={user} shows={shows} initialTab='incoming' hideHeader hideTabs />}
               {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} initialTab='dashboard' hideHeader hideTabs />}
               {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} initialTab='contracts' hideHeader hideTabs />}
               {studioTab === 'calculator' && <ProducerStudio user={user} shows={shows} initialTab='calculator' hideHeader hideTabs />}

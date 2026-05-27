@@ -143,6 +143,9 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       {/* ── DASHBOARD ── */}
       {tab === 'dashboard' && (
         <div className="space-y-6">
+          <div className="border-l-4 border-brand-yellow pl-4">
+            <p className="text-white/50 text-sm italic">Overview of all your shows — performances logged, contracts active, and total audience reached. Use this as your production scoreboard.</p>
+          </div>
           {myShows.length === 0 ? (
             <p className="text-white/20 italic">No shows uploaded yet.</p>
           ) : myShows.map((show: any) => {
@@ -204,7 +207,10 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       {/* ── ROYALTY TRACKER ── */}
       {tab === 'royalty' && (
         <div className="space-y-6">
-          <p className="text-white/40 font-bold italic text-sm">Log each performance. The rights holder sees your reports automatically.</p>
+          <div className="border-l-4 border-brand-yellow pl-4">
+            <p className="text-white font-black uppercase italic text-sm">Performance Log</p>
+            <p className="text-white/50 text-sm italic mt-1">As a licensee, log every performance of a show you have licensed. Enter tickets sold and ticket price — royalty is calculated automatically and sent to the rights holder. This is your legal obligation under the licensing agreement.</p>
+          </div>
 
           {/* ADD REPORT FORM */}
           <div className="border-4 border-brand-yellow/30 p-4 space-y-4">
@@ -218,7 +224,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 }} className={inp}>
                   <option value="">Select licensed show...</option>
                   {licensedShows.map((s: any, i: number) => <option key={i} value={s.show_title}>{s.show_title}</option>)}
-                  {licensedShows.length === 0 && myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
+                  {licensedShows.length === 0 && <option disabled value="">No licensed shows found. License a show first.</option>}
                 </select>
               </div>
               <div><label className={lbl}>Venue</label><input placeholder="Theatre name" value={newReport.venue} onChange={e => setNewReport(p => ({...p, venue: e.target.value}))} className={inp} /></div>
@@ -525,6 +531,10 @@ Party B: ___________________ Date: _______`;
       {/* ── CALCULATOR ── */}
       {tab === 'calculator' && (
         <div className="space-y-6">
+          <div className="border-l-4 border-brand-yellow pl-4">
+            <p className="text-white font-black uppercase italic text-sm">Break-Even Calculator</p>
+            <p className="text-white/50 text-sm italic mt-1">Calculate how many performances you need to break even on a production. Enter revenue parameters and costs — the calculator shows your break-even point and profit projection. Use this before signing a licensing deal.</p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4 border-4 border-white/10 p-4">
               <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Revenue</p>
@@ -581,6 +591,10 @@ Party B: ___________________ Date: _______`;
       {/* ── CONTACTS ── */}
       {tab === 'contacts' && (
         <div className="space-y-6">
+          <div className="border-l-4 border-brand-cyan pl-4">
+            <p className="text-white font-black uppercase italic text-sm">Contacts</p>
+            <p className="text-white/50 text-sm italic mt-1">Your private address book of producers, agents, and theatre directors. Add contacts you meet at festivals or through deals. Notes are private — only you can see them.</p>
+          </div>
           <div className="flex items-center justify-between gap-4">
             <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contacts.length} contacts</p>
             <button onClick={() => setShowContactForm(!showContactForm)}
@@ -643,6 +657,10 @@ Party B: ___________________ Date: _______`;
       {/* ── SHOW LOG ── */}
       {tab === 'log' && (
         <div className="space-y-6">
+          <div className="border-l-4 border-white/30 pl-4">
+            <p className="text-white font-black uppercase italic text-sm">Show Log</p>
+            <p className="text-white/50 text-sm italic mt-1">A timeline of all activities across your shows — performances, contracts signed, royalties received. Your complete production history in one place.</p>
+          </div>
           <div className="border-4 border-white/10 p-4 space-y-4">
             <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">Log a Performance</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
