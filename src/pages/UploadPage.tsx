@@ -75,6 +75,9 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     rightsStatus: 'Available', territoriesAvailable: 'Global',
     licensedCountries: '', licenseType: 'License', licensingModel: 'Royalty-based',
     exclusivityLevel: 'Exclusive', royaltyRange: '8-10%', advanceFee: '',
+    // PACKAGES
+    hasScriptPackage: true, scriptRoyaltyPct: '10', scriptAdvanceFee: '',
+    hasFullPunchPackage: false, fullPunchRoyaltyPct: '15', fullPunchAdvanceFee: '', fullPunchIncludes: '',
     rightsClearingSpeed: 'Medium', riskProfile: 'Proven hit',
     breakEvenThreshold: 'Medium', breakEvenPerformances: '40',
     isSponsorFriendly: 'true', isGroupSalesFriendly: 'true',
@@ -189,6 +192,13 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       licensingModel: formData.licensingModel as Show['licensingModel'],
       exclusivityLevel: formData.exclusivityLevel as Show['exclusivityLevel'],
       royaltyRange: formData.royaltyRange, advanceFee: formData.advanceFee,
+      has_script_package: formData.hasScriptPackage === true || formData.hasScriptPackage === 'true',
+      script_royalty_pct: formData.scriptRoyaltyPct ? Number(formData.scriptRoyaltyPct) : null,
+      script_advance_fee: formData.scriptAdvanceFee ? Number(formData.scriptAdvanceFee) : null,
+      has_full_punch_package: formData.hasFullPunchPackage === true || formData.hasFullPunchPackage === 'true',
+      full_punch_royalty_pct: formData.fullPunchRoyaltyPct ? Number(formData.fullPunchRoyaltyPct) : null,
+      full_punch_advance_fee: formData.fullPunchAdvanceFee ? Number(formData.fullPunchAdvanceFee) : null,
+      full_punch_includes: formData.fullPunchIncludes,
       rightsClearingSpeed: formData.rightsClearingSpeed as Show['rightsClearingSpeed'],
       decisionMakerType: formData.decisionMakerType as Show['decisionMakerType'],
       riskProfile: formData.riskProfile as Show['riskProfile'],
@@ -486,6 +496,76 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   </div>
                   <div><label className={lbl}>Royalty Range</label><input name="royaltyRange" value={formData.royaltyRange} onChange={handleInputChange} className={inp} placeholder="8-10% GBO" /></div>
                   <div><label className={lbl}>Advance Fee</label><input name="advanceFee" value={formData.advanceFee} onChange={handleInputChange} className={inp} placeholder="€2,000" /></div>
+                </div>
+
+                {/* ── PACKAGES ── */}
+                <div className="border-4 border-brand-yellow/30 p-5 space-y-5">
+                  <div>
+                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">Licensing Packages</p>
+                    <p className="text-white/30 text-xs italic">Define what you offer and at what price. Buyers will select a package when they send an inquiry.</p>
+                  </div>
+
+                  {/* SCRIPT PACKAGE */}
+                  <div className={"border-2 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/60" : "border-white/10")}>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
+                        onChange={e => setFormData((p: any) => ({...p, hasScriptPackage: e.target.checked}))}
+                        className="w-4 h-4 accent-brand-yellow" />
+                      <label htmlFor="hasScript" className="font-black uppercase italic text-white text-sm cursor-pointer">
+                        🎭 SCRIPT — Script only license
+                      </label>
+                    </div>
+                    <p className="text-white/30 text-xs italic pl-7">Buyer gets the script and produces independently. Lower royalty, maximum creative freedom for buyer.</p>
+                    {formData.hasScriptPackage && (
+                      <div className="grid grid-cols-2 gap-3 pl-7">
+                        <div>
+                          <label className={lbl}>Royalty %</label>
+                          <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="e.g. 10" />
+                          <p className="text-white/20 text-[9px] italic mt-1">% of gross box office per performance</p>
+                        </div>
+                        <div>
+                          <label className={lbl}>Advance Fee (EUR)</label>
+                          <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="e.g. 1000" />
+                          <p className="text-white/20 text-[9px] italic mt-1">One-time upfront payment (optional)</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* FULL PUNCH PACKAGE */}
+                  <div className={"border-2 p-4 space-y-3 " + (formData.hasFullPunchPackage ? "border-brand-pink/60" : "border-white/10")}>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" id="hasFullPunch" checked={!!formData.hasFullPunchPackage}
+                        onChange={e => setFormData((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))}
+                        className="w-4 h-4 accent-brand-pink" />
+                      <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white text-sm cursor-pointer">
+                        🥊 FULL PUNCH — Complete know-how package
+                      </label>
+                    </div>
+                    <p className="text-white/30 text-xs italic pl-7">Script + production know-how: director's notes, set design reference, costume design reference, lighting/sound plan, original video material (back projections, AV content), original music. Buyer decides what to use.</p>
+                    {formData.hasFullPunchPackage && (
+                      <div className="space-y-3 pl-7">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className={lbl}>Royalty %</label>
+                            <input type="number" name="fullPunchRoyaltyPct" value={formData.fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="e.g. 15" />
+                            <p className="text-white/20 text-[9px] italic mt-1">Includes video + music royalties</p>
+                          </div>
+                          <div>
+                            <label className={lbl}>Advance Fee (EUR)</label>
+                            <input type="number" name="fullPunchAdvanceFee" value={formData.fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="e.g. 3000" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className={lbl}>What's included (optional detail)</label>
+                          <input name="fullPunchIncludes" value={formData.fullPunchIncludes} onChange={handleInputChange} className={inp} placeholder="e.g. 4 video projections, original score by..." />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   <div className="flex gap-6">
                     <div className="flex-1"><label className={lbl}>Sponsor Friendly</label>
                       <select name="isSponsorFriendly" value={formData.isSponsorFriendly} onChange={handleInputChange} className={sel}>

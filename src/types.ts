@@ -41,6 +41,15 @@ export interface Show {
   humorType: 'Language-based' | 'Local Politics' | 'Physical Comedy' | 'Universal';
   internationalSuccessNotes?: string; licensingModel: 'Royalty-based' | 'Flat fee' | 'Hybrid';
   royaltyRange?: string; advanceFee?: string; budgetRange: 'Low' | 'Medium' | 'High';
+  // PACKAGES
+  hasScriptPackage: boolean;
+  scriptRoyaltyPct?: number;
+  scriptAdvanceFee?: number;
+  hasFullPunchPackage: boolean;
+  fullPunchRoyaltyPct?: number;
+  fullPunchAdvanceFee?: number;
+  fullPunchIncludes?: string;
+  // ORIGINAL FIELDS
   likesCount: number; viewsCount: number; inquiriesCount: number; imageUrl: string; productionPhotos: string[];
   isFavorited?: boolean; userId?: string;
 }

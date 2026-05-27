@@ -27,6 +27,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [inquiryRateLimit, setInquiryRateLimit] = useState<number | null>(null); // koliko inquiries je poslal ta mesec (GIGL)
   const [inquiryFile, setInquiryFile] = useState<File | null>(null);
   const [inquirySending, setInquirySending] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<'script' | 'full_punch' | ''>('');
   const [isLoading, setIsLoading] = useState(true);
   const [shortlist, setShortlist] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('hahahub_shortlist') || '[]'); } catch { return []; }
@@ -639,6 +640,69 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic truncate">Asset: {inquiryShow?.title}</p>
               </div>
 
+              {/* PACKAGE SELECTOR */}
+              <div className="space-y-3">
+                <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Select Package</p>
+                <p className="text-white/30 text-xs italic">Choose what you want to license. The rights holder will confirm availability and exact pricing.</p>
+                <div className="space-y-3">
+                  {(inquiryShow as any)?.has_script_package !== false && (
+                    <button onClick={() => setSelectedPackage('script')}
+                      className={"w-full text-left border-4 p-4 transition-all " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-white/40')}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <p className="font-black uppercase italic text-white text-sm">🎭 SCRIPT</p>
+                          <p className="text-white/40 text-xs italic mt-1">Script only — you produce independently with your own creative team.</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          {(inquiryShow as any)?.script_royalty_pct && (
+                            <p className="text-brand-yellow font-black text-sm">{(inquiryShow as any).script_royalty_pct}% royalty</p>
+                          )}
+                          {(inquiryShow as any)?.script_advance_fee && (
+                            <p className="text-white/40 text-xs">+ €{(inquiryShow as any).script_advance_fee} advance</p>
+                          )}
+                        </div>
+                      </div>
+                      {selectedPackage === 'script' && (
+                        <div className="mt-3 border-t border-brand-yellow/30 pt-3">
+                          <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest">✓ Selected</p>
+                        </div>
+                      )}
+                    </button>
+                  )}
+                  {(inquiryShow as any)?.has_full_punch_package && (
+                    <button onClick={() => setSelectedPackage('full_punch')}
+                      className={"w-full text-left border-4 p-4 transition-all " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-white/40')}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <p className="font-black uppercase italic text-white text-sm">🥊 FULL PUNCH</p>
+                          <p className="text-white/40 text-xs italic mt-1">Script + full know-how: director's notes, set/costume design reference, video material, original music. You decide what to use.</p>
+                          {(inquiryShow as any)?.full_punch_includes && (
+                            <p className="text-brand-pink text-[9px] italic mt-1">Includes: {(inquiryShow as any).full_punch_includes}</p>
+                          )}
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          {(inquiryShow as any)?.full_punch_royalty_pct && (
+                            <p className="text-brand-pink font-black text-sm">{(inquiryShow as any).full_punch_royalty_pct}% royalty</p>
+                          )}
+                          {(inquiryShow as any)?.full_punch_advance_fee && (
+                            <p className="text-white/40 text-xs">+ €{(inquiryShow as any).full_punch_advance_fee} advance</p>
+                          )}
+                          <p className="text-[8px] text-white/20 italic mt-1">Incl. video + music</p>
+                        </div>
+                      </div>
+                      {selectedPackage === 'full_punch' && (
+                        <div className="mt-3 border-t border-brand-pink/30 pt-3">
+                          <p className="text-[8px] font-black uppercase italic text-brand-pink tracking-widest">✓ Selected</p>
+                        </div>
+                      )}
+                    </button>
+                  )}
+                  {!selectedPackage && (
+                    <p className="text-brand-pink text-[9px] font-black uppercase italic">Please select a package to continue.</p>
+                  )}
+                </div>
+              </div>
+
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -735,6 +799,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         fromName: inquiryName,
                         fromEmail: inquiryEmail,
                         message: inquiryMessage,
+                        packageType: selectedPackage,
                       }),
                     });
                   } catch {}
@@ -753,6 +818,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       is_read: false,
                       status: 'sent',
                       attachment_url: attachmentUrl || null,
+                      package_type: selectedPackage,
                     });
                     if (inquiryErr) console.error('Inquiry save error:', inquiryErr);
                     // Posodobimo lokalni rate limit counter
