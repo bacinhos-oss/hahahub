@@ -679,7 +679,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         {F('fullPunchRoyaltyPct', 'Royalty %', 'number')}
                         {F('fullPunchAdvanceFee', 'Advance Fee (EUR)', 'number')}
                       </div>
-                      {F('fullPunchIncludes', 'What's Included')}
+                      {F("fullPunchIncludes", "What's Included")}
                     </div>
                   )}
                 </div>
