@@ -33,6 +33,8 @@ interface Deal {
   territory?: string;
   recipient_id?: string;
   status?: string;
+  package_type?: string;
+  attachment_url?: string;
 }
 
 interface RoyaltyReport {
@@ -93,6 +95,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [showRoyaltyForm, setShowRoyaltyForm] = useState(false);
   const [signForm, setSignForm] = useState({ signed_date: '', start_date: '', end_date: '', territory: '', royalty_pct: '', advance_amount: '', max_performances: '' });
   const [royaltyForm, setRoyaltyForm] = useState({ date: '', venue: '', tickets: '', ticket_price: '', notes: '' });
+  const [sendingFile, setSendingFile] = useState(false);
+  const [fileToSend, setFileToSend] = useState<File | null>(null);
   const threadEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { loadData(); }, [user]);
@@ -178,6 +182,37 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       }
     } catch { showToast('Error sending.'); }
     setSendingMsg(false);
+  };
+
+  const sendFileToThread = async () => {
+    if (!fileToSend || !activeDeal) return;
+    setSendingFile(true);
+    try {
+      const ext = fileToSend.name.split('.').pop();
+      const path = `deals/${activeDeal.id}_${Date.now()}.${ext}`;
+      const { data: uploadData } = await supabase.storage
+        .from('inquiry-attachments')
+        .upload(path, fileToSend, { contentType: fileToSend.type });
+      if (uploadData) {
+        const { data: urlData } = supabase.storage.from('inquiry-attachments').getPublicUrl(uploadData.path);
+        const fileUrl = urlData?.publicUrl || '';
+        const { data: td } = await supabase.from('posts').select('thread_id, participants').eq('deal_id', activeDeal.id).eq('is_private', true).limit(1).single();
+        if (td?.thread_id) {
+          await supabase.from('posts').insert({
+            user_id: user.id, type: 'news',
+            content: `📎 File sent: [${fileToSend.name}](${fileUrl})`,
+            likes_count: 0, is_private: true,
+            thread_id: td.thread_id, participants: td.participants,
+            deal_id: activeDeal.id, is_system: false, show_title: activeDeal.show_title
+          });
+          setFileToSend(null);
+          const { data } = await supabase.from('posts').select('*, profiles(name)').eq('deal_id', activeDeal.id).eq('is_private', true).order('created_at', { ascending: true });
+          setThreadPosts((data || []) as ThreadPost[]);
+          showToast('FILE SENT →');
+        }
+      }
+    } catch { showToast('Error sending file.'); }
+    setSendingFile(false);
   };
 
   const markSigned = async () => {
@@ -313,6 +348,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <p className="font-black uppercase italic text-white text-sm">{deal.from_name}</p>
+                                  {deal.package_type === 'script' && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">🎭 SCRIPT</span>}
+                                  {deal.package_type === 'full_punch' && <span className="text-[7px] font-black uppercase bg-brand-pink/20 text-brand-pink px-1.5 py-0.5">🥊 FULL PUNCH</span>}
                                   {deal.territory && <span className="text-[8px] font-black uppercase text-white/30 border border-white/10 px-1">{deal.territory}</span>}
                                   {!deal.is_read && <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-1.5 py-0.5">NEW</span>}
                                   {warn === 'red' && <span className="text-[7px] font-black uppercase bg-brand-pink/20 text-brand-pink px-1.5 py-0.5">⚠ {daysSince(deal.last_activity_at || deal.created_at)}D</span>}
@@ -344,6 +381,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
                               <p className="font-black uppercase italic text-white text-sm">{deal.from_name}</p>
+                              {deal.package_type === 'script' && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">🎭 SCRIPT</span>}
+                              {deal.package_type === 'full_punch' && <span className="text-[7px] font-black uppercase bg-brand-pink/20 text-brand-pink px-1.5 py-0.5">🥊 FULL PUNCH</span>}
                               {!deal.is_read && <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-1.5 py-0.5">NEW</span>}
                             </div>
                             <p className="text-white/30 text-xs italic truncate">{deal.show_title}</p>
@@ -375,6 +414,11 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         {STATUS_CFG[activeDeal.deal_status || 'new'].label}
                       </span>
                       <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest">{activeDeal.show_title}</p>
+                      {activeDeal.package_type && (
+                        <span className={"text-[7px] font-black uppercase px-2 py-0.5 mt-1 inline-block " + (activeDeal.package_type === 'full_punch' ? 'bg-brand-pink text-white' : 'bg-brand-yellow text-black')}>
+                          {activeDeal.package_type === 'full_punch' ? '🥊 FULL PUNCH' : '🎭 SCRIPT'}
+                        </span>
+                      )}
                       <p className="text-xl font-black uppercase italic text-white">{activeDeal.from_name}</p>
                       <p className="text-white/40 text-xs">{activeDeal.from_email}</p>
                     </div>
@@ -522,15 +566,32 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                     <div ref={threadEndRef} />
                   </div>
                   {threadPosts.length > 0 && (
-                    <div className="px-4 py-3 border-t-2 border-white/10 flex gap-2">
-                      <input type="text" value={threadMsg} onChange={e => setThreadMsg(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }}}
-                        placeholder="Type a message... (Enter to send)"
-                        className="flex-1 bg-black border-2 border-white/20 px-3 py-2 text-white font-bold italic text-xs outline-none focus:border-brand-cyan"
-                      />
-                      <button onClick={sendMsg} disabled={sendingMsg || !threadMsg.trim()} className={btnC + " disabled:opacity-30 flex-shrink-0"}>
-                        {sendingMsg ? '...' : 'Send →'}
-                      </button>
+                    <div className="border-t-2 border-white/10">
+                      <div className="px-4 py-3 flex gap-2">
+                        <input type="text" value={threadMsg} onChange={e => setThreadMsg(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }}}
+                          placeholder="Type a message... (Enter to send)"
+                          className="flex-1 bg-black border-2 border-white/20 px-3 py-2 text-white font-bold italic text-xs outline-none focus:border-brand-cyan"
+                        />
+                        <button onClick={sendMsg} disabled={sendingMsg || !threadMsg.trim()} className={btnC + " disabled:opacity-30 flex-shrink-0"}>
+                          {sendingMsg ? '...' : 'Send →'}
+                        </button>
+                      </div>
+                      <div className="px-4 pb-3 flex gap-2 border-t border-white/10 pt-2">
+                        <input type="file" accept=".pdf,.doc,.docx,.zip"
+                          onChange={e => setFileToSend(e.target.files?.[0] || null)}
+                          className="flex-1 text-white/40 text-[10px] file:bg-brand-yellow file:text-black file:font-black file:uppercase file:text-[8px] file:px-2 file:py-1 file:border-0 file:mr-2 cursor-pointer"
+                        />
+                        {fileToSend && (
+                          <button onClick={sendFileToThread} disabled={sendingFile}
+                            className={btnY + " disabled:opacity-30 flex-shrink-0 text-[9px]"}>
+                            {sendingFile ? '...' : '📎 Send File →'}
+                          </button>
+                        )}
+                      </div>
+                      <div className="px-4 pb-2">
+                        <p className="text-white/20 text-[8px] italic">Send scripts, PDFs, or Full Punch materials directly to this thread.</p>
+                      </div>
                     </div>
                   )}
                 </div>
