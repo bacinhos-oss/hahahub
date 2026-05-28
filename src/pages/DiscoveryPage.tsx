@@ -363,34 +363,60 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   </section>
 
                   {/* 02. CREATIVE ASSETS */}
-                  {((selectedShow as any).music_author || (selectedShow as any).has_video_projections || (selectedShow as any).has_original_music) && (
                   <section className="space-y-4">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. CREATIVE ASSETS</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {(selectedShow as any).music_author && (
-                        <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
-                          <p className="text-sm font-black italic">{(selectedShow as any).music_author}</p>
-                          {(selectedShow as any).has_original_music && <p className="text-[8px] text-brand-yellow/60 italic mt-1">Original composition — included in Full Punch royalty</p>}
-                        </div>
-                      )}
-                      {(selectedShow as any).video_author && (
-                        <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video / AV</p>
-                          <p className="text-sm font-black italic">{(selectedShow as any).video_author}</p>
-                          {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
-                        </div>
-                      )}
-                      {(selectedShow as any).has_video_projections && !(selectedShow as any).video_author && (
-                        <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video Projections</p>
-                          <p className="text-sm font-black italic">Original video content available</p>
-                          {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
-                        </div>
-                      )}
+                      {/* MUSIC */}
+                      <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
+                        {(selectedShow as any).music_author ? (
+                          <>
+                            <p className="text-sm font-black italic">{(selectedShow as any).music_author}</p>
+                            <p className="text-[8px] text-brand-yellow/60 italic mt-1">
+                              {(selectedShow as any).has_original_music ? 'Original composition — included in Full Punch royalty' : 'Licensed / existing music'}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-sm font-black italic text-white/30">Not specified</p>
+                        )}
+                      </div>
+                      {/* VIDEO */}
+                      <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video / AV</p>
+                        {(selectedShow as any).has_video_projections ? (
+                          <>
+                            {(selectedShow as any).video_author && <p className="text-sm font-black italic">{(selectedShow as any).video_author}</p>}
+                            {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
+                            {!(selectedShow as any).video_author && <p className="text-sm font-black italic">Original video content available</p>}
+                          </>
+                        ) : (
+                          <p className="text-sm font-black italic text-white/30">No video projections</p>
+                        )}
+                      </div>
+                      {/* SCRIPT */}
+                      <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-pink italic">📄 Script in English</p>
+                        {selectedShow.translationsAvailable ? (
+                          <p className="text-sm font-black italic">{selectedShow.translationsAvailable}</p>
+                        ) : (selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (
+                          <p className="text-sm font-black italic">Full script available</p>
+                        ) : (selectedShow as any).script_in_english === 'partial' ? (
+                          <p className="text-sm font-black italic">Synopsis only</p>
+                        ) : (
+                          <p className="text-sm font-black italic text-white/30">Not specified</p>
+                        )}
+                      </div>
+                      {/* TRANSLATIONS */}
+                      <div className="border-l-4 border-white/20 pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-white/40 italic">🌍 Translations Available</p>
+                        {(selectedShow as any).translations_available || selectedShow.translationsAvailable ? (
+                          <p className="text-sm font-black italic">{(selectedShow as any).translations_available || selectedShow.translationsAvailable}</p>
+                        ) : (
+                          <p className="text-sm font-black italic text-white/30">Not specified</p>
+                        )}
+                      </div>
                     </div>
                   </section>
-                  )}
 
                   {/* 03. TECHNICAL STACK */}
                   <section className="space-y-8">
