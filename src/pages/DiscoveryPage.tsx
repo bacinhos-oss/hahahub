@@ -61,7 +61,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [filterGenre, setFilterGenre] = useState('All');
   const [filterCountry, setFilterCountry] = useState('All');
   const [filterCast, setFilterCast] = useState('All');
-  const [filterRisk, setFilterRisk] = useState('All');
   const [sortBy, setSortBy] = useState('Newest');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -86,7 +85,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       const totalCast = (show.maleRoles || 0) + (show.femaleRoles || 0);
       const matchesGenre = filterGenre === 'All' || show.genre === filterGenre || show.subgenre === filterGenre;
       const matchesCountry = filterCountry === 'All' || show.location === filterCountry;
-      const matchesRisk = filterRisk === 'All' || show.riskProfile === filterRisk;
       const matchesCast = filterCast === 'All' || 
                          (filterCast === 'Solo/Duo' && totalCast <= 2) ||
                          (filterCast === 'Small (3-5)' && totalCast >= 3 && totalCast <= 5) ||
@@ -96,10 +94,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
         show.title, show.author, show.director, show.synopsis, (show as any).synopsis_en, (show as any).original_language, (show as any).script_in_english,
         show.genre, show.subgenre, show.location, show.language,
         show.humorType, show.rightsStatus, show.budgetRange,
-        show.producerName, show.riskProfile,
+        show.producerName,
         String(show.duration), String(show.maleRoles + show.femaleRoles),
       ].some(field => field?.toLowerCase().includes(q));
-      return matchesGenre && matchesCountry && matchesRisk && matchesCast && matchesSearch;
+      return matchesGenre && matchesCountry && matchesCast && matchesSearch;
     });
 
     return result.sort((a, b) => {
@@ -113,7 +111,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       if (sortBy === 'Trending') return (b.viewsCount || 0) - (a.viewsCount || 0);
       return 0;
     });
-  }, [shows, filterGenre, filterCountry, filterRisk, filterCast, sortBy, searchQuery, shortlist, showShortlistOnly]);
+  }, [shows, filterGenre, filterCountry, filterCast, sortBy, searchQuery, shortlist, showShortlistOnly]);
 
   const handleShowSelect = (show: Show) => {
     setSelectedShowId(show.id);
@@ -1136,15 +1134,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <option value="Large (6+)">Large (6+)</option>
                     </select>
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 italic">Risk Profile</label>
-                    <select value={filterRisk} onChange={(e) => setFilterRisk(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-white italic">
-                        <option value="All">Any Risk</option>
-                        <option value="Proven hit">Proven Hit</option>
-                        <option value="Moderate risk">Moderate Risk</option>
-                        <option value="Experimental">Experimental</option>
-                    </select>
-                </div>
+                
             </div>
           </section>
 
