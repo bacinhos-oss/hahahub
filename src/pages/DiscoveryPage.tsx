@@ -445,7 +445,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         </div>
                         <div className="bg-brand-surface border-2 border-white/10 p-6">
                            <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Group Sales</p>
-                           <p className="text-sm font-black uppercase">{selectedShow.isGroupSalesFriendly ? 'YES' : 'NO'}</p>
+                           <p className="text-sm font-black uppercase">{selectedShow.isGroupSalesFriendly_x ? 'YES' : 'NO'}</p>
                         </div>
                     </div>
                     {selectedShow.awards && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">

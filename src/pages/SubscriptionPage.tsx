@@ -798,7 +798,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {F('locationsPlayed', 'Locations Played')}
                   {F('buyoutLocations', 'Buyout Locations')}
                   {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
-                  {S('riskProfile', 'Risk Profile', ['Proven hit','Moderate risk','Experimental'])}
+                  
                   {S('breakEvenThreshold', 'Break Even Threshold', ['Low','Medium','High'])}
                   {F('breakEvenPerformances', 'Break Even Performances', 'number')}
                   {F('awards', 'Awards')}
