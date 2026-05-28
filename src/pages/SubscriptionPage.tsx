@@ -494,7 +494,26 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     { label: 'Active Favs', value: realStats.totalLikes.toLocaleString(), icon: 'favorite', color: 'white' },
   ];
 
-  const openManage = (show: Show) => { setManageShow(show); setEditForm({ ...show }); setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]); };
+  const openManage = (show: Show) => {
+    setManageShow(show);
+    setEditForm({
+      ...show,
+      // Map new snake_case DB fields to camelCase form fields
+      musicAuthor: (show as any).music_author || '',
+      hasOriginalMusic: (show as any).has_original_music ? 'true' : 'false',
+      videoAuthor: (show as any).video_author || '',
+      hasVideoProjections: (show as any).has_video_projections ? 'true' : 'false',
+      videoDescription: (show as any).video_description || '',
+      hasScriptPackage: (show as any).has_script_package !== false,
+      scriptRoyaltyPct: (show as any).script_royalty_pct || 10,
+      scriptAdvanceFee: (show as any).script_advance_fee || '',
+      hasFullPunchPackage: (show as any).has_full_punch_package || false,
+      fullPunchRoyaltyPct: (show as any).full_punch_royalty_pct || 15,
+      fullPunchAdvanceFee: (show as any).full_punch_advance_fee || '',
+      fullPunchIncludes: (show as any).full_punch_includes || '',
+    } as any);
+    setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]);
+  };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
