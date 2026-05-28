@@ -366,37 +366,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>
                   </section>
 
-                  {/* 02. CREATIVE ASSETS */}
-                  {((selectedShow as any).music_author || (selectedShow as any).has_video_projections || (selectedShow as any).has_original_music) && (
-                  <section className="space-y-6">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. CREATIVE ASSETS</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {(selectedShow as any).music_author && (
-                        <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music Author</p>
-                          <p className="text-sm font-black italic">{(selectedShow as any).music_author}</p>
-                          {(selectedShow as any).has_original_music && <p className="text-[8px] text-brand-yellow/60 italic mt-1">Original composition</p>}
-                        </div>
-                      )}
-                      {(selectedShow as any).video_author && (
-                        <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video / AV Author</p>
-                          <p className="text-sm font-black italic">{(selectedShow as any).video_author}</p>
-                          {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
-                        </div>
-                      )}
-                      {(selectedShow as any).has_video_projections && !(selectedShow as any).video_author && (
-                        <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video Projections</p>
-                          <p className="text-sm font-black italic">Original video content included</p>
-                          {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
-                        </div>
-                      )}
-                    </div>
-                  </section>
-                  )}
-
-                  {/* 03. TECHNICAL STACK */}
+                  {/* 02. TECHNICAL STACK */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. TECHNICAL STACK & PRODUCTION SCALE</h4>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -492,45 +462,31 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>}
                   </section>
 
-                  {/* 04. COMMERCIAL BIBLE */}
-                  <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">04. COMMERCIAL BIBLE & CLEARANCE</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
-                       <div className="bg-brand-surface border-4 border-white p-4">
-                          <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
-                          <p className="text-sm font-black uppercase italic">{selectedShow.licenseType}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-4">
-                          <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Model</p>
-                          <p className="text-sm font-black uppercase italic">{selectedShow.licensingModel}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-4">
-                          <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Royalties</p>
-                          <p className="text-sm font-black uppercase italic">{selectedShow.royaltyRange || 'Standard'}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-4">
-                          <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Advance Fee</p>
-                          <p className="text-sm font-black uppercase italic text-brand-yellow">{selectedShow.advanceFee || '€0'}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-4">
-                          <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Exclusivity</p>
-                          <p className="text-sm font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
-                       </div>
-                       <div className="bg-brand-surface border-2 border-white/20 p-4">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Decision Maker</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.decisionMakerType}</p>
-                       </div>
-                       <div className="bg-brand-surface border-2 border-white/20 p-4">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Translation Rights</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.translationRightsIncluded ? 'INCLUDED' : 'SEPARATE'}</p>
-                       </div>
-                       {selectedShow.exitScenarios && <div className="sm:col-span-2 bg-brand-surface border-2 border-white/20 p-4">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Exit Scenarios</p>
-                          <p className="text-sm italic text-gray-300 break-words">{selectedShow.exitScenarios}</p>
-                       </div>}
+                  {/* 04. RIGHTS */}
+                  <section className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">04. Rights & Licensing</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <div className="bg-brand-surface border-4 border-white p-4">
+                        <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
+                        <p className="text-sm font-black uppercase italic">{selectedShow.licenseType}</p>
+                      </div>
+                      <div className="bg-brand-surface border-4 border-white p-4">
+                        <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Exclusivity</p>
+                        <p className="text-sm font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
+                      </div>
+                      {selectedShow.territoriesAvailable && (
+                        <div className="bg-brand-surface border-2 border-white/20 p-4">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Territories</p>
+                          <p className="text-sm font-black uppercase">{selectedShow.territoriesAvailable}</p>
+                        </div>
+                      )}
+                      {(selectedShow as any).translations_available && (
+                        <div className="bg-brand-surface border-2 border-white/20 p-4">
+                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Translations</p>
+                          <p className="text-sm font-black uppercase">{(selectedShow as any).translations_available}</p>
+                        </div>
+                      )}
                     </div>
-
-                    {/* ROYALTY CALCULATOR */}
                   </section>
 
                   {/* SCRIPT SCENARIO */}
