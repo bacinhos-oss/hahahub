@@ -141,9 +141,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center" alt={selectedShow.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                     <div className="absolute top-4 left-4 z-10">
-                      <div className="px-3 py-1 text-[9px] font-black uppercase italic border-2 border-black shadow-[3px_3px_0px_white] bg-brand-yellow text-black">
-                        {selectedShow.riskProfile}
-                      </div>
+   
                     </div>
                     <div className="absolute bottom-3 left-4 z-10">
                       <p className="text-[8px] font-black uppercase tracking-widest text-white/50 italic">Poster</p>
@@ -431,22 +429,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Box Office</p><p className="text-base font-black">{selectedShow.boxOfficeIndicator}</p></div>
                            <span className="material-symbols-outlined text-white/40">trending_up</span>
                         </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6">
-                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Risk Profile</p>
-                           <p className="text-sm font-black uppercase text-brand-yellow">{selectedShow.riskProfile}</p>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6">
-                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Break Even</p>
-                           <p className="text-sm font-black uppercase">{selectedShow.breakEvenPerformances} shows</p>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6">
-                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Sponsor Friendly</p>
-                           <p className="text-sm font-black uppercase">{selectedShow.isSponsorFriendly ? 'YES' : 'NO'}</p>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6">
-                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Group Sales</p>
-                           <p className="text-sm font-black uppercase">{selectedShow.isGroupSalesFriendly_x ? 'YES' : 'NO'}</p>
-                        </div>
+
+
+
+
                     </div>
                     {selectedShow.awards && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">Awards</p>
