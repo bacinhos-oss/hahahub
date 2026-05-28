@@ -362,7 +362,37 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>
                   </section>
 
-                  {/* 02. TECHNICAL STACK */}
+                  {/* 02. CREATIVE ASSETS */}
+                  {((selectedShow as any).music_author || (selectedShow as any).has_video_projections || (selectedShow as any).has_original_music) && (
+                  <section className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. CREATIVE ASSETS</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(selectedShow as any).music_author && (
+                        <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
+                          <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
+                          <p className="text-sm font-black italic">{(selectedShow as any).music_author}</p>
+                          {(selectedShow as any).has_original_music && <p className="text-[8px] text-brand-yellow/60 italic mt-1">Original composition — included in Full Punch royalty</p>}
+                        </div>
+                      )}
+                      {(selectedShow as any).video_author && (
+                        <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                          <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video / AV</p>
+                          <p className="text-sm font-black italic">{(selectedShow as any).video_author}</p>
+                          {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
+                        </div>
+                      )}
+                      {(selectedShow as any).has_video_projections && !(selectedShow as any).video_author && (
+                        <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                          <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video Projections</p>
+                          <p className="text-sm font-black italic">Original video content available</p>
+                          {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                  )}
+
+                  {/* 03. TECHNICAL STACK */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. TECHNICAL STACK & PRODUCTION SCALE</h4>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
