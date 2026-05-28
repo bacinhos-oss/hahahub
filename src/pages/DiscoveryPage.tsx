@@ -1037,104 +1037,97 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </h1>
             </div>
 
-            {/* STEFUNNY — INLINE SEARCH */}
-            <div className="relative">
-              <div className="flex items-center gap-4 bg-brand-surface border-4 border-brand-yellow p-4 md:p-5 shadow-neo-yellow focus-within:shadow-none focus-within:translate-x-1 focus-within:translate-y-1 transition-all">
-                <div className="flex-shrink-0 w-10 h-10 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-xs uppercase italic rotate-[-2deg]">
-                  SF
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">MISS STEFUNNY</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">— Tickle Finder</span>
-                  </div>
+            {/* SEARCH + FILTERS — ONE ROW */}
+            <div className="flex flex-wrap items-end gap-3">
+              {/* Stefunny Search */}
+              <div className="relative flex-1 min-w-[200px]">
+                <div className="flex items-center gap-3 bg-brand-surface border-4 border-brand-yellow p-3 shadow-neo-yellow focus-within:shadow-none focus-within:translate-x-0.5 focus-within:translate-y-0.5 transition-all">
+                  <div className="flex-shrink-0 w-7 h-7 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-[8px] uppercase italic">SF</div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ask Stefunny... genre, country, cast size, keywords"
-                    className="w-full bg-transparent border-none text-white font-black text-sm md:text-base uppercase outline-none italic placeholder:text-white/20 placeholder:normal-case placeholder:not-italic"
+                    placeholder="Search... genre, country, cast, keywords"
+                    className="flex-1 bg-transparent border-none text-white font-black text-xs uppercase outline-none italic placeholder:text-white/30 placeholder:normal-case placeholder:not-italic"
                   />
+                  {searchQuery ? (
+                    <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
+                      <span className="material-symbols-outlined text-base">close</span>
+                    </button>
+                  ) : (
+                    <span className="material-symbols-outlined text-brand-yellow text-base flex-shrink-0">search</span>
+                  )}
                 </div>
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
-                    <span className="material-symbols-outlined text-xl">close</span>
-                  </button>
-                )}
-                {!searchQuery && (
-                  <span className="material-symbols-outlined text-brand-yellow text-2xl flex-shrink-0">search</span>
+                  <div className="absolute top-full mt-1 text-[9px] font-black uppercase italic text-white/30 z-10">
+                    {filteredShows.length > 0 ? `${filteredShows.length} found 🥊` : `Nothing found.`}
+                  </div>
                 )}
               </div>
-              {searchQuery && (
-                <div className="mt-2 text-[10px] font-black uppercase italic text-white/40">
-                  {filteredShows.length > 0
-                    ? `Stefunny found ${filteredShows.length} show${filteredShows.length !== 1 ? 's' : ''} for you. 🥊`
-                    : `Stefunny found nothing. Try again.`}
-                </div>
-              )}
-            </div>
 
-            {/* SORT + SHORTLIST */}
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-3 bg-brand-surface border-2 border-white/20 p-3">
-                <span className="material-symbols-outlined text-brand-cyan text-base">sort</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent border-none text-white font-black uppercase italic text-xs focus:ring-0 p-0 cursor-pointer"
-                >
-                  <option value="Newest" className="bg-brand-black">Newest</option>
-                  <option value="Popular" className="bg-brand-black">Most Liked</option>
-                  <option value="Trending" className="bg-brand-black">Trending</option>
+              {/* Comedy Type */}
+              <div className="space-y-1">
+                <label className="text-[8px] font-black uppercase text-white/30 italic block">Comedy Type</label>
+                <select value={filterGenre} onChange={(e) => setFilterGenre(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-pink italic">
+                  <option value="All">All Types</option>
+                  <option value="Comedy">Comedy (All)</option>
+                  <optgroup label="── Subgenres ──">
+                    <option value="Farce">Farce</option>
+                    <option value="Monocomedy">Monocomedy</option>
+                    <option value="Black Comedy">Black Comedy</option>
+                    <option value="Satire">Satire</option>
+                    <option value="Absurd">Absurd / Surreal</option>
+                    <option value="Romantic Comedy">Romantic Comedy</option>
+                    <option value="Slapstick">Slapstick</option>
+                    <option value="Stand-up">Stand-up Theatre</option>
+                    <option value="Musical Comedy">Musical Comedy</option>
+                    <option value="Dark Comedy">Dark Comedy</option>
+                  </optgroup>
+                  {allGenres.filter(g => g !== 'All' && g !== 'Comedy').map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
               </div>
-              <button
-                onClick={() => setShowShortlistOnly(v => !v)}
-                className={`flex items-center gap-2 px-4 py-3 border-4 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black shadow-neo-magenta' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}
-              >
-                <span className="material-symbols-outlined text-base">bookmark</span>
-                Tickle List {shortlist.length > 0 && <span className="ml-1">({shortlist.length})</span>}
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6 border-y-4 border-white/10 py-8">
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 italic">Comedy Type</label>
-                    <select value={filterGenre} onChange={(e) => setFilterGenre(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-pink italic">
-                        <option value="All">All Types</option>
-                        <option value="Comedy">Comedy (All)</option>
-                        <optgroup label="── Comedy Subgenres ──">
-                          <option value="Farce">Farce</option>
-                          <option value="Monocomedy">Monocomedy</option>
-                          <option value="Black Comedy">Black Comedy</option>
-                          <option value="Satire">Satire</option>
-                          <option value="Absurd">Absurd / Surreal</option>
-                          <option value="Romantic Comedy">Romantic Comedy</option>
-                          <option value="Slapstick">Slapstick</option>
-                          <option value="Stand-up">Stand-up Theatre</option>
-                          <option value="Improv">Improv / Sketch</option>
-                          <option value="Musical Comedy">Musical Comedy</option>
-                          <option value="Dark Comedy">Dark Comedy</option>
-                        </optgroup>
-                        {allGenres.filter(g => g !== 'All' && g !== 'Comedy').map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
+
+              {/* Origin Market */}
+              <div className="space-y-1">
+                <label className="text-[8px] font-black uppercase text-white/30 italic block">Origin Market</label>
+                <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-cyan italic">
+                  {allCountries.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+
+              {/* Cast Size */}
+              <div className="space-y-1">
+                <label className="text-[8px] font-black uppercase text-white/30 italic block">Cast Size</label>
+                <select value={filterCast} onChange={(e) => setFilterCast(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-yellow italic">
+                  <option value="All">All Sizes</option>
+                  <option value="Solo/Duo">Solo / Duo (1-2)</option>
+                  <option value="Small (3-5)">Small (3-5)</option>
+                  <option value="Large (6+)">Large (6+)</option>
+                </select>
+              </div>
+
+              {/* Sort */}
+              <div className="space-y-1">
+                <label className="text-[8px] font-black uppercase text-white/30 italic block">Sort</label>
+                <div className="flex items-center gap-2 bg-brand-surface border-2 border-white/20 p-2">
+                  <span className="material-symbols-outlined text-brand-cyan text-sm">sort</span>
+                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent border-none text-white font-black uppercase italic text-xs focus:ring-0 p-0 cursor-pointer">
+                    <option value="Newest" className="bg-brand-black">Newest</option>
+                    <option value="Popular" className="bg-brand-black">Most Liked</option>
+                    <option value="Trending" className="bg-brand-black">Trending</option>
+                  </select>
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 italic">Origin Market</label>
-                    <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-cyan italic">
-                        {allCountries.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 italic">Cast Size</label>
-                    <select value={filterCast} onChange={(e) => setFilterCast(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-yellow italic">
-                        <option value="All">All Sizes</option>
-                        <option value="Solo/Duo">Solo / Duo (1-2)</option>
-                        <option value="Small (3-5)">Small (3-5)</option>
-                        <option value="Large (6+)">Large (6+)</option>
-                    </select>
-                </div>
-                
+              </div>
+
+              {/* Tickle List */}
+              <div className="space-y-1">
+                <label className="text-[8px] font-black uppercase text-white/30 italic block">&nbsp;</label>
+                <button onClick={() => setShowShortlistOnly(v => !v)}
+                  className={`flex items-center gap-2 px-3 py-2 border-4 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}>
+                  <span className="material-symbols-outlined text-sm">bookmark</span>
+                  Tickle List {shortlist.length > 0 && <span>({shortlist.length})</span>}
+                </button>
+              </div>
             </div>
           </section>
 
