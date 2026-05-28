@@ -808,20 +808,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </div>
               </section>
 
-              {/* 04. COMMERCIAL */}
+              {/* 04. MARKET PERFORMANCE */}
               <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-6">04. Commercial Bible</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {S('licenseType', 'License Type', ['License','Option','Co-production'])}
-                  {S('licensingModel', 'Licensing Model', ['Royalty-based','Flat fee','Hybrid'])}
-                  {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
-                  {S('rightsClearingSpeed', 'Clearing Speed', ['Fast','Medium','Slow'])}
-                  {S('decisionMakerType', 'Decision Maker', ['Single','Committee'])}
-                  {F('royaltyRange', 'Royalty Range')}
-                  {F('advanceFee', 'Advance Fee')}
-                  {S('isSponsorFriendly', 'Sponsor Friendly', ['true','false'])}
-                  {S('isGroupSalesFriendly', 'Group Sales', ['true','false'])}
-                  {S('translationRightsIncluded', 'Translation Rights', ['true','false'])}
+                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-4">03. Market Performance</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {F('premiereDate', 'Premiere Date', 'date')}
+                  {F('premiereLocation', 'Premiere Location')}
+                  {F('performancesCount', 'Total Performances', 'number')}
+                  {F('totalAudience', 'Total Audience', 'number')}
+                  {F('locationsPlayed', 'Locations Played')}
+                  {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
                 </div>
               </section>
 
