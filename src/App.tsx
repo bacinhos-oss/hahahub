@@ -167,24 +167,6 @@ const App: React.FC = () => {
       productionPhotos: s.production_photos || [],
       is_produced: s.is_produced ?? true,
       user_id: s.user_id || null,
-      // Creative Assets
-      music_author: s.music_author || '',
-      has_original_music: s.has_original_music || false,
-      video_author: s.video_author || '',
-      has_video_projections: s.has_video_projections || false,
-      video_description: s.video_description || '',
-      // Packages
-      has_script_package: s.has_script_package !== false,
-      script_royalty_pct: s.script_royalty_pct || null,
-      script_advance_fee: s.script_advance_fee || null,
-      has_full_punch_package: s.has_full_punch_package || false,
-      full_punch_royalty_pct: s.full_punch_royalty_pct || null,
-      full_punch_advance_fee: s.full_punch_advance_fee || null,
-      full_punch_includes: s.full_punch_includes || '',
-      // Extra
-      internationalSuccessNotes: s.international_success_notes || '',
-      translationsAvailable: s.translations_available || '',
-      awards: s.awards || '',
     }))
     setShows(mapped)
   }
@@ -385,7 +367,14 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      {renderPage()}
+      <div className="fixed top-0 left-0 right-0 z-[9999] bg-brand-pink text-white text-center py-2 px-4">
+        <p className="font-black uppercase italic text-xs tracking-widest">
+          BETA · Platform under development · Not live yet · For testing only
+        </p>
+      </div>
+      <div style={{paddingTop: '36px'}}>
+        {renderPage()}
+      </div>
       <CookieBanner />
     </div>
   )
