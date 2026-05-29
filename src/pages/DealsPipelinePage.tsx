@@ -158,7 +158,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     if (view === 'tickled') setAllTickled(update); else setAllTickler(update);
 
     const s = STATUSES.find(s => s.key === newStatus);
-    showToast(`${s?.label`);
+    showToast(s?.label || '');
   };
 
   const deleteDeal = async (deal: Deal) => {
