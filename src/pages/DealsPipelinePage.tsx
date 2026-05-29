@@ -52,7 +52,6 @@ interface Msg {
   user_id: string;
   content: string;
   created_at: string;
-  profiles?: { name: string };
 }
 
 const STATUSES: { key: DealStatus; label: string; dot: string; desc: string; bg: string }[] = [
@@ -109,7 +108,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         filter: `deal_id=eq.${activeDealId}`,
       }, async () => {
         // Reload messages when new one arrives
-        const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDealId).order('created_at', { ascending: true });
+        const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDealId).order('created_at', { ascending: true });
         setMsgs((data || []) as Msg[]);
       })
       .subscribe();
@@ -139,7 +138,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
   const loadData = async () => {
-    console.log('Pipeline user.id:', user.id, 'user:', user);
     setLoading(true);
     const [t1, t2, rr] = await Promise.all([
       supabase.from('inquiries').select('*').eq('producer_id', user.id).order('created_at', { ascending: false }),
@@ -179,7 +177,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       else setAllTickler(p => p.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
     }
     setMsgLoading(true);
-    const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', deal.id).order('created_at', { ascending: true });
+    const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', deal.id).order('created_at', { ascending: true });
     setMsgs((data || []) as Msg[]);
     setMsgLoading(false);
   };
@@ -208,7 +206,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     const { error } = await supabase.from('deal_messages').insert({ deal_id: activeDeal.id, user_id: user.id, content: msgText.trim(), show_title: activeDeal.show_title });
     if (!error) {
       setMsgText('');
-      const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
+      const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
       setMsgs((data || []) as Msg[]);
     }
     setSendingMsg(false);
@@ -227,7 +225,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         await supabase.from('deal_messages').insert({ deal_id: activeDeal.id, user_id: user.id, content: `FILE:${fileToSend.name}|${fileUrl}`, show_title: activeDeal.show_title });
         setFileToSend(null);
         if (fileInputRef.current) fileInputRef.current.value = '';
-        const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
+        const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
         setMsgs((data || []) as Msg[]);
         showToast('File sent!');
       }
@@ -574,7 +572,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         return (
                           <div key={msg.id} className={"flex gap-2 " + (isMe ? 'flex-row-reverse' : '')}>
                             <div className={"w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[8px] font-black border-2 " + (isMe ? 'bg-brand-yellow text-black border-black' : 'bg-brand-cyan text-black border-black')}>
-                              {((msg.profiles?.name || 'U')[0]).toUpperCase()}
+                              {(msg.user_id === user.id ? (user.name || 'U') : activeDeal?.from_name || 'U')[0].toUpperCase()}
                             </div>
                             <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
                               <div className={"border-2 px-3 py-1.5 " + (isMe ? 'border-brand-yellow/40' : 'border-white/20')}>
@@ -586,7 +584,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                                   <p className="text-white font-bold italic text-xs">{msg.content}</p>
                                 )}
                               </div>
-                              <p className="text-white/20 text-[8px] mt-0.5">{msg.profiles?.name} · {fmtTime(msg.created_at)}</p>
+                              <p className="text-white/20 text-[8px] mt-0.5">{msg.user_id === user.id ? user.name : activeDeal?.from_name} · {fmtTime(msg.created_at)}</p>
                             </div>
                           </div>
                         );
