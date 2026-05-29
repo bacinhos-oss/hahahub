@@ -32,6 +32,7 @@ interface Deal {
   territory?: string;
   recipient_id?: string;
   package_type?: string;
+  unread_messages?: number;
 }
 
 interface RoyaltyReport {
@@ -79,6 +80,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [allTickler, setAllTickler] = useState<Deal[]>([]);
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [msgCounts, setMsgCounts] = useState<Record<string, number>>({});
   const [toast, setToast] = useState('');
   const [activeDealId, setActiveDealId] = useState<string | null>(null);
   const [threadPosts, setThreadPosts] = useState<ThreadPost[]>([]);
@@ -110,6 +112,19 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     if (t1.data) setAllTickled(t1.data as Deal[]);
     if (t2.data) setAllTickler(t2.data as Deal[]);
     if (rr.data) setRoyaltyReports(rr.data as RoyaltyReport[]);
+    // Load unread message counts per deal
+    const allDeals = [...(t1.data || []), ...(t2.data || [])];
+    if (allDeals.length > 0) {
+      const counts: Record<string, number> = {};
+      for (const deal of allDeals) {
+        const { count } = await supabase.from('deal_messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('deal_id', deal.id)
+          .neq('user_id', user.id);
+        counts[deal.id] = count || 0;
+      }
+      setMsgCounts(counts);
+    }
     setLoading(false);
   };
 
@@ -129,6 +144,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       if (view === 'tickled') setAllTickled(p => p.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
       else setAllTickler(p => p.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
     }
+    setMsgCounts(p => ({...p, [deal.id]: 0}));
     setThreadLoading(true);
     const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', deal.id).order('created_at', { ascending: true });
     setThreadPosts((data || []) as ThreadPost[]);
@@ -184,15 +200,19 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       const { data: uploadData } = await supabase.storage.from('inquiry-attachments').upload(path, fileToSend, { contentType: fileToSend.type });
       if (uploadData) {
         const { data: urlData } = supabase.storage.from('inquiry-attachments').getPublicUrl(uploadData.path);
-        const { data: td } = await supabase.from('posts').select('thread_id, participants').eq('deal_id', activeDeal.id).eq('is_private', true).limit(1).single();
-        if (td?.thread_id) {
-          await supabase.from('posts').insert({ user_id: user.id, type: 'news', content: `📎 ${fileToSend.name}\n${urlData?.publicUrl}`, likes_count: 0, is_private: true, thread_id: td.thread_id, participants: td.participants, deal_id: activeDeal.id, is_system: false, show_title: activeDeal.show_title });
-          setFileToSend(null);
-          if (fileInputRef.current) fileInputRef.current.value = '';
-          const { data } = await supabase.from('posts').select('*, profiles(name)').eq('deal_id', activeDeal.id).eq('is_private', true).order('created_at', { ascending: true });
-          setThreadPosts((data || []) as ThreadPost[]);
-          showToast('📎 File sent!');
-        }
+        const { error: fileError } = await supabase.from('deal_messages').insert({
+            deal_id: activeDeal.id,
+            user_id: user.id,
+            content: `📎 ${fileToSend.name}\n${urlData?.publicUrl}`,
+            show_title: activeDeal.show_title,
+          });
+          if (!fileError) {
+            setFileToSend(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
+            setThreadPosts((data || []) as ThreadPost[]);
+            showToast('📎 File sent!');
+          }
       }
     } catch { showToast('Error sending file.'); }
     setSendingFile(false);
