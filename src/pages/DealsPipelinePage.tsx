@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { openDealThread, postToThread } from './LaffWirePage';
 import { supabase } from '../lib/supabase';
 import { User } from '../types';
 
@@ -86,7 +85,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [threadLoading, setThreadLoading] = useState(false);
   const [threadMsg, setThreadMsg] = useState('');
   const [sendingMsg, setSendingMsg] = useState(false);
-  const [openingThread, setOpeningThread] = useState(false);
   const [showSignForm, setShowSignForm] = useState(false);
   const [showRoyaltyForm, setShowRoyaltyForm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -132,7 +130,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       else setAllTickler(p => p.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
     }
     setThreadLoading(true);
-    const { data } = await supabase.from('posts').select('*, profiles(name)').eq('deal_id', deal.id).eq('is_private', true).order('created_at', { ascending: true });
+    const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', deal.id).order('created_at', { ascending: true });
     setThreadPosts((data || []) as ThreadPost[]);
     setThreadLoading(false);
   };
@@ -141,17 +139,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     await supabase.from('inquiries').update({ deal_status: newStatus, last_activity_at: new Date().toISOString() }).eq('id', deal.id);
     const update = (p: Deal[]) => p.map(d => d.id === deal.id ? { ...d, deal_status: newStatus } : d);
     if (view === 'tickled') setAllTickled(update); else setAllTickler(update);
-    try {
-      const { data: td } = await supabase.from('posts').select('thread_id, participants').eq('deal_id', deal.id).eq('is_private', true).limit(1).single();
-      if (td?.thread_id) {
-        const s = STATUSES.find(s => s.key === newStatus);
-        await supabase.from('posts').insert({ user_id: user.id, type: 'news', content: `${s?.emoji} Status → ${s?.label}`, likes_count: 0, is_private: true, thread_id: td.thread_id, participants: td.participants, deal_id: deal.id, is_system: true, show_title: deal.show_title });
-        if (activeDealId === deal.id) {
-          const { data } = await supabase.from('posts').select('*, profiles(name)').eq('deal_id', deal.id).eq('is_private', true).order('created_at', { ascending: true });
-          setThreadPosts((data || []) as ThreadPost[]);
-        }
-      }
-    } catch {}
+
     const s = STATUSES.find(s => s.key === newStatus);
     showToast(`${s?.emoji} ${s?.label}`);
   };
@@ -166,31 +154,21 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     showToast('Deal deleted');
   };
 
-  const startThread = async (deal: Deal) => {
-    setOpeningThread(true);
-    try {
-      const buyerId = deal.recipient_id || deal.producer_id;
-      const producerId = user.id || '';
-      await openDealThread(deal.id, deal.show_title, producerId, buyerId, `📬 New inquiry for "${deal.show_title}" from ${deal.from_name}`);
-      await supabase.from('inquiries').update({ replied: true, deal_status: 'contacted', last_activity_at: new Date().toISOString() }).eq('id', deal.id);
-      const update = (p: Deal[]) => p.map(d => d.id === deal.id ? { ...d, replied: true, deal_status: 'contacted' as DealStatus } : d);
-      if (view === 'tickled') setAllTickled(update); else setAllTickler(update);
-      const { data } = await supabase.from('posts').select('*, profiles(name)').eq('deal_id', deal.id).eq('is_private', true).order('created_at', { ascending: true });
-      setThreadPosts((data || []) as ThreadPost[]);
-      showToast('💬 Thread started!');
-    } catch { showToast('Error starting thread.'); }
-    setOpeningThread(false);
-  };
 
   const sendMsg = async () => {
     if (!threadMsg.trim() || !activeDeal) return;
     setSendingMsg(true);
     try {
-      const { data: td } = await supabase.from('posts').select('thread_id, participants').eq('deal_id', activeDeal.id).eq('is_private', true).limit(1).single();
-      if (td?.thread_id) {
-        await supabase.from('posts').insert({ user_id: user.id, type: 'news', content: threadMsg.trim(), likes_count: 0, is_private: true, thread_id: td.thread_id, participants: td.participants, deal_id: activeDeal.id, is_system: false, show_title: activeDeal.show_title });
+      // Save message to deal_messages table
+      const { error } = await supabase.from('deal_messages').insert({
+        deal_id: activeDeal.id,
+        user_id: user.id,
+        content: threadMsg.trim(),
+        show_title: activeDeal.show_title,
+      });
+      if (!error) {
         setThreadMsg('');
-        const { data } = await supabase.from('posts').select('*, profiles(name)').eq('deal_id', activeDeal.id).eq('is_private', true).order('created_at', { ascending: true });
+        const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
         setThreadPosts((data || []) as ThreadPost[]);
       }
     } catch { showToast('Error sending.'); }
@@ -230,8 +208,18 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     } catch {}
     const update = (p: Deal[]) => p.map(d => d.id === activeDeal.id ? { ...d, ...updates } : d);
     if (view === 'tickled') setAllTickled(update); else setAllTickler(update);
+    // Post to LaffWire public feed
+    try {
+      await supabase.from('posts').insert({
+        user_id: user.id,
+        type: 'deal',
+        content: `✅ DEAL SIGNED — "${activeDeal.show_title}"${signForm.territory ? ' · ' + signForm.territory : ''}`,
+        likes_count: 0,
+        is_private: false,
+      });
+    } catch {}
     setShowSignForm(false);
-    showToast('✅ Signed! Emails sent.');
+    showToast('✅ Signed! Emails sent + LaffWire posted.');
   };
 
   const addReport = async () => {
@@ -494,21 +482,18 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                   </div>
                 )}
 
-                {/* THREAD */}
+                {/* MESSAGES */}
                 <div>
                   <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-brand-cyan/5">
-                    <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">🔒 Private Thread</p>
-                    <button onClick={() => onNavigate('wire')} className="text-[8px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors">Open in LaffWire →</button>
+                    <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">💬 Messages</p>
+                    <button onClick={() => onNavigate('wire')} className="text-[8px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors">LaffWire →</button>
                   </div>
                   <div className="px-4 py-3 space-y-2 min-h-24 max-h-64 overflow-y-auto">
                     {threadLoading ? (
                       <p className="text-white/20 text-xs italic text-center py-4">Loading...</p>
                     ) : threadPosts.length === 0 ? (
-                      <div className="text-center py-4 space-y-2">
-                        <p className="text-white/20 text-xs italic">Start a private conversation with {activeDeal.from_name}.</p>
-                        <button onClick={() => startThread(activeDeal)} disabled={openingThread} className="bg-brand-cyan text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all disabled:opacity-30">
-                          {openingThread ? 'Starting...' : '💬 Start Conversation →'}
-                        </button>
+                      <div className="text-center py-4">
+                        <p className="text-white/20 text-xs italic">No messages yet. Type below to start.</p>
                       </div>
                     ) : threadPosts.map(post => {
                       const isMe = post.user_id === user.id;
@@ -540,8 +525,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                     })}
                     <div ref={threadEndRef} />
                   </div>
-                  {threadPosts.length > 0 && (
-                    <div className="border-t-2 border-white/10">
+                  <div className="border-t-2 border-white/10">
                       <div className="px-4 py-3 flex gap-2">
                         <input type="text" value={threadMsg} onChange={e => setThreadMsg(e.target.value)}
                           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }}}
@@ -562,7 +546,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         )}
                       </div>
                     </div>
-                  )}
                 </div>
 
                 {/* DELETE */}
