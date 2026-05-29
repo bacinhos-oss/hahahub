@@ -59,14 +59,14 @@ interface ThreadPost {
   profiles?: { name: string };
 }
 
-const STATUSES: { key: DealStatus; label: string; emoji: string; desc: string; bg: string }[] = [
-  { key: 'new',           label: 'New',           emoji: '📬', desc: 'Inquiry received',      bg: 'bg-brand-pink' },
-  { key: 'contacted',     label: 'Contacted',     emoji: '💬', desc: 'You replied',            bg: 'bg-brand-cyan' },
-  { key: 'negotiating',   label: 'Negotiating',   emoji: '🤝', desc: 'In discussion',          bg: 'bg-brand-yellow' },
-  { key: 'contract_sent', label: 'Contract Sent', emoji: '📄', desc: 'Awaiting signature',     bg: 'bg-purple-400' },
-  { key: 'signed',        label: 'Signed',        emoji: '✅', desc: 'Deal confirmed',         bg: 'bg-green-400' },
-  { key: 'royalties',     label: 'Royalties',     emoji: '💰', desc: 'Tracking performances',  bg: 'bg-orange-400' },
-  { key: 'completed',     label: 'Completed',     emoji: '🏆', desc: 'Deal closed',            bg: 'bg-white/20' },
+const STATUSES: { key: DealStatus; label: string; dot: string; desc: string; bg: string }[] = [
+  { key: 'new',           label: 'New',           dot: 'bg-brand-pink',   desc: 'Inquiry received',      bg: 'bg-brand-pink' },
+  { key: 'contacted',     label: 'Contacted',     dot: 'bg-brand-cyan',   desc: 'You replied',            bg: 'bg-brand-cyan' },
+  { key: 'negotiating',   label: 'Negotiating',   dot: 'bg-brand-yellow', desc: 'In discussion',          bg: 'bg-brand-yellow' },
+  { key: 'contract_sent', label: 'Contract Sent', dot: 'bg-purple-400',   desc: 'Awaiting signature',     bg: 'bg-purple-400' },
+  { key: 'signed',        label: 'Signed',        dot: 'bg-green-400',    desc: 'Deal confirmed',         bg: 'bg-green-400' },
+  { key: 'royalties',     label: 'Royalties',     dot: 'bg-orange-400',   desc: 'Tracking performances',  bg: 'bg-orange-400' },
+  { key: 'completed',     label: 'Completed',     dot: 'bg-white/30',     desc: 'Deal closed',            bg: 'bg-white/20' },
 ];
 
 const fmt = (d?: string) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
@@ -77,6 +77,7 @@ const daysSince = (d?: string) => d ? Math.floor((Date.now() - new Date(d).getTi
 const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [view, setView] = useState<'tickled' | 'tickler'>('tickled');
   const [allTickled, setAllTickled] = useState<Deal[]>([]);
+  const [viewMode, setViewMode] = useState<'shows' | 'list'>('shows');
   const [allTickler, setAllTickler] = useState<Deal[]>([]);
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,7 +158,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     if (view === 'tickled') setAllTickled(update); else setAllTickler(update);
 
     const s = STATUSES.find(s => s.key === newStatus);
-    showToast(`${s?.emoji} ${s?.label}`);
+    showToast(`${s?.label`);
   };
 
   const deleteDeal = async (deal: Deal) => {
@@ -211,7 +212,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
             if (fileInputRef.current) fileInputRef.current.value = '';
             const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
             setThreadPosts((data || []) as ThreadPost[]);
-            showToast('📎 File sent!');
+            showToast('File sent!');
           }
       }
     } catch { showToast('Error sending file.'); }
@@ -239,7 +240,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       });
     } catch {}
     setShowSignForm(false);
-    showToast('✅ Signed! Emails sent + LaffWire posted.');
+    showToast('Signed! Emails sent + LaffWire posted.');
   };
 
   const addReport = async () => {
@@ -247,7 +248,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     const gross = Number(royaltyForm.tickets) * Number(royaltyForm.ticket_price);
     const royalty_amount = gross * (Number(activeDeal.royalty_pct || 0) / 100);
     const { error } = await supabase.from('royalty_reports').insert({ show_id: activeDeal.show_id, show_title: activeDeal.show_title, date: royaltyForm.date, venue: royaltyForm.venue, tickets: Number(royaltyForm.tickets), ticket_price: Number(royaltyForm.ticket_price), gross, royalty_amount, notes: royaltyForm.notes, buyer_id: user.id, buyer_name: user.name });
-    if (!error) { setRoyaltyForm({ date: '', venue: '', tickets: '', ticket_price: '', notes: '' }); setShowRoyaltyForm(false); loadData(); showToast('💰 Report saved!'); }
+    if (!error) { setRoyaltyForm({ date: '', venue: '', tickets: '', ticket_price: '', notes: '' }); setShowRoyaltyForm(false); loadData(); showToast('Report saved!'); }
   };
 
   const showGroups = deals.reduce((acc, deal) => {
@@ -274,12 +275,16 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         <div className="flex border-4 border-white/20">
           <button onClick={() => { setView('tickled'); setActiveDealId(null); setThreadPosts([]); }}
             className={"px-5 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickled' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
-            🎭 Tickled <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickled' ? 'bg-black text-brand-yellow' : 'bg-white/10')}>{allTickled.length}</span>
+            TICKLED <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickled' ? 'bg-black text-brand-yellow' : 'bg-white/10')}>{allTickled.length}</span>
           </button>
           <button onClick={() => { setView('tickler'); setActiveDealId(null); setThreadPosts([]); }}
             className={"px-5 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickler' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
-            🥊 Tickler <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickler' ? 'bg-black text-brand-cyan' : 'bg-white/10')}>{allTickler.length}</span>
+            TICKLER <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickler' ? 'bg-black text-brand-cyan' : 'bg-white/10')}>{allTickler.length}</span>
           </button>
+          <div className="flex border-4 border-white/20">
+            <button onClick={() => setViewMode('shows')} className={"px-4 py-2 font-black uppercase italic text-xs transition-all " + (viewMode === 'shows' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white')}>By Show</button>
+            <button onClick={() => setViewMode('list')} className={"px-4 py-2 font-black uppercase italic text-xs transition-all " + (viewMode === 'list' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white')}>List</button>
+          </div>
         </div>
       </div>
 
@@ -302,7 +307,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         <p className="text-white/20 font-black uppercase italic">Loading...</p>
       ) : deals.length === 0 ? (
         <div className="border-4 border-white/10 p-12 text-center space-y-3">
-          <p className="text-5xl">{view === 'tickled' ? '🎭' : '🥊'}</p>
+          
           <p className="text-white/40 font-black uppercase italic text-sm">
             {view === 'tickled' ? 'No inquiries yet.' : 'You have not tickled any shows yet.'}
           </p>
@@ -315,7 +320,33 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
 
           {/* LEFT */}
           <div className="space-y-4 min-h-96">
-            {Object.entries(showGroups).map(([showTitle, showDeals]) => {
+            {viewMode === 'list' ? (
+              <div className="border-4 border-white/20 overflow-hidden">
+                {deals.map(deal => {
+                  const s = STATUSES.find(s => s.key === (deal.deal_status || 'new')) || STATUSES[0];
+                  const isActive = activeDealId === deal.id;
+                  return (
+                    <div key={deal.id} onClick={() => openDeal(deal)}
+                      className={"border-b border-white/10 last:border-b-0 cursor-pointer transition-all " + (isActive ? 'bg-brand-yellow/5 border-l-4 border-l-brand-yellow' : 'hover:bg-white/3')}>
+                      <div className="px-4 py-3 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className={"w-2 h-2 rounded-full flex-shrink-0 " + s.dot} />
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-black uppercase italic text-white text-sm">{deal.from_name}</p>
+                              {!deal.is_read && <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-1.5 py-0.5">NEW</span>}
+                              {msgCounts[deal.id] > 0 && <span className="text-[7px] font-black uppercase bg-brand-cyan text-black px-1.5 py-0.5">{msgCounts[deal.id]} MSG</span>}
+                            </div>
+                            <p className="text-white/30 text-xs italic truncate">{deal.show_title}</p>
+                          </div>
+                        </div>
+                        <span className={"text-[7px] font-black uppercase px-2 py-1 flex-shrink-0 text-black " + s.bg}>{s.label}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : Object.entries(showGroups).map(([showTitle, showDeals]) => {
               const showRoyalties = royaltyReports.filter(r => r.show_title === showTitle).reduce((s, r) => s + Number(r.royalty_amount), 0);
               return (
                 <div key={showTitle} className="border-4 border-white/20 overflow-hidden">
@@ -339,12 +370,12 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         className={"border-b border-white/10 last:border-b-0 cursor-pointer transition-all " + (isActive ? 'bg-brand-yellow/5 border-l-4 border-l-brand-yellow' : isOverdue ? 'border-l-4 border-l-brand-pink hover:bg-white/3' : 'hover:bg-white/3')}>
                         <div className="px-4 py-3 flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="text-lg flex-shrink-0">{s.emoji}</span>
+                            <span className="text-lg flex-shrink-0">
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-black uppercase italic text-white text-sm">{deal.from_name}</p>
                                 {!deal.is_read && <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-1.5 py-0.5">NEW</span>}
-                                {deal.package_type && <span className={"text-[7px] font-black uppercase px-1.5 py-0.5 " + (deal.package_type === 'full_punch' ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>{deal.package_type === 'full_punch' ? '🥊' : '🎭'}</span>}
+                                {deal.package_type && <span className={"text-[7px] font-black uppercase px-1.5 py-0.5 " + (deal.package_type === 'full_punch' ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>{deal.package_type === 'full_punch' ? 'FP' : 'SC'}</span>}
                               </div>
                               <p className="text-white/30 text-xs">{fmtShort(deal.created_at)}{deal.territory && ` · ${deal.territory}`}</p>
                             </div>
@@ -371,7 +402,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                   <div className="space-y-3">
                     {STATUSES.map(s => (
                       <div key={s.key} className="flex gap-3 items-start">
-                        <span className="text-xl flex-shrink-0">{s.emoji}</span>
+                        <span className="text-xl flex-shrink-0">
                         <div className="border-l-2 border-white/10 pl-3">
                           <p className="font-black uppercase italic text-white text-xs">{s.label}</p>
                           <p className="text-white/30 text-xs italic">{s.desc}</p>
@@ -386,14 +417,14 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                   <div className="border-t border-white/10 pt-4 space-y-2">
                     <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">Tips</p>
                     {[
-                      { icon: '🎭', text: 'TICKLED — inquiries sent to your shows' },
-                      { icon: '🥊', text: 'TICKLER — shows you have inquired about' },
-                      { icon: '💬', text: 'Message box sends directly to the other party' },
-                      { icon: '📎', text: 'Send scripts, PDFs or Full Punch materials' },
-                      { icon: '🗑', text: 'Delete a deal if it is no longer relevant' },
+                      { icon: '→', text: 'TICKLED — inquiries sent to your shows' },
+                      { icon: '→', text: 'TICKLER — shows you have inquired about' },
+                      { icon: '→', text: 'Message box sends directly to the other party' },
+                      { icon: '→', text: 'Send scripts, PDFs or Full Punch materials' },
+                      { icon: '→', text: 'Delete a deal if it is no longer relevant' },
                     ].map((t, i) => (
                       <div key={i} className="flex gap-2 items-start">
-                        <span className="text-sm flex-shrink-0">{t.icon}</span>
+                        <span className="text-white/30 font-black flex-shrink-0">{t.icon}</span>
                         <p className="text-white/30 text-xs italic">{t.text}</p>
                       </div>
                     ))}
@@ -409,9 +440,9 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <span className={"text-[7px] font-black uppercase px-2 py-1 text-black " + (STATUSES.find(s => s.key === (activeDeal.deal_status||'new'))?.bg||'bg-brand-pink')}>
-                          {STATUSES.find(s => s.key === (activeDeal.deal_status||'new'))?.emoji} {STATUSES.find(s => s.key === (activeDeal.deal_status||'new'))?.label}
+                          {STATUSES.find(s => s.key === (activeDeal.deal_status||'new'))?.label}
                         </span>
-                        {activeDeal.package_type && <span className={"text-[7px] font-black uppercase px-2 py-0.5 " + (activeDeal.package_type === 'full_punch' ? 'bg-brand-pink text-white' : 'bg-brand-yellow text-black')}>{activeDeal.package_type === 'full_punch' ? '🥊 Full Punch' : '🎭 Script'}</span>}
+                        {activeDeal.package_type && <span className={"text-[7px] font-black uppercase px-2 py-0.5 " + (activeDeal.package_type === 'full_punch' ? 'bg-brand-pink text-white' : 'bg-brand-yellow text-black')}>{activeDeal.package_type === 'full_punch' ? 'FULL PUNCH' : 'SCRIPT'}</span>}
                       </div>
                       <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest truncate">{activeDeal.show_title}</p>
                       <p className="text-xl font-black uppercase italic text-white">{activeDeal.from_name}</p>
@@ -440,7 +471,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                       return (
                         <button key={s.key} onClick={() => updateStatus(activeDeal, s.key)}
                           className={"flex items-center gap-2 px-3 py-2 border-2 transition-all text-left " + (isCurrent ? s.bg + ' border-black text-black' : 'border-white/20 text-white/50 hover:border-white/60 hover:text-white')}>
-                          <span className="text-base">{s.emoji}</span>
+                          <span className="text-base">
                           <div>
                             <p className={"text-xs font-black uppercase italic " + (isCurrent ? 'text-black' : '')}>{s.label}</p>
                             <p className={"text-[8px] " + (isCurrent ? 'text-black/60' : 'text-white/20')}>{s.desc}</p>
@@ -455,7 +486,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                 {activeDeal.deal_status === 'contract_sent' && (
                   <div className="px-4 py-4 border-b-2 border-white/10 bg-green-400/5">
                     <button onClick={() => setShowSignForm(!showSignForm)} className="w-full bg-green-400 text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white transition-all">
-                      ✅ {showSignForm ? 'Cancel' : 'Mark as Signed — Enter Deal Terms'}
+                      {showSignForm ? 'Cancel' : 'Mark as Signed — Enter Deal Terms'}
                     </button>
                     {showSignForm && (
                       <div className="mt-4 space-y-3">
@@ -476,7 +507,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                           ))}
                         </div>
                         <button onClick={markSigned} className="w-full bg-green-400 text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white transition-all">
-                          ✅ Confirm — Move to Royalties & Send Emails
+                          Confirm — Move to Royalties & Send Emails
                         </button>
                       </div>
                     )}
@@ -487,7 +518,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                 {(activeDeal.deal_status === 'signed' || activeDeal.deal_status === 'royalties') && (
                   <div className="px-4 py-4 border-b-2 border-white/10">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest">💰 Royalty Reports</p>
+                      <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest">Royalty Reports</p>
                       <button onClick={() => setShowRoyaltyForm(!showRoyaltyForm)} className="bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
                         {showRoyaltyForm ? 'Cancel' : '+ Add'}
                       </button>
@@ -528,7 +559,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                 {/* MESSAGES */}
                 <div>
                   <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-brand-cyan/5">
-                    <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">💬 Messages</p>
+                    <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">Messages</p>
                     <button onClick={() => onNavigate('wire')} className="text-[8px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors">LaffWire →</button>
                   </div>
                   <div className="px-4 py-3 space-y-2 min-h-24 max-h-64 overflow-y-auto">
@@ -556,7 +587,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                           <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
                             <div className={"border-2 px-3 py-1.5 " + (isMe ? 'border-brand-yellow/40' : 'border-white/20')}>
                               {isFile && fileUrl ? (
-                                <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-brand-cyan font-black italic text-xs hover:underline">📎 {fileName}</a>
+                                <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-brand-cyan font-black italic text-xs hover:underline">{fileName}</a>
                               ) : (
                                 <p className="text-white font-bold italic text-xs">{post.content}</p>
                               )}
