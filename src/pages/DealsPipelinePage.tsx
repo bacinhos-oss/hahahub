@@ -97,6 +97,45 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   useEffect(() => { loadData(); }, [user, view]);
   useEffect(() => { msgsEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
 
+  // Realtime subscription for new messages
+  useEffect(() => {
+    if (!activeDealId) return;
+    const channel = supabase
+      .channel('deal_messages_' + activeDealId)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'deal_messages',
+        filter: `deal_id=eq.${activeDealId}`,
+      }, async () => {
+        // Reload messages when new one arrives
+        const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDealId).order('created_at', { ascending: true });
+        setMsgs((data || []) as Msg[]);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [activeDealId]);
+
+  // Realtime subscription for new messages on all deals (badge counter)
+  useEffect(() => {
+    const channel = supabase
+      .channel('deal_messages_all_' + user.id)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'deal_messages',
+      }, (payload: any) => {
+        const newMsg = payload.new;
+        // Only count messages from others
+        if (newMsg.user_id !== user.id) {
+          setMsgCounts(p => ({ ...p, [newMsg.deal_id]: (p[newMsg.deal_id] || 0) + 1 }));
+          showToast('New message in ' + (newMsg.show_title || 'a deal'));
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user.id]);
+
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
   const loadData = async () => {
