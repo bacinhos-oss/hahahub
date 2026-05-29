@@ -342,20 +342,42 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           {/* RIGHT */}
           <div className="lg:sticky lg:top-4">
             {!activeDeal ? (
-              <div className="border-4 border-white/10 p-8 text-center space-y-4">
-                <p className="text-4xl">👈</p>
-                <p className="text-white/30 font-black uppercase italic text-sm">Select a deal to manage it</p>
-                <div className="text-left space-y-2 border-t border-white/10 pt-4">
-                  <p className="text-[8px] font-black uppercase italic text-white/20 tracking-widest mb-3">Deal stages</p>
-                  {STATUSES.map(s => (
-                    <div key={s.key} className="flex items-center gap-3">
-                      <span className="text-base">{s.emoji}</span>
-                      <div>
-                        <span className="text-white/60 font-black uppercase italic text-xs">{s.label}</span>
-                        <span className="text-white/20 text-xs italic"> — {s.desc}</span>
+              <div className="border-4 border-white/10 overflow-hidden">
+                <div className="bg-white/5 px-5 py-4 border-b-2 border-white/10">
+                  <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">How Pipeline works</p>
+                  <p className="text-white/40 text-xs italic">Click any deal on the left to manage it. You are always in control — move deals through stages manually.</p>
+                </div>
+                <div className="px-5 py-4 space-y-4">
+                  <div className="space-y-3">
+                    {STATUSES.map(s => (
+                      <div key={s.key} className="flex gap-3 items-start">
+                        <span className="text-xl flex-shrink-0">{s.emoji}</span>
+                        <div className="border-l-2 border-white/10 pl-3">
+                          <p className="font-black uppercase italic text-white text-xs">{s.label}</p>
+                          <p className="text-white/30 text-xs italic">{s.desc}</p>
+                          {s.key === 'new' && <p className="text-white/20 text-[9px] italic mt-0.5">→ Reply in the message box. Move to Contacted when done.</p>}
+                          {s.key === 'contract_sent' && <p className="text-white/20 text-[9px] italic mt-0.5">→ Mark as Signed button appears. Fill in deal terms.</p>}
+                          {s.key === 'signed' && <p className="text-white/20 text-[9px] italic mt-0.5">→ Emails go to both parties. LaffWire announces the deal.</p>}
+                          {s.key === 'royalties' && <p className="text-white/20 text-[9px] italic mt-0.5">→ Log each performance. Royalty calculated automatically.</p>}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <div className="border-t border-white/10 pt-4 space-y-2">
+                    <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">Tips</p>
+                    {[
+                      { icon: '🎭', text: 'TICKLED — inquiries sent to your shows' },
+                      { icon: '🥊', text: 'TICKLER — shows you have inquired about' },
+                      { icon: '💬', text: 'Message box sends directly to the other party' },
+                      { icon: '📎', text: 'Send scripts, PDFs or Full Punch materials' },
+                      { icon: '🗑', text: 'Delete a deal if it is no longer relevant' },
+                    ].map((t, i) => (
+                      <div key={i} className="flex gap-2 items-start">
+                        <span className="text-sm flex-shrink-0">{t.icon}</span>
+                        <p className="text-white/30 text-xs italic">{t.text}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -390,7 +412,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
 
                 {/* STATUS SELECTOR */}
                 <div className="px-4 py-4 border-b-2 border-white/10">
-                  <p className="text-[8px] font-black uppercase italic text-white/30 tracking-widest mb-3">Where is this deal?</p>
+                  <p className="text-[8px] font-black uppercase italic text-white/30 tracking-widest mb-1">Where is this deal?</p>
+                  <p className="text-white/20 text-[9px] italic mb-3">Click to move the deal to that stage. Status updates are logged automatically.</p>
                   <div className="grid grid-cols-2 gap-2">
                     {STATUSES.map(s => {
                       const isCurrent = (activeDeal.deal_status || 'new') === s.key;
@@ -529,7 +552,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                       <div className="px-4 py-3 flex gap-2">
                         <input type="text" value={threadMsg} onChange={e => setThreadMsg(e.target.value)}
                           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }}}
-                          placeholder="Message... (Enter to send)"
+                          placeholder={`Message ${activeDeal.from_name}... (Enter to send)`}
                           className="flex-1 bg-black border-2 border-white/20 px-3 py-2 text-white font-bold italic text-xs outline-none focus:border-brand-cyan" />
                         <button onClick={sendMsg} disabled={sendingMsg||!threadMsg.trim()} className="bg-brand-cyan text-black px-4 font-black uppercase italic text-xs border-2 border-black disabled:opacity-30 hover:bg-white transition-all">
                           {sendingMsg ? '...' : '→'}
@@ -539,6 +562,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.zip,.mp4"
                           onChange={e => setFileToSend(e.target.files?.[0]||null)}
                           className="text-white/30 text-[9px] flex-1 file:bg-white/10 file:text-white/60 file:font-black file:text-[8px] file:uppercase file:px-2 file:py-1 file:border-0 file:mr-2 cursor-pointer" />
+                        <span className="text-white/15 text-[8px] italic">PDF, DOC, ZIP</span>
                         {fileToSend && (
                           <button onClick={sendFile} disabled={sendingFile} className="bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-[9px] border-2 border-black disabled:opacity-30 hover:bg-white transition-all">
                             {sendingFile ? '...' : '📎 Send'}
