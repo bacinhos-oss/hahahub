@@ -494,26 +494,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     { label: 'Active Favs', value: realStats.totalLikes.toLocaleString(), icon: 'favorite', color: 'white' },
   ];
 
-  const openManage = (show: Show) => {
-    setManageShow(show);
-    setEditForm({
-      ...show,
-      // Map new snake_case DB fields to camelCase form fields
-      musicAuthor: (show as any).music_author || '',
-      hasOriginalMusic: (show as any).has_original_music ? 'true' : 'false',
-      videoAuthor: (show as any).video_author || '',
-      hasVideoProjections: (show as any).has_video_projections ? 'true' : 'false',
-      videoDescription: (show as any).video_description || '',
-      hasScriptPackage: (show as any).has_script_package !== false,
-      scriptRoyaltyPct: (show as any).script_royalty_pct || 10,
-      scriptAdvanceFee: (show as any).script_advance_fee || '',
-      hasFullPunchPackage: (show as any).has_full_punch_package || false,
-      fullPunchRoyaltyPct: (show as any).full_punch_royalty_pct || 15,
-      fullPunchAdvanceFee: (show as any).full_punch_advance_fee || '',
-      fullPunchIncludes: (show as any).full_punch_includes || '',
-    } as any);
-    setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]);
-  };
+  const openManage = (show: Show) => { setManageShow(show); setEditForm({ ...show }); setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]); };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -563,19 +544,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         script_scenario: editForm.scriptScenario,
         is_produced: true,
         production_photos: editForm.productionPhotos || [],
-        music_author: (editForm as any).musicAuthor || null,
-        has_original_music: (editForm as any).hasOriginalMusic === 'true' || (editForm as any).hasOriginalMusic === true,
-        video_author: (editForm as any).videoAuthor || null,
-        has_video_projections: (editForm as any).hasVideoProjections === 'true' || (editForm as any).hasVideoProjections === true,
-        video_description: (editForm as any).videoDescription || null,
-        has_script_package: (editForm as any).hasScriptPackage === 'true' || (editForm as any).hasScriptPackage === true,
-        script_royalty_pct: (editForm as any).scriptRoyaltyPct ? Number((editForm as any).scriptRoyaltyPct) : null,
-        script_advance_fee: (editForm as any).scriptAdvanceFee ? Number((editForm as any).scriptAdvanceFee) : null,
-        has_full_punch_package: (editForm as any).hasFullPunchPackage === 'true' || (editForm as any).hasFullPunchPackage === true,
-        full_punch_royalty_pct: (editForm as any).fullPunchRoyaltyPct ? Number((editForm as any).fullPunchRoyaltyPct) : null,
-        full_punch_advance_fee: (editForm as any).fullPunchAdvanceFee ? Number((editForm as any).fullPunchAdvanceFee) : null,
-        full_punch_includes: (editForm as any).fullPunchIncludes || null,
-        international_success_notes: editForm.internationalSuccessNotes,
       }).eq('id', manageShow.id);
 
       if (error) { console.error('Error:', error.message); }
@@ -626,87 +594,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             <div className="space-y-10">
 
-              {/* 00. BASIC INFO */}
-              <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-4">00. Basic Info</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {F('title', 'Title *')}
-                  {F('author', 'Author / Playwright')}
-                  {F('genre', 'Genre')}
-                  {F('subgenre', 'Subgenre')}
-                  {F('originalLanguage', 'Original Language', 'text', 'Slovenian...')}
-                  {F('location', 'Origin City / Country')}
-                  {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
-                  {F('awards', 'Awards')}
-                  {F('trailerUrl', 'Trailer URL', 'text', 'https://youtube.com/...')}
-                  {T('synopsisEn', 'Synopsis in English *')}
-                  {T('internationalSuccessNotes', 'International Success Notes')}
-                </div>
-              </section>
-
-              {/* 02. CREATIVE ASSETS */}
-              <section className="border-4 border-brand-yellow/30 p-6 space-y-4">
-                <h3 className="text-lg font-black uppercase italic text-brand-yellow mb-4">02. Creative Assets</h3>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">🎵 Music</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    {F('musicAuthor', 'Music Author / Composer')}
-                    {S('hasOriginalMusic', 'Original Music', ['false','true'])}
-                  </div>
-                </div>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">📽 Video & AV</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    {F('videoAuthor', 'Video / AV Author')}
-                    {S('hasVideoProjections', 'Has Video Projections', ['false','true'])}
-                    {T('videoDescription', 'Video Description')}
-                  </div>
-                </div>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">📄 Script</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    {S('scriptInEnglish', 'Script in English', ['false','partial','true'])}
-                    {F('translationsAvailable', 'Translations Available', 'text', 'EN, DE, FR...')}
-                    {T('scriptScenario', 'Script Excerpt / Scenario')}
-                  </div>
-                </div>
-              </section>
-
-              {/* 05. PACKAGES */}
-              <section className="border-4 border-brand-yellow/30 p-6 space-y-4">
-                <h3 className="text-lg font-black uppercase italic text-brand-yellow mb-4">05. Licensing Packages</h3>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
-                    <span className="font-black uppercase italic text-white text-sm">🎭 SCRIPT</span>
-                  </div>
-                  {(editForm as any).hasScriptPackage && (
-                    <div className="grid grid-cols-2 gap-4 pl-7">
-                      {F('scriptRoyaltyPct', 'Royalty %', 'number')}
-                      {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
-                    </div>
-                  )}
-                </div>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" checked={!!(editForm as any).hasFullPunchPackage} onChange={e => setEditForm((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))} className="w-4 h-4 accent-brand-pink" />
-                    <span className="font-black uppercase italic text-white text-sm">🥊 FULL PUNCH</span>
-                  </div>
-                  {(editForm as any).hasFullPunchPackage && (
-                    <div className="space-y-3 pl-7">
-                      <div className="grid grid-cols-2 gap-4">
-                        {F('fullPunchRoyaltyPct', 'Royalty %', 'number')}
-                        {F('fullPunchAdvanceFee', 'Advance Fee (EUR)', 'number')}
-                      </div>
-                      {F("fullPunchIncludes", "What's Included")}
-                    </div>
-                  )}
-                </div>
-              </section>
-
               {/* 00. RIGHTS */}
               <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-6">04. Rights & Identity</h3>
+                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-6">00. Rights & Identity</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {F('producerName', 'Production Company')}
                   {F('producerEmail', 'Producer Email')}
@@ -798,7 +688,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {F('locationsPlayed', 'Locations Played')}
                   {F('buyoutLocations', 'Buyout Locations')}
                   {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
-                  
+                  {S('riskProfile', 'Risk Profile', ['Proven hit','Moderate risk','Experimental'])}
                   {S('breakEvenThreshold', 'Break Even Threshold', ['Low','Medium','High'])}
                   {F('breakEvenPerformances', 'Break Even Performances', 'number')}
                   {F('awards', 'Awards')}
@@ -808,16 +698,20 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </div>
               </section>
 
-              {/* 04. MARKET PERFORMANCE */}
+              {/* 04. COMMERCIAL */}
               <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-4">03. Market Performance</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {F('premiereDate', 'Premiere Date', 'date')}
-                  {F('premiereLocation', 'Premiere Location')}
-                  {F('performancesCount', 'Total Performances', 'number')}
-                  {F('totalAudience', 'Total Audience', 'number')}
-                  {F('locationsPlayed', 'Locations Played')}
-                  {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
+                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-6">04. Commercial Bible</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {S('licenseType', 'License Type', ['License','Option','Co-production'])}
+                  {S('licensingModel', 'Licensing Model', ['Royalty-based','Flat fee','Hybrid'])}
+                  {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
+                  {S('rightsClearingSpeed', 'Clearing Speed', ['Fast','Medium','Slow'])}
+                  {S('decisionMakerType', 'Decision Maker', ['Single','Committee'])}
+                  {F('royaltyRange', 'Royalty Range')}
+                  {F('advanceFee', 'Advance Fee')}
+                  {S('isSponsorFriendly', 'Sponsor Friendly', ['true','false'])}
+                  {S('isGroupSalesFriendly', 'Group Sales', ['true','false'])}
+                  {S('translationRightsIncluded', 'Translation Rights', ['true','false'])}
                 </div>
               </section>
 
@@ -980,7 +874,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               {[
                 { label: 'VIEWS', value: myStats.views, icon: 'visibility', color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
                 { label: 'LIKES', value: myStats.likes, icon: 'favorite', color: 'text-brand-pink', border: 'border-brand-pink/30' },
-                { label: 'INQUIRIES', value: inquiries.length + sentInquiries.length, icon: 'mail', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
+                { label: 'INQUIRIES', value: inquiries.length, icon: 'mail', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
                 { label: 'MY SHOWS', value: userUploads.length, icon: 'theater_comedy', color: 'text-white', border: 'border-white/20' },
               ].map((s, i) => (
                 <div key={i} className={`border-4 ${s.border} p-4 flex items-center gap-3`}>
