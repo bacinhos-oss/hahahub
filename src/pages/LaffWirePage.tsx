@@ -10,7 +10,6 @@ interface LaffWirePageProps {
   onLogout?: () => void;
   user?: User;
   onViewProducer?: (producerId: string) => void;
-  initialThreadId?: string;
 }
 
 const POST_TYPES: Record<string, { label: string; bg: string; text: string }> = {
@@ -34,47 +33,9 @@ function getEmbedUrl(url: string): string {
   return url;
 }
 
-export async function openDealThread(dealId: string, showTitle: string, producerId: string, buyerId: string, systemMsg: string): Promise<string> {
-  const { data: existing } = await supabase
-    .from('posts')
-    .select('thread_id')
-    .eq('deal_id', dealId)
-    .eq('is_private', true)
-    .limit(1)
-    .single();
 
-  if (existing?.thread_id) return existing.thread_id;
 
-  const threadId = crypto.randomUUID();
-  await supabase.from('posts').insert({
-    user_id: producerId,
-    type: 'news',
-    content: systemMsg,
-    likes_count: 0,
-    is_private: true,
-    thread_id: threadId,
-    participants: [producerId, buyerId],
-    deal_id: dealId,
-    is_system: true,
-  });
-  return threadId;
-}
-
-export async function postToThread(threadId: string, userId: string, producerId: string, buyerId: string, dealId: string, content: string, isSystem = false) {
-  await supabase.from('posts').insert({
-    user_id: userId,
-    type: 'news',
-    content,
-    likes_count: 0,
-    is_private: true,
-    thread_id: threadId,
-    participants: [producerId, buyerId],
-    deal_id: dealId,
-    is_system: isSystem,
-  });
-}
-
-const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer, initialThreadId }) => {
+const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer }) => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
@@ -84,28 +45,13 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   const [postSuccess, setPostSuccess] = useState(false);
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
-  const [activeView, setActiveView] = useState<'public' | 'private'>(initialThreadId ? 'private' : 'public');
-  const [activeThread, setActiveThread] = useState<string | null>(initialThreadId || null);
-  const [threads, setThreads] = useState<any[]>([]);
-  const [threadPosts, setThreadPosts] = useState<any[]>([]);
-  const [threadMsg, setThreadMsg] = useState('');
-  const [sendingThread, setSendingThread] = useState(false);
   const textRef = useRef<HTMLTextAreaElement>(null);
-  const threadRef = useRef<HTMLDivElement>(null);
 
   const plan = (user as any)?.plan || 'gigl';
   const isRoar = plan === 'roar' || user?.isAdmin;
   const isLaff = plan === 'laff' || isRoar;
 
-  useEffect(() => { loadPosts(); loadThreads(); }, []);
-
-  useEffect(() => {
-    if (activeThread) loadThreadPosts(activeThread);
-  }, [activeThread]);
-
-  useEffect(() => {
-    if (initialThreadId) { setActiveView('private'); setActiveThread(initialThreadId); }
-  }, [initialThreadId]);
+  useEffect(() => { loadPosts(); }, []);
 
   const loadPosts = async () => {
     setLoading(true);
@@ -123,48 +69,8 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
     setLoading(false);
   };
 
-  const loadThreads = async () => {
-    if (!user?.id) return;
-    const { data } = await supabase.from('posts')
-      .select('thread_id, deal_id, content, created_at, show_title')
-      .eq('is_private', true)
-      .contains('participants', [user.id])
-      .eq('is_system', true)
-      .order('created_at', { ascending: false });
-    const unique = data ? [...new Map(data.map((t: any) => [t.thread_id, t])).values()] : [];
-    setThreads(unique);
-  };
 
-  const loadThreadPosts = async (threadId: string) => {
-    const { data } = await supabase.from('posts')
-      .select('*, profiles(id, name, is_verified)')
-      .eq('is_private', true)
-      .eq('thread_id', threadId)
-      .order('created_at', { ascending: true });
-    setThreadPosts(data || []);
-    setTimeout(() => threadRef.current?.scrollTo(0, threadRef.current.scrollHeight), 100);
-  };
 
-  const sendThreadMsg = async () => {
-    if (!threadMsg.trim() || !activeThread || !user?.id) return;
-    setSendingThread(true);
-    const thread = threadPosts[0];
-    if (!thread) return;
-    await supabase.from('posts').insert({
-      user_id: user.id,
-      type: 'news',
-      content: threadMsg.trim(),
-      likes_count: 0,
-      is_private: true,
-      thread_id: activeThread,
-      participants: thread.participants,
-      deal_id: thread.deal_id,
-      is_system: false,
-    });
-    setThreadMsg('');
-    loadThreadPosts(activeThread);
-    setSendingThread(false);
-  };
 
   const handlePost = async () => {
     if (!newPost.trim()) return;
@@ -227,101 +133,10 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
 
         <div className="max-w-2xl mx-auto px-4 md:px-0 py-6">
 
-          {/* VIEW TOGGLE */}
-          {isLaff && (
-            <div className="flex border-4 border-white/20 mb-6">
-              <button onClick={() => setActiveView('public')}
-                className={"flex-1 py-2 font-black uppercase italic text-xs transition-all " + (activeView === 'public' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
-                Public Feed
-              </button>
-              <button onClick={() => setActiveView('private')}
-                className={"flex-1 py-2 font-black uppercase italic text-xs transition-all flex items-center justify-center gap-2 " + (activeView === 'private' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
-                🔒 Private Threads
-                {threads.length > 0 && <span className={"text-[8px] px-2 py-0.5 font-black " + (activeView === 'private' ? 'bg-black text-brand-cyan' : 'bg-brand-cyan text-black')}>{threads.length}</span>}
-              </button>
-            </div>
-          )}
 
-          {/* PRIVATE THREADS */}
-          {activeView === 'private' && isLaff && (
-            <div className="space-y-4">
-              {threads.length === 0 ? (
-                <div className="border-4 border-white/10 p-8 text-center">
-                  <p className="text-white/20 font-black uppercase italic">No private threads yet.</p>
-                  <p className="text-white/10 text-sm italic mt-2">Threads open automatically when a deal starts.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-3">
-                  {threads.map((t: any) => (
-                    <button key={t.thread_id} onClick={() => setActiveThread(activeThread === t.thread_id ? null : t.thread_id)}
-                      className={"w-full text-left border-4 p-4 transition-all " + (activeThread === t.thread_id ? 'border-brand-cyan bg-brand-cyan/5' : 'border-white/20 hover:border-white/40')}>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[8px] font-black uppercase text-brand-cyan italic tracking-widest mb-1">🔒 Private Thread</p>
-                          <p className="font-black uppercase italic text-white text-sm">{t.show_title || 'Deal Thread'}</p>
-                          <p className="text-white/30 text-xs italic mt-1 line-clamp-1">{t.content}</p>
-                        </div>
-                        <span className="text-white/20 text-[9px] ml-4">{timeAgo(t.created_at)}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* THREAD MESSAGES */}
-              {activeThread && (
-                <div className="border-4 border-brand-cyan mt-4">
-                  <div className="border-b-4 border-brand-cyan/30 px-4 py-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">🔒 Private Conversation</p>
-                  </div>
-                  <div ref={threadRef} className="p-4 space-y-4 max-h-96 overflow-y-auto">
-                    {threadPosts.map((p: any) => {
-                      const isMe = p.user_id === user?.id;
-                      const isSystem = p.is_system;
-                      if (isSystem) return (
-                        <div key={p.id} className="text-center">
-                          <span className="text-[8px] font-black uppercase italic text-white/20 border border-white/10 px-3 py-1">
-                            📌 {p.content}
-                          </span>
-                        </div>
-                      );
-                      return (
-                        <div key={p.id} className={"flex gap-3 " + (isMe ? 'flex-row-reverse' : '')}>
-                          <Avatar name={p.profiles?.name || '?'} size={32} badges={[]} />
-                          <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
-                            <p className={"text-[8px] font-black uppercase italic mb-1 " + (isMe ? 'text-brand-yellow' : 'text-brand-cyan')}>
-                              {p.profiles?.name || 'User'} · {timeAgo(p.created_at)}
-                            </p>
-                            <div className={"border-2 p-3 " + (isMe ? 'border-brand-yellow bg-brand-yellow/5' : 'border-white/20')}>
-                              <p className="text-white font-bold italic text-sm">{p.content}</p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="border-t-4 border-brand-cyan/30 p-4 flex gap-3">
-                    <textarea
-                      value={threadMsg}
-                      onChange={e => setThreadMsg(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendThreadMsg(); }}}
-                      placeholder="Type a message..."
-                      rows={2}
-                      className="flex-1 bg-black border-2 border-white/20 p-3 text-white font-bold italic text-sm outline-none focus:border-brand-cyan resize-none"
-                    />
-                    <button onClick={sendThreadMsg} disabled={sendingThread || !threadMsg.trim()}
-                      className="bg-brand-cyan text-black px-4 font-black uppercase italic text-xs border-2 border-black disabled:opacity-30 hover:bg-white transition-all">
-                      Send →
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* PUBLIC FEED */}
-          {activeView === 'public' && (
-            <div className="space-y-0">
+          <div className="space-y-0">
               {isLaff && (
                 <div className="border-b-4 border-white/10 pb-6 mb-2">
                   <div className="flex gap-3">
