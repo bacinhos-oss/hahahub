@@ -139,6 +139,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
   const loadData = async () => {
+    console.log('Pipeline user.id:', user.id, 'user:', user);
     setLoading(true);
     const [t1, t2, rr] = await Promise.all([
       supabase.from('inquiries').select('*').eq('producer_id', user.id).order('created_at', { ascending: false }),
