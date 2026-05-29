@@ -359,7 +359,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         if (data) setProfileForm({ bio: data.bio || '', website: data.website || '', location_city: data.location_city || '', festivals: data.festivals || '', avatar_url: data.avatar_url || '' });
       });
     }
-  }, [user]);
+  }, [user?.id]);
 
   const loadLaffRoyalties = async () => {
     if (!user?.id) return;
@@ -470,7 +470,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     const expiry = new Date(user.subscription.expiryDate);
     if (isNaN(expiry.getTime())) return 365;
     return Math.max(0, Math.ceil((expiry.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
-  }, [user]);
+  }, [user?.id]);
 
   const subscriptionProgress = useMemo(() => {
     const total = 365;
