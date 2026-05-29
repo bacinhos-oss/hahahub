@@ -370,7 +370,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         className={"border-b border-white/10 last:border-b-0 cursor-pointer transition-all " + (isActive ? 'bg-brand-yellow/5 border-l-4 border-l-brand-yellow' : isOverdue ? 'border-l-4 border-l-brand-pink hover:bg-white/3' : 'hover:bg-white/3')}>
                         <div className="px-4 py-3 flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="text-lg flex-shrink-0">
+                            <div className={"w-2 h-2 rounded-full flex-shrink-0 " + s.dot} />
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-black uppercase italic text-white text-sm">{deal.from_name}</p>
