@@ -98,7 +98,14 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { loadData(); }, [user?.id, view]);
-  useEffect(() => { msgsEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
+  useEffect(() => {
+    const el = msgsEndRef.current;
+    if (!el) return;
+    const parent = el.parentElement;
+    if (!parent) return;
+    const isNearBottom = parent.scrollHeight - parent.scrollTop - parent.clientHeight < 100;
+    if (isNearBottom) el.scrollIntoView({ behavior: 'smooth' });
+  }, [msgs]);
 
   // Realtime - new messages on active deal
   useEffect(() => {
