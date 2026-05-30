@@ -494,7 +494,37 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     { label: 'Active Favs', value: realStats.totalLikes.toLocaleString(), icon: 'favorite', color: 'white' },
   ];
 
-  const openManage = (show: Show) => { setManageShow(show); setEditForm({ ...show }); setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]); };
+  const openManage = (show: Show) => {
+    setManageShow(show);
+    setEditForm({
+      ...show,
+      // Map snake_case DB fields to camelCase form
+      englishTitle: (show as any).english_title || (show as any).englishTitle || show.title || '',
+      synopsisEn: (show as any).synopsis_en || (show as any).synopsisEn || '',
+      originalLanguage: (show as any).original_language || (show as any).originalLanguage || show.language || '',
+      trailerUrl: (show as any).trailer_url || (show as any).trailerUrl || '',
+      internationalSuccessNotes: (show as any).international_success_notes || (show as any).internationalSuccessNotes || '',
+      musicAuthor: (show as any).music_author || (show as any).musicAuthor || '',
+      hasOriginalMusic: (show as any).has_original_music ? 'true' : 'false',
+      videoAuthor: (show as any).video_author || (show as any).videoAuthor || '',
+      hasVideoProjections: (show as any).has_video_projections ? 'true' : 'false',
+      videoDescription: (show as any).video_description || (show as any).videoDescription || '',
+      scriptInEnglish: (show as any).script_in_english || (show as any).scriptInEnglish || 'false',
+      translationsAvailable: (show as any).translations_available || show.translationsAvailable || '',
+      translationRightsIncluded: show.translationRightsIncluded ? 'true' : 'false',
+      scriptScenario: show.scriptScenario || (show as any).script_scenario || '',
+      premiereLocation: show.premiereLocation || (show as any).premiere_location || '',
+      locationsPlayed: show.locationsPlayed || (show as any).locations_played || '',
+      hasScriptPackage: (show as any).has_script_package !== false,
+      scriptRoyaltyPct: (show as any).script_royalty_pct || (show as any).scriptRoyaltyPct || '',
+      scriptAdvanceFee: (show as any).script_advance_fee || (show as any).scriptAdvanceFee || '',
+      hasFullPunchPackage: (show as any).has_full_punch_package || (show as any).hasFullPunchPackage || false,
+      fullPunchRoyaltyPct: (show as any).full_punch_royalty_pct || (show as any).fullPunchRoyaltyPct || '',
+      fullPunchAdvanceFee: (show as any).full_punch_advance_fee || (show as any).fullPunchAdvanceFee || '',
+      fullPunchIncludes: (show as any).full_punch_includes || (show as any).fullPunchIncludes || '',
+    } as any);
+    setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]);
+  };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -541,6 +571,27 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         script_scenario: editForm.scriptScenario,
         is_produced: true,
         production_photos: editForm.productionPhotos || [],
+        english_title: (editForm as any).englishTitle || '',
+        synopsis_en: (editForm as any).synopsis_en || (editForm as any).synopsisEn || '',
+        original_language: (editForm as any).originalLanguage || '',
+        trailer_url: (editForm as any).trailer_url || (editForm as any).trailerUrl || '',
+        international_success_notes: (editForm as any).internationalSuccessNotes || '',
+        music_author: (editForm as any).musicAuthor || null,
+        has_original_music: (editForm as any).hasOriginalMusic === 'true',
+        video_author: (editForm as any).videoAuthor || null,
+        has_video_projections: (editForm as any).hasVideoProjections === 'true',
+        video_description: (editForm as any).videoDescription || null,
+        script_in_english: (editForm as any).scriptInEnglish || 'false',
+        translations_available: (editForm as any).translationsAvailable || null,
+        translation_rights_included: (editForm as any).translationRightsIncluded === 'true',
+        script_scenario: (editForm as any).scriptScenario || null,
+        has_script_package: (editForm as any).hasScriptPackage === true || (editForm as any).hasScriptPackage === 'true',
+        script_royalty_pct: (editForm as any).scriptRoyaltyPct ? Number((editForm as any).scriptRoyaltyPct) : null,
+        script_advance_fee: (editForm as any).scriptAdvanceFee ? Number((editForm as any).scriptAdvanceFee) : null,
+        has_full_punch_package: (editForm as any).hasFullPunchPackage === true || (editForm as any).hasFullPunchPackage === 'true',
+        full_punch_royalty_pct: (editForm as any).fullPunchRoyaltyPct ? Number((editForm as any).fullPunchRoyaltyPct) : null,
+        full_punch_advance_fee: (editForm as any).fullPunchAdvanceFee ? Number((editForm as any).fullPunchAdvanceFee) : null,
+        full_punch_includes: (editForm as any).fullPunchIncludes || null,
       }).eq('id', manageShow.id);
 
       if (error) { console.error('Error:', error.message); }
@@ -589,22 +640,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <h2 className="text-4xl font-black uppercase italic mb-2">Edit Production</h2>
             <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-10">{manageShow.title}</p>
 
-            <div className="space-y-6">
+            <div className="space-y-5">
 
               {/* 00. BASIC INFO */}
-              <section className="border-4 border-white/20 p-6 space-y-4">
-                <div className="border-b-2 border-white/10 pb-2">
-                  <h3 className="text-lg font-black uppercase italic text-brand-cyan">00. Basic Info</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="col-span-2 md:col-span-3">
+              <section className="border-4 border-white/20 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">00. Basic Info</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">
                     <label className={lbl}>English Title * (main title)</label>
-                    <input name="englishTitle" value={(editForm as any).englishTitle || (editForm as any).english_title || ''} onChange={handleEditChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl outline-none focus:border-brand-yellow" />
+                    <input name="englishTitle" value={(editForm as any).englishTitle || ''} onChange={handleEditChange} className="w-full bg-brand-black border-4 border-white px-4 py-3 text-white font-bold uppercase text-lg outline-none focus:border-brand-yellow" />
                   </div>
-                  <div className="col-span-2 md:col-span-3">
-                    <label className={lbl}>Original Title (if different)</label>
-                    <input name="title" value={(editForm as any).title || ''} onChange={handleEditChange} className={inp} />
-                  </div>
+                  <div className="col-span-2">{F('title', 'Original Title (if different)')}</div>
                   {F('author', 'Author / Playwright *')}
                   {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
                   {F('genre', 'Genre *')}
@@ -612,14 +658,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {F('originalLanguage', 'Original Language *')}
                   {F('productionYear', 'Production Year', 'number')}
                   {F('awards', 'Awards')}
-                  <div className="col-span-2 md:col-span-3">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 italic">Synopsis in English *</label>
+                  <div className="col-span-2">
+                    <label className={lbl}>Synopsis in English *</label>
                     <textarea name="synopsis_en" value={(editForm as any).synopsis_en || (editForm as any).synopsisEn || ''} onChange={handleEditChange} rows={4} className="w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-yellow" placeholder="English synopsis for international buyers" />
                   </div>
-                  <div className="col-span-2 md:col-span-3">
-                    {T('internationalSuccessNotes', 'International Success Notes', 2)}
-                  </div>
-                  <div className="col-span-2 md:col-span-3">
+                  <div className="col-span-2">{T('internationalSuccessNotes', 'International Success Notes', 2)}</div>
+                  <div className="col-span-2">
                     <label className={lbl}>Trailer URL</label>
                     <input name="trailer_url" value={(editForm as any).trailer_url || (editForm as any).trailerUrl || ''} onChange={handleEditChange} className={inp} placeholder="https://youtube.com/..." />
                   </div>
@@ -627,11 +671,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 01. PRODUCTION */}
-              <section className="border-4 border-white/20 p-6 space-y-4">
-                <div className="border-b-2 border-white/10 pb-2">
-                  <h3 className="text-lg font-black uppercase italic text-brand-pink">01. Production</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <section className="border-4 border-white/20 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">01. Production</h3>
+                <div className="grid grid-cols-2 gap-3">
                   {F('maleRoles', 'Male Roles *', 'number')}
                   {F('femaleRoles', 'Female Roles *', 'number')}
                   {F('duration', 'Duration (min) *', 'number')}
@@ -652,49 +694,41 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 02. CREATIVE ASSETS */}
-              <section className="border-4 border-white/20 p-6 space-y-4">
-                <div className="border-b-2 border-white/10 pb-2">
-                  <h3 className="text-lg font-black uppercase italic text-brand-yellow">02. Creative Assets</h3>
+              <section className="border-4 border-white/20 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-yellow border-b border-white/10 pb-2">02. Creative Assets</h3>
+                <div className="border-2 border-white/10 p-4 space-y-3">
+                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {F('musicAuthor', 'Music Author')}
+                    {S('hasOriginalMusic', 'Original Music', ['false','true'])}
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      {F('musicAuthor', 'Music Author')}
-                      {S('hasOriginalMusic', 'Original Music', ['false','true'])}
-                    </div>
+                <div className="border-2 border-white/10 p-4 space-y-3">
+                  <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {F('videoAuthor', 'Video Author')}
+                    {S('hasVideoProjections', 'Has Video', ['false','true'])}
+                    <div className="col-span-2">{F('videoDescription', 'Video Description')}</div>
                   </div>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      {F('videoAuthor', 'Video Author')}
-                      {S('hasVideoProjections', 'Has Video', ['false','true'])}
-                      <div className="col-span-2">{F('videoDescription', 'Video Description')}</div>
-                    </div>
+                </div>
+                <div className="border-2 border-white/10 p-4 space-y-3">
+                  <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {S('scriptInEnglish', 'Script in English', ['false','partial','true'])}
+                    {F('translationsAvailable', 'Translations')}
+                    {S('translationRightsIncluded', 'Translation Rights', ['false','true'])}
                   </div>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      {S('scriptInEnglish', 'Script in English', ['false','partial','true'])}
-                      {F('translationsAvailable', 'Translations')}
-                      {S('translationRightsIncluded', 'Translation Rights', ['false','true'])}
-                    </div>
-                    <div className="col-span-2 bg-brand-black border-2 border-brand-yellow/30 p-4 mt-2">
-                      <label className="block text-[9px] font-black uppercase text-brand-yellow mb-2 italic">Script Scenario / Excerpt</label>
-                      <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={6} className="w-full bg-black border-2 border-white/10 p-3 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
-                    </div>
+                  <div>
+                    <label className={lbl}>Script Scenario / Excerpt</label>
+                    <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={5} className="w-full bg-brand-black border-2 border-white/10 p-3 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
                   </div>
                 </div>
               </section>
 
-
-
               {/* 03. MARKET PERFORMANCE */}
-              <section className="border-4 border-white/20 p-6 space-y-4">
-                <div className="border-b-2 border-white/10 pb-2">
-                  <h3 className="text-lg font-black uppercase italic text-brand-cyan">03. Market Performance</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <section className="border-4 border-white/20 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">03. Market Performance</h3>
+                <div className="grid grid-cols-2 gap-3">
                   {F('premiereDate', 'Premiere Date', 'date')}
                   {F('premiereLocation', 'Premiere Location')}
                   {F('performancesCount', 'Total Performances', 'number')}
@@ -705,10 +739,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 04. RIGHTS */}
-              <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-4">04. Rights & Identity</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {F('rightsHolder', 'Copyright Holder *')}
+              <section className="border-4 border-white/20 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">04. Rights & Identity</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">{F('rightsHolder', 'Copyright Holder *')}</div>
                   {S('rightsStatus', 'Rights Status', ['Available','Co-production Only','Licensed'])}
                   {S('licenseType', 'License Type', ['License','Option','Co-production'])}
                   {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
@@ -718,17 +752,15 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 05. PACKAGES */}
-              <section className="border-4 border-brand-yellow/40 p-6 space-y-4">
-                <div className="border-b-2 border-white/10 pb-2">
-                  <h3 className="text-lg font-black uppercase italic text-brand-yellow">05. Licensing Packages</h3>
-                </div>
+              <section className="border-4 border-brand-yellow/30 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-yellow border-b border-white/10 pb-2">05. Licensing Packages</h3>
                 <div className="border-2 border-white/10 p-4 space-y-3">
                   <div className="flex items-center gap-3">
                     <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
                     <span className="font-black uppercase italic text-white text-sm">Script Package</span>
                   </div>
                   {(editForm as any).hasScriptPackage && (
-                    <div className="grid grid-cols-2 gap-4 pl-7">
+                    <div className="grid grid-cols-2 gap-3 pl-7">
                       {F('scriptRoyaltyPct', 'Royalty % *', 'number')}
                       {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
                     </div>
@@ -741,7 +773,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                   {(editForm as any).hasFullPunchPackage && (
                     <div className="space-y-3 pl-7">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-3">
                         {F('fullPunchRoyaltyPct', 'Royalty % *', 'number')}
                         {F('fullPunchAdvanceFee', 'Advance Fee (EUR)', 'number')}
                       </div>
@@ -750,9 +782,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   )}
                 </div>
               </section>
-
-            </div>
-
             {/* PRODUCTION PHOTOS */}
             <div className="mt-8 space-y-4">
               <h3 className="text-lg font-black uppercase italic text-brand-cyan border-b-2 border-brand-cyan/20 pb-2">Photos from Production</h3>
