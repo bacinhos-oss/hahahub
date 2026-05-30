@@ -411,7 +411,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   color: 'border-white/30',
                   labelColor: 'text-white',
                   title: 'Your command center.',
-                  desc: 'Shows, deals, royalties, analytics, contracts. Everything your production needs. Nothing it doesn't.',
+                  desc: 'Shows, deals, royalties, analytics, contracts. Everything your production needs. Nothing it does not.',
                 },
               ].map((item, i) => (
                 <div key={i} className={`border-4 ${item.color} p-6 md:p-8 space-y-3 bg-brand-surface hover:bg-white/5 transition-all`}>
