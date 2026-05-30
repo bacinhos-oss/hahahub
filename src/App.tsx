@@ -367,14 +367,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="fixed top-0 left-0 right-0 z-[9999] bg-brand-pink text-white text-center py-2 px-4">
-        <p className="font-black uppercase italic text-xs tracking-widest">
-          BETA · Platform under development · Not live yet · For testing only
-        </p>
-      </div>
-      <div style={{paddingTop: '36px'}}>
-        {renderPage()}
-      </div>
+      {renderPage()}
       <CookieBanner />
     </div>
   )

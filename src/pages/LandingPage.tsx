@@ -90,7 +90,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         </div>
       </header>
 
-      <main className="pt-24 md:pt-32">
+      {/* BETA BANNER */}
+      <div className="fixed top-[72px] left-0 right-0 z-40 bg-brand-pink border-b-4 border-black text-white text-center py-2 px-4">
+        <p className="font-black uppercase italic text-[10px] tracking-widest">
+          Beta · Platform under development · Not live yet · For testing only
+        </p>
+      </div>
+
+      <main className="pt-32 md:pt-40">
 
         {/* HERO */}
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
