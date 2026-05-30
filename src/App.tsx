@@ -167,6 +167,34 @@ const App: React.FC = () => {
       productionPhotos: s.production_photos || [],
       is_produced: s.is_produced ?? true,
       user_id: s.user_id || null,
+      // Creative Assets
+      music_author: s.music_author || '',
+      has_original_music: s.has_original_music || false,
+      video_author: s.video_author || '',
+      has_video_projections: s.has_video_projections || false,
+      video_description: s.video_description || '',
+      // Packages
+      hasScriptPackage: s.has_script_package !== false,
+      scriptRoyaltyPct: s.script_royalty_pct || null,
+      scriptAdvanceFee: s.script_advance_fee || null,
+      hasFullPunchPackage: s.has_full_punch_package || false,
+      fullPunchRoyaltyPct: s.full_punch_royalty_pct || null,
+      fullPunchAdvanceFee: s.full_punch_advance_fee || null,
+      fullPunchIncludes: s.full_punch_includes || '',
+      // Extra
+      englishTitle: s.english_title || '',
+      internationalSuccessNotes: s.international_success_notes || '',
+      translationsAvailable: s.translations_available || '',
+      awards: s.awards || '',
+      premiereLocation: s.premiere_location || '',
+      locationsPlayed: s.locations_played || '',
+      territoriesAvailable: s.territories_available || '',
+      stageType: s.stage_type || 'Main Stage',
+      adaptationFlexibility: s.adaptation_flexibility || 'Medium',
+      technicalComplexity: s.technical_complexity || 'Medium',
+      costumeComplexity: s.costume_complexity || 'Medium',
+      setComplexity: s.set_complexity || 'Medium',
+      hasIntermission: s.has_intermission || false,
     }))
     setShows(mapped)
   }
