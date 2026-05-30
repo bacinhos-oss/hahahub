@@ -278,7 +278,6 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                 </div>
               )}
             </div>
-          )}
         </div>
       </main>
       <Footer onNavigate={onNavigate} />
