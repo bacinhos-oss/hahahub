@@ -36,7 +36,8 @@ function generatePassword(name: string, email: string): string {
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
-  const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog' | 'inquiries'>('analytics');
+  const [inquiries, setInquiries] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [invites, setInvites] = useState<Invitation[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -467,6 +468,45 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
         )}
 
         {/* ARCHIVE TAB */}
+        {activeTab === 'inquiries' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-black uppercase italic text-brand-cyan">All Inquiries <span className="text-white/30">({inquiries.length})</span></h3>
+              <div className="flex gap-4 text-xs font-black uppercase italic text-white/40">
+                <span>New: {inquiries.filter(i => i.deal_status === 'new' || !i.deal_status).length}</span>
+                <span>Active: {inquiries.filter(i => ['contacted','negotiating','contract_sent'].includes(i.deal_status)).length}</span>
+                <span>Signed: {inquiries.filter(i => ['signed','royalties'].includes(i.deal_status)).length}</span>
+              </div>
+            </div>
+            <div className="border-4 border-white/10 overflow-hidden">
+              <div className="grid grid-cols-12 bg-white/5 px-4 py-2 text-[8px] font-black uppercase italic text-white/40 border-b border-white/10">
+                <span className="col-span-2">Show</span>
+                <span className="col-span-2">From</span>
+                <span className="col-span-2">Email</span>
+                <span className="col-span-2">Package</span>
+                <span className="col-span-2">Status</span>
+                <span className="col-span-2">Date</span>
+              </div>
+              {inquiries.map(inq => (
+                <div key={inq.id} className="grid grid-cols-12 px-4 py-3 border-b border-white/5 hover:bg-white/3 text-xs">
+                  <span className="col-span-2 font-black uppercase italic truncate">{inq.show_title}</span>
+                  <span className="col-span-2 font-black italic truncate">{inq.from_name}</span>
+                  <span className="col-span-2 text-white/40 truncate">{inq.from_email}</span>
+                  <span className="col-span-2">
+                    {inq.package_type && <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.package_type === 'full_punch' ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>{inq.package_type === 'full_punch' ? 'Full Punch' : 'Script'}</span>}
+                  </span>
+                  <span className="col-span-2">
+                    <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.deal_status === 'signed' ? 'bg-green-400/20 text-green-400' : inq.deal_status === 'new' || !inq.deal_status ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>
+                      {inq.deal_status || 'new'}
+                    </span>
+                  </span>
+                  <span className="col-span-2 text-white/40">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {activeTab === 'catalog' && (
           <div className="space-y-3">
             {shows.length === 0 ? (
