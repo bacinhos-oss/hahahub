@@ -374,31 +374,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
-        {/* PRICING — 3 tieri */}
+        {/* PRICING */}
         <section className="px-4 md:px-12 py-16 md:py-32" id="pricing">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12 md:mb-16">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
               <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] italic mb-6 inline-block">Pricing</span>
               <h2 className="font-display text-white text-5xl md:text-8xl uppercase italic">Comedy <span className="text-brand-pink">Travels.</span></h2>
-              <p className="text-white/40 font-bold italic text-lg mt-4 max-w-xl mx-auto">Pick your passport. No per-inquiry fees. No commissions. Ever.</p>
+              <p className="text-white/40 font-bold italic text-lg mt-4 max-w-xl mx-auto">No per-inquiry fees. No commissions. No agents. Ever.</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+
               {/* GIGL */}
-              <div className="bg-brand-surface border-4 border-white/20 p-6 md:p-8">
-                <p className="text-white/40 text-xs font-black uppercase tracking-widest italic mb-2">Free · Solo Producer</p>
-                <h3 className="text-4xl font-black uppercase italic text-white mb-1">GIGL</h3>
+              <div className="bg-brand-surface border-4 border-white/20 p-7 flex flex-col">
+                <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.4em] italic mb-2">The first laugh is free.</p>
+                <h3 className="text-4xl font-black uppercase italic text-white mb-2">GIGL</h3>
                 <div className="text-5xl font-black text-white/40 mb-1">€0</div>
-                <p className="text-white/30 text-xs font-bold italic mb-8">forever</p>
-                <ul className="space-y-3 mb-8">
+                <p className="text-white/20 text-xs font-bold italic mb-6">forever</p>
+                <p className="text-white/40 text-sm italic mb-6 border-l-4 border-white/10 pl-3">One show. Five catalog pages. No credit card. Just enough to see if the water's funny.</p>
+                <ul className="space-y-2 mb-8 flex-1">
                   {[
-                    { t: 'Browse 5 shows', ok: false },
-                    { t: 'Upload 1 show', ok: true },
-                    { t: 'Wire — read only', ok: false },
-                    { t: 'No contact access', ok: false },
-                    { t: 'No Dossier', ok: false },
+                    { t: '1 show upload', ok: true },
+                    { t: 'Browse 5 catalog pages', ok: true },
+                    { t: 'Send 3 inquiries/month', ok: true },
+                    { t: 'Pipeline — deal tracking', ok: true },
+                    { t: 'Full dossier access', ok: false },
+                    { t: 'Unlimited catalog', ok: false },
                   ].map((f, i) => (
-                    <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/60' : 'text-white/25'}`}>
-                      <span className={`material-symbols-outlined text-base ${f.ok ? 'text-brand-cyan' : 'text-white/20'}`}>{f.ok ? 'check' : 'remove'}</span>{f.t}
+                    <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/70' : 'text-white/20'}`}>
+                      <span className={`material-symbols-outlined text-base ${f.ok ? 'text-brand-cyan' : 'text-white/20'}`} style={{fontVariationSettings:"'FILL' 1"}}>{f.ok ? 'check_circle' : 'remove'}</span>{f.t}
                     </li>
                   ))}
                 </ul>
@@ -406,35 +409,57 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   Start for Free
                 </button>
               </div>
+
               {/* LAFF */}
-              <div className="bg-white border-8 border-black p-6 md:p-10 shadow-neo-magenta relative md:-mt-4">
+              <div className="bg-white border-8 border-black p-7 flex flex-col shadow-neo-magenta relative md:-mt-4">
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-pink text-white px-6 py-1 font-black uppercase text-xs italic border-4 border-black whitespace-nowrap">Most Popular</div>
-                <p className="text-gray-400 text-xs font-black uppercase tracking-widest italic mb-2">Pro · Production House</p>
-                <h3 className="text-4xl font-black uppercase italic text-black mb-1">LAFF</h3>
+                <p className="text-gray-400 text-[9px] font-black uppercase tracking-[0.4em] italic mb-2">You're serious. We can tell.</p>
+                <h3 className="text-4xl font-black uppercase italic text-black mb-2">LAFF</h3>
                 <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
-                <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
-                <ul className="space-y-3 mb-8">
-                  {['Full catalog — unlimited browsing', 'Upload up to 10 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Inquiry history — sent & received', 'Deal tracking', 'Royalty Tracker — log & calculate', 'Laff Wire — 7 days + post', 'Producer Profile + Dashboard'].map((f, i) => (
+                <p className="text-gray-400 text-xs font-bold italic mb-6">per year · €8/month</p>
+                <p className="text-gray-500 text-sm italic mb-6 border-l-4 border-brand-pink pl-3">Five shows. Full catalog. Real conversations with real rights holders. No filters. No agents.</p>
+                <ul className="space-y-2 mb-8 flex-1">
+                  {[
+                    'Upload up to 5 shows',
+                    'Full catalog — unlimited',
+                    'Unlimited inquiries',
+                    'Full dossier access',
+                    'Pipeline — complete deal management',
+                    'Royalty tracking',
+                    'LaffWire — post & read',
+                  ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
-                      <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
+                      <span className="material-symbols-outlined text-brand-pink text-base" style={{fontVariationSettings:"'FILL' 1"}}>check_circle</span>{f}
                     </li>
                   ))}
                 </ul>
                 <button onClick={() => { sessionStorage.setItem('selectedPlan','laff'); onNavigate('login'); }} className="w-full py-5 bg-black text-brand-yellow border-4 border-black font-black uppercase text-lg hover:bg-brand-pink hover:text-white transition-all italic">
                   Start Laffing →
                 </button>
-                <p className="text-gray-400 text-xs font-bold italic mt-3 text-center">Secure payment via Stripe</p>
+                <p className="text-gray-400 text-[9px] font-bold italic mt-3 text-center uppercase tracking-widest">Secure payment via Stripe</p>
               </div>
+
               {/* ROAR */}
-              <div className="bg-brand-surface border-4 border-brand-pink p-6 md:p-8 shadow-[8px_8px_0px_rgba(255,2,102,0.4)]">
-                <p className="text-brand-pink text-xs font-black uppercase tracking-widest italic mb-2">Studio · Full Power</p>
-                <h3 className="text-4xl font-black uppercase italic text-white mb-1">ROAR</h3>
+              <div className="bg-brand-surface border-4 border-brand-pink p-7 flex flex-col shadow-[8px_8px_0px_rgba(255,2,102,0.4)]">
+                <p className="text-brand-pink text-[9px] font-black uppercase tracking-[0.4em] italic mb-2">No limits. No excuses.</p>
+                <h3 className="text-4xl font-black uppercase italic text-white mb-2">ROAR</h3>
                 <div className="text-5xl font-black text-brand-pink mb-1">€189</div>
-                <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
-                <ul className="space-y-3 mb-8">
-                  {['Full catalog — unlimited + Priority', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge + VERIFIED badge', 'Laff Wire — live real-time', 'Producer Studio — full command center', 'Royalty Tracker — log, calculate, report', 'Show Analytics — views, inquiries, likes', 'Contracts, Contacts, Show Log', 'Deal tracking + rights holder reports'].map((f, i) => (
+                <p className="text-white/30 text-xs font-bold italic mb-6">per year · €16/month</p>
+                <p className="text-white/50 text-sm italic mb-6 border-l-4 border-brand-pink pl-3">Unlimited everything. FEATURED in catalog. Priority listing. This is your stage.</p>
+                <ul className="space-y-2 mb-8 flex-1">
+                  {[
+                    'Unlimited show uploads',
+                    'Full catalog — unlimited',
+                    'Unlimited inquiries',
+                    'Full dossier access',
+                    'Pipeline + Royalty tracking',
+                    'FEATURED badge in catalog',
+                    'Priority listing — always first',
+                    'VERIFIED badge on profile',
+                    'LaffWire — live real-time',
+                  ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
-                      <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
+                      <span className="material-symbols-outlined text-brand-pink text-base" style={{fontVariationSettings:"'FILL' 1"}}>check_circle</span>{f}
                     </li>
                   ))}
                 </ul>
@@ -442,7 +467,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   Start Roaring →
                 </button>
               </div>
+
             </div>
+            <p className="text-center text-white/20 text-xs italic mt-8 font-bold">0% commission on all deals. Always. <button onClick={() => onNavigate('pricing')} className="text-brand-cyan hover:text-white transition-colors">Full comparison →</button></p>
           </div>
         </section>
 
