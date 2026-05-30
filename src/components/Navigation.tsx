@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Page } from '../types';
 
@@ -62,7 +61,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
               </button>
             </div>
           ) : (
-            <button onClick={() => onNavigate('login')} className="bg-white text-black font-black px-6 py-2 text-sm uppercase border-2 border-black hover:bg-brand-yellow transition-all shadow-neo-magenta italic">
+            <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black font-black px-6 py-2 text-sm uppercase border-4 border-black hover:bg-white transition-all shadow-neo-magenta italic">
               Tickle In →
             </button>
           )}
@@ -91,30 +90,13 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
       {menuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-brand-black border-b-4 border-white px-6 py-8 space-y-6 animate-in slide-in-from-top-2">
           <div className="flex flex-col gap-6">
-            <button onClick={() => { onNavigate('discovery'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-yellow transition-colors">
-              CATALOG
-            </button>
-            <button onClick={() => { onNavigate('wire'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-pink transition-colors">
-              LAFFWIRE
-            </button>
-            <button onClick={() => { onNavigate('about'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">
-              MISSION
-            </button>
-            <button onClick={() => { onNavigate('subscription'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">
-              MY HUB
-            </button>
-            {user && (
-              <button onClick={() => { onNavigate('upload'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-cyan/70 hover:text-brand-cyan transition-colors">
-                SHOWLOAD
-              </button>
-            )}
-            {isAdmin && (
-              <button onClick={() => { onNavigate('admin'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-pink/70 hover:text-brand-pink transition-colors">
-                ADMIN
-              </button>
-            )}
+            <button onClick={() => { onNavigate('discovery'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-yellow transition-colors">CATALOG</button>
+            <button onClick={() => { onNavigate('wire'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-brand-pink transition-colors">LAFFWIRE</button>
+            <button onClick={() => { onNavigate('about'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">MISSION</button>
+            <button onClick={() => { onNavigate('subscription'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">MY HUB</button>
+            {user && <button onClick={() => { onNavigate('upload'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-cyan/70 hover:text-brand-cyan transition-colors">SHOWLOAD</button>}
+            {isAdmin && <button onClick={() => { onNavigate('admin'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-pink/70 hover:text-brand-pink transition-colors">ADMIN</button>}
           </div>
-
           <div className="border-t-2 border-white/10 pt-6">
             {user ? (
               <button onClick={() => { onLogout?.(); setMenuOpen(false); }} className="flex items-center gap-3 text-sm font-black uppercase italic text-brand-pink/70 hover:text-brand-pink transition-colors">
@@ -122,7 +104,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
                 LOGOUT
               </button>
             ) : (
-              <button onClick={() => { onNavigate('login'); setMenuOpen(false); }} className="w-full bg-white text-black font-black py-4 text-lg uppercase border-2 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">
+              <button onClick={() => { onNavigate('login'); setMenuOpen(false); }} className="w-full bg-brand-yellow text-black font-black py-4 text-lg uppercase border-4 border-black italic hover:bg-white transition-all">
                 Tickle In →
               </button>
             )}
