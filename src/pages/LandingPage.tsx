@@ -14,7 +14,7 @@ const FOUNDING_TOTAL = 30;
 
 const FAQ_ITEMS = [
   { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your direct route.' },
-  { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
+  { q: 'Can I list my own show?', a: 'Yes. LAFF members can upload up to 5 shows, ROAR members can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
   { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery tools and contract templates — the deal is between you and the producer. No commission.' },
   { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
   { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on The Laff Exchange.' },
@@ -276,7 +276,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show with full data and help shape The Laff Exchange.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {['Free Forever ✓', 'Founding Producer Badge ✓', 'Unlimited Uploads ✓', 'Shape the Product ✓'].map((b, i) => (
+                  {['Free Forever ✓', 'Founding Producer Badge ✓', 'Unlimited Uploads ✓ (ROAR)', 'Shape the Product ✓'].map((b, i) => (
                     <span key={i} className="bg-black text-brand-yellow px-3 py-1 text-xs font-black uppercase italic border-2 border-black">{b}</span>
                   ))}
                 </div>
@@ -393,12 +393,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <p className="text-white/40 text-sm italic mb-6 border-l-4 border-white/10 pl-3">One show. Five catalog pages. No credit card. Just enough to see if the water's funny.</p>
                 <ul className="space-y-2 mb-8 flex-1">
                   {[
-                    { t: '1 show upload', ok: true },
+                    { t: '1 show in the vault', ok: true },
                     { t: 'Browse 5 catalog pages', ok: true },
                     { t: 'Send 3 inquiries/month', ok: true },
-                    { t: 'Pipeline — deal tracking', ok: true },
-                    { t: 'Full dossier access', ok: false },
-                    { t: 'Unlimited catalog', ok: false },
+                    { t: 'My Hub — full access', ok: true },
+                    { t: 'Pipeline — deal management', ok: true },
+                    { t: 'LaffWire — read & post', ok: true },
+                    { t: 'Upgrade anytime', ok: true },
                   ].map((f, i) => (
                     <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/70' : 'text-white/20'}`}>
                       <span className={`material-symbols-outlined text-base ${f.ok ? 'text-brand-cyan' : 'text-white/20'}`} style={{fontVariationSettings:"'FILL' 1"}}>{f.ok ? 'check_circle' : 'remove'}</span>{f.t}
@@ -421,12 +422,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <ul className="space-y-2 mb-8 flex-1">
                   {[
                     'Upload up to 5 shows',
-                    'Full catalog — unlimited',
+                    'Full catalog — unlimited browsing',
                     'Unlimited inquiries',
-                    'Full dossier access',
-                    'Pipeline — complete deal management',
-                    'Royalty tracking',
-                    'LaffWire — post & read',
+                    'Full dossier — all sections',
+                    'Pipeline — direct link to every buyer & seller',
+                    'LaffWire — post, connect, be seen',
+                    'Royalty tracking & reporting',
+                    'Analytics — views, inquiries, deals',
+                    'Contract templates',
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
                       <span className="material-symbols-outlined text-brand-pink text-base" style={{fontVariationSettings:"'FILL' 1"}}>check_circle</span>{f}
@@ -449,14 +452,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <ul className="space-y-2 mb-8 flex-1">
                   {[
                     'Unlimited show uploads',
-                    'Full catalog — unlimited',
+                    'Full catalog — unlimited + priority',
                     'Unlimited inquiries',
-                    'Full dossier access',
-                    'Pipeline + Royalty tracking',
-                    'FEATURED badge in catalog',
+                    'Full dossier — all sections',
+                    'Pipeline — direct link to every buyer & seller',
+                    'LaffWire — post, connect, be seen',
+                    'Royalty tracking & reporting',
+                    'Analytics — views, inquiries, deals',
+                    'Contract templates',
+                    'FEATURED badge — front of catalog',
                     'Priority listing — always first',
                     'VERIFIED badge on profile',
-                    'LaffWire — live real-time',
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
                       <span className="material-symbols-outlined text-brand-pink text-base" style={{fontVariationSettings:"'FILL' 1"}}>check_circle</span>{f}

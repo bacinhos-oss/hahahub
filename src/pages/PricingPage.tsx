@@ -99,14 +99,13 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
               </p>
               <ul className="space-y-3 mb-8 flex-1">
                 {[
-                  { t: '1 show upload', ok: true },
+                  { t: '1 show in the vault', ok: true },
                   { t: 'Browse 5 catalog pages', ok: true },
                   { t: 'Send inquiries (3/month)', ok: true },
                   { t: 'Pipeline — deal management', ok: true },
-                  { t: 'LaffWire feed', ok: true },
-                  { t: 'Full dossier access', ok: false },
-                  { t: 'Unlimited catalog browsing', ok: false },
-                  { t: 'Unlimited show uploads', ok: false },
+                  { t: 'My Hub — full access', ok: true },
+                  { t: 'LaffWire — read & post', ok: true },
+                  { t: 'Upgrade anytime', ok: true },
                 ].map((f, i) => (
                   <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/70' : 'text-white/20'}`}>
                     {f.ok ? <Check /> : <Cross />}{f.t}
@@ -173,13 +172,15 @@ const PricingPage: React.FC<PricingPageProps> = ({ onNavigate, onLogout, user, o
               <ul className="space-y-3 mb-8 flex-1">
                 {[
                   { t: 'Unlimited show uploads', ok: true },
-                  { t: 'Full catalog — unlimited browsing', ok: true },
+                  { t: 'Full catalog — unlimited + priority', ok: true },
                   { t: 'Unlimited inquiries', ok: true },
                   { t: 'Full dossier — all sections', ok: true },
-                  { t: 'Pipeline — complete deal management', ok: true },
-                  { t: 'Royalty tracking', ok: true },
-                  { t: 'LaffWire — live real-time', ok: true },
-                  { t: 'FEATURED badge in catalog', ok: true },
+                  { t: 'Pipeline — direct link to every buyer & seller', ok: true },
+                  { t: 'LaffWire — post, connect, be seen', ok: true },
+                  { t: 'Royalty tracking & reporting', ok: true },
+                  { t: 'Analytics — views, inquiries, deals', ok: true },
+                  { t: 'Contract templates', ok: true },
+                  { t: 'FEATURED badge — front of catalog', ok: true },
                   { t: 'Priority listing — always first', ok: true },
                   { t: 'VERIFIED badge on profile', ok: true },
                 ].map((f, i) => (
