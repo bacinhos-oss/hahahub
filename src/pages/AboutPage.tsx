@@ -173,6 +173,48 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
             </div>
           </section>
 
+
+          {/* YOUR COMEDY BUSINESS IN ONE PLACE */}
+          <section className="space-y-12">
+            <div>
+              <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6">The Platform</span>
+              <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none">
+                Your comedy<br/>business.<br/><span className="text-brand-yellow">In one place.</span>
+              </h2>
+              <p className="text-white/40 font-bold italic text-lg mt-6 max-w-2xl">
+                HahaHub is not just a marketplace. It is your entire comedy production infrastructure. From first tickle to final royalty — everything happens here. No spreadsheets. No email chains. No agents with hats.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border-4 border-brand-cyan p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-brand-cyan">Catalog</p>
+                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Browse international<br/>comedy productions.</h3>
+                <p className="text-white/40 font-bold italic text-sm leading-relaxed">Filter by cast size, language, humor type, touring friendly. Find exactly what your stage needs. Or list yours — and let the world find you. Tickle what excites you. The inquiry takes thirty seconds.</p>
+              </div>
+              <div className="border-4 border-brand-yellow p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-brand-yellow">Pipeline</p>
+                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Every deal.<br/>Every conversation.<br/>Every stage.</h3>
+                <p className="text-white/40 font-bold italic text-sm leading-relaxed">From first tickle to signed contract — Pipeline is your personal deal room. Every inquiry. Every message. Every status update. You move the deal forward. You stay in control. No one else touches it.</p>
+              </div>
+              <div className="border-4 border-brand-pink p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-brand-pink">LaffWire</p>
+                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Your industry feed.<br/>Post. Connect.<br/>Be seen.</h3>
+                <p className="text-white/40 font-bold italic text-sm leading-relaxed">LaffWire is not social media. It is the comedy industry talking to itself. A deal gets signed — it lands on LaffWire. A new show gets listed — same. Post. React. Connect. The comedy world is smaller than you think. Use that.</p>
+              </div>
+              <div className="border-4 border-white/30 p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-white">My Hub</p>
+                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Your command center.<br/>Nothing missing.<br/>Nothing extra.</h3>
+                <p className="text-white/40 font-bold italic text-sm leading-relaxed">Shows. Deals. Royalties in. Royalties out. Analytics. Contracts. Calculator. Everything your production needs — in one place, on one screen. Your Hub is where the business actually happens. And it never closes.</p>
+              </div>
+            </div>
+            <div className="border-t-4 border-white/10 pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <p className="text-white/20 font-black uppercase text-xs tracking-widest italic max-w-lg">0% commission. No per-inquiry fees. No agents. The deal you close is yours. Every euro of your licensing fee stays yours.</p>
+              <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-8 py-4 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all flex-shrink-0">
+                See Plans →
+              </button>
+            </div>
+          </section>
+
           {/* COPYRIGHT & RIGHTS */}
           <section className="space-y-8 bg-brand-surface border-4 border-white/20 p-6 md:p-12 shadow-neo-cyan">
             <h2 className="text-3xl md:text-4xl font-black uppercase italic text-brand-cyan border-b-2 border-brand-cyan/20 pb-4">Copyright and Licensing</h2>
