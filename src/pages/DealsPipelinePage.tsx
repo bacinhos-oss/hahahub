@@ -578,7 +578,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                             <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
                               <div className={"border-2 px-3 py-1.5 " + (isMe ? 'border-brand-yellow/40' : 'border-white/20')}>
                                 {isFile ? (
-                                  <a href={fileUrl} download={fileName} target="_blank" rel="noopener noreferrer"
+                                  <a href={`/api/download?url=${encodeURIComponent(fileUrl)}&name=${encodeURIComponent(fileName)}`} download={fileName}
                                     className="flex items-center gap-2 bg-brand-cyan/10 border border-brand-cyan/30 px-3 py-2 hover:bg-brand-cyan/20 transition-all group">
                                     <span className="text-brand-cyan text-[10px] font-black uppercase">Attachment</span>
                                     <span className="text-white font-bold italic text-xs flex-1 truncate">{fileName}</span>
