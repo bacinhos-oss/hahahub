@@ -60,10 +60,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   useEffect(() => {
     if (activeTab === 'inquiries') {
       supabase.from('inquiries').select('*').order('created_at', { ascending: false }).limit(200)
-        .then(({ data, error }) => { 
-          console.log('Inquiries:', data, error);
-          if (data) setInquiries(data); 
-        });
+        .then(({ data }) => { if (data) setInquiries(data); });
     }
   }, [activeTab]);
 
@@ -204,10 +201,11 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             { key: 'analytics', label: 'Producers', icon: 'group' },
             { key: 'access', label: 'Invites', icon: 'mail' },
             { key: 'catalog', label: 'Archive', icon: 'gavel' },
+            { key: 'inquiries', label: 'Inquiries', icon: 'inbox' },
           ] as const).map(tab => (
             <button key={tab.key} onClick={() => { setActiveTab(tab.key); if (tab.key === 'analytics') loadUsers(); }}
               className={`flex items-center gap-2 px-5 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 text-[10px] font-black uppercase tracking-widest italic
-                ${activeTab === tab.key ? tab.key === 'analytics' ? 'bg-brand-cyan text-black' : tab.key === 'access' ? 'bg-brand-yellow text-black' : 'bg-brand-pink text-white' : 'text-white/40 hover:text-white'}`}>
+                ${activeTab === tab.key ? tab.key === 'analytics' ? 'bg-brand-cyan text-black' : tab.key === 'access' ? 'bg-brand-yellow text-black' : tab.key === 'inquiries' ? 'bg-brand-cyan text-black' : 'bg-brand-pink text-white' : 'text-white/40 hover:text-white'}`}>
               <span className="material-symbols-outlined text-sm">{tab.icon}</span>
               {tab.label}
             </button>
