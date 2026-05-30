@@ -135,8 +135,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
                 <div className="flex flex-col h-full">
                   {/* POSTER */}
-                  <div className="relative flex-shrink-0" style={{aspectRatio: '1/1.414'}}>
-                    <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-top" alt={selectedShow.title} />
+                  <div className="relative flex-shrink-0" style={{height: '55%', minHeight: '280px'}}>
+                    <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center" alt={selectedShow.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                     <div className="absolute top-4 left-4 z-10">
    
@@ -1096,8 +1096,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             <div className="flex flex-wrap items-end gap-3">
               {/* Stefunny Search */}
               <div className="relative flex-1 min-w-[200px]">
-                <div className="flex items-center gap-3 bg-brand-surface border-4 border-brand-yellow p-3 shadow-neo-yellow focus-within:shadow-none focus-within:translate-x-0.5 focus-within:translate-y-0.5 transition-all">
-                  <div className="flex-shrink-0 w-7 h-7 bg-brand-yellow border-2 border-black flex items-center justify-center font-black text-black text-[8px] uppercase italic">SF</div>
+                <div className="flex items-center gap-3 bg-brand-surface border-4 border-brand-cyan p-3 shadow-neo-cyan focus-within:shadow-none focus-within:translate-x-0.5 focus-within:translate-y-0.5 transition-all">
+                  <div className="flex-shrink-0 px-2 h-7 bg-brand-cyan border-2 border-black flex items-center justify-center font-black text-black text-[8px] uppercase italic whitespace-nowrap">Miss Stefunny</div>
                   <input
                     type="text"
                     value={searchQuery}
@@ -1110,7 +1110,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       <span className="material-symbols-outlined text-base">close</span>
                     </button>
                   ) : (
-                    <span className="material-symbols-outlined text-brand-yellow text-base flex-shrink-0">search</span>
+                    <span className="material-symbols-outlined text-brand-cyan text-base flex-shrink-0">search</span>
                   )}
                 </div>
                 {searchQuery && (
@@ -1179,7 +1179,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <label className="text-[8px] font-black uppercase text-white/30 italic block">&nbsp;</label>
                 <button onClick={() => setShowShortlistOnly(v => !v)}
                   className={`flex items-center gap-2 px-3 py-2 border-4 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}>
-                  <span className="material-symbols-outlined text-sm">bookmark</span>
+                  <span className="material-symbols-outlined text-sm" style={{fontVariationSettings:"'FILL' 1"}}>touch_app</span>
                   Tickle List {shortlist.length > 0 && <span>({shortlist.length})</span>}
                 </button>
               </div>
