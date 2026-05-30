@@ -589,109 +589,118 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <h2 className="text-4xl font-black uppercase italic mb-2">Edit Production</h2>
             <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-10">{manageShow.title}</p>
 
-            <div className="space-y-10">
+            <div className="space-y-6">
 
-              {/* 00. RIGHTS */}
-              <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-6">00. Rights & Identity</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {F('producerName', 'Production Company')}
-                  {F('producerEmail', 'Producer Email')}
-                  {F('rightsHolder', 'Copyright Holder')}
-                  {S('rightsStatus', 'Rights Status', ['Available','Co-production Only','Licensed'])}
-                  {F('territoriesAvailable', 'Territories Available')}
-                  {F('licensedCountries', 'Licensed Countries')}
-                  {F('territoryConflicts', 'Territory Conflicts')}
-                  {F('mediaConflicts', 'Media Conflicts')}
+              {/* 00. BASIC INFO */}
+              <section className="border-4 border-white/20 p-6 space-y-4">
+                <div className="border-b-2 border-white/10 pb-2">
+                  <h3 className="text-lg font-black uppercase italic text-brand-cyan">00. Basic Info</h3>
                 </div>
-              </section>
-
-              {/* 01. CREATIVE */}
-              <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-6">01. Creative Engine</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="col-span-2 md:col-span-4">
-                    <label className={lbl}>Production Title</label>
-                    <input name="title" value={(editForm as any).title || ''} onChange={handleEditChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl outline-none focus:border-brand-yellow" />
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="col-span-2 md:col-span-3">
+                    <label className={lbl}>English Title * (main title)</label>
+                    <input name="englishTitle" value={(editForm as any).englishTitle || (editForm as any).english_title || ''} onChange={handleEditChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl outline-none focus:border-brand-yellow" />
                   </div>
-                  {F('author', 'Author / Playwright')}
-                  {F('director', 'Director')}
-                  {F('genre', 'Genre')}
-                  {F('subgenre', 'Subgenre')}
-                  {F('language', 'Language')}
-                  {F('location', 'Origin Market')}
+                  <div className="col-span-2 md:col-span-3">
+                    <label className={lbl}>Original Title (if different)</label>
+                    <input name="title" value={(editForm as any).title || ''} onChange={handleEditChange} className={inp} />
+                  </div>
+                  {F('author', 'Author / Playwright *')}
                   {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
-                  {F('translationsAvailable', 'Translations Available')}
-                  <div className="col-span-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">Synopsis in English *</label>
-                    <textarea name="synopsis_en" value={(editForm as any).synopsis_en || ''} onChange={handleEditChange} rows={5} className="w-full bg-brand-black border-2 border-brand-yellow/30 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-yellow" placeholder="English synopsis — required for international producers" />
+                  {F('genre', 'Genre *')}
+                  {F('subgenre', 'Subgenre')}
+                  {F('originalLanguage', 'Original Language *')}
+                  {F('productionYear', 'Production Year', 'number')}
+                  {F('awards', 'Awards')}
+                  <div className="col-span-2 md:col-span-3">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 italic">Synopsis in English *</label>
+                    <textarea name="synopsis_en" value={(editForm as any).synopsis_en || (editForm as any).synopsisEn || ''} onChange={handleEditChange} rows={4} className="w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-yellow" placeholder="English synopsis for international buyers" />
                   </div>
-                  {T('synopsis', 'Synopsis (Original Language)', 3)}
-                  <div className="col-span-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-cyan mb-2 italic">🎬 Trailer / Teaser URL</label>
-                    <p className="text-white/30 text-xs italic mb-2">YouTube or Vimeo link</p>
-                    <input name="trailer_url" value={(editForm as any).trailer_url || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-brand-cyan/30 px-4 py-3 text-white outline-none focus:border-brand-cyan" placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..." />
+                  <div className="col-span-2 md:col-span-3">
+                    {T('internationalSuccessNotes', 'International Success Notes', 2)}
                   </div>
-                  {T('directorNotes', "Director's Notes", 3)}
-                  {T('originalProductionSolutions', 'Original Staging Solutions', 2)}
-                  {T('internationalSuccessNotes', 'International Success Notes', 2)}
-                  <div className="col-span-2 bg-brand-black border-4 border-brand-yellow p-4">
-                    <label className="block text-[9px] font-black uppercase text-brand-yellow mb-1 italic">Script Scenario — 3 Pages in English</label>
-                    <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={15} className="w-full bg-black border-2 border-white/10 p-4 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
+                  <div className="col-span-2 md:col-span-3">
+                    <label className={lbl}>Trailer URL</label>
+                    <input name="trailer_url" value={(editForm as any).trailer_url || (editForm as any).trailerUrl || ''} onChange={handleEditChange} className={inp} placeholder="https://youtube.com/..." />
                   </div>
                 </div>
               </section>
 
-              {/* 02. PRODUCTION */}
-              <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-yellow mb-6">02. Production & Cast</h3>
+              {/* 01. PRODUCTION */}
+              <section className="border-4 border-white/20 p-6 space-y-4">
+                <div className="border-b-2 border-white/10 pb-2">
+                  <h3 className="text-lg font-black uppercase italic text-brand-pink">01. Production</h3>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {F('maleRoles', 'Male Roles', 'number')}
-                  {F('femaleRoles', 'Female Roles', 'number')}
-                  {F('duration', 'Duration (min)', 'number')}
-                  {F('productionYear', 'Production Year', 'number')}
-                  {S('canMergeRoles', 'Can Merge Roles', ['false','true'])}
+                  {F('maleRoles', 'Male Roles *', 'number')}
+                  {F('femaleRoles', 'Female Roles *', 'number')}
+                  {F('duration', 'Duration (min) *', 'number')}
                   {S('hasIntermission', 'Intermission', ['false','true'])}
                   {S('productionScale', 'Scale', ['Small','Medium','Large'])}
                   {S('stageType', 'Stage Type', ['Main Stage','Black Box','Arena','Open Air'])}
-                  {S('isTouringFriendly', 'Touring Friendly', ['true','false'])}
+                  {S('isTouringFriendly', 'Touring', ['true','false'])}
+                  {S('adaptationFlexibility', 'Adaptation', ['High','Medium','Low'])}
                   {S('technicalComplexity', 'Technical', ['Low','Medium','High'])}
-                  {S('costumeComplexity', 'Costumes', ['Low','Medium','High'])}
-                  {S('setComplexity', 'Set', ['Low','Medium','High'])}
-                  {S('adaptationFlexibility', 'Adaptation', ['Low','Medium','High'])}
-                  {S('isDirectorMandatory', 'Director Mandatory', ['false','true'])}
-                  {S('creativeTeamAvailability', 'Creative Team', ['Optional','Required','Not required'])}
-                  {S('budgetRange', 'Budget Range', ['Low','Medium','High'])}
-                  <div className="col-span-2 md:col-span-4">
-                    <label className={lbl}>Scalability Notes</label>
-                    <input name="scalabilityNotes" value={(editForm as any).scalabilityNotes || ''} onChange={handleEditChange} className={inp} />
-                  </div>
-                  {F('techStaffLighting', 'Lighting', 'number')}
-                  {F('techStaffSound', 'Sound', 'number')}
-                  {F('techStaffPrompter', 'Prompter', 'number')}
+                  {F('techStaffLighting', 'Lighting Staff', 'number')}
+                  {F('techStaffSound', 'Sound Staff', 'number')}
                   {F('techStaffStagehands', 'Stagehands', 'number')}
-                  <div className="col-span-2 md:col-span-4">{F('techStaffOther', 'Other Tech Staff')}</div>
+                  {F('techStaffPrompter', 'Prompter', 'number')}
+                  {F('director', 'Director')}
+                </div>
+                {T('directorNotes', "Director's Notes", 2)}
+                {T('originalProductionSolutions', 'Original Staging Solutions', 2)}
+              </section>
+
+              {/* 02. CREATIVE ASSETS */}
+              <section className="border-4 border-white/20 p-6 space-y-4">
+                <div className="border-b-2 border-white/10 pb-2">
+                  <h3 className="text-lg font-black uppercase italic text-brand-yellow">02. Creative Assets</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      {F('musicAuthor', 'Music Author')}
+                      {S('hasOriginalMusic', 'Original Music', ['false','true'])}
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      {F('videoAuthor', 'Video Author')}
+                      {S('hasVideoProjections', 'Has Video', ['false','true'])}
+                      <div className="col-span-2">{F('videoDescription', 'Video Description')}</div>
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      {S('scriptInEnglish', 'Script in English', ['false','partial','true'])}
+                      {F('translationsAvailable', 'Translations')}
+                      {S('translationRightsIncluded', 'Translation Rights', ['false','true'])}
+                    </div>
+                    <div className="col-span-2 bg-brand-black border-2 border-brand-yellow/30 p-4 mt-2">
+                      <label className="block text-[9px] font-black uppercase text-brand-yellow mb-2 italic">Script Scenario / Excerpt</label>
+                      <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={6} className="w-full bg-black border-2 border-white/10 p-3 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
+                    </div>
+                  </div>
                 </div>
               </section>
 
-              {/* 03. MARKET */}
-              <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-cyan mb-6">03. Market Performance</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+
+              {/* 03. MARKET PERFORMANCE */}
+              <section className="border-4 border-white/20 p-6 space-y-4">
+                <div className="border-b-2 border-white/10 pb-2">
+                  <h3 className="text-lg font-black uppercase italic text-brand-cyan">03. Market Performance</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {F('premiereDate', 'Premiere Date', 'date')}
                   {F('premiereLocation', 'Premiere Location')}
                   {F('performancesCount', 'Total Performances', 'number')}
                   {F('totalAudience', 'Total Audience', 'number')}
                   {F('locationsPlayed', 'Locations Played')}
-                  {F('buyoutLocations', 'Buyout Locations')}
                   {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
-                  {S('riskProfile', 'Risk Profile', ['Proven hit','Moderate risk','Experimental'])}
-                  {S('breakEvenThreshold', 'Break Even Threshold', ['Low','Medium','High'])}
-                  {F('breakEvenPerformances', 'Break Even Performances', 'number')}
-                  {F('awards', 'Awards')}
-                  {F('audienceProfile', 'Audience Profile')}
-                  {F('originatingProducerTrackRecord', 'Producer Track Record')}
-                  {F('exitScenarios', 'Exit Scenarios')}
                 </div>
               </section>
 
@@ -705,6 +714,40 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
                   {F('territoriesAvailable', 'Territories Available')}
                   {F('licensedCountries', 'Licensed Countries')}
+                </div>
+              </section>
+
+              {/* 05. PACKAGES */}
+              <section className="border-4 border-brand-yellow/40 p-6 space-y-4">
+                <div className="border-b-2 border-white/10 pb-2">
+                  <h3 className="text-lg font-black uppercase italic text-brand-yellow">05. Licensing Packages</h3>
+                </div>
+                <div className="border-2 border-white/10 p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
+                    <span className="font-black uppercase italic text-white text-sm">Script Package</span>
+                  </div>
+                  {(editForm as any).hasScriptPackage && (
+                    <div className="grid grid-cols-2 gap-4 pl-7">
+                      {F('scriptRoyaltyPct', 'Royalty % *', 'number')}
+                      {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
+                    </div>
+                  )}
+                </div>
+                <div className="border-2 border-white/10 p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" checked={!!(editForm as any).hasFullPunchPackage} onChange={e => setEditForm((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))} className="w-4 h-4 accent-brand-pink" />
+                    <span className="font-black uppercase italic text-white text-sm">Full Punch Package</span>
+                  </div>
+                  {(editForm as any).hasFullPunchPackage && (
+                    <div className="space-y-3 pl-7">
+                      <div className="grid grid-cols-2 gap-4">
+                        {F('fullPunchRoyaltyPct', 'Royalty % *', 'number')}
+                        {F('fullPunchAdvanceFee', 'Advance Fee (EUR)', 'number')}
+                      </div>
+                      {F('fullPunchIncludes', "What's Included")}
+                    </div>
+                  )}
                 </div>
               </section>
 

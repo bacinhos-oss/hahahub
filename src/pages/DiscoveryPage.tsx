@@ -289,242 +289,269 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                      </div>
                   </section>
 
-                  {/* 01. CREATIVE ENGINE */}
-                  <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">01. CREATIVE ENGINE</h4>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                      <div className="space-y-6">
-                        <div className="flex gap-4">
-                          <div className="flex-1 border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-brand-pink italic">Playwright</p>
-                             <p className="text-xl font-black italic">{selectedShow.author || '—'}</p>
-                          </div>
-                          <div className="flex-1 border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-brand-cyan italic">Director</p>
-                             <p className="text-xl font-black italic uppercase">{selectedShow.director || 'TBD'}</p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-brand-yellow italic">Subgenre</p>
-                             <p className="text-sm font-black italic break-words">{selectedShow.subgenre || 'N/A'}</p>
-                          </div>
-                          <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-gray-500 italic">Humor Type</p>
-                             <p className="text-sm font-black italic break-words">{selectedShow.humorType}</p>
-                          </div>
-                          <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-gray-500 italic">Director Mandatory</p>
-                             <p className="text-sm font-black italic break-words">{selectedShow.isDirectorMandatory ? 'YES' : 'NO'}</p>
-                          </div>
-                          <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-gray-500 italic">Creative Team</p>
-                             <p className="text-sm font-black italic break-words">{selectedShow.creativeTeamAvailability}</p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
-                             <span className="text-xs font-black uppercase italic text-brand-yellow">Male Roles</span>
-                             <span className="text-2xl font-black">{selectedShow.maleRoles}</span>
-                          </div>
-                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
-                             <span className="text-xs font-black uppercase italic text-brand-pink">Female Roles</span>
-                             <span className="text-2xl font-black">{selectedShow.femaleRoles}</span>
-                          </div>
-                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center col-span-2">
-                             <span className="text-xs font-black uppercase italic text-brand-cyan">Can Merge Roles</span>
-                             <span className="text-sm font-black">{selectedShow.canMergeRoles ? 'YES' : 'NO'}</span>
-                          </div>
-                        </div>
-                        {selectedShow.translationsAvailable && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                           <p className="text-[8px] font-black uppercase text-brand-cyan italic">Translations Available</p>
-                           <p className="text-sm font-black italic break-words">{selectedShow.translationsAvailable}</p>
-                        </div>}
-                        {selectedShow.internationalSuccessNotes && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                           <p className="text-[8px] font-black uppercase text-brand-yellow italic">International Success</p>
-                           <p className="text-sm italic text-gray-300 break-words">{selectedShow.internationalSuccessNotes}</p>
-                        </div>}
+                  {/* 00. BASIC INFO */}
+                  <section className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic border-b border-white/10 pb-2">00. Basic Info</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-pink italic">Author / Playwright</p>
+                        <p className="text-base font-black italic">{selectedShow.author || '—'}</p>
                       </div>
-                      <div className="bg-brand-surface border-4 border-white p-8 space-y-6 shadow-neo-magenta">
-                         <div className="border-b-2 border-white/10 pb-4">
-                            <p className="text-[10px] font-black uppercase text-brand-pink italic mb-2">Director's Vision Notes</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.directorNotes || 'Standard staging permitted.'}</p>
-                         </div>
-                         <div>
-                            <p className="text-[10px] font-black uppercase text-brand-cyan italic mb-2">Original Staging Solutions</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.originalProductionSolutions || 'No exclusive technical hardware required.'}</p>
-                         </div>
-                         {selectedShow.scalabilityNotes && <div>
-                            <p className="text-[10px] font-black uppercase text-brand-yellow italic mb-2">Scalability Notes</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.scalabilityNotes}</p>
-                         </div>}
+                      <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">Director</p>
+                        <p className="text-base font-black italic uppercase">{selectedShow.director || '—'}</p>
+                      </div>
+                      <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">Genre</p>
+                        <p className="text-sm font-black italic">{selectedShow.genre}{selectedShow.subgenre ? ` · ${selectedShow.subgenre}` : ''}</p>
+                      </div>
+                      <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-white/40 italic">Humor Type</p>
+                        <p className="text-sm font-black italic">{selectedShow.humorType || '—'}</p>
+                      </div>
+                      <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-white/40 italic">Original Language</p>
+                        <p className="text-sm font-black italic">{selectedShow.originalLanguage || selectedShow.language || '—'}</p>
+                      </div>
+                      <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-white/40 italic">Production Year</p>
+                        <p className="text-sm font-black italic">{selectedShow.productionYear || '—'}</p>
                       </div>
                     </div>
+                    {selectedShow.awards && (
+                      <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">Awards</p>
+                        <p className="text-sm font-black italic">{selectedShow.awards}</p>
+                      </div>
+                    )}
+                    {selectedShow.internationalSuccessNotes && (
+                      <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">International Success</p>
+                        <p className="text-sm italic text-white/70">{selectedShow.internationalSuccessNotes}</p>
+                      </div>
+                    )}
+                    {selectedShow.trailerUrl && (
+                      <a href={selectedShow.trailerUrl} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+                        Watch Trailer →
+                      </a>
+                    )}
+                  </section>
+
+                  {/* 01. PRODUCTION */}
+                  <section className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic border-b border-white/10 pb-2">01. Production</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="bg-brand-surface border-4 border-white p-4 text-center shadow-neo-yellow">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Male Roles</p>
+                        <p className="text-3xl font-black text-brand-yellow">{selectedShow.maleRoles || '—'}</p>
+                      </div>
+                      <div className="bg-brand-surface border-4 border-white p-4 text-center shadow-neo-magenta">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Female Roles</p>
+                        <p className="text-3xl font-black text-brand-pink">{selectedShow.femaleRoles || '—'}</p>
+                      </div>
+                      <div className="bg-brand-surface border-4 border-white p-4 text-center shadow-neo-cyan">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Duration</p>
+                        <p className="text-3xl font-black text-brand-cyan">{selectedShow.duration || '—'}<span className="text-sm">min</span></p>
+                      </div>
+                      <div className="bg-brand-surface border-4 border-white p-4 text-center">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Intermission</p>
+                        <p className="text-xl font-black uppercase italic">{selectedShow.hasIntermission ? 'Yes' : 'No'}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="bg-black/30 border border-white/10 p-3 text-center">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Scale</p>
+                        <p className="text-sm font-black uppercase italic text-brand-cyan">{selectedShow.productionScale || '—'}</p>
+                      </div>
+                      <div className="bg-black/30 border border-white/10 p-3 text-center">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Stage</p>
+                        <p className="text-sm font-black uppercase italic">{selectedShow.stageType || '—'}</p>
+                      </div>
+                      <div className="bg-black/30 border border-white/10 p-3 text-center">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Touring</p>
+                        <p className="text-sm font-black uppercase italic text-brand-yellow">{selectedShow.isTouringFriendly ? 'Yes' : 'No'}</p>
+                      </div>
+                      <div className="bg-black/30 border border-white/10 p-3 text-center">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Adaptation</p>
+                        <p className={`text-sm font-black uppercase italic ${selectedShow.adaptationFlexibility === 'High' ? 'text-brand-cyan' : selectedShow.adaptationFlexibility === 'Low' ? 'text-brand-pink' : 'text-white'}`}>{selectedShow.adaptationFlexibility || '—'}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                      {[
+                        { label: 'Lighting', value: selectedShow.techStaffLighting, color: 'text-brand-cyan' },
+                        { label: 'Sound', value: selectedShow.techStaffSound, color: 'text-brand-pink' },
+                        { label: 'Stagehands', value: selectedShow.techStaffStagehands, color: 'text-brand-yellow' },
+                        { label: 'Technical', value: selectedShow.technicalComplexity, color: 'text-white' },
+                      ].map((item, i) => (
+                        <div key={i} className="bg-black/20 border border-white/10 p-3 text-center">
+                          <p className="text-[8px] font-black text-white/30 uppercase italic">{item.label}</p>
+                          <p className={`text-lg font-black ${item.color}`}>{item.value ?? '—'}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {selectedShow.directorNotes && (
+                      <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-pink italic">Director Notes</p>
+                        <p className="text-sm italic text-white/70">{selectedShow.directorNotes}</p>
+                      </div>
+                    )}
+                    {selectedShow.originalProductionSolutions && (
+                      <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">Original Staging Solutions</p>
+                        <p className="text-sm italic text-white/70">{selectedShow.originalProductionSolutions}</p>
+                      </div>
+                    )}
                   </section>
 
                   {/* 02. CREATIVE ASSETS */}
                   <section className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. CREATIVE ASSETS</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* MUSIC */}
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic border-b border-white/10 pb-2">02. Creative Assets</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
+                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">Music</p>
                         {(selectedShow as any).music_author ? (
                           <>
                             <p className="text-sm font-black italic">{(selectedShow as any).music_author}</p>
                             <p className="text-[8px] text-brand-yellow/60 italic mt-1">
-                              {(selectedShow as any).has_original_music ? 'Original composition — included in Full Punch royalty' : 'Licensed / existing music'}
+                              {(selectedShow as any).has_original_music ? 'Original composition' : 'Licensed / existing music'}
                             </p>
                           </>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">Not specified</p>
-                        )}
+                        ) : <p className="text-sm font-black italic text-white/30">Not specified</p>}
                       </div>
-                      {/* VIDEO */}
                       <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video / AV</p>
+                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">Video / AV</p>
                         {(selectedShow as any).has_video_projections ? (
                           <>
                             {(selectedShow as any).video_author && <p className="text-sm font-black italic">{(selectedShow as any).video_author}</p>}
                             {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
-                            {!(selectedShow as any).video_author && <p className="text-sm font-black italic">Original video content available</p>}
+                            {!(selectedShow as any).video_author && <p className="text-sm font-black italic">Original video content</p>}
                           </>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">No video projections</p>
-                        )}
+                        ) : <p className="text-sm font-black italic text-white/30">No video projections</p>}
                       </div>
-                      {/* SCRIPT */}
                       <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-brand-pink italic">📄 Script in English</p>
-                        {selectedShow.translationsAvailable ? (
-                          <p className="text-sm font-black italic">{selectedShow.translationsAvailable}</p>
-                        ) : (selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (
+                        <p className="text-[8px] font-black uppercase text-brand-pink italic">Script in English</p>
+                        {(selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (
                           <p className="text-sm font-black italic">Full script available</p>
                         ) : (selectedShow as any).script_in_english === 'partial' ? (
                           <p className="text-sm font-black italic">Synopsis only</p>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">Not specified</p>
-                        )}
+                        ) : <p className="text-sm font-black italic text-white/30">Not specified</p>}
                       </div>
-                      {/* TRANSLATIONS */}
                       <div className="border-l-4 border-white/20 pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-white/40 italic">🌍 Translations Available</p>
+                        <p className="text-[8px] font-black uppercase text-white/40 italic">Translations</p>
                         {(selectedShow as any).translations_available || selectedShow.translationsAvailable ? (
                           <p className="text-sm font-black italic">{(selectedShow as any).translations_available || selectedShow.translationsAvailable}</p>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">Not specified</p>
-                        )}
+                        ) : <p className="text-sm font-black italic text-white/30">Not specified</p>}
                       </div>
                     </div>
-                  </section>
-
-                  {/* 03. TECHNICAL STACK */}
-                  <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. TECHNICAL STACK & PRODUCTION SCALE</h4>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-cyan">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
-                          <p className="text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-magenta">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Sound</p>
-                          <p className="text-2xl font-black text-brand-pink">{selectedShow.techStaffSound}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-yellow">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Stagehands</p>
-                          <p className="text-2xl font-black text-brand-yellow">{selectedShow.techStaffStagehands}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Prompter</p>
-                          <p className="text-2xl font-black text-white">{selectedShow.techStaffPrompter}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-cyan">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Scale</p>
-                          <p className="text-xl font-black uppercase italic text-brand-cyan">{selectedShow.productionScale}</p>
-                       </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-magenta">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Touring</p>
-                          <p className="text-xl font-black uppercase italic text-brand-pink">{selectedShow.isTouringFriendly ? 'YES' : 'NO'}</p>
-                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                       {[
-                         { label: 'Technical', value: selectedShow.technicalComplexity },
-                         { label: 'Costumes', value: selectedShow.costumeComplexity },
-                         { label: 'Set', value: selectedShow.setComplexity },
-                         { label: 'Adaptation', value: selectedShow.adaptationFlexibility },
-                       ].map((item, i) => (
-                         <div key={i} className="bg-black/30 border border-white/10 p-4 text-center overflow-hidden">
-                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">{item.label}</p>
-                           <p className={`font-black uppercase text-[10px] leading-tight break-words ${item.value === 'High' ? 'text-brand-pink' : item.value === 'Low' ? 'text-brand-cyan' : 'text-white'}`}>{item.value}</p>
-                         </div>
-                       ))}
-                    </div>
-                    {selectedShow.techStaffOther && <p className="text-xs text-gray-400 italic">Additional: {selectedShow.techStaffOther}</p>}
                   </section>
 
                   {/* 03. MARKET PERFORMANCE */}
-                  <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">03. MARKET PERFORMANCE</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'N/A'}</p></div>
-                           <span className="material-symbols-outlined text-brand-yellow">calendar_today</span>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p><p className="text-base font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p></div>
-                           <span className="material-symbols-outlined text-brand-cyan">theater_comedy</span>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p><p className="text-base font-black text-brand-pink">{(selectedShow.totalAudience || 0).toLocaleString()}</p></div>
-                           <span className="material-symbols-outlined text-brand-pink">groups</span>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Box Office</p><p className="text-base font-black">{selectedShow.boxOfficeIndicator}</p></div>
-                           <span className="material-symbols-outlined text-white/40">trending_up</span>
-                        </div>
-
-
-
-
+                  <section className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic border-b border-white/10 pb-2">03. Market Performance</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="bg-brand-surface border-2 border-white/10 p-4">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Premiere</p>
+                        <p className="text-sm font-black text-brand-yellow">{selectedShow.premiereDate || '—'}</p>
+                        {selectedShow.premiereLocation && <p className="text-[9px] text-white/40 italic mt-1">{selectedShow.premiereLocation}</p>}
+                      </div>
+                      <div className="bg-brand-surface border-2 border-white/10 p-4">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Performances</p>
+                        <p className="text-2xl font-black text-brand-cyan">{selectedShow.performancesCount || 0}</p>
+                      </div>
+                      <div className="bg-brand-surface border-2 border-white/10 p-4">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Total Audience</p>
+                        <p className="text-2xl font-black text-brand-pink">{(selectedShow.totalAudience || 0).toLocaleString()}</p>
+                      </div>
+                      <div className="bg-brand-surface border-2 border-white/10 p-4">
+                        <p className="text-[8px] font-black text-white/40 uppercase italic">Box Office</p>
+                        <p className="text-sm font-black uppercase italic">{selectedShow.boxOfficeIndicator || '—'}</p>
+                      </div>
                     </div>
-                    {selectedShow.awards && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                       <p className="text-[8px] font-black uppercase text-brand-yellow italic">Awards</p>
-                       <p className="text-sm font-black italic break-words">{selectedShow.awards}</p>
-                    </div>}
-                    {selectedShow.audienceProfile && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                       <p className="text-[8px] font-black uppercase text-brand-cyan italic">Audience Profile</p>
-                       <p className="text-sm italic text-gray-300 break-words">{selectedShow.audienceProfile}</p>
-                    </div>}
-                    {selectedShow.locationsPlayed && <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
-                       <p className="text-[8px] font-black uppercase text-gray-500 italic">Locations Played</p>
-                       <p className="text-sm italic text-gray-300 break-words">{selectedShow.locationsPlayed}</p>
-                    </div>}
+                    {selectedShow.locationsPlayed && (
+                      <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                        <p className="text-[8px] font-black uppercase text-white/40 italic">Locations Played</p>
+                        <p className="text-sm italic text-white/60">{selectedShow.locationsPlayed}</p>
+                      </div>
+                    )}
                   </section>
 
                   {/* 04. RIGHTS */}
                   <section className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">04. Rights & Licensing</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic border-b border-white/10 pb-2">04. Rights & Identity</h4>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       <div className="bg-brand-surface border-4 border-white p-4">
                         <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
-                        <p className="text-sm font-black uppercase italic">{selectedShow.licenseType}</p>
+                        <p className="text-sm font-black uppercase italic">{selectedShow.licenseType || '—'}</p>
                       </div>
                       <div className="bg-brand-surface border-4 border-white p-4">
                         <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Exclusivity</p>
-                        <p className="text-sm font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
+                        <p className="text-sm font-black uppercase italic">{selectedShow.exclusivityLevel || '—'}</p>
+                      </div>
+                      <div className="bg-brand-surface border-4 border-white p-4">
+                        <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Rights Status</p>
+                        <p className="text-sm font-black uppercase italic">{selectedShow.rightsStatus || '—'}</p>
                       </div>
                       {selectedShow.territoriesAvailable && (
-                        <div className="bg-brand-surface border-2 border-white/20 p-4">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Territories</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.territoriesAvailable}</p>
+                        <div className="bg-brand-surface border-2 border-white/20 p-4 col-span-2">
+                          <p className="text-[8px] font-black text-white/40 uppercase italic mb-1">Territories</p>
+                          <p className="text-sm font-black italic">{selectedShow.territoriesAvailable}</p>
                         </div>
                       )}
-                      {(selectedShow as any).translations_available && (
+                      {selectedShow.translationsAvailable && (
                         <div className="bg-brand-surface border-2 border-white/20 p-4">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Translations</p>
-                          <p className="text-sm font-black uppercase">{(selectedShow as any).translations_available}</p>
+                          <p className="text-[8px] font-black text-white/40 uppercase italic mb-1">Translations</p>
+                          <p className="text-sm font-black italic">{selectedShow.translationsAvailable}</p>
                         </div>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* 05. PACKAGES */}
+                  <section className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic border-b border-white/10 pb-2">05. Licensing Packages</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {(selectedShow as any).hasScriptPackage && (
+                        <div className="border-4 border-brand-yellow/40 p-4 space-y-2">
+                          <p className="font-black uppercase italic text-white text-sm">Script Package</p>
+                          <p className="text-white/30 text-xs italic">Script only license. Buyer produces independently.</p>
+                          <div className="flex gap-4 mt-2">
+                            <div>
+                              <p className="text-[8px] font-black uppercase text-brand-yellow italic">Royalty</p>
+                              <p className="text-xl font-black text-brand-yellow">{(selectedShow as any).scriptRoyaltyPct || (selectedShow as any).script_royalty_pct || '—'}%</p>
+                            </div>
+                            {((selectedShow as any).scriptAdvanceFee || (selectedShow as any).script_advance_fee) && (
+                              <div>
+                                <p className="text-[8px] font-black uppercase text-white/40 italic">Advance</p>
+                                <p className="text-xl font-black">EUR {(selectedShow as any).scriptAdvanceFee || (selectedShow as any).script_advance_fee}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {(selectedShow as any).hasFullPunchPackage && (
+                        <div className="border-4 border-brand-pink/40 p-4 space-y-2">
+                          <p className="font-black uppercase italic text-white text-sm">Full Punch Package</p>
+                          <p className="text-white/30 text-xs italic">Script + know-how + video + music. All royalties in one rate.</p>
+                          <div className="flex gap-4 mt-2">
+                            <div>
+                              <p className="text-[8px] font-black uppercase text-brand-pink italic">Royalty</p>
+                              <p className="text-xl font-black text-brand-pink">{(selectedShow as any).fullPunchRoyaltyPct || (selectedShow as any).full_punch_royalty_pct || '—'}%</p>
+                            </div>
+                            {((selectedShow as any).fullPunchAdvanceFee || (selectedShow as any).full_punch_advance_fee) && (
+                              <div>
+                                <p className="text-[8px] font-black uppercase text-white/40 italic">Advance</p>
+                                <p className="text-xl font-black">EUR {(selectedShow as any).fullPunchAdvanceFee || (selectedShow as any).full_punch_advance_fee}</p>
+                              </div>
+                            )}
+                          </div>
+                          {((selectedShow as any).fullPunchIncludes || (selectedShow as any).full_punch_includes) && (
+                            <p className="text-[9px] text-white/40 italic">{(selectedShow as any).fullPunchIncludes || (selectedShow as any).full_punch_includes}</p>
+                          )}
+                        </div>
+                      )}
+                      {!(selectedShow as any).hasScriptPackage && !(selectedShow as any).hasFullPunchPackage && (
+                        <p className="text-white/30 text-sm italic col-span-2">Licensing terms available on request.</p>
                       )}
                     </div>
                   </section>
