@@ -77,6 +77,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [allTickler, setAllTickler] = useState<Deal[]>([]);
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
   const [msgCounts, setMsgCounts] = useState<Record<string, number>>({});
+  const [producerNames, setProducerNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
   const [activeDealId, setActiveDealId] = useState<string | null>(null);
@@ -146,7 +147,22 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       supabase.from('royalty_reports').select('*').order('date', { ascending: false }),
     ]);
     if (t1.data) setAllTickled(t1.data as Deal[]);
-    if (t2.data) setAllTickler(t2.data as Deal[]);
+    if (t2.data) {
+      setAllTickler(t2.data as Deal[]);
+      // Load producer names for tickler deals
+      const producerIds = [...new Set((t2.data as Deal[]).map(d => d.producer_id).filter(Boolean))];
+      if (producerIds.length > 0) {
+        const { data: profiles } = await supabase.from('profiles').select('id, name').in('id', producerIds);
+        if (profiles) {
+          const names: Record<string, string> = {};
+          profiles.forEach((p: any) => { names[p.id] = p.name; });
+          // Map deal_id to producer name
+          const dealNames: Record<string, string> = {};
+          (t2.data as Deal[]).forEach(d => { dealNames[d.id] = names[d.producer_id] || 'Producer'; });
+          setProducerNames(dealNames);
+        }
+      }
+    }
     if (rr.data) setRoyaltyReports(rr.data as RoyaltyReport[]);
     const allDeals = [...(t1.data || []), ...(t2.data || [])];
     if (allDeals.length > 0) {
@@ -591,7 +607,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                               <p className="text-white/20 text-[8px] mt-0.5">
                                 {msg.user_id === user.id 
                                   ? (user.name || 'Me') 
-                                  : (view === 'tickled' ? (activeDeal?.from_name || 'Them') : 'Producer')
+                                  : (view === 'tickled' ? (activeDeal?.from_name || 'Them') : (producerNames[activeDeal?.id || ''] || 'Producer'))
                                 } · {fmtTime(msg.created_at)}
                               </p>
                             </div>
