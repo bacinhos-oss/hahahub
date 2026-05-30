@@ -30,6 +30,7 @@ interface Deal {
   territory?: string;
   recipient_id?: string;
   package_type?: string;
+  producer_name?: string;
 }
 
 interface RoyaltyReport {
@@ -140,8 +141,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const loadData = async () => {
     setLoading(true);
     const [t1, t2, rr] = await Promise.all([
-      supabase.from('inquiries').select('*').eq('producer_id', user.id).order('created_at', { ascending: false }),
-      supabase.from('inquiries').select('*').eq('recipient_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('inquiries').select('*, profiles!inquiries_producer_id_fkey(name)').eq('producer_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('inquiries').select('*, profiles!inquiries_producer_id_fkey(name)').eq('recipient_id', user.id).order('created_at', { ascending: false }),
       supabase.from('royalty_reports').select('*').order('date', { ascending: false }),
     ]);
     if (t1.data) setAllTickled(t1.data as Deal[]);
@@ -587,7 +588,12 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                                   <p className="text-white font-bold italic text-xs">{msg.content}</p>
                                 )}
                               </div>
-                              <p className="text-white/20 text-[8px] mt-0.5">{msg.user_id === user.id ? (user.name || 'Me') : (activeDeal?.from_name || 'Them')} · {fmtTime(msg.created_at)}</p>
+                              <p className="text-white/20 text-[8px] mt-0.5">
+                                {msg.user_id === user.id 
+                                  ? (user.name || 'Me') 
+                                  : (view === 'tickled' ? (activeDeal?.from_name || 'Them') : ((activeDeal as any)?.profiles?.name || 'Producer'))
+                                } · {fmtTime(msg.created_at)}
+                              </p>
                             </div>
                           </div>
                         );
