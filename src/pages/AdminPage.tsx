@@ -194,6 +194,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             { key: 'analytics', label: 'Producers', icon: 'group' },
             { key: 'access', label: 'Invites', icon: 'mail' },
             { key: 'catalog', label: 'Archive', icon: 'gavel' },
+            { key: 'inquiries', label: 'Inquiries', icon: 'inbox' },
           ] as const).map(tab => (
             <button key={tab.key} onClick={() => { setActiveTab(tab.key); if (tab.key === 'analytics') loadUsers(); }}
               className={`flex items-center gap-2 px-5 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 text-[10px] font-black uppercase tracking-widest italic
