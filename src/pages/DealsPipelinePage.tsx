@@ -77,6 +77,9 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
   const [msgCounts, setMsgCounts] = useState<Record<string, number>>({});
   const [otherNames, setOtherNames] = useState<Record<string, string>>({});
+  const [lastRead, setLastRead] = useState<Record<string, string>>(() => {
+    try { return JSON.parse(localStorage.getItem('hahahub_lastread') || '{}'); } catch { return {}; }
+  });
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
   const [activeDealId, setActiveDealId] = useState<string | null>(null);
@@ -166,7 +169,10 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     if (allDeals.length > 0) {
       const counts: Record<string, number> = {};
       for (const deal of allDeals.slice(0, 20)) {
-        const { count } = await supabase.from('deal_messages').select('*', { count: 'exact', head: true }).eq('deal_id', deal.id).neq('user_id', user.id);
+        const lastReadTime = lastRead[deal.id];
+        let q = supabase.from('deal_messages').select('*', { count: 'exact', head: true }).eq('deal_id', deal.id).neq('user_id', user.id);
+        if (lastReadTime) q = q.gt('created_at', lastReadTime);
+        const { count } = await q;
         counts[deal.id] = count || 0;
       }
       setMsgCounts(counts);
@@ -189,6 +195,10 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     setShowDeleteConfirm(false);
     setMsgText('');
     setFileToSend(null);
+    const now = new Date().toISOString();
+    const newLastRead = { ...lastRead, [deal.id]: now };
+    setLastRead(newLastRead);
+    try { localStorage.setItem('hahahub_lastread', JSON.stringify(newLastRead)); } catch {}
     setMsgCounts(p => ({ ...p, [deal.id]: 0 }));
     if (!deal.is_read) {
       await supabase.from('inquiries').update({ is_read: true }).eq('id', deal.id);
