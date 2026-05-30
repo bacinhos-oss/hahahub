@@ -135,7 +135,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             {/* LEFT — POSTER + PHOTOS */}
             <div className="lg:w-80 flex-shrink-0 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black">
               {/* POSTER */}
-              <div className="relative" style={{aspectRatio: '2/3'}}>
+              <div className="relative" style={{aspectRatio: '1/1.414'}}>
                 <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-top" alt={selectedShow.title} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-3 left-3 z-10 flex gap-1 flex-wrap">
@@ -184,23 +184,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       <span className="material-symbols-outlined text-lg font-black">favorite</span>
                     </button>
                   </div>
-
-                  {/* TRAILER — right after title */}
-                  {(selectedShow as any).trailer_url && (
-                    <div className="relative w-full border-4 border-brand-cyan" style={{paddingBottom:'56.25%'}}>
-                      <iframe className="absolute inset-0 w-full h-full"
-                        src={(() => {
-                          const url = (selectedShow as any).trailer_url;
-                          if (url.includes('youtube.com/watch')) return url.replace('watch?v=', 'embed/');
-                          if (url.includes('youtu.be/')) return 'https://www.youtube.com/embed/' + url.split('youtu.be/')[1];
-                          if (url.includes('vimeo.com/')) return 'https://player.vimeo.com/video/' + url.split('vimeo.com/')[1];
-                          return url;
-                        })()}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  )}
 
                   {/* SYNOPSIS */}
                   <section className="space-y-6">
