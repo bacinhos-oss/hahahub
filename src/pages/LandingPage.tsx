@@ -374,6 +374,56 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
+        {/* WHAT YOU HAVE IN YOUR HANDS */}
+        <section className="px-4 md:px-12 py-16 md:py-24 border-t-4 border-white/10">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-12">
+              <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] italic inline-block mb-4">Platform</span>
+              <h2 className="text-4xl md:text-6xl font-black uppercase italic text-white leading-none">
+                Your comedy business.<br/><span className="text-brand-yellow">In one place.</span>
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  label: 'Catalog',
+                  color: 'border-brand-cyan',
+                  labelColor: 'text-brand-cyan',
+                  title: 'Browse international comedy productions.',
+                  desc: 'Filter by cast, language, humor type. Tickle what excites you.',
+                },
+                {
+                  label: 'Pipeline',
+                  color: 'border-brand-yellow',
+                  labelColor: 'text-brand-yellow',
+                  title: 'Every deal. Every conversation. Every stage.',
+                  desc: 'From first tickle to signed contract — you are always in control.',
+                },
+                {
+                  label: 'LaffWire',
+                  color: 'border-brand-pink',
+                  labelColor: 'text-brand-pink',
+                  title: 'Your industry feed.',
+                  desc: 'Post. Connect. Get noticed. The comedy world is smaller than you think.',
+                },
+                {
+                  label: 'My Hub',
+                  color: 'border-white/30',
+                  labelColor: 'text-white',
+                  title: 'Your command center.',
+                  desc: 'Shows, deals, royalties, analytics, contracts. Everything your production needs. Nothing it doesn't.',
+                },
+              ].map((item, i) => (
+                <div key={i} className={`border-4 ${item.color} p-6 md:p-8 space-y-3 bg-brand-surface hover:bg-white/5 transition-all`}>
+                  <p className={`text-[9px] font-black uppercase tracking-[0.4em] italic ${item.labelColor}`}>{item.label}</p>
+                  <p className="text-lg font-black uppercase italic text-white leading-tight">{item.title}</p>
+                  <p className="text-white/40 font-bold italic text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* PRICING */}
         <section className="px-4 md:px-12 py-16 md:py-32" id="pricing">
           <div className="max-w-6xl mx-auto">
