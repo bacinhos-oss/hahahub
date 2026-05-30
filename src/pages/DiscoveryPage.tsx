@@ -1251,7 +1251,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     onClick={(e) => { e.stopPropagation(); toggleShortlist(e, show.id); }}
                     className={"absolute top-2 right-2 w-8 h-8 flex items-center justify-center border-2 transition-all " + (shortlist.includes(show.id) ? "bg-brand-yellow border-brand-yellow text-black" : "bg-black/60 border-white/40 text-white hover:border-brand-yellow hover:text-brand-yellow")}
                   >
-                    <span className="material-symbols-outlined text-base" style={shortlist.includes(show.id) ? {fontVariationSettings:"'FILL' 1"} : {}}>bookmark</span>
+                    <span className="material-symbols-outlined text-base" style={{fontVariationSettings: shortlist.includes(show.id) ? "'FILL' 1" : "'FILL' 0"}}>touch_app</span>
                   </button>
 
                   {/* BOTTOM INFO */}
