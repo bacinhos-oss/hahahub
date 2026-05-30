@@ -109,7 +109,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         filter: `deal_id=eq.${activeDealId}`,
       }, async () => {
         // Reload messages when new one arrives
-        const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDealId).order('created_at', { ascending: true });
+        const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDealId).order('created_at', { ascending: true });
         setMsgs((data || []) as Msg[]);
       })
       .subscribe();
@@ -178,7 +178,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       else setAllTickler(p => p.map(d => d.id === deal.id ? { ...d, is_read: true } : d));
     }
     setMsgLoading(true);
-    const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', deal.id).order('created_at', { ascending: true });
+    const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', deal.id).order('created_at', { ascending: true });
     setMsgs((data || []) as Msg[]);
     setMsgLoading(false);
   };
@@ -207,7 +207,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     const { error } = await supabase.from('deal_messages').insert({ deal_id: activeDeal.id, user_id: user.id, content: msgText.trim(), show_title: activeDeal.show_title });
     if (!error) {
       setMsgText('');
-      const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
+      const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
       setMsgs((data || []) as Msg[]);
     }
     setSendingMsg(false);
@@ -226,7 +226,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         await supabase.from('deal_messages').insert({ deal_id: activeDeal.id, user_id: user.id, content: `FILE:${fileToSend.name}|${fileUrl}`, show_title: activeDeal.show_title });
         setFileToSend(null);
         if (fileInputRef.current) fileInputRef.current.value = '';
-        const { data } = await supabase.from('deal_messages').select('*, profiles(name)').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
+        const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
         setMsgs((data || []) as Msg[]);
         showToast('File sent!');
       }
@@ -578,8 +578,11 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                             <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
                               <div className={"border-2 px-3 py-1.5 " + (isMe ? 'border-brand-yellow/40' : 'border-white/20')}>
                                 {isFile ? (
-                                  <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-brand-cyan font-black italic text-xs hover:underline">
-                                    Attachment: {fileName}
+                                  <a href={fileUrl} download={fileName} target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-brand-cyan/10 border border-brand-cyan/30 px-3 py-2 hover:bg-brand-cyan/20 transition-all group">
+                                    <span className="text-brand-cyan text-[10px] font-black uppercase">Attachment</span>
+                                    <span className="text-white font-bold italic text-xs flex-1 truncate">{fileName}</span>
+                                    <span className="text-brand-cyan text-[9px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity">Download</span>
                                   </a>
                                 ) : (
                                   <p className="text-white font-bold italic text-xs">{msg.content}</p>
