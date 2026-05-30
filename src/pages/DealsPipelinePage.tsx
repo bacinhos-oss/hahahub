@@ -52,7 +52,6 @@ interface Msg {
   user_id: string;
   content: string;
   created_at: string;
-  profiles?: { name: string };
 }
 
 const STATUSES: { key: DealStatus; label: string; dot: string; desc: string; bg: string }[] = [
@@ -94,7 +93,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const msgsEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { loadData(); }, [user, view]);
+  useEffect(() => { loadData(); }, [user?.id, view]);
   useEffect(() => { msgsEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
 
   // Realtime subscription for new messages
@@ -588,7 +587,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                                   <p className="text-white font-bold italic text-xs">{msg.content}</p>
                                 )}
                               </div>
-                              <p className="text-white/20 text-[8px] mt-0.5">{msg.profiles?.name} · {fmtTime(msg.created_at)}</p>
+                              <p className="text-white/20 text-[8px] mt-0.5">{msg.user_id === user.id ? (user.name || 'Me') : (activeDeal?.from_name || 'Them')} · {fmtTime(msg.created_at)}</p>
                             </div>
                           </div>
                         );
