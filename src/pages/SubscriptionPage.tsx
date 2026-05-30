@@ -782,6 +782,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   )}
                 </div>
               </section>
+
+            </div>
+
             {/* PRODUCTION PHOTOS */}
             <div className="mt-8 space-y-4">
               <h3 className="text-lg font-black uppercase italic text-brand-cyan border-b-2 border-brand-cyan/20 pb-2">Photos from Production</h3>
