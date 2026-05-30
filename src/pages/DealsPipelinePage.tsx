@@ -30,7 +30,14 @@ interface Deal {
   territory?: string;
   recipient_id?: string;
   package_type?: string;
-  producer_name?: string;
+}
+
+interface Msg {
+  id: string;
+  deal_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
 }
 
 interface RoyaltyReport {
@@ -47,22 +54,14 @@ interface RoyaltyReport {
   buyer_name: string;
 }
 
-interface Msg {
-  id: string;
-  deal_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-}
-
 const STATUSES: { key: DealStatus; label: string; dot: string; desc: string; bg: string }[] = [
-  { key: 'new',           label: 'New',           dot: 'bg-brand-pink',   desc: 'Inquiry received',     bg: 'bg-brand-pink' },
-  { key: 'contacted',     label: 'Contacted',     dot: 'bg-brand-cyan',   desc: 'You replied',          bg: 'bg-brand-cyan' },
-  { key: 'negotiating',   label: 'Negotiating',   dot: 'bg-brand-yellow', desc: 'In discussion',        bg: 'bg-brand-yellow' },
-  { key: 'contract_sent', label: 'Contract Sent', dot: 'bg-purple-400',   desc: 'Awaiting signature',   bg: 'bg-purple-400' },
-  { key: 'signed',        label: 'Signed',        dot: 'bg-green-400',    desc: 'Deal confirmed',       bg: 'bg-green-400' },
+  { key: 'new',           label: 'New',           dot: 'bg-brand-pink',   desc: 'Inquiry received',      bg: 'bg-brand-pink' },
+  { key: 'contacted',     label: 'Contacted',     dot: 'bg-brand-cyan',   desc: 'You replied',           bg: 'bg-brand-cyan' },
+  { key: 'negotiating',   label: 'Negotiating',   dot: 'bg-brand-yellow', desc: 'In discussion',         bg: 'bg-brand-yellow' },
+  { key: 'contract_sent', label: 'Contract Sent', dot: 'bg-purple-400',   desc: 'Awaiting signature',    bg: 'bg-purple-400' },
+  { key: 'signed',        label: 'Signed',        dot: 'bg-green-400',    desc: 'Deal confirmed',        bg: 'bg-green-400' },
   { key: 'royalties',     label: 'Royalties',     dot: 'bg-orange-400',   desc: 'Tracking performances', bg: 'bg-orange-400' },
-  { key: 'completed',     label: 'Completed',     dot: 'bg-white/30',     desc: 'Deal closed',          bg: 'bg-white/20' },
+  { key: 'completed',     label: 'Completed',     dot: 'bg-white/30',     desc: 'Deal closed',           bg: 'bg-white/20' },
 ];
 
 const fmt = (d?: string) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
@@ -77,7 +76,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [allTickler, setAllTickler] = useState<Deal[]>([]);
   const [royaltyReports, setRoyaltyReports] = useState<RoyaltyReport[]>([]);
   const [msgCounts, setMsgCounts] = useState<Record<string, number>>({});
-  const [producerNames, setProducerNames] = useState<Record<string, string>>({});
+  const [otherNames, setOtherNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
   const [activeDealId, setActiveDealId] = useState<string | null>(null);
@@ -90,7 +89,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const [showSignForm, setShowSignForm] = useState(false);
   const [showRoyaltyForm, setShowRoyaltyForm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [signForm, setSignForm] = useState({ signed_date: '', start_date: '', end_date: '', territory: '', royalty_pct: '', advance_amount: '', max_performances: '' });
+  const [signForm, setSignForm] = useState({ signed_date: '', start_date: '', end_date: '', territory: '', royalty_pct: '', advance_amount: '' });
   const [royaltyForm, setRoyaltyForm] = useState({ date: '', venue: '', tickets: '', ticket_price: '' });
   const msgsEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -98,73 +97,72 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   useEffect(() => { loadData(); }, [user?.id, view]);
   useEffect(() => { msgsEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
 
-  // Realtime subscription for new messages
+  // Realtime - new messages on active deal
   useEffect(() => {
     if (!activeDealId) return;
-    const channel = supabase
-      .channel('deal_messages_' + activeDealId)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'deal_messages',
-        filter: `deal_id=eq.${activeDealId}`,
-      }, async () => {
-        // Reload messages when new one arrives
-        const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDealId).order('created_at', { ascending: true });
-        setMsgs((data || []) as Msg[]);
-      })
+    const ch = supabase.channel('dm_' + activeDealId)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'deal_messages', filter: `deal_id=eq.${activeDealId}` },
+        async () => {
+          const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDealId).order('created_at', { ascending: true });
+          setMsgs((data || []) as Msg[]);
+        })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => { supabase.removeChannel(ch); };
   }, [activeDealId]);
 
-  // Realtime subscription for new messages on all deals (badge counter)
+  // Realtime - badge counter for all deals
   useEffect(() => {
-    const channel = supabase
-      .channel('deal_messages_all_' + user.id)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'deal_messages',
-      }, (payload: any) => {
-        const newMsg = payload.new;
-        // Only count messages from others
-        if (newMsg.user_id !== user.id) {
-          setMsgCounts(p => ({ ...p, [newMsg.deal_id]: (p[newMsg.deal_id] || 0) + 1 }));
-          showToast('New message in ' + (newMsg.show_title || 'a deal'));
-        }
-      })
+    const ch = supabase.channel('dm_all_' + user?.id)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'deal_messages' },
+        (payload: any) => {
+          const msg = payload.new;
+          if (msg.user_id !== user?.id) {
+            setMsgCounts(p => ({ ...p, [msg.deal_id]: (p[msg.deal_id] || 0) + 1 }));
+            showToast('New message in ' + (msg.show_title || 'a deal'));
+          }
+        })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user.id]);
+    return () => { supabase.removeChannel(ch); };
+  }, [user?.id]);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
   const loadData = async () => {
+    if (!user?.id) return;
     setLoading(true);
+
     const [t1, t2, rr] = await Promise.all([
       supabase.from('inquiries').select('*').eq('producer_id', user.id).order('created_at', { ascending: false }),
       supabase.from('inquiries').select('*').eq('recipient_id', user.id).order('created_at', { ascending: false }),
       supabase.from('royalty_reports').select('*').order('date', { ascending: false }),
     ]);
-    if (t1.data) setAllTickled(t1.data as Deal[]);
-    if (t2.data) {
-      setAllTickler(t2.data as Deal[]);
-      // Load producer names for tickler deals
-      const producerIds = [...new Set((t2.data as Deal[]).map(d => d.producer_id).filter(Boolean))];
-      if (producerIds.length > 0) {
-        const { data: profiles } = await supabase.from('profiles').select('id, name').in('id', producerIds);
-        if (profiles) {
-          const names: Record<string, string> = {};
-          profiles.forEach((p: any) => { names[p.id] = p.name; });
-          // Map deal_id to producer name
-          const dealNames: Record<string, string> = {};
-          (t2.data as Deal[]).forEach(d => { dealNames[d.id] = names[d.producer_id] || 'Producer'; });
-          setProducerNames(dealNames);
-        }
+
+    const tickled = (t1.data || []) as Deal[];
+    const tickler = (t2.data || []) as Deal[];
+
+    setAllTickled(tickled);
+    setAllTickler(tickler);
+    if (rr.data) setRoyaltyReports(rr.data as RoyaltyReport[]);
+
+    // Load names for the other person in each deal
+    // For TICKLED: other = from_name (buyer) - already in deal
+    // For TICKLER: other = producer name - need to fetch from profiles
+    const producerIds = [...new Set(tickler.map(d => d.producer_id).filter(Boolean))];
+    const names: Record<string, string> = {};
+    if (producerIds.length > 0) {
+      const { data: profiles } = await supabase.from('profiles').select('id, name').in('id', producerIds);
+      if (profiles) {
+        profiles.forEach((p: any) => { names[p.id] = p.name; });
       }
     }
-    if (rr.data) setRoyaltyReports(rr.data as RoyaltyReport[]);
-    const allDeals = [...(t1.data || []), ...(t2.data || [])];
+    // Map deal_id -> other person name
+    const dealOtherNames: Record<string, string> = {};
+    tickled.forEach(d => { dealOtherNames[d.id] = d.from_name || 'Buyer'; });
+    tickler.forEach(d => { dealOtherNames[d.id] = names[d.producer_id] || 'Producer'; });
+    setOtherNames(dealOtherNames);
+
+    // Load unread message counts
+    const allDeals = [...tickled, ...tickler];
     if (allDeals.length > 0) {
       const counts: Record<string, number> = {};
       for (const deal of allDeals.slice(0, 20)) {
@@ -173,11 +171,15 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       }
       setMsgCounts(counts);
     }
+
     setLoading(false);
   };
 
   const deals = view === 'tickled' ? allTickled : allTickler;
   const activeDeal = deals.find(d => d.id === activeDealId) || null;
+
+  // Name of the other person in active deal
+  const otherName = activeDeal ? (otherNames[activeDeal.id] || 'Them') : 'Them';
 
   const openDeal = async (deal: Deal) => {
     if (activeDealId === deal.id) { setActiveDealId(null); setMsgs([]); return; }
@@ -211,9 +213,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     await supabase.from('inquiries').delete().eq('id', deal.id);
     if (view === 'tickled') setAllTickled(p => p.filter(d => d.id !== deal.id));
     else setAllTickler(p => p.filter(d => d.id !== deal.id));
-    setActiveDealId(null);
-    setMsgs([]);
-    setShowDeleteConfirm(false);
+    setActiveDealId(null); setMsgs([]); setShowDeleteConfirm(false);
     showToast('Deal deleted');
   };
 
@@ -255,7 +255,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     const updates: any = { deal_status: 'signed', contract_signed_date: signForm.signed_date, contract_start_date: signForm.start_date, contract_end_date: signForm.end_date, territory: signForm.territory, royalty_pct: signForm.royalty_pct ? Number(signForm.royalty_pct) : null, advance_amount: signForm.advance_amount ? Number(signForm.advance_amount) : null, last_activity_at: new Date().toISOString() };
     await supabase.from('inquiries').update(updates).eq('id', activeDeal.id);
     try {
-      await fetch('/api/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'deal_signed_producer', to: user.email, data: { show_title: activeDeal.show_title, buyer: activeDeal.from_name, territory: signForm.territory, signed_date: signForm.signed_date } }) });
+      await fetch('/api/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'deal_signed_producer', to: user.email, data: { show_title: activeDeal.show_title, buyer: otherName, territory: signForm.territory, signed_date: signForm.signed_date } }) });
       await fetch('/api/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'deal_signed_buyer', to: activeDeal.from_email, data: { show_title: activeDeal.show_title, producer: user.name, territory: signForm.territory, signed_date: signForm.signed_date } }) });
       await supabase.from('posts').insert({ user_id: user.id, type: 'deal', content: `DEAL SIGNED — "${activeDeal.show_title}"${signForm.territory ? ' · ' + signForm.territory : ''}`, likes_count: 0, is_private: false });
     } catch {}
@@ -289,6 +289,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     const isActive = activeDealId === deal.id;
     const days = daysSince(deal.last_activity_at || deal.created_at);
     const isOverdue = ((deal.deal_status === 'new' || !deal.deal_status) && days >= 7) || (deal.deal_status === 'contract_sent' && days >= 7);
+    const unread = msgCounts[deal.id] || 0;
     return (
       <div onClick={() => openDeal(deal)}
         className={"border-b border-white/10 last:border-b-0 cursor-pointer transition-all " + (isActive ? 'bg-brand-yellow/5 border-l-4 border-l-brand-yellow' : isOverdue ? 'border-l-4 border-l-brand-pink hover:bg-white/3' : 'hover:bg-white/3')}>
@@ -297,9 +298,9 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
             <div className={"w-2 h-2 rounded-full flex-shrink-0 " + s.dot} />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-black uppercase italic text-white text-sm">{deal.from_name}</p>
+                <p className="font-black uppercase italic text-white text-sm">{otherNames[deal.id] || deal.from_name}</p>
                 {!deal.is_read && <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-1.5 py-0.5">NEW</span>}
-                {(msgCounts[deal.id] || 0) > 0 && <span className="text-[7px] font-black uppercase bg-brand-cyan text-black px-1.5 py-0.5">{msgCounts[deal.id]} MSG</span>}
+                {unread > 0 && <span className="text-[7px] font-black uppercase bg-brand-cyan text-black px-1.5 py-0.5 animate-pulse">{unread} MSG</span>}
                 {deal.package_type && <span className={"text-[7px] font-black uppercase px-1.5 py-0.5 " + (deal.package_type === 'full_punch' ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>{deal.package_type === 'full_punch' ? 'FULL PUNCH' : 'SCRIPT'}</span>}
               </div>
               <p className="text-white/30 text-xs">{fmtShort(deal.created_at)}{deal.territory && ` · ${deal.territory}`}</p>
@@ -323,10 +324,12 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         </div>
         <div className="flex gap-3 flex-wrap">
           <div className="flex border-4 border-white/20">
-            <button onClick={() => { setView('tickled'); setActiveDealId(null); setMsgs([]); }} className={"px-4 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickled' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
+            <button onClick={() => { setView('tickled'); setActiveDealId(null); setMsgs([]); }}
+              className={"px-4 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickled' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
               TICKLED <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickled' ? 'bg-black text-brand-yellow' : 'bg-white/10')}>{allTickled.length}</span>
             </button>
-            <button onClick={() => { setView('tickler'); setActiveDealId(null); setMsgs([]); }} className={"px-4 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickler' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
+            <button onClick={() => { setView('tickler'); setActiveDealId(null); setMsgs([]); }}
+              className={"px-4 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickler' ? 'bg-brand-cyan text-black' : 'text-white/40 hover:text-white')}>
               TICKLER <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickler' ? 'bg-black text-brand-cyan' : 'bg-white/10')}>{allTickler.length}</span>
             </button>
           </div>
@@ -356,12 +359,8 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         <p className="text-white/20 font-black uppercase italic">Loading...</p>
       ) : deals.length === 0 ? (
         <div className="border-4 border-white/10 p-12 text-center space-y-3">
-          <p className="text-white/40 font-black uppercase italic text-sm">
-            {view === 'tickled' ? 'No inquiries yet.' : 'You have not tickled any shows yet.'}
-          </p>
-          {view === 'tickler' && (
-            <button onClick={() => onNavigate('discovery')} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Browse Catalog</button>
-          )}
+          <p className="text-white/40 font-black uppercase italic text-sm">{view === 'tickled' ? 'No inquiries yet.' : 'You have not tickled any shows yet.'}</p>
+          {view === 'tickler' && <button onClick={() => onNavigate('discovery')} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Browse Catalog</button>}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
@@ -413,20 +412,14 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                           {s.key === 'new' && <p className="text-white/20 text-[9px] italic mt-0.5">Reply in the message box. Move to Contacted when done.</p>}
                           {s.key === 'contract_sent' && <p className="text-white/20 text-[9px] italic mt-0.5">Mark as Signed button appears. Fill in deal terms.</p>}
                           {s.key === 'signed' && <p className="text-white/20 text-[9px] italic mt-0.5">Emails go to both parties. LaffWire announces the deal.</p>}
-                          {s.key === 'royalties' && <p className="text-white/20 text-[9px] italic mt-0.5">Log each performance. Royalty is calculated automatically.</p>}
+                          {s.key === 'royalties' && <p className="text-white/20 text-[9px] italic mt-0.5">Log each performance. Royalty calculated automatically.</p>}
                         </div>
                       </div>
                     ))}
                   </div>
                   <div className="border-t border-white/10 pt-4 space-y-2">
                     <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">Tips</p>
-                    {[
-                      'TICKLED — inquiries sent to your shows',
-                      'TICKLER — shows you have inquired about',
-                      'Message box sends directly to the other party',
-                      'Send scripts, PDFs or Full Punch materials via file upload',
-                      'Delete a deal if it is no longer relevant',
-                    ].map((tip, i) => (
+                    {['TICKLED — inquiries sent to your shows', 'TICKLER — shows you have inquired about', 'Message box sends directly to the other party', 'Send scripts, PDFs or Full Punch materials via file upload', 'Delete a deal if it is no longer relevant'].map((tip, i) => (
                       <div key={i} className="flex gap-2 items-start">
                         <span className="text-white/30 font-black text-xs flex-shrink-0">—</span>
                         <p className="text-white/30 text-xs italic">{tip}</p>
@@ -446,14 +439,10 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         <span className={"text-[7px] font-black uppercase px-2 py-1 text-black " + (STATUSES.find(s => s.key === (activeDeal.deal_status || 'new'))?.bg || 'bg-brand-pink')}>
                           {STATUSES.find(s => s.key === (activeDeal.deal_status || 'new'))?.label}
                         </span>
-                        {activeDeal.package_type && (
-                          <span className={"text-[7px] font-black uppercase px-2 py-0.5 " + (activeDeal.package_type === 'full_punch' ? 'bg-brand-pink text-white' : 'bg-brand-yellow text-black')}>
-                            {activeDeal.package_type === 'full_punch' ? 'FULL PUNCH' : 'SCRIPT'}
-                          </span>
-                        )}
+                        {activeDeal.package_type && <span className={"text-[7px] font-black uppercase px-2 py-0.5 " + (activeDeal.package_type === 'full_punch' ? 'bg-brand-pink text-white' : 'bg-brand-yellow text-black')}>{activeDeal.package_type === 'full_punch' ? 'FULL PUNCH' : 'SCRIPT'}</span>}
                       </div>
                       <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest truncate">{activeDeal.show_title}</p>
-                      <p className="text-xl font-black uppercase italic text-white">{activeDeal.from_name}</p>
+                      <p className="text-xl font-black uppercase italic text-white">{otherName}</p>
                       <p className="text-white/40 text-xs">{activeDeal.from_email}</p>
                       {activeDeal.message && <p className="text-white/40 text-xs italic mt-2 border-l-2 border-brand-yellow pl-2 line-clamp-2">{activeDeal.message}</p>}
                     </div>
@@ -468,7 +457,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                   )}
                 </div>
 
-                {/* STATUS SELECTOR */}
+                {/* STATUS */}
                 <div className="px-4 py-4 border-b-2 border-white/10">
                   <p className="text-[8px] font-black uppercase italic text-white/30 tracking-widest mb-1">Where is this deal?</p>
                   <p className="text-white/20 text-[9px] italic mb-3">Click a stage to move the deal. Saved automatically.</p>
@@ -498,23 +487,14 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                     {showSignForm && (
                       <div className="mt-4 space-y-3">
                         <div className="grid grid-cols-2 gap-2">
-                          {[
-                            { label: 'Date Signed', key: 'signed_date', type: 'date' },
-                            { label: 'Contract Start', key: 'start_date', type: 'date' },
-                            { label: 'Contract End', key: 'end_date', type: 'date' },
-                            { label: 'Territory', key: 'territory', type: 'text', ph: 'e.g. Norway' },
-                            { label: 'Royalty %', key: 'royalty_pct', type: 'number', ph: '10' },
-                            { label: 'Advance EUR', key: 'advance_amount', type: 'number', ph: '0' },
-                          ].map(f => (
+                          {[{ label: 'Date Signed', key: 'signed_date', type: 'date' }, { label: 'Contract Start', key: 'start_date', type: 'date' }, { label: 'Contract End', key: 'end_date', type: 'date' }, { label: 'Territory', key: 'territory', type: 'text', ph: 'e.g. Norway' }, { label: 'Royalty %', key: 'royalty_pct', type: 'number', ph: '10' }, { label: 'Advance EUR', key: 'advance_amount', type: 'number', ph: '0' }].map(f => (
                             <div key={f.key}>
                               <p className="text-[8px] font-black uppercase italic text-white/30 mb-1">{f.label}</p>
                               <input type={f.type} placeholder={f.ph || ''} value={(signForm as any)[f.key]} onChange={e => setSignForm(p => ({ ...p, [f.key]: e.target.value }))} className={inp} />
                             </div>
                           ))}
                         </div>
-                        <button onClick={markSigned} className="w-full bg-green-400 text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white transition-all">
-                          Confirm — Move to Royalties and Send Emails
-                        </button>
+                        <button onClick={markSigned} className="w-full bg-green-400 text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white transition-all">Confirm — Move to Royalties and Send Emails</button>
                       </div>
                     )}
                   </div>
@@ -525,9 +505,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                   <div className="px-4 py-4 border-b-2 border-white/10">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest">Royalty Reports</p>
-                      <button onClick={() => setShowRoyaltyForm(!showRoyaltyForm)} className="bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-                        {showRoyaltyForm ? 'Cancel' : '+ Add'}
-                      </button>
+                      <button onClick={() => setShowRoyaltyForm(!showRoyaltyForm)} className="bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">{showRoyaltyForm ? 'Cancel' : '+ Add'}</button>
                     </div>
                     {showRoyaltyForm && (
                       <div className="space-y-3 mb-4 border-2 border-brand-yellow/30 p-3">
@@ -554,13 +532,9 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                             <span className="text-brand-yellow font-black">EUR {Number(r.royalty_amount).toLocaleString()}</span>
                           </div>
                         ))}
-                        <div className="flex justify-end pt-2">
-                          <span className="text-brand-yellow font-black">Total: EUR {reportsForDeal.reduce((s, r) => s + Number(r.royalty_amount), 0).toLocaleString()}</span>
-                        </div>
+                        <div className="flex justify-end pt-2"><span className="text-brand-yellow font-black">Total: EUR {reportsForDeal.reduce((s, r) => s + Number(r.royalty_amount), 0).toLocaleString()}</span></div>
                       </div>
-                    ) : (
-                      <p className="text-white/20 text-xs italic">No reports yet. Add the first performance.</p>
-                    )}
+                    ) : <p className="text-white/20 text-xs italic">No reports yet.</p>}
                   </div>
                 )}
 
@@ -568,60 +542,56 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                 <div>
                   <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-brand-cyan/5">
                     <p className="text-[8px] font-black uppercase italic text-brand-cyan tracking-widest">Messages</p>
-                    <p className="text-[8px] text-white/20 italic">Private — only you and {activeDeal.from_name} can see this</p>
+                    <p className="text-[8px] text-white/20 italic">Private — only you and {otherName}</p>
                   </div>
                   <div className="px-4 py-3 space-y-3 min-h-24 max-h-64 overflow-y-auto">
                     {msgLoading ? (
                       <p className="text-white/20 text-xs italic text-center py-4">Loading...</p>
                     ) : msgs.length === 0 ? (
                       <p className="text-white/20 text-xs italic text-center py-4">No messages yet. Write below to start.</p>
-                    ) : (
-                      msgs.map(msg => {
-                        const isMe = msg.user_id === user.id;
-                        const isFile = msg.content.startsWith('FILE:');
-                        let fileName = '';
-                        let fileUrl = '';
-                        if (isFile) {
-                          const parts = msg.content.replace('FILE:', '').split('|');
-                          fileName = parts[0];
-                          fileUrl = parts[1];
-                        }
-                        return (
-                          <div key={msg.id} className={"flex gap-2 " + (isMe ? 'flex-row-reverse' : '')}>
-                            <div className={"w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[8px] font-black border-2 " + (isMe ? 'bg-brand-yellow text-black border-black' : 'bg-brand-cyan text-black border-black')}>
-                              {(msg.user_id === user.id ? (user.name || 'Me') : (activeDeal?.from_name || 'U'))[0].toUpperCase()}
-                            </div>
-                            <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
-                              <div className={"border-2 px-3 py-1.5 " + (isMe ? 'border-brand-yellow/40' : 'border-white/20')}>
-                                {isFile ? (
-                                  <a href={`/api/download?url=${encodeURIComponent(fileUrl)}&name=${encodeURIComponent(fileName)}`} download={fileName}
-                                    className="flex items-center gap-2 bg-brand-cyan/10 border border-brand-cyan/30 px-3 py-2 hover:bg-brand-cyan/20 transition-all group">
-                                    <span className="text-brand-cyan text-[10px] font-black uppercase">Attachment</span>
-                                    <span className="text-white font-bold italic text-xs flex-1 truncate">{fileName}</span>
-                                    <span className="text-brand-cyan text-[9px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity">Download</span>
-                                  </a>
-                                ) : (
-                                  <p className="text-white font-bold italic text-xs">{msg.content}</p>
-                                )}
-                              </div>
-                              <p className="text-white/20 text-[8px] mt-0.5">
-                                {msg.user_id === user.id 
-                                  ? (user.name || 'Me') 
-                                  : (view === 'tickled' ? (activeDeal?.from_name || 'Them') : (producerNames[activeDeal?.id || ''] || 'Producer'))
-                                } · {fmtTime(msg.created_at)}
-                              </p>
-                            </div>
+                    ) : msgs.map(msg => {
+                      const isMe = msg.user_id === user.id;
+                      const isFile = msg.content.startsWith('FILE:');
+                      let fileName = '';
+                      let fileUrl = '';
+                      if (isFile) {
+                        const parts = msg.content.replace('FILE:', '').split('|');
+                        fileName = parts[0];
+                        fileUrl = parts[1];
+                      }
+                      // Name to display
+                      const senderName = isMe ? (user.name || 'Me') : otherName;
+                      const initial = senderName[0]?.toUpperCase() || '?';
+                      return (
+                        <div key={msg.id} className={"flex gap-2 " + (isMe ? 'flex-row-reverse' : '')}>
+                          <div className={"w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[9px] font-black border-2 " + (isMe ? 'bg-brand-yellow text-black border-black' : 'bg-brand-cyan text-black border-black')}>
+                            {initial}
                           </div>
-                        );
-                      })
-                    )}
+                          <div className={"max-w-xs " + (isMe ? 'text-right' : '')}>
+                            <div className={"border-2 px-3 py-2 " + (isMe ? 'border-brand-yellow/40' : 'border-white/20')}>
+                              {isFile ? (
+                                <a href={`/api/download?url=${encodeURIComponent(fileUrl)}&name=${encodeURIComponent(fileName)}`} download={fileName}
+                                  className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                                  <span className="text-brand-cyan text-[10px] font-black uppercase">File</span>
+                                  <span className="text-white font-bold italic text-xs truncate max-w-32">{fileName}</span>
+                                  <span className="text-brand-cyan text-[9px] font-black uppercase">↓</span>
+                                </a>
+                              ) : (
+                                <p className="text-white font-bold italic text-xs">{msg.content}</p>
+                              )}
+                            </div>
+                            <p className="text-white/20 text-[8px] mt-0.5">{senderName} · {fmtTime(msg.created_at)}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
                     <div ref={msgsEndRef} />
                   </div>
                   <div className="border-t-2 border-white/10">
                     <div className="px-4 py-3 flex gap-2">
                       <input type="text" value={msgText} onChange={e => setMsgText(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-                        placeholder={`Message ${activeDeal.from_name}... (Enter to send)`}
+                        placeholder={`Message ${otherName}...`}
                         className="flex-1 bg-black border-2 border-white/20 px-3 py-2 text-white font-bold italic text-xs outline-none focus:border-brand-cyan" />
                       <button onClick={sendMsg} disabled={sendingMsg || !msgText.trim()} className="bg-brand-cyan text-black px-4 font-black uppercase italic text-xs border-2 border-black disabled:opacity-30 hover:bg-white transition-all">
                         {sendingMsg ? '...' : 'Send'}
@@ -643,9 +613,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                 {/* DELETE */}
                 <div className="px-4 py-3 border-t-2 border-white/10">
                   {!showDeleteConfirm ? (
-                    <button onClick={() => setShowDeleteConfirm(true)} className="text-white/20 hover:text-brand-pink transition-colors font-black uppercase italic text-[9px]">
-                      Delete this deal
-                    </button>
+                    <button onClick={() => setShowDeleteConfirm(true)} className="text-white/20 hover:text-brand-pink transition-colors font-black uppercase italic text-[9px]">Delete this deal</button>
                   ) : (
                     <div className="flex items-center gap-3">
                       <p className="text-white/40 text-xs italic flex-1">Delete permanently?</p>
@@ -658,7 +626,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
               </div>
             )}
           </div>
-
         </div>
       )}
     </div>
