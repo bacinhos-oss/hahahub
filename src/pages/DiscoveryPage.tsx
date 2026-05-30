@@ -590,7 +590,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           <p className="text-white/40 text-xs italic">Script only — your production, your vision.</p>
                           <div className="border-t border-white/10 pt-3 space-y-1">
                             <p className="text-brand-yellow font-black text-2xl">
-                              {(selectedShow as any).script_royalty_pct || selectedShow.royaltyRange?.split('-')[0] || '10'}%
+                              {(selectedShow as any).script_royalty_pct || '10'}%
                               <span className="text-white/30 text-xs font-bold ml-1">of gross box office</span>
                             </p>
                             {(selectedShow as any).script_advance_fee > 0 && (
@@ -1035,8 +1035,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     <div class="section-title">Rights & Commercial</div>
     <div class="grid2">
       <div class="stat"><div class="stat-label">License Type</div><div class="stat-value">${show.licenseType}</div></div>
-      <div class="stat"><div class="stat-label">Licensing Model</div><div class="stat-value">${show.licensingModel}</div></div>
-      <div class="stat"><div class="stat-label">Royalty Range</div><div class="stat-value">${show.royaltyRange || 'On request'}</div></div>
+      <div class="stat"><div class="stat-label">License Type</div><div class="stat-value">${show.licenseType || 'License'}</div></div>
       <div class="stat"><div class="stat-label">Advance Fee</div><div class="stat-value">${show.advanceFee || 'On request'}</div></div>
       <div class="stat"><div class="stat-label">Rights Status</div><div class="stat-value">${show.rightsStatus}</div></div>
       <div class="stat"><div class="stat-label">Clearing Speed</div><div class="stat-value">${show.rightsClearingSpeed}</div></div>
@@ -1265,19 +1264,19 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                 {/* BOTTOM BAR */}
                 <div className="border-t-4 border-white/20 group-hover:border-brand-yellow/30 px-3 py-2 space-y-1.5 transition-all">
-                  {/* ROI — royalty range */}
-                  {show.royaltyRange && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-[8px] font-black uppercase text-brand-yellow italic">Royalty</span>
-                      <span className="text-[9px] font-black text-brand-yellow italic">{show.royaltyRange}</span>
-                    </div>
-                  )}
-                  {show.licensingModel && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-[8px] font-black uppercase text-white/30 italic">Model</span>
-                      <span className="text-[9px] font-black text-white/50 italic">{show.licensingModel}</span>
-                    </div>
-                  )}
+                  {/* PACKAGES */}
+                  <div className="flex gap-1 flex-wrap">
+                    {(show as any).hasScriptPackage && (
+                      <span className="text-[8px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">
+                        Script {(show as any).scriptRoyaltyPct ? (show as any).scriptRoyaltyPct + '%' : ''}
+                      </span>
+                    )}
+                    {(show as any).hasFullPunchPackage && (
+                      <span className="text-[8px] font-black uppercase bg-brand-pink/20 text-brand-pink px-1.5 py-0.5">
+                        Full Punch {(show as any).fullPunchRoyaltyPct ? (show as any).fullPunchRoyaltyPct + '%' : ''}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/10">
                     <div className="flex items-center gap-2">
                       <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">

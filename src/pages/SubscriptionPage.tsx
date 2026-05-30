@@ -529,11 +529,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         producer_name: editForm.producerName, producer_email: editForm.producerEmail,
         rights_holder: editForm.rightsHolder, rights_status: editForm.rightsStatus,
         territories_available: editForm.territoriesAvailable, licensed_countries: editForm.licensedCountries,
-        license_type: editForm.licenseType, licensing_model: editForm.licensingModel,
-        exclusivity_level: editForm.exclusivityLevel, royalty_range: editForm.royaltyRange,
-        advance_fee: editForm.advanceFee, rights_clearing_speed: editForm.rightsClearingSpeed,
-        decision_maker_type: editForm.decisionMakerType, risk_profile: editForm.riskProfile,
-        break_even_threshold: editForm.breakEvenThreshold, break_even_performances: Number(editForm.breakEvenPerformances),
+        license_type: editForm.licenseType,
+        exclusivity_level: editForm.exclusivityLevel,
         budget_range: editForm.budgetRange, humor_type: editForm.humorType,
         translations_available: editForm.translationsAvailable,
         translation_rights_included: editForm.translationRightsIncluded,
@@ -698,20 +695,16 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </div>
               </section>
 
-              {/* 04. COMMERCIAL */}
+              {/* 04. RIGHTS */}
               <section className="border-4 border-white/20 p-6">
-                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-6">04. Commercial Bible</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <h3 className="text-lg font-black uppercase italic text-brand-pink mb-4">04. Rights & Identity</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {F('rightsHolder', 'Copyright Holder *')}
+                  {S('rightsStatus', 'Rights Status', ['Available','Co-production Only','Licensed'])}
                   {S('licenseType', 'License Type', ['License','Option','Co-production'])}
-                  {S('licensingModel', 'Licensing Model', ['Royalty-based','Flat fee','Hybrid'])}
                   {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
-                  {S('rightsClearingSpeed', 'Clearing Speed', ['Fast','Medium','Slow'])}
-                  {S('decisionMakerType', 'Decision Maker', ['Single','Committee'])}
-                  {F('royaltyRange', 'Royalty Range')}
-                  {F('advanceFee', 'Advance Fee')}
-                  {S('isSponsorFriendly', 'Sponsor Friendly', ['true','false'])}
-                  {S('isGroupSalesFriendly', 'Group Sales', ['true','false'])}
-                  {S('translationRightsIncluded', 'Translation Rights', ['true','false'])}
+                  {F('territoriesAvailable', 'Territories Available')}
+                  {F('licensedCountries', 'Licensed Countries')}
                 </div>
               </section>
 

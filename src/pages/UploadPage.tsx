@@ -8,35 +8,34 @@ interface UploadPageProps {
   onLogout?: () => void;
   user?: User;
   onUpload: (show: Show) => void;
+  userShowCount?: number;
 }
 
-const inp = "w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-bold outline-none focus:border-brand-cyan";
-const sel = "w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
-const lbl = "block text-[10px] font-black uppercase text-gray-500 mb-2 italic";
+const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-bold outline-none focus:border-brand-cyan text-sm";
+const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
+const lbl = "block text-[9px] font-black uppercase text-white/40 mb-1.5 italic tracking-widest";
+const sec = "bg-brand-surface border-4 border-white p-6 md:p-8 space-y-5";
 
-const compressImage = (file: File, maxWidth: number, quality: number): Promise<File> => {
-  return new Promise((resolve) => {
+const compressImage = (file: File, maxWidth: number, quality: number): Promise<File> =>
+  new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
       const scale = Math.min(1, maxWidth / img.width);
       const canvas = document.createElement('canvas');
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
+      canvas.width = img.width * scale; canvas.height = img.height * scale;
       canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      canvas.toBlob((blob) => {
-        resolve(new File([blob!], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
-      }, 'image/jpeg', quality);
+      canvas.toBlob(blob => resolve(new File([blob!], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' })), 'image/jpeg', quality);
     };
     img.src = url;
   });
-};
 
 const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onUpload, userShowCount = 0 }) => {
   const plan = (user as any)?.plan || 'gigl';
-  const uploadLimit = user?.isAdmin ? 9999 : plan === 'roar' ? 9999 : plan === 'laff' ? 10 : 1;
+  const uploadLimit = user?.isAdmin ? 9999 : plan === 'roar' ? 9999 : plan === 'laff' ? 5 : 1;
   const isAtLimit = userShowCount >= uploadLimit;
+
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -50,40 +49,30 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([null, null, null]);
 
   const [formData, setFormData] = useState({
-    // CORE
-    title: '', author: '', director: '',
-    producerName: user?.name || '', producerEmail: user?.email || '', rightsHolder: '',
-    // CREATIVE
-    genre: 'Comedy', subgenre: '', language: '',
-    originalLanguage: '', translationsAvailable: '', scriptInEnglish: 'false',
-    location: '', humorType: 'Universal',
-    // PRODUCTION
-    maleRoles: '1', femaleRoles: '1', duration: '90',
-    hasIntermission: 'false', productionScale: 'Medium',
-    isTouringFriendly: 'true', stageType: 'Main Stage',
-    technicalComplexity: 'Medium', costumeComplexity: 'Medium',
-    setComplexity: 'Medium', adaptationFlexibility: 'Medium',
-    creativeTeamAvailability: 'Optional', budgetRange: 'Medium',
-    techStaffLighting: '1', techStaffSound: '1', techStaffStagehands: '1',
-    // HISTORY
-    premiereDate: '', premiereLocation: '',
-    productionYear: new Date().getFullYear().toString(),
-    performancesCount: '0', totalAudience: '0',
-    locationsPlayed: '', awards: '', audienceProfile: '',
-    boxOfficeIndicator: 'Emerging', internationalSuccessNotes: '',
-    // RIGHTS
-    rightsStatus: 'Available', territoriesAvailable: 'Global',
-    licensedCountries: '', licenseType: 'License', licensingModel: 'Royalty-based',
-    exclusivityLevel: 'Exclusive', royaltyRange: '8-10%', advanceFee: '',
-    // PACKAGES
-    hasScriptPackage: true, scriptRoyaltyPct: '10', scriptAdvanceFee: '',
-    hasFullPunchPackage: false, fullPunchRoyaltyPct: '15', fullPunchAdvanceFee: '', fullPunchIncludes: '',
-    rightsClearingSpeed: 'Medium', riskProfile: 'Proven hit',
-    breakEvenThreshold: 'Medium', breakEvenPerformances: '40',
-    isSponsorFriendly: 'true', isGroupSalesFriendly: 'true',
-    translationRightsIncluded: 'true',
-    // CONTENT
-    synopsis: '', synopsisEn: '', directorNotes: '', scriptScenario: '', trailerUrl: '',
+    // 00. BASIC INFO
+    englishTitle: '', title: '', author: '', genre: 'Comedy', subgenre: '',
+    originalLanguage: '', humorType: 'Universal', synopsisEn: '',
+    internationalSuccessNotes: '', awards: '', trailerUrl: '', productionYear: new Date().getFullYear().toString(),
+    // 01. PRODUCTION
+    maleRoles: '1', femaleRoles: '1', duration: '90', hasIntermission: 'false',
+    productionScale: 'Medium', stageType: 'Main Stage', isTouringFriendly: 'true',
+    adaptationFlexibility: 'Medium', technicalComplexity: 'Medium',
+    techStaffLighting: '1', techStaffSound: '1', techStaffPrompter: '0', techStaffStagehands: '1',
+    director: '', directorNotes: '', originalProductionSolutions: '',
+    // 02. CREATIVE ASSETS
+    musicAuthor: '', hasOriginalMusic: 'false',
+    videoAuthor: '', hasVideoProjections: 'false', videoDescription: '',
+    scriptInEnglish: 'false', translationsAvailable: '', translationRightsIncluded: 'false',
+    scriptScenario: '',
+    // 03. MARKET PERFORMANCE
+    premiereDate: '', premiereLocation: '', performancesCount: '0',
+    totalAudience: '0', locationsPlayed: '', boxOfficeIndicator: 'Emerging',
+    // 04. RIGHTS
+    rightsHolder: '', rightsStatus: 'Available', territoriesAvailable: 'Global',
+    licensedCountries: '', exclusivityLevel: 'Exclusive', licenseType: 'License',
+    // 05. PACKAGES
+    hasScriptPackage: true, scriptRoyaltyPct: '', scriptAdvanceFee: '',
+    hasFullPunchPackage: false, fullPunchRoyaltyPct: '', fullPunchAdvanceFee: '', fullPunchIncludes: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -107,29 +96,24 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     if (file) {
       const newFiles = [...photoFiles]; newFiles[index] = file; setPhotoFiles(newFiles);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const newPreviews = [...photoPreviews]; newPreviews[index] = reader.result as string; setPhotoPreviews(newPreviews);
-      };
+      reader.onloadend = () => { const p = [...photoPreviews]; p[index] = reader.result as string; setPhotoPreviews(p); };
       reader.readAsDataURL(file);
     }
   };
 
   const handleLaunch = async () => {
     const errors: string[] = [];
-    if (!formData.title?.trim()) errors.push('Production Title');
+    if (!formData.englishTitle?.trim() && !formData.title?.trim()) errors.push('Title');
     if (!formData.author?.trim()) errors.push('Author / Playwright');
     if (!formData.genre?.trim()) errors.push('Genre');
     if (!formData.originalLanguage?.trim()) errors.push('Original Language');
     if (!formData.synopsisEn?.trim()) errors.push('Synopsis in English');
-    if (!formData.maleRoles && Number(formData.maleRoles) !== 0) errors.push('Male Roles');
-    if (!formData.femaleRoles && Number(formData.femaleRoles) !== 0) errors.push('Female Roles');
-    if (!formData.duration) errors.push('Duration (minutes)');
-    if (!formData.location?.trim()) errors.push('Origin City / Country');
+    if (!formData.duration) errors.push('Duration');
     if (!formData.rightsHolder?.trim()) errors.push('Copyright Holder');
-    if (!formData.hasScriptPackage && !formData.hasFullPunchPackage) errors.push('At least one licensing package (Script or Full Punch)');
-    if (formData.hasScriptPackage && !formData.scriptRoyaltyPct) errors.push('Script royalty %');
-    if (formData.hasFullPunchPackage && !formData.fullPunchRoyaltyPct) errors.push('Full Punch royalty %');
-    if (!imagePreview) errors.push('Show image / poster');
+    if (!formData.hasScriptPackage && !formData.hasFullPunchPackage) errors.push('At least one package (Script or Full Punch)');
+    if (formData.hasScriptPackage && !formData.scriptRoyaltyPct) errors.push('Script Royalty %');
+    if (formData.hasFullPunchPackage && !formData.fullPunchRoyaltyPct) errors.push('Full Punch Royalty %');
+    if (!imagePreview) errors.push('Show poster / image');
     if (errors.length > 0) { setValidationErrors(errors); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
 
     let finalImageUrl = imagePreview || '';
@@ -138,10 +122,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
         const compressed = await compressImage(imageFile, 800, 0.75);
         const path = `shows/${Date.now()}.jpg`;
         const { data: uploadData } = await supabase.storage.from('show-images').upload(path, compressed, { cacheControl: '31536000', upsert: false });
-        if (uploadData) {
-          const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path);
-          finalImageUrl = urlData.publicUrl;
-        }
+        if (uploadData) { const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(path); finalImageUrl = urlData.publicUrl; }
       } catch {}
     }
 
@@ -150,185 +131,156 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       const pf = photoFiles[i]; const pp = photoPreviews[i];
       if (pf) {
         try {
-          const compressedPhoto = await compressImage(pf, 600, 0.7);
+          const c = await compressImage(pf, 600, 0.7);
           const path = `shows/photo_${Date.now()}_${i}.jpg`;
-          const { data: pd } = await supabase.storage.from('show-images').upload(path, compressedPhoto, { cacheControl: '31536000', upsert: false });
+          const { data: pd } = await supabase.storage.from('show-images').upload(path, c, { cacheControl: '31536000', upsert: false });
           if (pd) { const { data: pu } = supabase.storage.from('show-images').getPublicUrl(path); uploadedPhotos.push(pu.publicUrl); }
         } catch { if (pp) uploadedPhotos.push(pp); }
       } else if (pp) { uploadedPhotos.push(pp); }
     }
 
-    const newShow: Show = {
-      title: formData.title, author: formData.author, director: formData.director,
-      directorNotes: formData.directorNotes, originalProductionSolutions: formData.originalProductionSolutions,
-      synopsis: formData.synopsisEn || formData.synopsis,
-      trailerUrl: formData.trailerUrl || '',
-      synopsisOriginal: formData.synopsis,
-      originalLanguage: formData.originalLanguage,
-      scriptInEnglish: formData.scriptInEnglish, imageUrl: finalImageUrl,
-      genre: formData.genre, subgenre: formData.subgenre, language: formData.language,
-      location: formData.location, duration: parseInt(formData.duration),
-      maleRoles: parseInt(formData.maleRoles), femaleRoles: parseInt(formData.femaleRoles),
-      canMergeRoles: formData.canMergeRoles === 'true',
-      hasIntermission: formData.hasIntermission === 'true',
-      isDirectorMandatory: formData.isDirectorMandatory === 'true',
-      creativeTeamAvailability: formData.creativeTeamAvailability as Show['creativeTeamAvailability'],
-      productionScale: formData.productionScale as Show['productionScale'],
-      isTouringFriendly: formData.isTouringFriendly === 'true',
-      technicalComplexity: formData.technicalComplexity as Show['technicalComplexity'],
-      costumeComplexity: formData.costumeComplexity as Show['costumeComplexity'],
-      setComplexity: formData.setComplexity as Show['setComplexity'],
-      adaptationFlexibility: formData.adaptationFlexibility as Show['adaptationFlexibility'],
-      scalabilityNotes: formData.scalabilityNotes,
-      stageType: formData.stageType as Show['stageType'],
-      techStaffLighting: parseInt(formData.techStaffLighting),
-      techStaffSound: parseInt(formData.techStaffSound),
-      techStaffPrompter: parseInt(formData.techStaffPrompter),
-      techStaffStagehands: parseInt(formData.techStaffStagehands),
-      techStaffOther: formData.techStaffOther,
-      premiereDate: formData.premiereDate, premiereLocation: formData.premiereLocation,
-      productionYear: parseInt(formData.productionYear),
-      performancesCount: parseInt(formData.performancesCount),
-      totalAudience: parseInt(formData.totalAudience),
-      locationsPlayed: formData.locationsPlayed, buyoutLocations: formData.buyoutLocations,
-      boxOfficeIndicator: formData.boxOfficeIndicator as Show['boxOfficeIndicator'],
-      awards: formData.awards, audienceProfile: formData.audienceProfile,
-      producerName: formData.producerName, producerEmail: formData.producerEmail,
-      rightsHolder: formData.rightsHolder,
-      rightsStatus: formData.rightsStatus as Show['rightsStatus'],
-      territoriesAvailable: formData.territoriesAvailable, licensedCountries: formData.licensedCountries,
-      licenseType: formData.licenseType as Show['licenseType'],
-      licensingModel: formData.licensingModel as Show['licensingModel'],
-      exclusivityLevel: formData.exclusivityLevel as Show['exclusivityLevel'],
-      royaltyRange: formData.royaltyRange, advanceFee: formData.advanceFee,
-      has_script_package: formData.hasScriptPackage === true || formData.hasScriptPackage === 'true',
+    const newShow = {
+      english_title: formData.englishTitle || formData.title,
+      title: formData.title || formData.englishTitle,
+      author: formData.author,
+      director: formData.director,
+      director_notes: formData.directorNotes,
+      original_production_solutions: formData.originalProductionSolutions,
+      synopsis_en: formData.synopsisEn,
+      original_language: formData.originalLanguage,
+      script_in_english: formData.scriptInEnglish,
+      trailer_url: formData.trailerUrl,
+      image_url: finalImageUrl,
+      genre: formData.genre,
+      subgenre: formData.subgenre,
+      language: formData.originalLanguage,
+      humor_type: formData.humorType,
+      awards: formData.awards,
+      international_success_notes: formData.internationalSuccessNotes,
+      production_year: parseInt(formData.productionYear),
+      duration: parseInt(formData.duration),
+      male_roles: parseInt(formData.maleRoles),
+      female_roles: parseInt(formData.femaleRoles),
+      has_intermission: formData.hasIntermission === 'true',
+      production_scale: formData.productionScale,
+      stage_type: formData.stageType,
+      is_touring_friendly: formData.isTouringFriendly === 'true',
+      adaptation_flexibility: formData.adaptationFlexibility,
+      technical_complexity: formData.technicalComplexity,
+      tech_staff_lighting: parseInt(formData.techStaffLighting),
+      tech_staff_sound: parseInt(formData.techStaffSound),
+      tech_staff_prompter: parseInt(formData.techStaffPrompter),
+      tech_staff_stagehands: parseInt(formData.techStaffStagehands),
+      music_author: formData.musicAuthor || null,
+      has_original_music: formData.hasOriginalMusic === 'true',
+      video_author: formData.videoAuthor || null,
+      has_video_projections: formData.hasVideoProjections === 'true',
+      video_description: formData.videoDescription || null,
+      translations_available: formData.translationsAvailable,
+      translation_rights_included: formData.translationRightsIncluded === 'true',
+      script_scenario: formData.scriptScenario,
+      premiere_date: formData.premiereDate,
+      premiere_location: formData.premiereLocation,
+      performances_count: parseInt(formData.performancesCount),
+      total_audience: parseInt(formData.totalAudience),
+      locations_played: formData.locationsPlayed,
+      box_office_indicator: formData.boxOfficeIndicator,
+      rights_holder: formData.rightsHolder,
+      rights_status: formData.rightsStatus,
+      territories_available: formData.territoriesAvailable,
+      licensed_countries: formData.licensedCountries,
+      exclusivity_level: formData.exclusivityLevel,
+      license_type: formData.licenseType,
+      has_script_package: formData.hasScriptPackage === true || (formData.hasScriptPackage as any) === 'true',
       script_royalty_pct: formData.scriptRoyaltyPct ? Number(formData.scriptRoyaltyPct) : null,
       script_advance_fee: formData.scriptAdvanceFee ? Number(formData.scriptAdvanceFee) : null,
-      has_full_punch_package: formData.hasFullPunchPackage === true || formData.hasFullPunchPackage === 'true',
+      has_full_punch_package: formData.hasFullPunchPackage === true || (formData.hasFullPunchPackage as any) === 'true',
       full_punch_royalty_pct: formData.fullPunchRoyaltyPct ? Number(formData.fullPunchRoyaltyPct) : null,
       full_punch_advance_fee: formData.fullPunchAdvanceFee ? Number(formData.fullPunchAdvanceFee) : null,
-      full_punch_includes: formData.fullPunchIncludes,
-      rightsClearingSpeed: formData.rightsClearingSpeed as Show['rightsClearingSpeed'],
-      decisionMakerType: formData.decisionMakerType as Show['decisionMakerType'],
-      riskProfile: formData.riskProfile as Show['riskProfile'],
-      breakEvenThreshold: formData.breakEvenThreshold as Show['breakEvenThreshold'],
-      breakEvenPerformances: parseInt(formData.breakEvenPerformances),
-      budgetRange: formData.budgetRange as Show['budgetRange'],
-      humorType: formData.humorType as Show['humorType'],
-      translationsAvailable: formData.translationsAvailable,
-      translationRightsIncluded: formData.translationRightsIncluded === 'true',
-      isSponsorFriendly: formData.isSponsorFriendly === 'true',
-      isGroupSalesFriendly: formData.isGroupSalesFriendly === 'true',
-      exitScenarios: formData.exitScenarios,
-      originatingProducerTrackRecord: formData.originatingProducerTrackRecord,
-      territoryConflicts: formData.territoryConflicts, mediaConflicts: formData.mediaConflicts,
-      internationalSuccessNotes: formData.internationalSuccessNotes,
-      scriptScenario: formData.scriptScenario,
-      programmingCompatibility: ['Commercial'],
-      transparencyScore: 80, likesCount: 0, viewsCount: 0, inquiriesCount: 0,
-      productionPhotos: uploadedPhotos, is_produced: true,
-    } as Show;
+      full_punch_includes: formData.fullPunchIncludes || null,
+      production_photos: uploadedPhotos,
+      is_produced: true,
+      likes_count: 0, views_count: 0, inquiries_count: 0,
+      producer_name: user?.name || '',
+      producer_email: user?.email || '',
+      user_id: user?.id,
+    };
 
-    onUpload(newShow);
-    setIsSuccess(true);
-    setTimeout(() => { setIsSuccess(false); onNavigate('subscription'); }, 3000);
+    const { data, error } = await supabase.from('shows').insert([newShow]).select().single();
+    if (!error && data) {
+      onUpload(data as unknown as Show);
+      setIsSuccess(true);
+      setTimeout(() => { setIsSuccess(false); onNavigate('subscription'); }, 3000);
+    }
   };
 
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen bg-brand-black flex items-center justify-center">
-        <div className="text-center space-y-6">
-          <div className="text-8xl font-black text-brand-cyan">✓</div>
-          <h2 className="text-5xl font-black uppercase italic text-white">Show Listed! 🎭 🥊</h2>
-          <p className="text-brand-cyan font-bold uppercase tracking-widest">Redirecting to My Hub...</p>
-        </div>
+  if (isSuccess) return (
+    <div className="min-h-screen bg-brand-black flex items-center justify-center">
+      <div className="text-center space-y-6 px-4">
+        <div className="text-6xl font-black text-brand-cyan">✓</div>
+        <h2 className="text-4xl md:text-5xl font-black uppercase italic text-white">Show Listed!</h2>
+        <p className="text-brand-cyan font-bold uppercase tracking-widest text-sm">Redirecting to My Hub...</p>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
-    <div className="flex flex-col min-h-screen bg-brand-black overflow-y-auto text-white">
+    <div className="flex flex-col min-h-screen bg-brand-black text-white">
       <Navigation onNavigate={onNavigate} onLogout={onLogout} activePage="upload" user={user} />
+
       {isAtLimit && (
         <div className="fixed inset-0 z-50 bg-brand-black flex flex-col items-center justify-center gap-6 px-4">
-          <h1 className="text-5xl font-black uppercase italic text-white text-center">
-            {plan === 'gigl' ? 'GIGL limit reached.' : 'LAFF limit reached.'}
-          </h1>
+          <h1 className="text-4xl font-black uppercase italic text-white text-center">Upload limit reached.</h1>
           <p className="text-white/40 font-bold italic text-center max-w-md">
-            {plan === 'gigl' ? `You've used your 1 free show slot. Upgrade to LAFF for up to 10 shows.` : `You've reached 10 shows on LAFF. Upgrade to ROAR for unlimited uploads.`}
+            {plan === 'gigl' ? 'Upgrade to LAFF for up to 5 shows.' : 'Upgrade to ROAR for unlimited uploads.'}
           </p>
-          <div className="flex gap-4">
-            <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all">
-              {plan === 'gigl' ? 'Upgrade to LAFF →' : 'Upgrade to ROAR →'}
-            </button>
-            <button onClick={() => onNavigate('subscription')} className="border-4 border-white text-white px-8 py-4 font-black uppercase italic hover:bg-white hover:text-black transition-all">
-              My Hub
-            </button>
-          </div>
-          <p className="text-white/20 text-xs italic">
-            {plan === 'gigl' ? '1/1 show used' : `${userShowCount}/10 shows used`}
-          </p>
+          <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all">
+            Upgrade →
+          </button>
         </div>
       )}
-      <main className="pt-40 pb-24 px-8">
-        <div className="max-w-6xl mx-auto space-y-16">
+
+      <main className="pt-32 pb-24 px-4 md:px-8">
+        <div className="max-w-5xl mx-auto space-y-8">
+
           <header>
-            <h1 className="text-7xl md:text-[120px] font-black uppercase italic leading-[0.8] tracking-tighter">
+            <h1 className="text-5xl md:text-7xl font-black uppercase italic leading-none">
               LIST YOUR <span className="text-brand-pink">SHOW</span>
             </h1>
+            <p className="text-white/30 text-xs italic mt-2 font-black uppercase tracking-widest">
+              Fields marked <span className="text-brand-pink">*</span> are required before publishing.
+            </p>
           </header>
 
           {validationErrors.length > 0 && (
-            <div className="bg-brand-pink border-4 border-black p-6">
-              <p className="font-black uppercase italic mb-2">Missing required fields:</p>
-              <p className="text-sm font-bold">{validationErrors.join(', ')}</p>
+            <div className="bg-brand-pink border-4 border-black p-5">
+              <p className="font-black uppercase italic mb-2 text-sm">Please fill in:</p>
+              <ul className="space-y-1">{validationErrors.map((e, i) => <li key={i} className="text-sm font-bold">• {e}</li>)}</ul>
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            <div className="lg:col-span-8 space-y-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-6">
 
-              {/* 00. RIGHTS & IDENTITY */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
-                <h3 className="text-2xl font-black uppercase italic text-brand-cyan mb-8">00. Rights & Identity</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div><label className={lbl}>Production Company</label><input name="producerName" value={formData.producerName} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Producer Email</label><input name="producerEmail" value={formData.producerEmail} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Copyright Holder *</label><input name="rightsHolder" value={formData.rightsHolder} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white/20 px-5 py-4 text-brand-yellow font-bold outline-none focus:border-brand-yellow" /></div>
-                  <div><label className={lbl}>Rights Status</label>
-                    <select name="rightsStatus" value={formData.rightsStatus} onChange={handleInputChange} className={sel}>
-                      <option value="Available">Available</option>
-                      <option value="Co-production Only">Co-production Only</option>
-                      <option value="Licensed">Licensed</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Territories Available</label><input name="territoriesAvailable" value={formData.territoriesAvailable} onChange={handleInputChange} className={inp} placeholder="Global, Europe..." /></div>
-                  <div><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} /></div>
-
-
+              {/* 00. BASIC INFO */}
+              <section className={sec + " shadow-neo-cyan"}>
+                <div className="border-b-2 border-white/10 pb-3 mb-2">
+                  <h3 className="text-xl font-black uppercase italic text-brand-cyan">00. Basic Info</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">What your show is about.</p>
                 </div>
-              </section>
-
-              {/* 01. CREATIVE ENGINE */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
-                <h3 className="text-2xl font-black uppercase italic text-brand-pink mb-8">01. Creative Engine</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="col-span-2"><label className={lbl}>Production Title *</label><input name="title" value={formData.title} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-6 py-5 text-white font-bold uppercase text-2xl focus:border-brand-yellow outline-none" /></div>
-                  <div><label className={lbl}>Author / Playwright *</label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Genre *</label><input name="genre" value={formData.genre} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Subgenre</label><input name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={inp} placeholder="Farce, Satire..." /></div>
-                  <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
-                  <div><label className={lbl}>Performance Language</label><input name="language" value={formData.language} onChange={handleInputChange} className={inp} placeholder="English, German..." /></div>
-                  <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
-                  <div><label className={lbl}>Script in English</label>
-                    <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
-                      <option value="true">Yes — full script</option>
-                      <option value="partial">Yes — partial / synopsis only</option>
-                      <option value="false">No</option>
-                    </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className={lbl}>English Title * <span className="text-white/20 normal-case font-normal">(main title for international buyers)</span></label>
+                    <input name="englishTitle" value={formData.englishTitle} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl focus:border-brand-yellow outline-none" placeholder="SHOW TITLE IN ENGLISH" />
                   </div>
-                  <div><label className={lbl}>Origin Market *</label><input name="location" value={formData.location} onChange={handleInputChange} className={inp} placeholder="Slovenia, USA..." /></div>
+                  <div className="sm:col-span-2">
+                    <label className={lbl}>Original Title (if different)</label>
+                    <input name="title" value={formData.title} onChange={handleInputChange} className={inp} placeholder="Original language title" />
+                  </div>
+                  <div><label className={lbl}>Author / Playwright *</label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
+                  <div><label className={lbl}>Genre *</label><input name="genre" value={formData.genre} onChange={handleInputChange} className={inp} placeholder="Comedy, Dark Comedy..." /></div>
+                  <div><label className={lbl}>Subgenre</label><input name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={inp} placeholder="Satire, Farce, Absurdist..." /></div>
                   <div><label className={lbl}>Humor Type</label>
                     <select name="humorType" value={formData.humorType} onChange={handleInputChange} className={sel}>
                       <option value="Universal">Universal</option>
@@ -337,298 +289,295 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       <option value="Physical Comedy">Physical Comedy</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
-                  <div className="col-span-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-yellow mb-2 italic">Synopsis in English *</label>
-                    <p className="text-white/30 text-xs italic mb-2">Required — this is what international producers will read first.</p>
-                    <textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={5} className="w-full bg-brand-black border-2 border-brand-yellow/30 p-6 text-white text-lg italic leading-relaxed outline-none focus:border-brand-yellow"></textarea>
-                  </div>
-                  <div className="col-span-2">
-                    <label className={lbl}>Synopsis (Original Language)</label>
-                    <textarea name="synopsis" value={formData.synopsis} onChange={handleInputChange} rows={4} className="w-full bg-brand-black border-2 border-white/10 p-6 text-white italic leading-relaxed outline-none focus:border-brand-pink"></textarea>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-brand-cyan mb-2 italic">🎬 Trailer / Teaser URL</label>
-                    <p className="text-white/30 text-xs italic mb-2">YouTube or Vimeo link — producers want to see the show before inquiring.</p>
-                    <input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-brand-cyan/30 p-4 text-white outline-none focus:border-brand-cyan" placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..." />
-                  </div>
-                  <div className="col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={3} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
-                  <div className="col-span-2"><label className={lbl}>International Success Notes</label><textarea name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} rows={2} className="w-full bg-brand-black border-2 border-white/10 p-4 text-white italic outline-none focus:border-brand-cyan"></textarea></div>
-
-                  <div className="col-span-2 bg-brand-black border-4 border-brand-yellow p-6 space-y-4">
-                    <div>
-                      <label className="block text-[10px] font-black uppercase text-brand-yellow mb-1 italic tracking-widest">Script Scenario — 3 Pages in English *</label>
-                      <p className="text-[9px] text-gray-500 italic mb-4">Public preview visible to all producers. Paste the first 3 pages of the script in English.</p>
-                      <textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={18} className="w-full bg-black border-2 border-white/10 p-6 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow"></textarea>
-                    </div>
-                  </div>
+                  <div><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Awards</label><input name="awards" value={formData.awards} onChange={handleInputChange} className={inp} placeholder="Best Comedy, Best Director..." /></div>
+                  <div><label className={lbl}>Trailer URL</label><input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className={inp} placeholder="https://youtube.com/..." /></div>
+                  <div className="sm:col-span-2"><label className={lbl}>Synopsis in English * <span className="text-white/20 normal-case font-normal">(for international buyers)</span></label><textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={4} className={inp} placeholder="Write a compelling synopsis in English..." /></div>
+                  <div className="sm:col-span-2"><label className={lbl}>International Success Notes</label><input name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} className={inp} placeholder="Toured X countries, won festival Y..." /></div>
                 </div>
               </section>
 
-              {/* 02. PRODUCTION & CAST */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-yellow">
-                <h3 className="text-2xl font-black uppercase italic text-brand-yellow mb-8">02. Production & Cast</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {/* 01. PRODUCTION */}
+              <section className={sec + " shadow-neo-magenta"}>
+                <div className="border-b-2 border-white/10 pb-3 mb-2">
+                  <h3 className="text-xl font-black uppercase italic text-brand-pink">01. Production</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">Cast, technical requirements and staging.</p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div><label className={lbl}>Male Roles *</label><input name="maleRoles" type="number" value={formData.maleRoles} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Female Roles *</label><input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Duration (min) *</label><input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
-
                   <div><label className={lbl}>Intermission</label>
                     <select name="hasIntermission" value={formData.hasIntermission} onChange={handleInputChange} className={sel}>
                       <option value="false">No</option><option value="true">Yes</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Production Scale</label>
+                  <div><label className={lbl}>Scale</label>
                     <select name="productionScale" value={formData.productionScale} onChange={handleInputChange} className={sel}>
                       <option value="Small">Small</option><option value="Medium">Medium</option><option value="Large">Large</option>
                     </select>
                   </div>
                   <div><label className={lbl}>Stage Type</label>
                     <select name="stageType" value={formData.stageType} onChange={handleInputChange} className={sel}>
-                      <option value="Main Stage">Main Stage</option><option value="Black Box">Black Box</option>
-                      <option value="Arena">Arena</option><option value="Open Air">Open Air</option>
+                      <option value="Main Stage">Main Stage</option><option value="Black Box">Black Box</option><option value="Arena">Arena</option><option value="Open Air">Open Air</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Touring Friendly</label>
+                  <div><label className={lbl}>Touring</label>
                     <select name="isTouringFriendly" value={formData.isTouringFriendly} onChange={handleInputChange} className={sel}>
-                      <option value="true">Yes</option><option value="false">No</option>
+                      <option value="true">Touring friendly</option><option value="false">Not touring</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Technical Complexity</label>
+                  <div><label className={lbl}>Adaptation</label>
+                    <select name="adaptationFlexibility" value={formData.adaptationFlexibility} onChange={handleInputChange} className={sel}>
+                      <option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Sound Staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Stagehands</label><input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Technical</label>
                     <select name="technicalComplexity" value={formData.technicalComplexity} onChange={handleInputChange} className={sel}>
                       <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Costume Complexity</label>
-                    <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Set Complexity</label>
-                    <select name="setComplexity" value={formData.setComplexity} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Adaptation Flexibility</label>
-                    <select name="adaptationFlexibility" value={formData.adaptationFlexibility} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Director Mandatory</label>
-                    <select name="isDirectorMandatory" value={formData.isDirectorMandatory} onChange={handleInputChange} className={sel}>
-                      <option value="false">No</option><option value="true">Yes</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Creative Team</label>
-                    <select name="creativeTeamAvailability" value={formData.creativeTeamAvailability} onChange={handleInputChange} className={sel}>
-                      <option value="Optional">Optional</option><option value="Required">Required</option><option value="Not required">Not required</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Budget Range</label>
-                    <select name="budgetRange" value={formData.budgetRange} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-
                 </div>
-                <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-6">
-                  <div><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Sound Staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Prompter</label><input name="techStaffPrompter" type="number" value={formData.techStaffPrompter} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Stagehands</label><input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Other Tech</label><input name="techStaffOther" value={formData.techStaffOther} onChange={handleInputChange} className={inp} placeholder="SFX, Video..." /></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
+                  <div className="sm:col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={2} className={inp} placeholder="Vision, approach, key staging decisions..." /></div>
+                  <div className="sm:col-span-2"><label className={lbl}>Original Production Solutions</label><textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={2} className={inp} placeholder="Unique staging, set design, technical innovations..." /></div>
+                </div>
+              </section>
+
+              {/* 02. CREATIVE ASSETS */}
+              <section className={sec + " shadow-neo-yellow"}>
+                <div className="border-b-2 border-white/10 pb-3 mb-2">
+                  <h3 className="text-xl font-black uppercase italic text-brand-yellow">02. Creative Assets</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">Music, video and script materials.</p>
+                </div>
+                <div className="space-y-4">
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label className={lbl}>Music Author / Composer</label><input name="musicAuthor" value={formData.musicAuthor} onChange={handleInputChange} className={inp} placeholder="Composer name" /></div>
+                      <div><label className={lbl}>Original Music</label>
+                        <select name="hasOriginalMusic" value={formData.hasOriginalMusic} onChange={handleInputChange} className={sel}>
+                          <option value="false">No — licensed / existing</option>
+                          <option value="true">Yes — original composition</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label className={lbl}>Video / AV Author</label><input name="videoAuthor" value={formData.videoAuthor} onChange={handleInputChange} className={inp} placeholder="Video artist name" /></div>
+                      <div><label className={lbl}>Has Video Projections</label>
+                        <select name="hasVideoProjections" value={formData.hasVideoProjections} onChange={handleInputChange} className={sel}>
+                          <option value="false">No</option>
+                          <option value="true">Yes — original video</option>
+                        </select>
+                      </div>
+                      {formData.hasVideoProjections === 'true' && (
+                        <div className="sm:col-span-2"><label className={lbl}>Video Description</label><input name="videoDescription" value={formData.videoDescription} onChange={handleInputChange} className={inp} placeholder="e.g. 4 back projections, 20min, abstract animations" /></div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label className={lbl}>Script in English</label>
+                        <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
+                          <option value="false">No</option>
+                          <option value="partial">Synopsis only</option>
+                          <option value="true">Full script</option>
+                        </select>
+                      </div>
+                      <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
+                      <div><label className={lbl}>Translation Rights</label>
+                        <select name="translationRightsIncluded" value={formData.translationRightsIncluded} onChange={handleInputChange} className={sel}>
+                          <option value="false">Not included</option>
+                          <option value="true">Included</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div><label className={lbl}>Script Excerpt / Scenario (3 pages in English)</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={4} className={inp} placeholder="Paste a short excerpt or scene description..." /></div>
+                  </div>
                 </div>
               </section>
 
               {/* 03. MARKET PERFORMANCE */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-cyan">
-                <h3 className="text-2xl font-black uppercase italic text-brand-cyan mb-8">03. Market Performance</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <section className={sec + " shadow-neo-cyan"}>
+                <div className="border-b-2 border-white/10 pb-3 mb-2">
+                  <h3 className="text-xl font-black uppercase italic text-brand-cyan">03. Market Performance</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">Track record and audience data.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div><label className={lbl}>Premiere Date</label><input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Premiere Location</label><input name="premiereLocation" value={formData.premiereLocation} onChange={handleInputChange} className={inp} placeholder="Theatre name, City" /></div>
                   <div><label className={lbl}>Total Performances</label><input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Total Audience</label><input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Locations Played</label><input name="locationsPlayed" value={formData.locationsPlayed} onChange={handleInputChange} className={inp} placeholder="London, Berlin, NYC..." /></div>
-                  <div><label className={lbl}>Buyout Locations</label><input name="buyoutLocations" value={formData.buyoutLocations} onChange={handleInputChange} className={inp} placeholder="None" /></div>
+                  <div><label className={lbl}>Locations Played</label><input name="locationsPlayed" value={formData.locationsPlayed} onChange={handleInputChange} className={inp} placeholder="Ljubljana, Berlin, London..." /></div>
                   <div><label className={lbl}>Box Office</label>
                     <select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className={sel}>
-                      <option value="High">High</option><option value="Medium">Medium</option><option value="Emerging">Emerging</option>
+                      <option value="High">High — sold out regularly</option>
+                      <option value="Medium">Medium — consistent</option>
+                      <option value="Emerging">Emerging — early stage</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Risk Profile</label>
-                    <select name="riskProfile" value={formData.riskProfile} onChange={handleInputChange} className={sel}>
-                      <option value="Proven hit">Proven Hit</option><option value="Moderate risk">Moderate Risk</option><option value="Experimental">Experimental</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Break Even Threshold</label>
-                    <select name="breakEvenThreshold" value={formData.breakEvenThreshold} onChange={handleInputChange} className={sel}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Break Even Performances</label><input name="breakEvenPerformances" type="number" value={formData.breakEvenPerformances} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Awards</label><input name="awards" value={formData.awards} onChange={handleInputChange} className={inp} placeholder="Fringe First 2024..." /></div>
-                  <div><label className={lbl}>Audience Profile</label><input name="audienceProfile" value={formData.audienceProfile} onChange={handleInputChange} className={inp} placeholder="Ages 25-65, Urban..." /></div>
-                  <div><label className={lbl}>Producer Track Record</label><input name="originatingProducerTrackRecord" value={formData.originatingProducerTrackRecord} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Exit Scenarios</label><input name="exitScenarios" value={formData.exitScenarios} onChange={handleInputChange} className={inp} placeholder="Standard termination..." /></div>
                 </div>
               </section>
 
-              {/* 04. COMMERCIAL BIBLE */}
-              <section className="bg-brand-surface border-4 border-white p-10 shadow-neo-magenta">
-                <h3 className="text-2xl font-black uppercase italic text-brand-pink mb-8">04. Commercial Bible</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* 04. RIGHTS */}
+              <section className={sec + " shadow-neo-magenta"}>
+                <div className="border-b-2 border-white/10 pb-3 mb-2">
+                  <h3 className="text-xl font-black uppercase italic text-brand-pink">04. Rights & Identity</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">Ownership and availability.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2"><label className={lbl}>Copyright Holder *</label><input name="rightsHolder" value={formData.rightsHolder} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-brand-yellow/40 px-4 py-3 text-brand-yellow font-bold outline-none focus:border-brand-yellow text-sm" /></div>
+                  <div><label className={lbl}>Rights Status</label>
+                    <select name="rightsStatus" value={formData.rightsStatus} onChange={handleInputChange} className={sel}>
+                      <option value="Available">Available</option>
+                      <option value="Co-production Only">Co-production Only</option>
+                      <option value="Licensed">Licensed</option>
+                    </select>
+                  </div>
                   <div><label className={lbl}>License Type</label>
                     <select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className={sel}>
-                      <option value="License">License</option><option value="Option">Option</option><option value="Co-production">Co-production</option>
+                      <option value="License">License</option>
+                      <option value="Option">Option</option>
+                      <option value="Co-production">Co-production</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Licensing Model</label>
-                    <select name="licensingModel" value={formData.licensingModel} onChange={handleInputChange} className={sel}>
-                      <option value="Royalty-based">Royalty-based</option><option value="Flat fee">Flat fee</option><option value="Hybrid">Hybrid</option>
-                    </select>
-                  </div>
+                  <div><label className={lbl}>Territories Available</label><input name="territoriesAvailable" value={formData.territoriesAvailable} onChange={handleInputChange} className={inp} placeholder="Global, Europe..." /></div>
+                  <div><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} placeholder="Already licensed in..." /></div>
                   <div><label className={lbl}>Exclusivity</label>
                     <select name="exclusivityLevel" value={formData.exclusivityLevel} onChange={handleInputChange} className={sel}>
-                      <option value="Exclusive">Exclusive</option><option value="Semi-exclusive">Semi-exclusive</option><option value="Non-exclusive">Non-exclusive</option>
+                      <option value="Exclusive">Exclusive per territory</option>
+                      <option value="Semi-exclusive">Semi-exclusive</option>
+                      <option value="Non-exclusive">Non-exclusive</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Rights Clearing Speed</label>
-                    <select name="rightsClearingSpeed" value={formData.rightsClearingSpeed} onChange={handleInputChange} className={sel}>
-                      <option value="Fast">Fast</option><option value="Medium">Medium</option><option value="Slow">Slow</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Decision Maker</label>
-                    <select name="decisionMakerType" value={formData.decisionMakerType} onChange={handleInputChange} className={sel}>
-                      <option value="Single">Single</option><option value="Committee">Committee</option>
-                    </select>
-                  </div>
-                  <div><label className={lbl}>Royalty Range</label><input name="royaltyRange" value={formData.royaltyRange} onChange={handleInputChange} className={inp} placeholder="8-10% GBO" /></div>
-                  <div><label className={lbl}>Advance Fee</label><input name="advanceFee" value={formData.advanceFee} onChange={handleInputChange} className={inp} placeholder="€2,000" /></div>
+                </div>
+              </section>
+
+              {/* 05. PACKAGES */}
+              <section className={sec + " border-brand-yellow shadow-neo-yellow"}>
+                <div className="border-b-2 border-white/10 pb-3 mb-2">
+                  <h3 className="text-xl font-black uppercase italic text-brand-yellow">05. Licensing Packages</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">What you offer and at what price. Buyers choose when they send an inquiry.</p>
                 </div>
 
-                {/* ── PACKAGES ── */}
-                <div className="border-4 border-brand-yellow/30 p-5 space-y-5">
-                  <div>
-                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">Licensing Packages</p>
-                    <p className="text-white/30 text-xs italic">Define what you offer and at what price. Buyers will select a package when they send an inquiry.</p>
+                {/* SCRIPT */}
+                <div className={"border-4 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/50" : "border-white/10")}>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
+                      onChange={e => setFormData(p => ({ ...p, hasScriptPackage: e.target.checked }))}
+                      className="w-4 h-4 accent-brand-yellow" />
+                    <label htmlFor="hasScript" className="font-black uppercase italic text-white cursor-pointer">Script Package</label>
                   </div>
-
-                  {/* SCRIPT PACKAGE */}
-                  <div className={"border-2 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/60" : "border-white/10")}>
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
-                        onChange={e => setFormData((p: any) => ({...p, hasScriptPackage: e.target.checked}))}
-                        className="w-4 h-4 accent-brand-yellow" />
-                      <label htmlFor="hasScript" className="font-black uppercase italic text-white text-sm cursor-pointer">
-                        🎭 SCRIPT — Script only license
-                      </label>
+                  <p className="text-white/30 text-xs italic pl-7">Script only license. Buyer produces independently.</p>
+                  {formData.hasScriptPackage && (
+                    <div className="grid grid-cols-2 gap-3 pl-7">
+                      <div>
+                        <label className={lbl}>Royalty % *</label>
+                        <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="10" />
+                        <p className="text-white/20 text-[9px] italic mt-1">% of gross box office</p>
+                      </div>
+                      <div>
+                        <label className={lbl}>Advance Fee (EUR)</label>
+                        <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
+                        <p className="text-white/20 text-[9px] italic mt-1">Optional upfront payment</p>
+                      </div>
                     </div>
-                    <p className="text-white/30 text-xs italic pl-7">Buyer gets the script and produces independently. Lower royalty, maximum creative freedom for buyer.</p>
-                    {formData.hasScriptPackage && (
-                      <div className="grid grid-cols-2 gap-3 pl-7">
+                  )}
+                </div>
+
+                {/* FULL PUNCH */}
+                <div className={"border-4 p-4 space-y-3 " + (formData.hasFullPunchPackage ? "border-brand-pink/50" : "border-white/10")}>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="hasFullPunch" checked={!!formData.hasFullPunchPackage}
+                      onChange={e => setFormData(p => ({ ...p, hasFullPunchPackage: e.target.checked }))}
+                      className="w-4 h-4 accent-brand-pink" />
+                    <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white cursor-pointer">Full Punch Package</label>
+                  </div>
+                  <p className="text-white/30 text-xs italic pl-7">Script + complete know-how: director notes, video, music. All royalties in one rate.</p>
+                  {formData.hasFullPunchPackage && (
+                    <div className="space-y-3 pl-7">
+                      <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className={lbl}>Royalty %</label>
-                          <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="e.g. 10" />
-                          <p className="text-white/20 text-[9px] italic mt-1">% of gross box office per performance</p>
+                          <label className={lbl}>Royalty % *</label>
+                          <input type="number" name="fullPunchRoyaltyPct" value={formData.fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="15" />
+                          <p className="text-white/20 text-[9px] italic mt-1">Includes video + music</p>
                         </div>
                         <div>
                           <label className={lbl}>Advance Fee (EUR)</label>
-                          <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="e.g. 1000" />
-                          <p className="text-white/20 text-[9px] italic mt-1">One-time upfront payment (optional)</p>
+                          <input type="number" name="fullPunchAdvanceFee" value={formData.fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
                         </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* FULL PUNCH PACKAGE */}
-                  <div className={"border-2 p-4 space-y-3 " + (formData.hasFullPunchPackage ? "border-brand-pink/60" : "border-white/10")}>
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id="hasFullPunch" checked={!!formData.hasFullPunchPackage}
-                        onChange={e => setFormData((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))}
-                        className="w-4 h-4 accent-brand-pink" />
-                      <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white text-sm cursor-pointer">
-                        🥊 FULL PUNCH — Complete know-how package
-                      </label>
+                      <div><label className={lbl}>What's Included (optional)</label><input name="fullPunchIncludes" value={formData.fullPunchIncludes} onChange={handleInputChange} className={inp} placeholder="e.g. 4 video projections, original score by..." /></div>
                     </div>
-                    <p className="text-white/30 text-xs italic pl-7">Script + production know-how: director's notes, set design reference, costume design reference, lighting/sound plan, original video material (back projections, AV content), original music. Buyer decides what to use.</p>
-                    {formData.hasFullPunchPackage && (
-                      <div className="space-y-3 pl-7">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className={lbl}>Royalty %</label>
-                            <input type="number" name="fullPunchRoyaltyPct" value={formData.fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="e.g. 15" />
-                            <p className="text-white/20 text-[9px] italic mt-1">Includes video + music royalties</p>
-                          </div>
-                          <div>
-                            <label className={lbl}>Advance Fee (EUR)</label>
-                            <input type="number" name="fullPunchAdvanceFee" value={formData.fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="e.g. 3000" />
-                          </div>
-                        </div>
-                        <div>
-                          <label className={lbl}>What's included (optional detail)</label>
-                          <input name="fullPunchIncludes" value={formData.fullPunchIncludes} onChange={handleInputChange} className={inp} placeholder="e.g. 4 video projections, original score by..." />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="flex gap-6">
-                    <div className="flex-1"><label className={lbl}>Sponsor Friendly</label>
-                      <select name="isSponsorFriendly" value={formData.isSponsorFriendly} onChange={handleInputChange} className={sel}>
-                        <option value="true">Yes</option><option value="false">No</option>
-                      </select>
-                    </div>
-                    <div className="flex-1"><label className={lbl}>Group Sales</label>
-                      <select name="isGroupSalesFriendly" value={formData.isGroupSalesFriendly} onChange={handleInputChange} className={sel}>
-                        <option value="true">Yes</option><option value="false">No</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div><label className={lbl}>Translation Rights</label>
-                    <select name="translationRightsIncluded" value={formData.translationRightsIncluded} onChange={handleInputChange} className={sel}>
-                      <option value="true">Included</option><option value="false">Separate</option>
-                    </select>
-                  </div>
+                  )}
                 </div>
               </section>
 
             </div>
 
             {/* SIDEBAR */}
-            <div className="lg:col-span-4">
-              <div className="bg-white text-black p-10 shadow-neo-white sticky top-32 space-y-8">
-                <div>
-                  <h3 className="text-xl font-black uppercase italic border-b-4 border-black pb-4 text-brand-pink mb-4">Poster Visual *</h3>
-                  <div onClick={() => fileInputRef.current?.click()} className="w-full h-56 border-4 border-dashed border-black/20 flex flex-col items-center justify-center cursor-pointer hover:border-brand-pink overflow-hidden bg-gray-50">
-                    {imagePreview ? <img src={imagePreview} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/20 text-6xl">add_a_photo</span>}
-                    <p className="mt-2 text-[8px] font-black uppercase text-gray-400">Click to upload</p>
-                  </div>
-                  <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
-                </div>
+            <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 lg:self-start">
 
-                <div>
-                  <h3 className="text-xl font-black uppercase italic border-b-4 border-black pb-4 text-brand-cyan mb-4">Production Photos</h3>
-                  <div className="space-y-3">
-                    {[0, 1, 2].map(i => (
-                      <div key={i}>
-                        <div onClick={() => photoRefs[i].current?.click()} className="w-full border-2 border-dashed border-black/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-gray-50" style={{aspectRatio:"16/9"}}>
-                          {photoPreviews[i] ? <img src={photoPreviews[i]!} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-black/20 text-3xl">add_photo_alternate</span>}
+              {/* POSTER */}
+              <div className="bg-brand-surface border-4 border-white p-5 space-y-3 shadow-neo-magenta">
+                <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Show Poster *</p>
+                <div className="relative aspect-[2/3] bg-brand-black border-2 border-white/20 overflow-hidden cursor-pointer hover:border-brand-yellow transition-colors"
+                  onClick={() => fileInputRef.current?.click()}>
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-4xl text-white/20">add_photo_alternate</span>
+                      <p className="text-white/20 text-xs font-black uppercase italic">Upload Poster</p>
+                    </div>
+                  )}
+                </div>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                <button onClick={() => fileInputRef.current?.click()} className="w-full border-2 border-white/20 text-white/40 py-2 font-black uppercase italic text-xs hover:border-white hover:text-white transition-all">
+                  {imagePreview ? 'Change Image' : 'Choose Image'}
+                </button>
+              </div>
+
+              {/* PRODUCTION PHOTOS */}
+              <div className="bg-brand-surface border-4 border-white p-5 space-y-3 shadow-neo-cyan">
+                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Production Photos</p>
+                <p className="text-white/20 text-[9px] italic">Up to 3 photos from the production.</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[0, 1, 2].map(i => (
+                    <div key={i} className="relative aspect-square bg-brand-black border-2 border-white/20 overflow-hidden cursor-pointer hover:border-brand-cyan transition-colors"
+                      onClick={() => photoRefs[i].current?.click()}>
+                      {photoPreviews[i] ? (
+                        <img src={photoPreviews[i]!} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-xl text-white/20">add_photo_alternate</span>
                         </div>
-                        <input type="file" ref={photoRefs[i]} onChange={handlePhotoChange(i)} className="hidden" accept="image/*" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t-4 border-black">
-                  <button onClick={handleLaunch} className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-cyan hover:bg-black transition-all italic tracking-[0.2em] text-xl">
-                    Showload
-                  </button>
+                      )}
+                      <input ref={photoRefs[i]} type="file" accept="image/*" onChange={handlePhotoChange(i)} className="hidden" />
+                    </div>
+                  ))}
                 </div>
               </div>
+
+              {/* LAUNCH */}
+              <button onClick={handleLaunch}
+                className="w-full bg-brand-yellow text-black py-5 font-black uppercase italic text-lg border-4 border-black hover:bg-white hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all shadow-neo-yellow">
+                SHOWLOAD IT →
+              </button>
+
+              <p className="text-white/20 text-[9px] italic text-center">
+                By listing you confirm you hold the rights to this show.
+              </p>
             </div>
           </div>
         </div>
