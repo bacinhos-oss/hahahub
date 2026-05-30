@@ -132,82 +132,77 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           </button>
           
           <div className="flex flex-col lg:flex-row">
-            <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
-                <div className="flex flex-col h-full">
-                  {/* POSTER */}
-                  <div className="relative flex-shrink-0" style={{height: '55%', minHeight: '280px'}}>
-                    <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center" alt={selectedShow.title} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                    <div className="absolute top-4 left-4 z-10">
-   
-                    </div>
-                    <div className="absolute bottom-3 left-4 z-10">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-white/50 italic">Poster</p>
-                    </div>
-                  </div>
-
-                  {/* PRODUCTION PHOTOS */}
-                  <div className="border-t-4 border-white flex-1 px-3 pt-3 pb-3">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan italic mb-3">Photos from Production</p>
-                    <div className="space-y-2">
-                      {[0, 1, 2].map(i => (
-                        <div key={i} className="w-full border-2 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center" style={{aspectRatio:"16/9"}}>
-                          {selectedShow.productionPhotos && selectedShow.productionPhotos[i] ? (
-                            <img src={selectedShow.productionPhotos[i]} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
-                          ) : (
-                            <span className="material-symbols-outlined text-white/10 text-3xl">add_photo_alternate</span>
-                          )}
+            {/* LEFT — POSTER + PHOTOS */}
+            <div className="lg:w-80 flex-shrink-0 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black">
+              {/* POSTER */}
+              <div className="relative" style={{aspectRatio: '2/3'}}>
+                <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-top" alt={selectedShow.title} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 z-10 flex gap-1 flex-wrap">
+                  <span className="bg-brand-cyan text-black text-[7px] font-black uppercase px-1.5 py-0.5">{selectedShow.genre}</span>
+                  {selectedShow.productionYear && <span className="bg-white/20 text-white text-[7px] font-black uppercase px-1.5 py-0.5">{selectedShow.productionYear}</span>}
+                </div>
+              </div>
+              {/* PRODUCTION PHOTOS */}
+              {selectedShow.productionPhotos && selectedShow.productionPhotos.some(p => p) && (
+                <div className="border-t-4 border-white p-3">
+                  <p className="text-[8px] font-black uppercase text-brand-cyan italic mb-2 tracking-widest">Production Photos</p>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      selectedShow.productionPhotos?.[i] ? (
+                        <div key={i} className="aspect-square overflow-hidden border border-white/20">
+                          <img src={selectedShow.productionPhotos[i]} alt={"Photo " + (i+1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                         </div>
-                      ))}
-                    </div>
+                      ) : null
+                    ))}
                   </div>
                 </div>
+              )}
             </div>
 
-            <div className="flex-1 p-4 md:p-12 space-y-16 overflow-x-hidden">
+            {/* RIGHT — CONTENT */}
+            <div className="flex-1 p-4 md:p-8 space-y-8 overflow-x-hidden min-w-0">
               {isGuest ? (
-                <div className="flex flex-col items-center justify-center text-center py-24 space-y-8">
-                  <span className="material-symbols-outlined text-8xl text-brand-pink">lock_person</span>
-                  <h2 className="text-4xl font-display uppercase italic text-white">PRODUCER TIER ONLY</h2>
-                  <p className="text-gray-400 italic font-bold">Registration required to view full scripts, commercial Bible, and technical rider.</p>
-                  <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase text-sm border-4 border-white shadow-neo-magenta italic">Unlock Full Dossier</button>
+                <div className="flex flex-col items-center justify-center text-center py-16 space-y-6">
+                  <span className="material-symbols-outlined text-6xl text-brand-pink">lock_person</span>
+                  <h2 className="text-3xl font-black uppercase italic text-white">Producer Access Only</h2>
+                  <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 py-3 font-black uppercase text-sm border-4 border-white italic">Login to View →</button>
                 </div>
               ) : (
-                <div className="space-y-16">
+                <div className="space-y-8">
                   {/* HEADER */}
-                  <div className="flex flex-row justify-between items-start gap-3">
-                    <div className="flex-1 min-w-0 pr-2">
-                      <span className="bg-brand-cyan text-black px-3 py-1 text-[10px] font-black uppercase italic mb-2 inline-block">PRODUCTION DOSSIER v{selectedShow.productionYear}</span>
-                      <h2 className="text-4xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter italic break-words">{selectedShow.title}</h2>
-                      <p className="text-base md:text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <span className="bg-brand-cyan text-black px-2 py-0.5 text-[9px] font-black uppercase italic mb-2 inline-block">Production Dossier · {selectedShow.productionYear}</span>
+                      <h2 className="text-3xl md:text-5xl font-black uppercase leading-none italic break-words">{(selectedShow as any).english_title || (selectedShow as any).englishTitle || selectedShow.title}</h2>
+                      {((selectedShow as any).english_title || (selectedShow as any).englishTitle) && selectedShow.title !== ((selectedShow as any).english_title) && (
+                        <p className="text-white/30 text-sm italic mt-1">{selectedShow.title}</p>
+                      )}
+                      <p className="text-sm font-bold text-white/40 italic mt-2">{selectedShow.duration} min · {selectedShow.genre}</p>
                     </div>
-                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-4 transition-all mt-8 ${isFavorited ? 'bg-brand-pink text-white border-black shadow-neo-white' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
-                      <span className="material-symbols-outlined text-2xl font-black">favorite</span>
+                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-10 w-10 flex-shrink-0 flex items-center justify-center border-4 transition-all ${isFavorited ? 'bg-brand-pink text-white border-black' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
+                      <span className="material-symbols-outlined text-lg font-black">favorite</span>
                     </button>
                   </div>
 
-                  {/* TRAILER VIDEO */}
+                  {/* TRAILER — right after title */}
                   {(selectedShow as any).trailer_url && (
-                    <section className="space-y-4">
-                      <h4 className="text-xl font-black uppercase italic text-brand-cyan">🎬 TRAILER</h4>
-                      <div className="relative w-full border-4 border-brand-cyan" style={{paddingBottom:'56.25%'}}>
-                        <iframe
-                          className="absolute inset-0 w-full h-full"
-                          src={(() => {
-                            const url = (selectedShow as any).trailer_url;
-                            if (url.includes('youtube.com/watch')) return url.replace('watch?v=', 'embed/');
-                            if (url.includes('youtu.be/')) return 'https://www.youtube.com/embed/' + url.split('youtu.be/')[1];
-                            if (url.includes('vimeo.com/')) return 'https://player.vimeo.com/video/' + url.split('vimeo.com/')[1];
-                            return url;
-                          })()}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      </div>
-                    </section>
+                    <div className="relative w-full border-4 border-brand-cyan" style={{paddingBottom:'56.25%'}}>
+                      <iframe className="absolute inset-0 w-full h-full"
+                        src={(() => {
+                          const url = (selectedShow as any).trailer_url;
+                          if (url.includes('youtube.com/watch')) return url.replace('watch?v=', 'embed/');
+                          if (url.includes('youtu.be/')) return 'https://www.youtube.com/embed/' + url.split('youtu.be/')[1];
+                          if (url.includes('vimeo.com/')) return 'https://player.vimeo.com/video/' + url.split('vimeo.com/')[1];
+                          return url;
+                        })()}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
                   )}
 
-                  {/* SYNOPSIS - MOVED HIGHER AS REQUESTED */}
+                  {/* SYNOPSIS */}
                   <section className="space-y-6">
                     <h4 className="text-xl font-black uppercase italic text-brand-pink">SYNOPSIS</h4>
                     {(selectedShow as any).synopsis_en && (
