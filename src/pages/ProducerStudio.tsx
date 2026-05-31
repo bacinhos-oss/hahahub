@@ -167,7 +167,9 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       {tab === 'dashboard' && (() => {
         // ── HELPERS ──
         const totalViews = myShows.reduce((s: number, sh: any) => s + (sh.viewsCount || 0), 0);
-        const totalInq = analyticsInquiries.length;
+        const totalInq = analyticsInquiries.length > 0
+          ? analyticsInquiries.length
+          : myShows.reduce((s: number, sh: any) => s + (sh.inquiriesCount || 0), 0);
         const conversion = totalViews > 0 ? Math.round((totalInq / totalViews) * 100) : 0;
         const activeDeals = analyticsInquiries.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
         const signedDeals = analyticsInquiries.filter((i: any) => ['signed','royalties','completed'].includes(i.deal_status || '')).length;
