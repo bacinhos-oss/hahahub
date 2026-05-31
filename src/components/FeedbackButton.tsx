@@ -7,22 +7,29 @@ const FeedbackButton: React.FC = () => {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const [error, setError] = useState('');
+
   const handleSend = async () => {
     if (!message.trim()) return;
     setSending(true);
+    setError('');
     try {
-      await fetch('/api/send-email', {
+      const res = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'feedback',
-          to: 'bacinhos@gmail.com',
+          to: 'info@hahahub.art',
           data: { feedbackType: type, message, url: window.location.href, ts: new Date().toISOString() }
         })
       });
+      const json = await res.json();
+      if (!res.ok) { setError(json.error || 'Send failed'); setSending(false); return; }
       setSent(true);
-      setTimeout(() => { setSent(false); setOpen(false); setMessage(''); setType('bug'); }, 2000);
-    } catch {}
+      setTimeout(() => { setSent(false); setOpen(false); setMessage(''); setType('bug'); setError(''); }, 2500);
+    } catch (e: any) {
+      setError(e?.message || 'Network error');
+    }
     setSending(false);
   };
 
@@ -90,6 +97,7 @@ const FeedbackButton: React.FC = () => {
                   >
                     {sending ? 'Sending...' : 'Punch It Out →'}
                   </button>
+                  {error && <p className="text-brand-pink text-[10px] font-black text-center">{error}</p>}
                 </>
               )}
             </div>
