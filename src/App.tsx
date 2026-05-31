@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage'
 import PrivacyPage from './pages/PrivacyPage'
 import UploadPage from './pages/UploadPage'
 import CookieBanner from './components/CookieBanner'
+import FeedbackButton from './components/FeedbackButton'
 import NotFoundPage from './pages/NotFoundPage'
 import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
@@ -26,6 +27,7 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [shows, setShows] = useState<Show[]>([])
   const [currentProducerId, setCurrentProducerId] = useState<string | undefined>(undefined)
+  const [currentShowId, setCurrentShowId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
 
@@ -410,7 +412,7 @@ const App: React.FC = () => {
 
     switch (effectivePage) {
       case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
-      case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} onViewProducer={(id) => setCurrentProducerId(id)} />
+      case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} onViewProducer={(id) => setCurrentProducerId(id)} initialShowId={currentShowId} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={(id) => setShows(prev => prev.filter(s => s.id !== id))} />
       case 'login': return <LoginPage 
         onSuccess={(isPaid: boolean) => setCurrentPage('discovery')} 
@@ -425,7 +427,7 @@ const App: React.FC = () => {
       case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onViewProducer={(id) => { setCurrentProducerId(id); setCurrentPage('producer'); }} />
       case 'stefunny': return <StefunnyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} shows={shows} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} />
-      case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} />
+      case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} onViewShow={(id) => { setCurrentShowId(id); setCurrentPage('discovery'); }} />
       case 'pipeline':
         return currentUser
           ? <DealsPipelinePage user={currentUser} onNavigate={(p) => setCurrentPage(p as Page)} />
@@ -438,6 +440,7 @@ const App: React.FC = () => {
     <div className="min-h-screen">
       {renderPage()}
       <CookieBanner />
+      <FeedbackButton />
       <Analytics />
     </div>
   )

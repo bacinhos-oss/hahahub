@@ -187,6 +187,33 @@ h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 
 
+  feedback: ({ feedbackType, message, url, ts }) => ({
+    subject: `[HahaHub Beta] ${feedbackType.toUpperCase()} — ${new Date(ts).toLocaleDateString('en-GB')}`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+.logo { font-size: 24px; font-weight: 900; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
+.badge { padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; background: ${feedbackType === 'bug' ? '#FF0266' : feedbackType === 'idea' ? '#FFDE03; color: #000' : '#03DAC6; color: #000'}; }
+.msg { background: #111; border-left: 4px solid ${feedbackType === 'bug' ? '#FF0266' : feedbackType === 'idea' ? '#FFDE03' : '#03DAC6'}; padding: 20px; margin: 16px 0; font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.8); }
+.meta { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 24px; }
+</style></head>
+<body>
+<div class="container">
+  <div class="logo">HAHAHUB</div>
+  <div class="badge">${feedbackType === 'bug' ? '🐛 Bug Report' : feedbackType === 'idea' ? '💡 Idea' : '💬 Feedback'}</div>
+  <div class="msg">${message.replace(/\n/g, '<br>')}</div>
+  <div class="meta">
+    <p>URL: ${url}</p>
+    <p>Time: ${new Date(ts).toLocaleString('en-GB')}</p>
+  </div>
+</div>
+</body>
+</html>`
+  }),
+
   inquiry_confirmation: ({ buyerName, showTitle, producerName, message, hasAttachment }) => ({
     subject: `Your Tickle Has Been Sent — ${showTitle}`,
     html: `
