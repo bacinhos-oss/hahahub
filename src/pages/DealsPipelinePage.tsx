@@ -358,7 +358,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       </div>
 
       {/* STATS */}
-      <div style={{ minHeight: '800px' }}>
+      <div style={{ minHeight: '900px', contain: 'layout' }}>
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: 'New', value: deals.filter(d => (d.deal_status || 'new') === 'new').length, color: 'text-brand-pink' },
@@ -404,14 +404,13 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
 
           {/* LEFT */}
-          <div className="space-y-4 min-h-96">
-            {/* HINT */}
-            <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">touch_app</span>
-              Click a deal to open messages &amp; manage
-            </p>
+          <div className="space-y-2 min-h-96">
             {viewMode === 'list' ? (
               <div className="border-4 border-white/20 overflow-hidden">
+                <div className="px-4 py-2 border-b border-white/10 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-sm text-white/20">touch_app</span>
+                  <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest">Click a deal to open messages &amp; manage</p>
+                </div>
                 {deals.map(deal => <DealRow key={deal.id} deal={deal} />)}
               </div>
             ) : (
