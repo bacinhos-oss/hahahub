@@ -1327,7 +1327,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 </div>
 
                 {analyticsData.length === 0 ? (
-                  <p className="text-white/20 font-bold italic">No shows to analyze yet. Upload a show first.</p>
+                  <div className="py-16 text-center space-y-3">
+                    <p className="text-4xl">📊</p>
+                    <p className="text-white/20 font-black uppercase italic">No data yet.</p>
+                    <p className="text-white/10 text-xs italic">Upload a show to start tracking views and inquiries.</p>
+                  </div>
                 ) : (<>
 
                   {/* BEST PERFORMER */}
@@ -1652,7 +1656,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     </div>
                     {userUploads.length === 0 ? (
                       <div>
-                        <p className="text-white/20 italic text-sm mb-3">No shows yet.</p>
+                        <div className="py-6 text-center space-y-2">
+                          <p className="text-3xl">🎭</p>
+                          <p className="text-white/20 italic text-sm">No shows yet.</p>
+                        </div>
                         <button onClick={() => onNavigate('upload')} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">+ Showload</button>
                       </div>
                     ) : userUploads.slice(0, 4).map((show: any) => (
@@ -1679,7 +1686,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       <button onClick={() => setActiveTab('pipeline')} className="text-[9px] font-black uppercase italic text-brand-pink border border-brand-pink/30 px-3 py-1 hover:bg-brand-pink hover:text-white transition-all">All →</button>
                     </div>
                     {inquiries.length === 0 ? (
-                      <p className="text-white/20 italic text-sm">No deals yet.</p>
+                      <div className="py-4 text-center space-y-1">
+                        <p className="text-2xl">📭</p>
+                        <p className="text-white/20 italic text-xs">No deals yet. Time to get tickled.</p>
+                      </div>
                     ) : inquiries.slice(0, 4).map((inq: any) => {
                       const status = inq.deal_status || 'new';
                       const colors: Record<string, string> = { new: 'bg-brand-pink text-white', contacted: 'bg-brand-cyan text-black', negotiating: 'bg-brand-yellow text-black', contract_sent: 'bg-purple-400 text-black', signed: 'bg-green-400 text-black', royalties: 'bg-orange-400 text-black', completed: 'bg-white/20 text-white' };
@@ -1705,7 +1715,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       <button onClick={() => onNavigate('discovery')} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">Browse →</button>
                     </div>
                     {(user?.favorites || []).length === 0 ? (
-                      <p className="text-white/20 italic text-sm">No shows saved yet.</p>
+                      <div className="py-4 text-center space-y-1">
+                        <p className="text-2xl">👆</p>
+                        <p className="text-white/20 italic text-xs">Nothing saved yet. Go tickle something.</p>
+                      </div>
                     ) : (user?.favorites || []).slice(0, 4).map((id: string) => {
                       const show = shows.find((s: any) => s.id === id);
                       if (!show) return null;

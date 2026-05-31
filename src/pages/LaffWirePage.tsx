@@ -186,8 +186,10 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                   ))}
                 </div>
               ) : posts.length === 0 ? (
-                <div className="py-20 text-center">
-                  <p className="text-white/20 font-black uppercase italic text-lg">Nothing on the wire yet.</p>
+                <div className="py-20 text-center space-y-4">
+                  <p className="text-5xl">📡</p>
+                  <p className="text-white/40 font-black uppercase italic text-lg">Wire's quiet.</p>
+                  <p className="text-white/20 text-sm italic">No industry news yet. Be the first to punch it out.</p>
                 </div>
               ) : (
                 <div className="space-y-0">

@@ -14,10 +14,11 @@ interface DiscoveryPageProps {
   onUpdateStats: (id: string, type: 'view' | 'inquiry') => void;
   shows: Show[];
   onViewProducer?: (producerId: string) => void;
+  initialShowId?: string | null;
 }
 
-const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpdateStats, shows, onViewProducer }) => {
-  const [selectedShowId, setSelectedShowId] = useState<string | null>(null);
+const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpdateStats, shows, onViewProducer, initialShowId }) => {
+  const [selectedShowId, setSelectedShowId] = useState<string | null>(initialShowId || null);
   const [inquiryShowId, setInquiryShowId] = useState<string | null>(null);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [inquirySuccess, setInquirySuccess] = useState(false);
@@ -1511,9 +1512,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </div>
               ))
             ) : filteredShows.length === 0 ? (
-              <div className="col-span-3 py-32 text-center">
-                <p className="text-white/20 font-black uppercase italic text-2xl">Shush.</p>
-                <p className="text-white/10 font-black uppercase italic text-sm mt-2">Nothing to tickle here. Adjust your filters.</p>
+              <div className="col-span-3 py-32 text-center space-y-4">
+                <p className="text-5xl">🔍</p>
+                <p className="text-white/40 font-black uppercase italic text-2xl">Shush.</p>
+                <p className="text-white/20 font-black uppercase italic text-sm">Nothing matches your filters.</p>
+                <p className="text-white/10 text-xs italic">Try adjusting genre, language or search term.</p>
               </div>
             ) : filteredShows.map((show, index) => {
               const plan = (user as any)?.plan || 'gigl';
