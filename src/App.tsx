@@ -397,10 +397,14 @@ const App: React.FC = () => {
   }
 
   const renderPage = () => {
-    // After loading, redirect paid users from landing to discovery
+    const userShowCount = shows.filter(s => (s as any).user_id === currentUser?.id).length
+    const uploadLimit = currentUser?.isAdmin ? 9999 : currentUser?.plan === 'roar' ? 9999 : currentUser?.plan === 'laff' ? 5 : 1
+    const isAtLimit = userShowCount >= uploadLimit
+
     const effectivePage = (() => {
-      if (currentPage === 'landing' && currentUser) return 'discovery' // all logged in users go to catalog
-      if ((currentPage === 'upload') && currentUser && !currentUser.isPaid && !currentUser.isAdmin) return 'landing'
+      if (currentPage === 'landing' && currentUser) return 'discovery'
+      if (currentPage === 'upload' && !currentUser) return 'landing'
+      if (currentPage === 'upload' && currentUser && !currentUser.isAdmin && isAtLimit) return 'subscription'
       return currentPage
     })()
 
