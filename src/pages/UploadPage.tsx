@@ -365,13 +365,95 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                 </div>
               </section>
 
-              {/* 02. CREATIVE ASSETS */}
-              <section className={sec + " shadow-neo-yellow"}>
+              {/* 02. FULL PUNCH */}
+              <section className={sec + " shadow-neo-magenta border-brand-pink"}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
-                  <h3 className="text-xl font-black uppercase italic text-brand-yellow">02. Creative Assets</h3>
-                  <p className="text-white/30 text-xs italic mt-0.5">Music, video and script materials.</p>
+                  <h3 className="text-xl font-black uppercase italic text-brand-pink">02. Full Punch</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">Your complete know-how package. Mark what you have — buyers see exactly what they get.</p>
                 </div>
-                <div className="space-y-4">
+
+                {/* ENABLE FULL PUNCH */}
+                <div className={"border-4 p-4 space-y-4 " + ((formData as any).hasFullPunchPackage ? "border-brand-pink/50 bg-brand-pink/5" : "border-white/10")}>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="hasFullPunch" checked={!!(formData as any).hasFullPunchPackage}
+                      onChange={e => setFormData(p => ({ ...p, hasFullPunchPackage: e.target.checked }))}
+                      className="w-4 h-4 accent-brand-pink" />
+                    <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white cursor-pointer text-lg">🥊 Offer Full Punch Package</label>
+                  </div>
+                  <p className="text-white/30 text-xs italic pl-7">Enable to let buyers license your complete production know-how. Script is always included.</p>
+
+                  {(formData as any).hasFullPunchPackage && (
+                    <div className="space-y-5 pl-0 pt-2">
+
+                      {/* Pricing */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={lbl}>Full Punch Royalty % *</label>
+                          <input type="number" name="fullPunchRoyaltyPct" value={(formData as any).fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="15" />
+                          <p className="text-white/20 text-[9px] italic mt-1">All royalties in one rate</p>
+                        </div>
+                        <div>
+                          <label className={lbl}>Advance Fee (EUR)</label>
+                          <input type="number" name="fullPunchAdvanceFee" value={(formData as any).fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
+                        </div>
+                      </div>
+
+                      {/* Know-How Contents */}
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-brand-pink/60 tracking-widest mb-3">What's In The Package</p>
+                        <div className="grid grid-cols-1 gap-2">
+                          {[
+                            { key: 'fpTheScript',          label: '📄 The Script',             desc: 'Complete script + stage directions', locked: true },
+                            { key: 'fpThePlaybook',        label: '📋 The Playbook',            desc: "Director's complete production notes" },
+                            { key: 'fpTheSoundtrack',      label: '🎵 The Soundtrack',          desc: 'Original music files + cue sheet' },
+                            { key: 'fpTheVisuals',         label: '🎬 The Visuals',             desc: 'Video projection files + technical specs' },
+                            { key: 'fpTheWardrobe',        label: '👗 The Wardrobe',            desc: 'Costume design sketches + supplier list' },
+                            { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint',       desc: 'Set design plans + construction notes' },
+                            { key: 'fpTheTechRider',       label: '🔧 The Tech Rider',          desc: 'Full technical requirements document' },
+                            { key: 'fpThePromoKit',        label: '📸 The Promo Kit',           desc: 'Press photos, trailer, marketing assets' },
+                            { key: 'fpTheHandoverSession', label: '🤝 The Handover Session',    desc: 'Live session with director / creative team' },
+                          ].map(({ key, label, desc, locked }) => (
+                            <div key={key} className={"flex items-start gap-3 p-3 border " + ((formData as any)[key] ? 'border-brand-pink/40 bg-brand-pink/5' : 'border-white/10')}>
+                              <input type="checkbox" id={key} checked={locked ? true : !!(formData as any)[key]}
+                                disabled={locked}
+                                onChange={e => setFormData(p => ({ ...p, [key]: e.target.checked }))}
+                                className="w-4 h-4 accent-brand-pink mt-0.5 flex-shrink-0" />
+                              <label htmlFor={key} className={"cursor-pointer " + (locked ? 'opacity-50' : '')}>
+                                <span className="font-black uppercase italic text-white text-xs">{label}</span>
+                                {locked && <span className="text-[8px] text-brand-yellow/60 ml-2 uppercase">always included</span>}
+                                <p className="text-white/30 text-[9px] italic mt-0.5">{desc}</p>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Punch Language + Support */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={lbl}>Punch Language</label>
+                          <select name="fpPunchLanguage" value={(formData as any).fpPunchLanguage || 'EN'} onChange={handleInputChange} className={sel}>
+                            {['EN','SI','DE','FR','IT','ES','HR','PL','CZ','HU','RO'].map(l => <option key={l} value={l}>{l}</option>)}
+                          </select>
+                          <p className="text-white/20 text-[9px] italic mt-1">Language of all documentation</p>
+                        </div>
+                        <div className="flex flex-col justify-center gap-2 pt-4">
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" id="fpPunchSupport" checked={!!(formData as any).fpPunchSupport}
+                              onChange={e => setFormData(p => ({ ...p, fpPunchSupport: e.target.checked }))}
+                              className="w-4 h-4 accent-brand-pink" />
+                            <label htmlFor="fpPunchSupport" className="font-black uppercase italic text-white text-xs cursor-pointer">🤝 Punch Support</label>
+                          </div>
+                          <p className="text-white/20 text-[9px] italic pl-7">Creative team available for buyer onboarding</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* CREATIVE DETAILS — always visible, inform the dossier */}
+                <div className="space-y-3 pt-2">
+                  <p className="text-[9px] font-black uppercase text-white/20 tracking-widest">Production Assets Info</p>
                   <div className="border-2 border-white/10 p-4 space-y-3">
                     <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -478,11 +560,11 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                 </div>
               </section>
 
-              {/* 05. PACKAGES */}
+              {/* 05. LICENSING PACKAGES */}
               <section className={sec + " border-brand-yellow shadow-neo-yellow"}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
                   <h3 className="text-xl font-black uppercase italic text-brand-yellow">05. Licensing Packages</h3>
-                  <p className="text-white/30 text-xs italic mt-0.5">What you offer and at what price. Buyers choose when they send an inquiry.</p>
+                  <p className="text-white/30 text-xs italic mt-0.5">Script only license — for buyers who produce independently. Full Punch is configured in section 02.</p>
                 </div>
 
                 {/* SCRIPT PACKAGE */}
@@ -505,84 +587,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                         <label className={lbl}>Advance Fee (EUR)</label>
                         <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
                         <p className="text-white/20 text-[9px] italic mt-1">Optional upfront payment</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* FULL PUNCH PACKAGE */}
-                <div className={"border-4 p-4 space-y-4 " + ((formData as any).hasFullPunchPackage ? "border-brand-pink/50" : "border-white/10")}>
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" id="hasFullPunch" checked={!!(formData as any).hasFullPunchPackage}
-                      onChange={e => setFormData(p => ({ ...p, hasFullPunchPackage: e.target.checked }))}
-                      className="w-4 h-4 accent-brand-pink" />
-                    <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white cursor-pointer">🥊 Full Punch — Complete Know-How Package</label>
-                  </div>
-                  <p className="text-white/30 text-xs italic pl-7">Everything a buyer needs to produce your show. No calls, no guesswork.</p>
-
-                  {(formData as any).hasFullPunchPackage && (
-                    <div className="space-y-4 pl-7">
-                      {/* Pricing */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className={lbl}>Royalty % *</label>
-                          <input type="number" name="fullPunchRoyaltyPct" value={(formData as any).fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="15" />
-                          <p className="text-white/20 text-[9px] italic mt-1">All royalties included</p>
-                        </div>
-                        <div>
-                          <label className={lbl}>Advance Fee (EUR)</label>
-                          <input type="number" name="fullPunchAdvanceFee" value={(formData as any).fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
-                        </div>
-                      </div>
-
-                      {/* Know-How Contents */}
-                      <div>
-                        <p className="text-[9px] font-black uppercase text-brand-pink/60 tracking-widest mb-3">What's In The Package</p>
-                        <div className="grid grid-cols-1 gap-2">
-                          {[
-                            { key: 'fpTheScript',          label: '📄 The Script',             desc: 'Complete script + stage directions', locked: true },
-                            { key: 'fpThePlaybook',        label: '📋 The Playbook',            desc: "Director's complete production notes" },
-                            { key: 'fpTheSoundtrack',      label: '🎵 The Soundtrack',          desc: 'Original music files + cue sheet' },
-                            { key: 'fpTheVisuals',         label: '🎬 The Visuals',             desc: 'Video projection files + technical specs' },
-                            { key: 'fpTheWardrobe',        label: '👗 The Wardrobe',            desc: 'Costume design sketches + supplier list' },
-                            { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint',       desc: 'Set design plans + construction notes' },
-                            { key: 'fpTheTechRider',       label: '🔧 The Tech Rider',          desc: 'Full technical requirements document' },
-                            { key: 'fpThePromoKit',        label: '📸 The Promo Kit',           desc: 'Press photos, trailer, marketing assets' },
-                            { key: 'fpTheHandoverSession', label: '🤝 The Handover Session',    desc: 'Live session with director / creative team' },
-                          ].map(({ key, label, desc, locked }) => (
-                            <div key={key} className={"flex items-start gap-3 p-3 border " + ((formData as any)[key] ? 'border-brand-pink/40 bg-brand-pink/5' : 'border-white/10')}>
-                              <input type="checkbox" id={key} checked={locked ? true : !!(formData as any)[key]}
-                                disabled={locked}
-                                onChange={e => setFormData(p => ({ ...p, [key]: e.target.checked }))}
-                                className="w-4 h-4 accent-brand-pink mt-0.5 flex-shrink-0" />
-                              <label htmlFor={key} className={"cursor-pointer " + (locked ? 'opacity-50' : '')}>
-                                <span className="font-black uppercase italic text-white text-xs">{label}</span>
-                                {locked && <span className="text-[8px] text-brand-yellow/60 ml-2 uppercase">always included</span>}
-                                <p className="text-white/30 text-[9px] italic mt-0.5">{desc}</p>
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Punch Language + Support */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className={lbl}>Punch Language</label>
-                          <select name="fpPunchLanguage" value={(formData as any).fpPunchLanguage || 'EN'} onChange={handleInputChange} className={sel}>
-                            {['EN','SI','DE','FR','IT','ES','HR','PL','CZ','HU','RO'].map(l => <option key={l} value={l}>{l}</option>)}
-                          </select>
-                          <p className="text-white/20 text-[9px] italic mt-1">Language of all documentation</p>
-                        </div>
-                        <div className="flex flex-col justify-center gap-2 pt-4">
-                          <div className="flex items-center gap-3">
-                            <input type="checkbox" id="fpPunchSupport" checked={!!(formData as any).fpPunchSupport}
-                              onChange={e => setFormData(p => ({ ...p, fpPunchSupport: e.target.checked }))}
-                              className="w-4 h-4 accent-brand-pink" />
-                            <label htmlFor="fpPunchSupport" className="font-black uppercase italic text-white text-xs cursor-pointer">Punch Support</label>
-                          </div>
-                          <p className="text-white/20 text-[9px] italic pl-7">Creative team available for buyer onboarding</p>
-                        </div>
                       </div>
                     </div>
                   )}

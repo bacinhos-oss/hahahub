@@ -713,90 +713,18 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 {T('originalProductionSolutions', 'Original Staging Solutions', 2)}
               </section>
 
-              {/* 02. CREATIVE ASSETS */}
-              <section className="border-4 border-white/20 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-yellow border-b border-white/10 pb-2">02. Creative Assets</h3>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {F('musicAuthor', 'Music Author')}
-                    {S('hasOriginalMusic', 'Original Music', ['false','true'])}
-                  </div>
-                </div>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {F('videoAuthor', 'Video Author')}
-                    {S('hasVideoProjections', 'Has Video', ['false','true'])}
-                    <div className="col-span-2">{F('videoDescription', 'Video Description')}</div>
-                  </div>
-                </div>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {S('scriptInEnglish', 'Script in English', ['false','partial','true'])}
-                    {F('translationsAvailable', 'Translations')}
-                    {S('translationRightsIncluded', 'Translation Rights', ['false','true'])}
-                  </div>
-                  <div>
-                    <label className={lbl}>Script Scenario / Excerpt</label>
-                    <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={5} className="w-full bg-brand-black border-2 border-white/10 p-3 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
-                  </div>
-                </div>
-              </section>
+              {/* 02. FULL PUNCH */}
+              <section className="border-4 border-brand-pink/30 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">02. Full Punch</h3>
 
-              {/* 03. MARKET PERFORMANCE */}
-              <section className="border-4 border-white/20 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">03. Market Performance</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {F('premiereDate', 'Premiere Date', 'date')}
-                  {F('premiereLocation', 'Premiere Location')}
-                  {F('performancesCount', 'Total Performances', 'number')}
-                  {F('totalAudience', 'Total Audience', 'number')}
-                  {F('locationsPlayed', 'Locations Played')}
-                  {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
-                </div>
-              </section>
-
-              {/* 04. RIGHTS */}
-              <section className="border-4 border-white/20 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">04. Rights & Identity</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2">{F('rightsHolder', 'Copyright Holder *')}</div>
-                  {S('rightsStatus', 'Rights Status', ['Available','Co-production Only','Licensed'])}
-                  {S('licenseType', 'License Type', ['License','Option','Co-production'])}
-                  {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
-                  {F('territoriesAvailable', 'Territories Available')}
-                  {F('licensedCountries', 'Licensed Countries')}
-                </div>
-              </section>
-
-              {/* 05. PACKAGES */}
-              <section className="border-4 border-brand-yellow/30 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-yellow border-b border-white/10 pb-2">05. Licensing Packages</h3>
-
-                {/* SCRIPT */}
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
-                    <span className="font-black uppercase italic text-white text-sm">📄 The Script — Script Only License</span>
-                  </div>
-                  {(editForm as any).hasScriptPackage && (
-                    <div className="grid grid-cols-2 gap-3 pl-7">
-                      {F('scriptRoyaltyPct', 'Royalty % *', 'number')}
-                      {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
-                    </div>
-                  )}
-                </div>
-
-                {/* FULL PUNCH */}
-                <div className={"border-2 p-4 space-y-4 " + ((editForm as any).hasFullPunchPackage ? "border-brand-pink/40" : "border-white/10")}>
+                {/* ENABLE */}
+                <div className={"border-2 p-4 space-y-4 " + ((editForm as any).hasFullPunchPackage ? "border-brand-pink/40 bg-brand-pink/5" : "border-white/10")}>
                   <div className="flex items-center gap-3">
                     <input type="checkbox" checked={!!(editForm as any).hasFullPunchPackage} onChange={e => setEditForm((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))} className="w-4 h-4 accent-brand-pink" />
-                    <span className="font-black uppercase italic text-white text-sm">🥊 Full Punch — Complete Know-How Package</span>
+                    <span className="font-black uppercase italic text-white text-sm">🥊 Offer Full Punch Package</span>
                   </div>
                   {(editForm as any).hasFullPunchPackage && (
-                    <div className="space-y-4 pl-7">
+                    <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-3">
                         {F('fullPunchRoyaltyPct', 'Royalty % *', 'number')}
                         {F('fullPunchAdvanceFee', 'Advance Fee (EUR)', 'number')}
@@ -840,6 +768,82 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                           <span className="text-xs font-black uppercase italic text-white">🤝 Punch Support</span>
                         </div>
                       </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* CREATIVE DETAILS */}
+                <div className="space-y-3 pt-1">
+                  <p className="text-[9px] font-black uppercase text-white/20 tracking-widest">Production Assets Info</p>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {F('musicAuthor', 'Music Author')}
+                      {S('hasOriginalMusic', 'Original Music', ['false','true'])}
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {F('videoAuthor', 'Video Author')}
+                      {S('hasVideoProjections', 'Has Video', ['false','true'])}
+                      <div className="col-span-2">{F('videoDescription', 'Video Description')}</div>
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {S('scriptInEnglish', 'Script in English', ['false','partial','true'])}
+                      {F('translationsAvailable', 'Translations')}
+                      {S('translationRightsIncluded', 'Translation Rights', ['false','true'])}
+                    </div>
+                    <div>
+                      <label className={lbl}>Script Scenario / Excerpt</label>
+                      <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={5} className="w-full bg-brand-black border-2 border-white/10 p-3 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* 03. MARKET PERFORMANCE */}
+              <section className="border-4 border-white/20 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">03. Market Performance</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {F('premiereDate', 'Premiere Date', 'date')}
+                  {F('premiereLocation', 'Premiere Location')}
+                  {F('performancesCount', 'Total Performances', 'number')}
+                  {F('totalAudience', 'Total Audience', 'number')}
+                  {F('locationsPlayed', 'Locations Played')}
+                  {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
+                </div>
+              </section>
+
+              {/* 04. RIGHTS */}
+              <section className="border-4 border-white/20 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">04. Rights & Identity</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">{F('rightsHolder', 'Copyright Holder *')}</div>
+                  {S('rightsStatus', 'Rights Status', ['Available','Co-production Only','Licensed'])}
+                  {S('licenseType', 'License Type', ['License','Option','Co-production'])}
+                  {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
+                  {F('territoriesAvailable', 'Territories Available')}
+                  {F('licensedCountries', 'Licensed Countries')}
+                </div>
+              </section>
+
+              {/* 05. LICENSING PACKAGES */}
+              <section className="border-4 border-brand-yellow/30 p-5 space-y-4">
+                <h3 className="text-sm font-black uppercase italic text-brand-yellow border-b border-white/10 pb-2">05. Licensing Packages</h3>
+                <p className="text-white/30 text-[9px] italic">Script only license. Full Punch is configured in section 02.</p>
+                <div className="border-2 border-white/10 p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
+                    <span className="font-black uppercase italic text-white text-sm">📄 The Script — Script Only License</span>
+                  </div>
+                  {(editForm as any).hasScriptPackage && (
+                    <div className="grid grid-cols-2 gap-3 pl-7">
+                      {F('scriptRoyaltyPct', 'Royalty % *', 'number')}
+                      {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
                     </div>
                   )}
                 </div>
