@@ -16,7 +16,7 @@ const FeedbackButton: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'feedback',
-          to: 'info@hahahub.art',
+          to: 'bacinhos@gmail.com',
           data: { feedbackType: type, message, url: window.location.href, ts: new Date().toISOString() }
         })
       });
