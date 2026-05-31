@@ -187,6 +187,110 @@ h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 
 
+  inquiry_confirmation: ({ buyerName, showTitle, producerName, message, hasAttachment }) => ({
+    subject: `Your Tickle Has Been Sent — ${showTitle}`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
+.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
+.badge { background: #FF0266; color: #fff; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
+h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; line-height: 1.1; }
+.show { background: #111; border: 2px solid #FFDE03; padding: 16px 20px; margin: 24px 0; }
+.show-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: #FFDE03; }
+.info { background: #111; border: 1px solid rgba(255,255,255,0.1); padding: 16px 20px; margin: 12px 0; }
+.message { background: #111; border-left: 4px solid #FF0266; padding: 16px 20px; margin: 16px 0; font-style: italic; color: rgba(255,255,255,0.7); }
+.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
+.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
+</style></head>
+<body>
+<div class="container">
+  <div class="logo">HAHAHUB</div>
+  <div class="slogan">Tickle. Set Up. Punch.</div>
+  <div class="badge">🎭 Tickle Sent!</div>
+  <h1>Your Tickle<br/>Is Out There.</h1>
+  <p style="color:rgba(255,255,255,0.6);font-style:italic;">The rights holder has been notified. Now wait for the Set Up.</p>
+
+  <div class="show">
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Show You Tickled</div>
+    <div class="show-title">${showTitle}</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px;">Rights holder: ${producerName}</div>
+  </div>
+
+  ${message ? `<div class="message">"${message}"</div>` : ''}
+  ${hasAttachment ? `<div class="info"><span style="color:#03DAC6;font-weight:700;">📎 Attachment included</span> — your file has been delivered.</div>` : ''}
+
+  <div class="info">
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">What Happens Next</div>
+    <p style="margin:0;color:rgba(255,255,255,0.6);font-size:13px;">Track your inquiry in <strong style="color:#FFDE03;">My Hub → Pipeline → TICKLER</strong>. You'll get notified when they respond.</p>
+  </div>
+
+  <a href="https://hahahub.art" class="cta">🥊 Go to My Pipeline →</a>
+
+  <div class="footer">
+    <p>HahaHub — Theatre Comedy Rights Marketplace | info@hahahub.art</p>
+    <p>Break a Laffing Leg. 🦵</p>
+  </div>
+</div>
+</body>
+</html>`
+  }),
+
+  deal_closed: ({ showTitle, royalty, years, territory, performances, isseller }) => ({
+    subject: `Deal Closed — ${showTitle} · ${territory || 'All Territories'}`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
+.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
+.badge { background: #4ade80; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
+h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; line-height: 1.1; }
+.show { background: #111; border: 2px solid #4ade80; padding: 16px 20px; margin: 24px 0; }
+.show-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: #4ade80; }
+.terms { background: #111; border: 1px solid rgba(255,255,255,0.1); padding: 20px; margin: 16px 0; display: grid; }
+.term-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.term-label { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 2px; }
+.term-value { font-weight: 700; color: #FFDE03; }
+.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
+.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
+</style></head>
+<body>
+<div class="container">
+  <div class="logo">HAHAHUB</div>
+  <div class="slogan">Tickle. Set Up. Punch.</div>
+  <div class="badge">✓ Deal Closed</div>
+  <h1>${isseller ? 'Your Show<br/>Is Going On.' : 'Curtain Up.<br/>Deal Is Closed.'}</h1>
+  <p style="color:rgba(255,255,255,0.6);font-style:italic;">${isseller ? 'A buyer has confirmed the deal for your show.' : 'Your deal has been confirmed. Time to produce.'}</p>
+
+  <div class="show">
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Show</div>
+    <div class="show-title">${showTitle}</div>
+  </div>
+
+  <div class="terms">
+    ${royalty ? `<div class="term-row"><span class="term-label">Royalty</span><span class="term-value">${royalty}%</span></div>` : ''}
+    ${territory ? `<div class="term-row"><span class="term-label">Territory</span><span class="term-value">${territory}</span></div>` : ''}
+    ${years ? `<div class="term-row"><span class="term-label">License Period</span><span class="term-value">${years} year(s)</span></div>` : ''}
+    ${performances ? `<div class="term-row"><span class="term-label">Performances</span><span class="term-value">${performances}</span></div>` : ''}
+  </div>
+
+  <a href="https://hahahub.art" class="cta">🥊 Go to My Pipeline →</a>
+
+  <div class="footer">
+    <p>HahaHub — Theatre Comedy Rights Marketplace | info@hahahub.art</p>
+    <p>Break a Laffing Leg. 🦵</p>
+  </div>
+</div>
+</body>
+</html>`
+  }),
+
   deal_signed_producer: ({ show_title, buyer, territory, signed_date }) => ({
     subject: `✓ Deal Signed — ${show_title} · ${territory}`,
     html: `
