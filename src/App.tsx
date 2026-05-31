@@ -19,6 +19,7 @@ import LaffWirePage from './pages/LaffWirePage'
 import ProducerPage from './pages/ProducerPage'
 import StefunnyPage from './pages/StefunnyPage'
 import { Analytics } from "@vercel/analytics/react"
+import { logError } from './lib/errorLogger'
 import DealsPipelinePage from './pages/DealsPipelinePage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
@@ -358,6 +359,7 @@ const App: React.FC = () => {
     }]).select().maybeSingle()
     if (error) {
       console.error('UPLOAD ERROR:', error)
+      logError('handleUpload', error, { userId: currentUser?.id, userEmail: currentUser?.email, page: 'upload' })
       alert('Upload error: ' + error.message)
       return
     }
@@ -374,6 +376,7 @@ const App: React.FC = () => {
       });
     } catch (err) {
       console.error('Email send error:', err);
+      logError('sendEmail', err, { userId: currentUser?.id, userEmail: currentUser?.email, details: { type } });
     }
   };
 

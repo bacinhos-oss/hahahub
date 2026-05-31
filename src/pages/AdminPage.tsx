@@ -36,8 +36,9 @@ function generatePassword(name: string, email: string): string {
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
-  const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog' | 'inquiries'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog' | 'inquiries' | 'errors'>('analytics');
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const [errorLogs, setErrorLogs] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [invites, setInvites] = useState<Invitation[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -61,6 +62,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     if (activeTab === 'inquiries') {
       supabase.from('inquiries').select('*').order('created_at', { ascending: false }).limit(200)
         .then(({ data }) => { if (data) setInquiries(data); });
+    }
+    if (activeTab === 'errors') {
+      supabase.from('error_logs').select('*').order('created_at', { ascending: false }).limit(200)
+        .then(({ data }) => { if (data) setErrorLogs(data); });
     }
   }, [activeTab]);
 
@@ -202,6 +207,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             { key: 'access', label: 'Invites', icon: 'mail' },
             { key: 'catalog', label: 'Archive', icon: 'gavel' },
             { key: 'inquiries', label: 'Inquiries', icon: 'inbox' },
+            { key: 'errors', label: 'Errors', icon: 'bug_report' },
           ] as const).map(tab => (
             <button key={tab.key} onClick={() => { setActiveTab(tab.key); if (tab.key === 'analytics') loadUsers(); }}
               className={`flex items-center gap-2 px-5 py-3 border-r-2 border-white/10 transition-all flex-shrink-0 text-[10px] font-black uppercase tracking-widest italic
@@ -531,6 +537,46 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   <span className="material-symbols-outlined text-sm">delete</span>
                   Delete
                 </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'errors' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">
+                {errorLogs.length} error{errorLogs.length !== 1 ? 's' : ''} logged
+              </p>
+              <button onClick={() => supabase.from('error_logs').select('*').order('created_at', { ascending: false }).limit(200).then(({ data }) => { if (data) setErrorLogs(data); })}
+                className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">refresh</span>
+                Refresh
+              </button>
+            </div>
+            {errorLogs.length === 0 ? (
+              <div className="py-16 text-center space-y-3">
+                <p className="text-4xl">✅</p>
+                <p className="text-white/20 font-black uppercase italic">No errors logged. Clean run.</p>
+              </div>
+            ) : errorLogs.map(log => (
+              <div key={log.id} className="border-2 border-red-500/20 bg-red-500/5 p-4 space-y-2">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="text-[8px] font-black uppercase bg-red-500/20 text-red-400 px-2 py-0.5">{log.action || 'Unknown'}</span>
+                      {log.page && <span className="text-[8px] font-black uppercase bg-white/5 text-white/30 px-2 py-0.5">{log.page}</span>}
+                    </div>
+                    <p className="font-black uppercase italic text-red-300 text-sm truncate">{log.error_message}</p>
+                    {log.user_email && <p className="text-white/30 text-[9px] mt-1">{log.user_email}</p>}
+                    {log.error_details && (
+                      <p className="text-white/20 text-[9px] font-mono mt-1 truncate">{typeof log.error_details === 'string' ? log.error_details : JSON.stringify(log.error_details)}</p>
+                    )}
+                  </div>
+                  <p className="text-white/20 text-[9px] flex-shrink-0">
+                    {new Date(log.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
