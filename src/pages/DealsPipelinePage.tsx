@@ -97,7 +97,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const msgsEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { loadData(); }, [user?.id, view]);
+  useEffect(() => { loadData(); }, [user?.id]);
   useEffect(() => {
     const el = msgsEndRef.current;
     if (!el) return;
@@ -358,7 +358,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       </div>
 
       {/* STATS */}
-      <div style={{ minHeight: '500px' }}>
+      <div style={{ minHeight: '800px' }}>
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: 'New', value: deals.filter(d => (d.deal_status || 'new') === 'new').length, color: 'text-brand-pink' },
