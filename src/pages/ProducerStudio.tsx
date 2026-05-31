@@ -43,8 +43,11 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [contracts, setContracts] = useState<any[]>([]);
   const [contractsLoading, setContractsLoading] = useState(false);
   const [showContractForm, setShowContractForm] = useState(false);
-  const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
+  const [activeTemplate, setActiveTemplate] = useState<any | null>(null);
   const [templateParams, setTemplateParams] = useState<any>({});
+  const [contractTemplates, setContractTemplates] = useState<any[]>([]);
+  const [showNewTemplateForm, setShowNewTemplateForm] = useState(false);
+  const [newTemplate, setNewTemplate] = useState({ title: '', type: 'custom', description: '', body: '' });
   const [newContract, setNewContract] = useState({ title: '', show: '', show_id: '', party: '', type: 'licensing', status: 'draft', date: '', royalty_pct: '', territory: '', start_date: '', end_date: '', notes: '' });
   const [editContractIdx, setEditContractIdx] = useState<number | null>(null);
   const [contractText, setContractText] = useState<string | null>(null);
@@ -66,7 +69,11 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   // Save to localStorage on change
   useEffect(() => { save('logs', logs); }, [logs]);
 
-  // Load hahafriends from Supabase
+  // Load contract templates (shared - everyone sees them)
+  useEffect(() => {
+    supabase.from('contract_templates').select('*').order('is_default', { ascending: false }).order('created_at', { ascending: true })
+      .then(({ data }) => { if (data) setContractTemplates(data); });
+  }, []);
   useEffect(() => {
     if (!user?.id) return;
     setContactsLoading(true);
@@ -786,122 +793,203 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
           {/* SMART TEMPLATES */}
           <div className="space-y-4 border-t-4 border-white/10 pt-5">
-            <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Smart Templates — Generate & Save</p>
+            <div className="flex items-center justify-between">
+              <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Templates — Fill & Generate</p>
+              <button onClick={() => setShowNewTemplateForm(!showNewTemplateForm)}
+                className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">
+                + New Template
+              </button>
+            </div>
 
-            {!activeTemplate && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {[
-                  { key: 'licensing', label: '📄 Licensing Agreement', desc: 'Script or Full Punch license between rights holder and producer', color: 'border-brand-yellow/30 hover:border-brand-yellow' },
-                  { key: 'coproduction', label: '🤝 Co-production Agreement', desc: 'Joint production between two theatre companies', color: 'border-brand-cyan/30 hover:border-brand-cyan' },
-                  { key: 'guest', label: '🎭 Guest Performance Contract', desc: 'Single or limited guest performance arrangement', color: 'border-brand-pink/30 hover:border-brand-pink' },
-                ].map(t => (
-                  <button key={t.key} onClick={() => {
-                    setActiveTemplate(t.key);
-                    setTemplateParams({
-                      show: myShows[0]?.title || '', show_id: myShows[0]?.id || '',
-                      royalty: myShows[0]?.scriptRoyaltyPct || '10',
-                      party: '', org: '', territory: '', city: '', performances: '',
-                      start_date: '', end_date: '', advance: '0', currency: 'EUR',
-                      rights_holder: user.name, date: new Date().toISOString().split('T')[0],
-                      package: 'Script License', governing_law: '', author: myShows[0]?.author || '',
-                    });
-                  }} className={"border-4 p-4 text-left transition-all space-y-2 " + t.color}>
-                    <p className="font-black uppercase italic text-white text-sm">{t.label}</p>
-                    <p className="text-white/30 text-[10px] italic">{t.desc}</p>
-                    <p className="text-[9px] font-black uppercase italic text-brand-cyan">Generate →</p>
+            {/* NEW TEMPLATE FORM */}
+            {showNewTemplateForm && (
+              <div className="border-4 border-brand-cyan/30 p-4 space-y-3">
+                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Create New Template (visible to all users)</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className={lbl}>Template Title *</label><input value={newTemplate.title} onChange={e => setNewTemplate(p => ({...p, title: e.target.value}))} className={inp} placeholder="e.g. Festival License Agreement" /></div>
+                  <div><label className={lbl}>Type</label>
+                    <select value={newTemplate.type} onChange={e => setNewTemplate(p => ({...p, type: e.target.value}))} className={inp}>
+                      <option value="licensing">Licensing</option>
+                      <option value="coproduction">Co-production</option>
+                      <option value="guest">Guest Performance</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2"><label className={lbl}>Description</label><input value={newTemplate.description} onChange={e => setNewTemplate(p => ({...p, description: e.target.value}))} className={inp} placeholder="What is this template for?" /></div>
+                </div>
+                <div>
+                  <label className={lbl}>Template Body *</label>
+                  <p className="text-[8px] text-white/20 italic mb-1">Use {'{{'} {'}}'}placeholders{'{{'} {'}}'}  like {'{{party}}'}, {'{{show}}'}, {'{{royalty}}'}, {'{{territory}}'}, {'{{start_date}}'}, {'{{end_date}}'}, {'{{advance}}'}, {'{{performances}}'}</p>
+                  <textarea value={newTemplate.body} onChange={e => setNewTemplate(p => ({...p, body: e.target.value}))}
+                    rows={12} className={inp + ' font-mono text-xs resize-y'}
+                    placeholder={"MY AGREEMENT\n\nDate: {{date}}\n\nRights Holder: {{rights_holder}}\nCounter Party: {{party}}\nShow: {{show}}\nTerritory: {{territory}}\nRoyalty: {{royalty}}%\n\n[Your terms here...]\n\nSigned: _____________"} />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={async () => {
+                    if (!newTemplate.title || !newTemplate.body || !user?.id) return;
+                    const { data } = await supabase.from('contract_templates').insert({
+                      user_id: user.id,
+                      title: newTemplate.title,
+                      type: newTemplate.type,
+                      description: newTemplate.description,
+                      body: newTemplate.body,
+                      is_default: false,
+                      created_by: user.name,
+                    }).select().single();
+                    if (data) setContractTemplates(prev => [...prev, data]);
+                    setNewTemplate({ title: '', type: 'custom', description: '', body: '' });
+                    setShowNewTemplateForm(false);
+                  }} className="bg-brand-cyan text-black px-5 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+                    Publish Template
                   </button>
+                  <button onClick={() => setShowNewTemplateForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
+                </div>
+              </div>
+            )}
+
+            {/* TEMPLATE LIST */}
+            {!activeTemplate && (
+              <div className="space-y-2">
+                {contractTemplates.map((tmpl: any) => (
+                  <div key={tmpl.id} className="border-2 border-white/10 hover:border-brand-cyan/40 transition-all">
+                    <div className="px-4 py-3 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="material-symbols-outlined text-brand-cyan text-sm flex-shrink-0">description</span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
+                            {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
+                            {!tmpl.is_default && tmpl.created_by && <span className="text-[7px] font-black uppercase bg-brand-cyan/15 text-brand-cyan px-1.5 py-0.5">by {tmpl.created_by}</span>}
+                            <span className="text-[7px] font-black uppercase border border-white/10 text-white/20 px-1.5 py-0.5">{tmpl.type}</span>
+                          </div>
+                          {tmpl.description && <p className="text-white/25 text-[9px] italic mt-0.5">{tmpl.description}</p>}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button onClick={() => {
+                          setActiveTemplate(tmpl);
+                          setTemplateParams({
+                            show: myShows[0]?.title || '', show_id: myShows[0]?.id || '',
+                            royalty: myShows[0]?.scriptRoyaltyPct || '10',
+                            party: '', org: '', territory: '', city: '', performances: '',
+                            start_date: '', end_date: '', advance: '0', currency: 'EUR',
+                            rights_holder: user.name, date: new Date().toISOString().split('T')[0],
+                            package: 'Script License', governing_law: '', author: myShows[0]?.author || '',
+                            ref: Date.now().toString().slice(-6),
+                          });
+                        }} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
+                          Fill →
+                        </button>
+                        {!tmpl.is_default && tmpl.user_id === user?.id && (
+                          <button onClick={async () => {
+                            await supabase.from('contract_templates').delete().eq('id', tmpl.id);
+                            setContractTemplates(prev => prev.filter(t => t.id !== tmpl.id));
+                          }} className="text-white/20 hover:text-brand-pink transition-colors">
+                            <span className="material-symbols-outlined text-sm">delete</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
 
+            {/* FILL FORM */}
             {activeTemplate && (() => {
-              const isLicensing = activeTemplate === 'licensing';
-              const isCoprod = activeTemplate === 'coproduction';
+              const tmpl = activeTemplate;
               const p = templateParams;
+
+              // Extract placeholders from template body
+              const placeholders = [...new Set((tmpl.body.match(/\{\{(\w+)\}\}/g) || []).map((m: string) => m.replace(/\{\{|\}\}/g, '')))];
+
               const generateText = () => {
-                const today = p.date || new Date().toISOString().split('T')[0];
-                if (isLicensing) return `THEATRICAL LICENSING AGREEMENT\n\nDate: ${today}\nReference No: LIC-${Date.now().toString().slice(-6)}\n\nPARTIES:\nRights Holder: ${p.rights_holder || user.name}\nLicensee: ${p.party || '[LICENSEE NAME]'}\nOrganisation: ${p.org || '[ORGANISATION]'}\n\nSHOW:\nTitle: ${p.show || '[SHOW TITLE]'}\nAuthor: ${p.author || '[AUTHOR]'}\nPackage: ${p.package || 'Script License'}\n\nLICENSE TERMS:\nTerritory: ${p.territory || '[COUNTRY]'}\nCity / Venue: ${p.city || '[CITY]'}\nLicense Period: ${p.start_date || '[START]'} to ${p.end_date || '[END]'}\nNumber of Performances: ${p.performances || '[NUMBER]'}\n\nFINANCIAL TERMS:\nRoyalty Rate: ${p.royalty || '[X]'}% of gross box office\nAdvance Payment: ${p.currency || 'EUR'} ${p.advance || '0'}\nRoyalty Reports Due: Within 14 days of each performance\n\nOBLIGATIONS:\n1. Licensee shall not alter the script without written consent.\n2. Licensee shall provide royalty reports for each performance.\n3. Rights Holder shall deliver materials within 14 days of signing.\n4. This license is non-transferable unless stated otherwise.\n\nGOVERNING LAW: ${p.governing_law || '[COUNTRY]'}\n\nRights Holder: _________________________ Date: __________\nName: ${p.rights_holder || user.name}\n\nLicensee: _________________________ Date: __________\nName: ${p.party || '[LICENSEE]'}`;
-                if (isCoprod) return `CO-PRODUCTION AGREEMENT\n\nDate: ${today}\nReference No: COPROD-${Date.now().toString().slice(-6)}\n\nPARTIES:\nProducer A: ${p.rights_holder || user.name}\nProducer B: ${p.party || '[CO-PRODUCER]'}\nCompany B: ${p.org || '[ORGANISATION]'}\n\nPRODUCTION:\nShow Title: ${p.show || '[SHOW TITLE]'}\nPremiere: ${p.city || '[CITY]'}, ${p.start_date || '[DATE]'}\nTour Territory: ${p.territory || '[COUNTRIES]'}\n\nFINANCIAL SPLIT:\nProducer A Share: ${p.royalty || '50'}%\nProducer B Share: ${100 - Number(p.royalty || 50)}%\nTotal Budget: ${p.currency || 'EUR'} ${p.advance || '[AMOUNT]'}\n\nProducer A: _________________________ Date: __________\nName: ${p.rights_holder || user.name}\n\nProducer B: _________________________ Date: __________\nName: ${p.party || '[CO-PRODUCER]'}`;
-                return `GUEST PERFORMANCE CONTRACT\n\nDate: ${today}\nReference No: GUEST-${Date.now().toString().slice(-6)}\n\nPARTIES:\nHost Theatre: ${p.rights_holder || user.name}\nGuest Company: ${p.party || '[GUEST COMPANY]'}\n\nPERFORMANCE:\nShow Title: ${p.show || '[SHOW TITLE]'}\nVenue: ${p.city || '[VENUE]'}\nDate(s): ${p.start_date || '[DATE]'}\nPerformances: ${p.performances || '[NUMBER]'}\n\nFINANCIAL TERMS:\nFee: ${p.currency || 'EUR'} ${p.advance || '[AMOUNT]'}\nPayment Due: ${p.end_date || '[DATE]'}\n\nHost Theatre: _________________________ Date: __________\nName: ${p.rights_holder || user.name}\n\nGuest Company: _________________________ Date: __________\nName: ${p.party || '[GUEST COMPANY]'}`;
+                let text = tmpl.body;
+                const vals: any = {
+                  ...p,
+                  date: p.date || new Date().toISOString().split('T')[0],
+                  ref: p.ref || Date.now().toString().slice(-6),
+                  share_b: String(100 - Number(p.royalty || 50)),
+                };
+                Object.entries(vals).forEach(([k, v]) => {
+                  text = text.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v || `[${k.toUpperCase()}]`));
+                });
+                // Replace any remaining placeholders
+                text = text.replace(/\{\{(\w+)\}\}/g, (_: string, k: string) => `[${k.toUpperCase()}]`);
+                return text;
+              };
+
+              // Nice labels for common placeholders
+              const labels: any = {
+                show: 'Show', party: 'Counter Party', org: 'Organisation', rights_holder: 'Rights Holder',
+                royalty: 'Royalty %', territory: 'Territory', city: 'City / Venue',
+                start_date: 'Start Date', end_date: 'End Date', advance: 'Advance / Fee (EUR)',
+                performances: 'Performances', governing_law: 'Governing Law', author: 'Author',
+                package: 'Package', currency: 'Currency', date: 'Contract Date',
+              };
+              const inputType: any = {
+                start_date: 'date', end_date: 'date', date: 'date',
+                royalty: 'number', advance: 'number', performances: 'number',
+              };
+              const selectOptions: any = {
+                package: ['Script License', 'Full Punch Package'],
+                currency: ['EUR', 'USD', 'GBP', 'CHF'],
               };
 
               return (
                 <div className="border-4 border-brand-cyan/30 p-5 space-y-4">
                   <div className="flex items-center justify-between">
-                    <p className="font-black uppercase italic text-brand-cyan text-sm">
-                      {activeTemplate === 'licensing' ? '📄 Licensing Agreement' : activeTemplate === 'coproduction' ? '🤝 Co-production Agreement' : '🎭 Guest Performance Contract'}
-                    </p>
+                    <div>
+                      <p className="font-black uppercase italic text-brand-cyan">{tmpl.title}</p>
+                      {tmpl.description && <p className="text-white/30 text-[9px] italic">{tmpl.description}</p>}
+                    </div>
                     <button onClick={() => setActiveTemplate(null)} className="text-white/30 hover:text-white font-black uppercase italic text-xs">← Back</button>
                   </div>
 
+                  {/* Auto-detected fields */}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    <div><label className={lbl}>Show *</label>
-                      <select value={p.show} onChange={e => {
-                        const sel = myShows.find((s: any) => s.title === e.target.value);
-                        setTemplateParams((prev: any) => ({...prev, show: e.target.value, show_id: sel?.id || '', royalty: sel?.scriptRoyaltyPct || prev.royalty, author: sel?.author || prev.author}));
-                      }} className={inp}>
-                        <option value="">Select show...</option>
-                        {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
-                      </select>
-                    </div>
-                    <div><label className={lbl}>{isCoprod ? 'Co-producer' : 'Counter Party'} *</label>
-                      <input value={p.party} onChange={e => setTemplateParams((prev: any) => ({...prev, party: e.target.value}))} className={inp} placeholder="Name" />
-                    </div>
-                    <div><label className={lbl}>Organisation</label>
-                      <input value={p.org || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, org: e.target.value}))} className={inp} placeholder="Theatre / Company" />
-                    </div>
-                    <div><label className={lbl}>Territory</label>
-                      <input value={p.territory} onChange={e => setTemplateParams((prev: any) => ({...prev, territory: e.target.value}))} className={inp} placeholder="e.g. Slovenia" />
-                    </div>
-                    <div><label className={lbl}>City / Venue</label>
-                      <input value={p.city} onChange={e => setTemplateParams((prev: any) => ({...prev, city: e.target.value}))} className={inp} placeholder="e.g. Ljubljana" />
-                    </div>
-                    {isLicensing && <div><label className={lbl}>Package</label>
-                      <select value={p.package || 'Script License'} onChange={e => setTemplateParams((prev: any) => ({...prev, package: e.target.value}))} className={inp}>
-                        <option value="Script License">Script License</option>
-                        <option value="Full Punch Package">Full Punch Package</option>
-                      </select>
-                    </div>}
-                    <div><label className={lbl}>{isCoprod ? 'Share A %' : 'Royalty %'}</label>
-                      <input type="number" value={p.royalty} onChange={e => setTemplateParams((prev: any) => ({...prev, royalty: e.target.value}))} className={inp} placeholder="10" />
-                    </div>
-                    <div><label className={lbl}>{activeTemplate === 'guest' ? 'Fee (EUR)' : 'Advance (EUR)'}</label>
-                      <input type="number" value={p.advance} onChange={e => setTemplateParams((prev: any) => ({...prev, advance: e.target.value}))} className={inp} placeholder="0" />
-                    </div>
-                    <div><label className={lbl}>Performances</label>
-                      <input type="number" value={p.performances} onChange={e => setTemplateParams((prev: any) => ({...prev, performances: e.target.value}))} className={inp} />
-                    </div>
-                    <div><label className={lbl}>Start Date</label>
-                      <input type="date" value={p.start_date} onChange={e => setTemplateParams((prev: any) => ({...prev, start_date: e.target.value}))} className={inp} />
-                    </div>
-                    <div><label className={lbl}>End Date</label>
-                      <input type="date" value={p.end_date} onChange={e => setTemplateParams((prev: any) => ({...prev, end_date: e.target.value}))} className={inp} />
-                    </div>
-                    {isLicensing && <div><label className={lbl}>Governing Law</label>
-                      <input value={p.governing_law || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, governing_law: e.target.value}))} className={inp} placeholder="e.g. Slovenia" />
-                    </div>}
+                    {placeholders.filter((ph: string) => !['ref', 'share_b'].includes(ph)).map((ph: string) => (
+                      <div key={ph}>
+                        <label className={lbl}>{labels[ph] || ph.replace(/_/g, ' ')}</label>
+                        {ph === 'show' ? (
+                          <select value={p[ph] || ''} onChange={e => {
+                            const sel = myShows.find((s: any) => s.title === e.target.value);
+                            setTemplateParams((prev: any) => ({...prev, show: e.target.value, show_id: sel?.id || '', author: sel?.author || prev.author, royalty: sel?.scriptRoyaltyPct || prev.royalty}));
+                          }} className={inp}>
+                            <option value="">Select show...</option>
+                            {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
+                          </select>
+                        ) : selectOptions[ph] ? (
+                          <select value={p[ph] || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, [ph]: e.target.value}))} className={inp}>
+                            {selectOptions[ph].map((o: string) => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        ) : (
+                          <input type={inputType[ph] || 'text'} value={p[ph] || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, [ph]: e.target.value}))} className={inp} placeholder={labels[ph] || ph} />
+                        )}
+                      </div>
+                    ))}
                   </div>
 
                   {/* Live preview */}
                   <div>
                     <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest mb-2">Live Preview</p>
-                    <pre className="w-full bg-brand-black border-2 border-white/10 p-4 text-white/50 font-mono text-[10px] leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto">
-                      {generateText().replace(/\\n/g, '\n')}
+                    <pre className="w-full bg-brand-black border-2 border-white/10 p-4 text-white/50 font-mono text-[10px] leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto">
+                      {generateText()}
                     </pre>
                   </div>
 
                   <div className="flex gap-2 flex-wrap">
                     <button onClick={async () => {
                       if (!p.party || !user?.id) return;
-                      const body = generateText().replace(/\\n/g, '\n');
-                      const title = `${activeTemplate === 'licensing' ? 'Licensing' : activeTemplate === 'coproduction' ? 'Co-production' : 'Guest'} — ${p.show || 'Show'} · ${p.party}`;
+                      const body = generateText();
+                      const title = `${tmpl.title} — ${p.show || 'Show'} · ${p.party}`;
                       const { data } = await supabase.from('contracts').insert({
                         user_id: user.id, title, show: p.show, show_id: p.show_id || null,
-                        party: p.party, type: activeTemplate, status: 'draft',
+                        party: p.party, type: tmpl.type, status: 'draft',
                         royalty_pct: p.royalty ? Number(p.royalty) : null,
                         territory: p.territory || null, start_date: p.start_date || null,
                         end_date: p.end_date || null, body,
-                        notes: `Generated ${new Date().toLocaleDateString('en-GB')}`,
+                        notes: `From template: ${tmpl.title}`,
                       }).select().single();
                       if (data) setContracts(prev => [data, ...prev]);
                       setActiveTemplate(null);
@@ -909,19 +997,19 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       💾 Save to HAHAoffice
                     </button>
                     <button onClick={() => {
-                      const text = generateText().replace(/\\n/g, '\n');
+                      const text = generateText();
                       const blob = new Blob([text], { type: 'text/plain' });
                       const a = document.createElement('a');
                       a.href = URL.createObjectURL(blob);
-                      a.download = `contract_${p.show || 'show'}_${p.party || 'party'}.txt`.replace(/\s+/g, '_');
+                      a.download = `${tmpl.title}_${p.party || 'contract'}.txt`.replace(/\s+/g, '_');
                       a.click();
                     }} className="border-4 border-brand-cyan/40 text-brand-cyan px-5 py-3 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
                       📥 Download .txt
                     </button>
                     <button onClick={() => {
-                      const text = generateText().replace(/\\n/g, '\n');
+                      const text = generateText();
                       const w = window.open('', '_blank');
-                      if (w) { w.document.write(`<html><head><title>Contract</title><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${text}</pre></body></html>`); w.document.close(); w.print(); }
+                      if (w) { w.document.write(`<html><head><title>${tmpl.title}</title><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${text}</pre></body></html>`); w.document.close(); w.print(); }
                     }} className="border-4 border-white/20 text-white/40 px-5 py-3 font-black uppercase italic text-xs hover:text-white transition-all">
                       🖨️ Print / PDF
                     </button>
