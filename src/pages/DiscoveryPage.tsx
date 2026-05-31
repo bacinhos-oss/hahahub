@@ -1071,109 +1071,318 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   };
 
 
-  const downloadDossier = (show: Show | null) => {
+  const downloadDossier = async (show: Show | null) => {
     if (!show) return;
-    const totalCast = (show.maleRoles || 0) + (show.femaleRoles || 0);
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>${show.title} — Production Dossier</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Space Grotesk', sans-serif; background: #fff; color: #050505; }
-    .cover { background: #050505; color: #fff; padding: 60px 48px 48px; min-height: 320px; display: flex; flex-direction: column; justify-content: flex-end; }
-    .cover-label { font-size: 9px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; color: #03DAC6; margin-bottom: 12px; }
-    .cover-title { font-size: 72px; font-weight: 900; text-transform: uppercase; line-height: 0.85; letter-spacing: -2px; margin-bottom: 16px; }
-    .cover-title span { color: #FFDE03; }
-    .cover-meta { font-size: 13px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.4); letter-spacing: 0.2em; }
-    .section { padding: 40px 48px; border-bottom: 3px solid #f0f0f0; }
-    .section-label { font-size: 8px; font-weight: 900; letter-spacing: 0.5em; text-transform: uppercase; color: #03DAC6; margin-bottom: 8px; }
-    .section-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 20px; border-left: 6px solid #FFDE03; padding-left: 16px; }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-    .stat { background: #f8f8f8; padding: 16px; }
-    .stat-label { font-size: 8px; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; color: #999; margin-bottom: 4px; }
-    .stat-value { font-size: 20px; font-weight: 900; text-transform: uppercase; }
-    .synopsis { font-size: 14px; line-height: 1.7; color: #333; font-weight: 500; }
-    .score-bar { height: 8px; background: #f0f0f0; margin-top: 8px; }
-    .score-fill { height: 8px; background: ${(show.transparencyScore || 0) >= 80 ? '#03DAC6' : (show.transparencyScore || 0) >= 50 ? '#FFDE03' : '#FF0266'}; width: ${show.transparencyScore || 0}%; }
-    .footer { background: #050505; color: rgba(255,255,255,0.3); padding: 32px 48px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; display: flex; justify-content: space-between; align-items: center; }
-    .footer span { color: #FFDE03; }
-  </style>
-</head>
-<body>
-  <div class="cover">
-    <div class="cover-label">Production Dossier v${show.productionYear} · HahaHub · The Laff Exchange</div>
-    <div class="cover-title">${show.title}</div>
-    <div class="cover-meta">${show.author} · ${show.location} · ${show.genre}${show.subgenre ? ' · ' + show.subgenre : ''}</div>
-  </div>
 
-  <div class="section">
-    <div class="section-label">Overview</div>
-    <div class="section-title">Synopsis</div>
-    <p class="synopsis">${(show as any).synopsis_en || show.synopsis || 'No synopsis provided.'}</p>
-  </div>
+    // Dynamically import to avoid SSR issues
+    const jsPDF = (await import('jspdf')).default;
 
-  <div class="section">
-    <div class="section-label">Production Data</div>
-    <div class="section-title">Key Specs</div>
-    <div class="grid3">
-      <div class="stat"><div class="stat-label">Duration</div><div class="stat-value">${show.duration} min</div></div>
-      <div class="stat"><div class="stat-label">Cast Size</div><div class="stat-value">${totalCast} actors</div></div>
-      <div class="stat"><div class="stat-label">Production Year</div><div class="stat-value">${show.productionYear}</div></div>
-      <div class="stat"><div class="stat-label">Male Roles</div><div class="stat-value">${show.maleRoles}</div></div>
-      <div class="stat"><div class="stat-label">Female Roles</div><div class="stat-value">${show.femaleRoles}</div></div>
-      <div class="stat"><div class="stat-label">Budget Range</div><div class="stat-value">${show.budgetRange}</div></div>
-      <div class="stat"><div class="stat-label">Scale</div><div class="stat-value">${show.productionScale}</div></div>
-      <div class="stat"><div class="stat-label">Touring</div><div class="stat-value">${show.isTouringFriendly ? 'Yes' : 'No'}</div></div>
-      <div class="stat"><div class="stat-label">Performances</div><div class="stat-value">${show.performancesCount || 0}</div></div>
-    </div>
-  </div>
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210; const H = 297;
+    const margin = 14;
+    const col = W - margin * 2;
+    let y = 0;
 
-  <div class="section">
-    <div class="section-label">Licensing</div>
-    <div class="section-title">Rights & Commercial</div>
-    <div class="grid2">
-      <div class="stat"><div class="stat-label">License Type</div><div class="stat-value">${show.licenseType}</div></div>
-      <div class="stat"><div class="stat-label">License Type</div><div class="stat-value">${show.licenseType || 'License'}</div></div>
-      <div class="stat"><div class="stat-label">Advance Fee</div><div class="stat-value">${show.advanceFee || 'On request'}</div></div>
-      <div class="stat"><div class="stat-label">Rights Status</div><div class="stat-value">${show.rightsStatus}</div></div>
-      <div class="stat"><div class="stat-label">Clearing Speed</div><div class="stat-value">${show.rightsClearingSpeed}</div></div>
-    </div>
-    ${show.licensedCountries ? `<div style="margin-top:16px"><div class="stat-label" style="font-size:8px;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;color:#999;margin-bottom:8px">Licensed Countries</div><p style="font-size:13px;font-weight:700">${show.licensedCountries}</p></div>` : ''}
-  </div>
+    const addPage = () => { doc.addPage(); y = 0; };
+    const checkY = (needed: number) => { if (y + needed > H - 20) addPage(); };
 
-  <div class="section">
-    <div class="section-label">Quality</div>
+    // Helpers
+    const black = () => doc.setTextColor(5, 5, 5);
+    const white = () => doc.setTextColor(255, 255, 255);
+    const yellow = () => doc.setTextColor(255, 222, 3);
+    const pink = () => doc.setTextColor(255, 2, 102);
+    const cyan = () => doc.setTextColor(3, 218, 198);
+    const gray = () => doc.setTextColor(150, 150, 150);
 
-  </div>
+    const fillBlack = () => doc.setFillColor(5, 5, 5);
+    const fillSurface = () => doc.setFillColor(18, 18, 18);
+    const fillYellow = () => doc.setFillColor(255, 222, 3);
+    const fillPink = () => doc.setFillColor(255, 2, 102);
+    const fillCyan = () => doc.setFillColor(3, 218, 198);
 
-  <div class="section">
-    <div class="section-label">Contact</div>
-    <div class="section-title">Rights Holder</div>
-    <div class="grid2">
-      <div class="stat"><div class="stat-label">Producer</div><div class="stat-value" style="font-size:16px">${show.producerName}</div></div>
-      <div class="stat"><div class="stat-label">Rights Holder</div><div class="stat-value" style="font-size:16px">${show.rightsHolder || show.producerName}</div></div>
-    </div>
-    <p style="margin-top:16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:#999">Inquiries via HahaHub — hahahub.art</p>
-  </div>
+    const label = (text: string, x: number, yy: number, color: () => void = gray) => {
+      color(); doc.setFontSize(6); doc.setFont('helvetica', 'bold');
+      doc.text(text.toUpperCase(), x, yy);
+    };
+    const value = (text: string, x: number, yy: number, size = 10, color: () => void = black) => {
+      color(); doc.setFontSize(size); doc.setFont('helvetica', 'bold');
+      doc.text(String(text || '—'), x, yy);
+    };
+    const sectionTitle = (text: string, num: string) => {
+      checkY(16);
+      fillYellow(); doc.rect(margin, y, 2, 8, 'F');
+      black(); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+      doc.text(num, margin + 5, y + 5.5);
+      doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+      doc.text(text.toUpperCase(), margin + 16, y + 5.5);
+      y += 12;
+    };
+    const statBox = (lbl: string, val: string, x: number, yy: number, w: number, h = 14) => {
+      fillSurface(); doc.rect(x, yy, w, h, 'F');
+      label(lbl, x + 3, yy + 5);
+      value(val, x + 3, yy + 11, 9);
+    };
+    const divider = () => {
+      doc.setDrawColor(40, 40, 40); doc.setLineWidth(0.3);
+      doc.line(margin, y, W - margin, y); y += 6;
+    };
 
-  <div class="footer">
-    <div>HahaHub · <span>The Laff Exchange</span> · hahahub.art</div>
-    <div>TICKLE. SET UP. PUNCH.</div>
-    <div>Break a <span>Laffing</span> Leg. 🦵</div>
-  </div>
-</body>
-</html>`;
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${show.title.replace(/\s+/g, '_')}_Dossier_HahaHub.html`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // ─── COVER ───────────────────────────────────────────────────────────────
+    fillBlack(); doc.rect(0, 0, W, H, 'F');
+
+    // Poster placeholder top-right (A4 ratio strip)
+    if (show.imageUrl) {
+      try {
+        doc.addImage(show.imageUrl, 'JPEG', W - 70, 0, 70, 99);
+      } catch {}
+    }
+
+    // Cover content
+    y = H - 100;
+    cyan(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+    doc.text(`PRODUCTION DOSSIER V${show.productionYear} · HAHAHUB · THE COMEDY RIGHTS MARKETPLACE`, margin, y);
+    y += 10;
+
+    // Big title
+    yellow(); doc.setFontSize(show.title.length > 12 ? 28 : 36); doc.setFont('helvetica', 'bold');
+    doc.text(show.title.toUpperCase(), margin, y);
+    y += (show.title.length > 12 ? 12 : 16);
+
+    if ((show as any).englishTitle && (show as any).englishTitle !== show.title) {
+      white(); doc.setFontSize(12); doc.setFont('helvetica', 'normal');
+      doc.text((show as any).englishTitle.toUpperCase(), margin, y);
+      y += 8;
+    }
+
+    white(); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+    doc.text(`${show.author} · ${(show as any).original_language || show.language || ''} · ${show.genre}${show.subgenre ? ' · ' + show.subgenre : ''}`, margin, y);
+    y += 6;
+    gray(); doc.setFontSize(8);
+    doc.text(`${show.duration} min · ${(show.maleRoles || 0) + (show.femaleRoles || 0)} actors · ${show.productionScale} production`, margin, y);
+    y += 12;
+
+    // Packages on cover
+    if ((show as any).has_script_package !== false) {
+      fillYellow(); doc.rect(margin, y, 28, 8, 'F');
+      black(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+      doc.text(`SCRIPT ${(show as any).scriptRoyaltyPct || ''}%`, margin + 2, y + 5.5);
+    }
+    if ((show as any).hasFullPunchPackage || (show as any).has_full_punch_package) {
+      fillPink(); doc.rect(margin + 32, y, 40, 8, 'F');
+      white(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+      doc.text(`FULL PUNCH ${(show as any).fullPunchRoyaltyPct || (show as any).full_punch_royalty_pct || ''}%`, margin + 34, y + 5.5);
+    }
+
+    // Footer strip
+    fillYellow(); doc.rect(0, H - 10, W, 10, 'F');
+    black(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+    doc.text('HAHAHUB · THE COMEDY RIGHTS MARKETPLACE · HAHAHUB.ART', margin, H - 4);
+    doc.text('TICKLE. SET UP. PUNCH.', W - margin - 38, H - 4);
+
+    // ─── PAGE 2 ───────────────────────────────────────────────────────────────
+    addPage();
+    fillBlack(); doc.rect(0, 0, W, H, 'F');
+    y = margin;
+
+    // Synopsis
+    sectionTitle('Synopsis', '00');
+    const synText = (show as any).synopsis_en || show.synopsis || 'No synopsis provided.';
+    white(); doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+    const synLines = doc.splitTextToSize(synText, col);
+    synLines.forEach((line: string) => { checkY(6); doc.text(line, margin, y); y += 5; });
+    y += 6; divider();
+
+    // Rights & Identity
+    sectionTitle('Rights & Identity', '01');
+    const col2 = (col - 4) / 2;
+    statBox('Copyright Holder', show.rightsHolder || show.producerName, margin, y, col2);
+    statBox('Rights Status', show.rightsStatus, margin + col2 + 4, y, col2);
+    y += 18;
+    statBox('License Type', show.licenseType, margin, y, col2);
+    statBox('Exclusivity', show.exclusivityLevel, margin + col2 + 4, y, col2);
+    y += 18;
+    statBox('Territories Available', (show as any).territoriesAvailable || 'Global', margin, y, col);
+    y += 18;
+    if ((show as any).licensedCountries) {
+      statBox('Licensed Countries', (show as any).licensedCountries, margin, y, col);
+      y += 18;
+    }
+    y += 4; divider();
+
+    // Production
+    sectionTitle('Production', '02');
+    const col3 = (col - 8) / 3;
+    statBox('Duration', `${show.duration} min`, margin, y, col3);
+    statBox('Male Roles', String(show.maleRoles), margin + col3 + 4, y, col3);
+    statBox('Female Roles', String(show.femaleRoles), margin + (col3 + 4) * 2, y, col3);
+    y += 18;
+    statBox('Production Scale', show.productionScale, margin, y, col3);
+    statBox('Stage Type', (show as any).stageType || '—', margin + col3 + 4, y, col3);
+    statBox('Touring Friendly', show.isTouringFriendly ? 'YES' : 'NO', margin + (col3 + 4) * 2, y, col3);
+    y += 18;
+    statBox('Tech Complexity', show.technicalComplexity, margin, y, col3);
+    statBox('Lighting Staff', String(show.techStaffLighting), margin + col3 + 4, y, col3);
+    statBox('Sound Staff', String(show.techStaffSound), margin + (col3 + 4) * 2, y, col3);
+    y += 18;
+    if (show.directorNotes) {
+      checkY(20);
+      fillSurface(); doc.rect(margin, y, col, 16, 'F');
+      fillCyan(); doc.rect(margin, y, 2, 16, 'F');
+      label("Director's Vision Notes", margin + 5, y + 5, cyan);
+      white(); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      const dnLines = doc.splitTextToSize(show.directorNotes, col - 10);
+      dnLines.slice(0, 2).forEach((line: string, i: number) => doc.text(line, margin + 5, y + 10 + i * 4));
+      y += 20;
+    }
+    y += 4; divider();
+
+    // Market Performance
+    sectionTitle('Market Performance', '03');
+    statBox('Premiere Date', show.premiereDate || '—', margin, y, col3);
+    statBox('Premiere Location', show.premiereLocation || '—', margin + col3 + 4, y, col3);
+    statBox('Box Office', show.boxOfficeIndicator, margin + (col3 + 4) * 2, y, col3);
+    y += 18;
+    statBox('Total Performances', String(show.performancesCount || 0), margin, y, col3);
+    statBox('Total Audience', String(show.totalAudience || 0), margin + col3 + 4, y, col3);
+    statBox('Production Year', String(show.productionYear), margin + (col3 + 4) * 2, y, col3);
+    y += 18;
+    if ((show as any).locationsPlayed) {
+      statBox('Locations Played', (show as any).locationsPlayed, margin, y, col);
+      y += 18;
+    }
+    if (show.awards) {
+      checkY(16); statBox('Awards', show.awards, margin, y, col); y += 18;
+    }
+    y += 4; divider();
+
+    // ─── PAGE 3 — FULL PUNCH ─────────────────────────────────────────────────
+    addPage();
+    fillBlack(); doc.rect(0, 0, W, H, 'F');
+    y = margin;
+
+    sectionTitle('Full Punch Package', '04');
+
+    const hasFP = (show as any).hasFullPunchPackage || (show as any).has_full_punch_package;
+    if (hasFP) {
+      // FP header box
+      fillPink(); doc.rect(margin, y, col, 16, 'F');
+      black(); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.text('🥊 FULL PUNCH AVAILABLE', margin + 4, y + 7);
+      doc.setFontSize(9);
+      const fpPct = (show as any).fullPunchRoyaltyPct || (show as any).full_punch_royalty_pct || '';
+      doc.text(`${fpPct}% royalty of gross box office`, margin + 4, y + 13);
+      y += 20;
+
+      // Contents checklist
+      white(); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+      doc.text('WHAT\'S IN THE PACKAGE:', margin, y); y += 7;
+
+      const fpItems = [
+        { key: 'fpTheScript',          db: 'fp_the_script',           label: 'The Script',           always: true },
+        { key: 'fpThePlaybook',        db: 'fp_the_playbook',         label: 'The Playbook' },
+        { key: 'fpTheSoundtrack',      db: 'fp_the_soundtrack',       label: 'The Soundtrack' },
+        { key: 'fpTheVisuals',         db: 'fp_the_visuals',          label: 'The Visuals' },
+        { key: 'fpTheWardrobe',        db: 'fp_the_wardrobe',         label: 'The Wardrobe' },
+        { key: 'fpTheSetBlueprint',    db: 'fp_the_set_blueprint',    label: 'The Set Blueprint' },
+        { key: 'fpTheTechRider',       db: 'fp_the_tech_rider',       label: 'The Tech Rider' },
+        { key: 'fpThePromoKit',        db: 'fp_the_promo_kit',        label: 'The Promo Kit' },
+        { key: 'fpTheHandoverSession', db: 'fp_the_handover_session', label: 'The Handover Session' },
+      ];
+
+      // 2 columns
+      const half = Math.ceil(fpItems.length / 2);
+      fpItems.forEach((item, i) => {
+        const included = item.always || (show as any)[item.key] || (show as any)[item.db];
+        const col2x = i < half ? margin : margin + col / 2 + 4;
+        const iy = y + (i < half ? i : i - half) * 8;
+        if (included) { fillCyan(); } else { doc.setFillColor(40, 40, 40); }
+        doc.rect(col2x, iy, 4, 4, 'F');
+        if (included) { cyan(); } else { doc.setTextColor(60, 60, 60); }
+        doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+        doc.text(item.label.toUpperCase(), col2x + 7, iy + 3.5);
+      });
+      y += half * 8 + 8;
+
+      // Language + Support
+      const fpLang = (show as any).fpPunchLanguage || (show as any).fp_punch_language || 'EN';
+      const fpSupport = (show as any).fpPunchSupport || (show as any).fp_punch_support;
+      statBox('Punch Language', fpLang, margin, y, col3);
+      statBox('Punch Support', fpSupport ? 'YES — Team Available' : 'No', margin + col3 + 4, y, col3 * 2 + 4);
+      y += 18;
+
+      if ((show as any).full_punch_advance_fee > 0) {
+        statBox('Advance Fee', `€${(show as any).full_punch_advance_fee}`, margin, y, col);
+        y += 18;
+      }
+    } else {
+      fillSurface(); doc.rect(margin, y, col, 12, 'F');
+      gray(); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.text('Full Punch not offered — Script only license available', margin + 4, y + 8);
+      y += 16;
+    }
+
+    y += 4; divider();
+
+    // Script Package
+    sectionTitle('Script Package', '05');
+    if ((show as any).has_script_package !== false) {
+      fillYellow(); doc.rect(margin, y, col, 16, 'F');
+      black(); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.text('📄 SCRIPT LICENSE AVAILABLE', margin + 4, y + 7);
+      const sPct = (show as any).scriptRoyaltyPct || (show as any).script_royalty_pct || '';
+      doc.setFontSize(9);
+      doc.text(`${sPct}% royalty of gross box office · Script only — your production, your vision`, margin + 4, y + 13);
+      y += 20;
+      if ((show as any).scriptAdvanceFee > 0 || (show as any).script_advance_fee > 0) {
+        statBox('Advance Fee', `€${(show as any).scriptAdvanceFee || (show as any).script_advance_fee}`, margin, y, col);
+        y += 18;
+      }
+    }
+
+    y += 4; divider();
+
+    // Creative Assets
+    sectionTitle('Creative Assets', '06');
+    if ((show as any).music_author || (show as any).musicAuthor) {
+      statBox('Music Author', (show as any).music_author || (show as any).musicAuthor, margin, y, col2);
+      statBox('Original Music', ((show as any).has_original_music || (show as any).hasOriginalMusic) ? 'YES' : 'NO', margin + col2 + 4, y, col2);
+      y += 18;
+    }
+    if ((show as any).has_video_projections || (show as any).hasVideoProjections) {
+      statBox('Video / AV', (show as any).video_author || (show as any).videoAuthor || 'Original content', margin, y, col2);
+      if ((show as any).video_description || (show as any).videoDescription) {
+        statBox('Video Description', (show as any).video_description || (show as any).videoDescription, margin + col2 + 4, y, col2);
+      }
+      y += 18;
+    }
+    statBox('Script in English', (show as any).script_in_english === 'true' ? 'Full Script' : (show as any).script_in_english === 'partial' ? 'Synopsis Only' : 'No', margin, y, col2);
+    if ((show as any).translations_available || show.translationsAvailable) {
+      statBox('Translations Available', (show as any).translations_available || show.translationsAvailable, margin + col2 + 4, y, col2);
+    }
+    y += 18;
+
+    if (show.scriptScenario) {
+      checkY(30);
+      fillSurface(); doc.rect(margin, y, col, 28, 'F');
+      fillYellow(); doc.rect(margin, y, 2, 28, 'F');
+      label('Script Excerpt / Scenario', margin + 5, y + 5, yellow);
+      white(); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      const scLines = doc.splitTextToSize(show.scriptScenario, col - 10);
+      scLines.slice(0, 5).forEach((line: string, i: number) => doc.text(line, margin + 5, y + 11 + i * 4.5));
+      y += 32;
+    }
+
+    // Footer on every page
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      fillYellow(); doc.rect(0, H - 10, W, 10, 'F');
+      black(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+      doc.text('HAHAHUB · THE COMEDY RIGHTS MARKETPLACE · HAHAHUB.ART', margin, H - 4);
+      doc.text(`${i} / ${pageCount}`, W - margin - 8, H - 4);
+    }
+
+    doc.save(`${show.title.replace(/\s+/g, '_')}_Dossier_HahaHub.pdf`);
   };
 
   return (
