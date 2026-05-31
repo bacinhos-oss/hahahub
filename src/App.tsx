@@ -16,7 +16,7 @@ import FAQPage from './pages/FAQPage'
 import LaffWirePage from './pages/LaffWirePage'
 import ProducerPage from './pages/ProducerPage'
 import StefunnyPage from './pages/StefunnyPage'
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 import DealsPipelinePage from './pages/DealsPipelinePage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
@@ -438,6 +438,7 @@ const App: React.FC = () => {
     <div className="min-h-screen">
       {renderPage()}
       <CookieBanner />
+      <Analytics />
     </div>
   )
 }
