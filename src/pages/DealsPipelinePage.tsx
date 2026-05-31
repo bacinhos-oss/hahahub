@@ -358,6 +358,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       </div>
 
       {/* STATS */}
+      <div style={{ minHeight: '500px' }}>
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: 'New', value: deals.filter(d => (d.deal_status || 'new') === 'new').length, color: 'text-brand-pink' },
@@ -404,6 +405,11 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
 
           {/* LEFT */}
           <div className="space-y-4 min-h-96">
+            {/* HINT */}
+            <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">touch_app</span>
+              Click a deal to open messages &amp; manage
+            </p>
             {viewMode === 'list' ? (
               <div className="border-4 border-white/20 overflow-hidden">
                 {deals.map(deal => <DealRow key={deal.id} deal={deal} />)}
@@ -665,6 +671,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
