@@ -696,6 +696,13 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       {c.notes && <p className="text-white/25 text-xs italic mt-1">{c.notes}</p>}
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* Edit body */}
+                      <button onClick={() => {
+                        if (contractTextIdx === c.id) { setContractTextIdx(null); setContractText(null); }
+                        else { setContractTextIdx(c.id); setContractText(c.body || ''); }
+                      }} className={"text-[8px] font-black uppercase italic px-2 py-1 border transition-all " + (contractTextIdx === c.id ? 'border-brand-yellow text-brand-yellow' : 'border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow')}>
+                        ✏️ Edit
+                      </button>
                       {/* Status update */}
                       <select value={c.status} onChange={async e => {
                         await supabase.from('contracts').update({ status: e.target.value }).eq('id', c.id);
@@ -714,6 +721,54 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       </button>
                     </div>
                   </div>
+
+                  {/* INLINE EDITOR */}
+                  {contractTextIdx === c.id && (
+                    <div className="border-t-4 border-brand-yellow/30 p-4 space-y-3 bg-black/20">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Contract Document</p>
+                        {c.body && <span className="text-[8px] text-green-400 font-black">✓ Saved</span>}
+                      </div>
+                      <textarea
+                        value={contractText || ''}
+                        onChange={e => setContractText(e.target.value)}
+                        rows={16}
+                        placeholder={`${c.title?.toUpperCase() || 'CONTRACT'}\n\nDate: ${new Date().toISOString().split('T')[0]}\nRights Holder: \nCounter Party: ${c.party || ''}\nShow: ${c.show || ''}\nTerritory: ${c.territory || ''}\nRoyalty: ${c.royalty_pct ? c.royalty_pct + '%' : ''} of gross box office\nDuration: ${c.start_date || ''} to ${c.end_date || ''}\n\n[Terms and conditions...]\n\nRights Holder: _______________ Date: _______\nCounter Party: _______________ Date: _______`}
+                        className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed"
+                      />
+                      <div className="flex gap-2 flex-wrap">
+                        <button onClick={async () => {
+                          await supabase.from('contracts').update({ body: contractText }).eq('id', c.id);
+                          setContracts(prev => prev.map(x => x.id === c.id ? {...x, body: contractText} : x));
+                        }} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+                          💾 Save
+                        </button>
+                        <button onClick={() => {
+                          const blob = new Blob([contractText || ''], { type: 'text/plain' });
+                          const a = document.createElement('a');
+                          a.href = URL.createObjectURL(blob);
+                          a.download = (c.title || 'contract').replace(/\s+/g, '_') + '.txt';
+                          a.click();
+                        }} className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
+                          📥 Download .txt
+                        </button>
+                        <button onClick={() => {
+                          const w = window.open('', '_blank');
+                          if (w) {
+                            w.document.write(`<html><head><title>${c.title || 'Contract'}</title><style>body{font-family:monospace;padding:40px;font-size:14px;line-height:1.8;}h1{font-size:18px;margin-bottom:24px;}</style></head><body><h1>${c.title || 'CONTRACT'}</h1><pre>${contractText || ''}</pre></body></html>`);
+                            w.document.close();
+                            w.print();
+                          }
+                        }} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs hover:border-white/40 hover:text-white transition-all">
+                          🖨️ Print / PDF
+                        </button>
+                        <button onClick={() => { setContractTextIdx(null); setContractText(null); }}
+                          className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
