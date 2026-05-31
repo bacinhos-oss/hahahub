@@ -1099,7 +1099,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   { key: 'royalties', label: 'ROYALTIES', badge: 0 },
                   { key: 'incoming', label: 'INCOMING', badge: 0 },
                   { key: 'analytics', label: 'ANALYTICS', badge: 0 },
-                  { key: 'contracts', label: 'CONTRACTS', badge: 0 },
+                  { key: 'contracts', label: 'HAHAOFFICE', badge: 0 },
                   { key: 'calculator', label: 'CALCULATOR', badge: 0 },
                 ] as {key: string; label: string; badge: number}[]).map(t => (
                   <button key={t.key} onClick={() => setStudioTab(t.key as any)}

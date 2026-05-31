@@ -143,9 +143,9 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { key: 'royalty', label: 'Royalty Tracker', icon: 'receipt_long' },
     { key: 'incoming', label: 'Incoming Royalties', icon: 'savings' },
-    { key: 'contracts', label: 'Contracts', icon: 'description' },
+    { key: 'contracts', label: 'HAHAoffice', icon: 'description' },
     { key: 'calculator', label: 'Calculator', icon: 'calculate' },
-    { key: 'contacts', label: 'Contacts', icon: 'contacts' },
+    { key: 'contacts', label: 'HAHAfriends', icon: 'contacts' },
     { key: 'log', label: 'Show Log', icon: 'history' },
   ];
 
@@ -593,7 +593,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
         <div className="space-y-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contracts.length} contract{contracts.length !== 1 ? 's' : ''} · saved in cloud</p>
+              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contracts.length} contract{contracts.length !== 1 ? 's' : ''} · HAHAoffice · saved in cloud</p>
             </div>
             <button onClick={() => setShowContractForm(!showContractForm)}
               className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
@@ -923,8 +923,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       {tab === 'contacts' && (
         <div className="space-y-6">
           <div className="border-l-4 border-brand-cyan pl-4">
-            <p className="text-white font-black uppercase italic text-sm">Contacts</p>
-            <p className="text-white/50 text-sm italic mt-1">Your private address book of producers, agents, and theatre directors. Add contacts you meet at festivals or through deals. Notes are private — only you can see them.</p>
+            <p className="text-white font-black uppercase italic text-sm">HAHAfriends</p>
+            <p className="text-white/50 text-sm italic mt-1">Your private network of producers, directors, agents and theatre contacts. Notes are private — only you can see them.</p>
           </div>
           <div className="flex items-center justify-between gap-4">
             <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contacts.length} contacts</p>
