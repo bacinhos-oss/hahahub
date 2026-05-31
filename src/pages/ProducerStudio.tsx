@@ -72,7 +72,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const techs = Number(calc.techFee) * Number(calc.techCount) * Number(calc.performances);
   const other = Number(calc.otherFee) * Number(calc.otherCount) * Number(calc.performances);
   const totalCosts = actors + techs + other;
-  const net = royalty - totalCosts;
+  const net = gross - royalty - totalCosts;
 
   // Load shows I have licensed (from deals where I am buyer)
   useEffect(() => {
