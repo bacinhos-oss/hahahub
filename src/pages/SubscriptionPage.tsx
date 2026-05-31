@@ -1109,12 +1109,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </button>
                 ))}
               </div>
-              {studioTab === 'pipeline' && <DealsPipelinePage user={user} onNavigate={onNavigate} />}
-              {studioTab === 'royalties' && <ProducerStudio user={user} shows={shows} initialTab='royalty' hideHeader hideTabs />}
-              {studioTab === 'incoming' && <ProducerStudio user={user} shows={shows} initialTab='incoming' hideHeader hideTabs />}
-              {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} initialTab='dashboard' hideHeader hideTabs />}
-              {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} initialTab='contracts' hideHeader hideTabs />}
-              {studioTab === 'calculator' && <ProducerStudio user={user} shows={shows} initialTab='calculator' hideHeader hideTabs />}
+              <div style={{ minHeight: '600px' }}>
+                {studioTab === 'pipeline' && <DealsPipelinePage user={user} onNavigate={onNavigate} />}
+                {studioTab === 'royalties' && <ProducerStudio user={user} shows={shows} initialTab='royalty' hideHeader hideTabs />}
+                {studioTab === 'incoming' && <ProducerStudio user={user} shows={shows} initialTab='incoming' hideHeader hideTabs />}
+                {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} initialTab='dashboard' hideHeader hideTabs />}
+                {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} initialTab='contracts' hideHeader hideTabs />}
+                {studioTab === 'calculator' && <ProducerStudio user={user} shows={shows} initialTab='calculator' hideHeader hideTabs />}
+              </div>
             </section>
             )}
 
