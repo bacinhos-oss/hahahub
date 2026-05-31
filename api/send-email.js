@@ -388,6 +388,53 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </html>`
   }),
 
+  beta_checkin: ({ name }) => ({
+    subject: `9 days in — how's HahaHub treating you? 🥊`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
+.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
+.badge { background: #03DAC6; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
+h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 16px; line-height: 1.1; }
+.question { background: #111; border-left: 4px solid #FFDE03; padding: 20px 24px; margin: 16px 0; }
+.question p { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.9); margin: 0; }
+.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
+.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
+</style></head>
+<body>
+<div class="container">
+  <div class="logo">HAHAHUB</div>
+  <div class="slogan">Tickle. Set Up. Punch.</div>
+  <div class="badge">🎭 Beta Check-In</div>
+  <h1>${name},<br/>9 days in.<br/>How's it going?</h1>
+  <p style="color:rgba(255,255,255,0.5);font-style:italic;font-size:15px;">You're one of our first beta users. Your feedback shapes the platform.</p>
+
+  <p style="color:rgba(255,255,255,0.7);font-size:14px;margin-top:24px;">Just hit reply and tell us:</p>
+
+  <div class="question">
+    <p>01. What's working well so far?</p>
+  </div>
+  <div class="question">
+    <p>02. What's missing or broken?</p>
+  </div>
+
+  <p style="color:rgba(255,255,255,0.4);font-style:italic;font-size:13px;margin-top:8px;">No forms, no links. Just reply to this email. We read everything.</p>
+
+  <a href="https://hahahub.art" class="cta">🥊 Back to HahaHub →</a>
+
+  <div class="footer">
+    <p>HahaHub — Theatre Comedy Rights Marketplace | info@hahahub.art</p>
+    <p>Break a Laffing Leg. 🦵</p>
+  </div>
+</div>
+</body>
+</html>`
+  }),
+
   subscription_reminder: ({ name, expiry, daysLeft }) => ({
     subject: `Your HahaHub Pass expires in ${daysLeft} days — Renew Now`,
     html: `
