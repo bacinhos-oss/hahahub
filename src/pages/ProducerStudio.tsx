@@ -40,9 +40,10 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [showViews, setShowViews] = useState<any[]>([]);
 
   // CONTRACTS STATE
-  const [contracts, setContracts] = useState<any[]>(() => load('contracts'));
+  const [contracts, setContracts] = useState<any[]>([]);
+  const [contractsLoading, setContractsLoading] = useState(false);
   const [showContractForm, setShowContractForm] = useState(false);
-  const [newContract, setNewContract] = useState({ title: '', show: '', party: '', type: 'licensing', status: 'draft', date: '', notes: '' });
+  const [newContract, setNewContract] = useState({ title: '', show: '', show_id: '', party: '', type: 'licensing', status: 'draft', date: '', royalty_pct: '', territory: '', start_date: '', end_date: '', notes: '' });
   const [editContractIdx, setEditContractIdx] = useState<number | null>(null);
   const [contractText, setContractText] = useState<string | null>(null);
   const [contractTextIdx, setContractTextIdx] = useState<number | null>(null);
@@ -60,10 +61,16 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [newLog, setNewLog] = useState({ date: new Date().toISOString().split('T')[0], show: '', venue: '', attendance: '', notes: '' });
 
   // Save to localStorage on change
-
-  useEffect(() => { save('contracts', contracts); }, [contracts]);
   useEffect(() => { save('contacts', contacts); }, [contacts]);
   useEffect(() => { save('logs', logs); }, [logs]);
+
+  // Load contracts from Supabase
+  useEffect(() => {
+    if (!user?.id) return;
+    setContractsLoading(true);
+    supabase.from('contracts').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
+      .then(({ data }) => { if (data) setContracts(data); setContractsLoading(false); });
+  }, [user?.id]);
 
   // CALCULATOR
   const gross = Number(calc.ticketPrice) * Number(calc.seats) * (Number(calc.occupancy) / 100) * Number(calc.performances);
@@ -583,9 +590,11 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       )}
 
             {tab === 'contracts' && (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contracts.length} contracts</p>
+            <div>
+              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contracts.length} contract{contracts.length !== 1 ? 's' : ''} · saved in cloud</p>
+            </div>
             <button onClick={() => setShowContractForm(!showContractForm)}
               className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
               + New Contract
@@ -594,15 +603,19 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
           {showContractForm && (
             <div className="border-4 border-brand-yellow/30 p-4 space-y-4">
+              <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">New Contract</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div><label className={lbl}>Contract Title</label><input placeholder="e.g. Licensing — Show Title" value={newContract.title} onChange={e => setNewContract(p => ({...p, title: e.target.value}))} className={inp} /></div>
+                <div className="col-span-2"><label className={lbl}>Contract Title *</label><input placeholder="e.g. Licensing — Show Title · Country" value={newContract.title} onChange={e => setNewContract(p => ({...p, title: e.target.value}))} className={inp} /></div>
                 <div><label className={lbl}>Show</label>
-                  <select value={newContract.show} onChange={e => setNewContract(p => ({...p, show: e.target.value}))} className={inp}>
+                  <select value={newContract.show} onChange={e => {
+                    const sel = myShows.find((s: any) => s.title === e.target.value);
+                    setNewContract(p => ({...p, show: e.target.value, show_id: sel?.id || ''}));
+                  }} className={inp}>
                     <option value="">Select show...</option>
                     {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
                   </select>
                 </div>
-                <div><label className={lbl}>Counter Party</label><input placeholder="Name / Company" value={newContract.party} onChange={e => setNewContract(p => ({...p, party: e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>Counter Party</label><input placeholder="Name / Theatre / Company" value={newContract.party} onChange={e => setNewContract(p => ({...p, party: e.target.value}))} className={inp} /></div>
                 <div><label className={lbl}>Type</label>
                   <select value={newContract.type} onChange={e => setNewContract(p => ({...p, type: e.target.value}))} className={inp}>
                     <option value="licensing">Licensing Agreement</option>
@@ -613,7 +626,6 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     <option value="other">Other</option>
                   </select>
                 </div>
-                <div><label className={lbl}>Date</label><input type="date" value={newContract.date} onChange={e => setNewContract(p => ({...p, date: e.target.value}))} className={inp} /></div>
                 <div><label className={lbl}>Status</label>
                   <select value={newContract.status} onChange={e => setNewContract(p => ({...p, status: e.target.value}))} className={inp}>
                     <option value="draft">Draft</option>
@@ -622,121 +634,116 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     <option value="expired">Expired</option>
                   </select>
                 </div>
+                <div><label className={lbl}>Royalty %</label><input type="number" placeholder="e.g. 10" value={newContract.royalty_pct} onChange={e => setNewContract(p => ({...p, royalty_pct: e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>Territory</label><input placeholder="e.g. Slovenia, Croatia" value={newContract.territory} onChange={e => setNewContract(p => ({...p, territory: e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>Start Date</label><input type="date" value={newContract.start_date} onChange={e => setNewContract(p => ({...p, start_date: e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>End Date</label><input type="date" value={newContract.end_date} onChange={e => setNewContract(p => ({...p, end_date: e.target.value}))} className={inp} /></div>
                 <div className="col-span-2"><label className={lbl}>Notes</label><textarea rows={2} value={newContract.notes} onChange={e => setNewContract(p => ({...p, notes: e.target.value}))} className={inp + ' resize-none'} /></div>
               </div>
               <div className="flex gap-3">
-                <button onClick={() => {
-                  if (!newContract.title) return;
-                  setContracts(prev => [...prev, { ...newContract, id: Date.now().toString() }]);
-                  setNewContract({ title: '', show: '', party: '', type: 'licensing', status: 'draft', date: '', notes: '' });
+                <button onClick={async () => {
+                  if (!newContract.title || !user?.id) return;
+                  const { data, error } = await supabase.from('contracts').insert({
+                    user_id: user.id,
+                    title: newContract.title,
+                    show: newContract.show,
+                    show_id: newContract.show_id || null,
+                    party: newContract.party,
+                    type: newContract.type,
+                    status: newContract.status,
+                    royalty_pct: newContract.royalty_pct ? Number(newContract.royalty_pct) : null,
+                    territory: newContract.territory || null,
+                    start_date: newContract.start_date || null,
+                    end_date: newContract.end_date || null,
+                    notes: newContract.notes,
+                  }).select().single();
+                  if (data) setContracts(prev => [data, ...prev]);
+                  setNewContract({ title: '', show: '', show_id: '', party: '', type: 'licensing', status: 'draft', date: '', royalty_pct: '', territory: '', start_date: '', end_date: '', notes: '' });
                   setShowContractForm(false);
-                }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black">Save</button>
+                }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black">Save to Cloud</button>
                 <button onClick={() => setShowContractForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
               </div>
             </div>
           )}
 
-          {/* Template contracts */}
-          <div className="space-y-2">
-            <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Sample Templates</p>
+          {/* My Contracts */}
+          {contractsLoading ? (
+            <p className="text-white/20 italic text-sm">Loading...</p>
+          ) : contracts.length === 0 ? (
+            <div className="py-12 text-center space-y-3">
+              <p className="text-4xl">📄</p>
+              <p className="text-white/20 font-black uppercase italic text-sm">No contracts yet.</p>
+              <p className="text-white/10 text-xs italic">Add a contract above or sign a deal in the Pipeline.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {contracts.map((c: any) => (
+                <div key={c.id} className="border-4 border-white/10 hover:border-white/20 transition-all">
+                  <div className="px-5 py-4 flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <p className="font-black uppercase italic text-white truncate">{c.title}</p>
+                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 flex-shrink-0 ${c.status === 'signed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : c.status === 'sent' ? 'bg-brand-yellow text-black' : c.status === 'expired' ? 'bg-red-500/20 text-red-400' : 'border border-white/20 text-white/30'}`}>{c.status}</span>
+                        <span className="text-[8px] font-black uppercase border border-white/10 text-white/20 px-2 py-0.5">{c.type}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-x-4 gap-y-0.5">
+                        {c.party && <p className="text-white/40 text-xs">👤 {c.party}</p>}
+                        {c.show && <p className="text-white/40 text-xs">🎭 {c.show}</p>}
+                        {c.territory && <p className="text-white/40 text-xs">🌍 {c.territory}</p>}
+                        {c.royalty_pct && <p className="text-brand-yellow text-xs font-black">{c.royalty_pct}% royalty</p>}
+                        {c.start_date && <p className="text-white/30 text-xs">{c.start_date}{c.end_date ? ' → ' + c.end_date : ''}</p>}
+                      </div>
+                      {c.notes && <p className="text-white/25 text-xs italic mt-1">{c.notes}</p>}
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* Status update */}
+                      <select value={c.status} onChange={async e => {
+                        await supabase.from('contracts').update({ status: e.target.value }).eq('id', c.id);
+                        setContracts(prev => prev.map(x => x.id === c.id ? {...x, status: e.target.value} : x));
+                      }} className="bg-brand-black border border-white/20 text-white/50 font-black uppercase italic text-[8px] px-2 py-1 outline-none">
+                        <option value="draft">Draft</option>
+                        <option value="sent">Sent</option>
+                        <option value="signed">Signed</option>
+                        <option value="expired">Expired</option>
+                      </select>
+                      <button onClick={async () => {
+                        await supabase.from('contracts').delete().eq('id', c.id);
+                        setContracts(prev => prev.filter(x => x.id !== c.id));
+                      }} className="text-white/20 hover:text-brand-pink transition-colors">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Templates */}
+          <div className="space-y-2 border-t-4 border-white/10 pt-5">
+            <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest mb-3">Quick Templates</p>
             {[
               { label: 'Licensing Agreement', type: 'licensing' },
               { label: 'Co-production Agreement', type: 'coproduction' },
               { label: 'Guest Performance Contract', type: 'guest' },
             ].map((tmpl, i) => (
-              <div key={i} className="border-2 border-brand-cyan/20 px-4 py-3 flex items-center justify-between gap-4 hover:border-brand-cyan transition-all">
+              <div key={i} className="border-2 border-brand-cyan/20 px-4 py-3 flex items-center justify-between gap-4 hover:border-brand-cyan/40 transition-all">
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-brand-cyan text-sm">description</span>
                   <span className="text-white font-black uppercase italic text-xs">{tmpl.label}</span>
-                  <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">Template</span>
                 </div>
                 <button onClick={() => {
                   const show = myShows[0];
                   const today = new Date().toISOString().split('T')[0];
-                  const filled = tmpl.label === 'Licensing Agreement' 
-                    ? `THEATRICAL LICENSING AGREEMENT
-
-Date: ${today}
-Rights Holder: ${user.name}
-Show: ${show?.title || '[SHOW TITLE]'}
-Licensee: [LICENSEE NAME]
-Territory: [COUNTRY]
-Duration: [START] to [END]
-Performances: [NUMBER]
-Royalty: [X] pct of gross box office
-
-Rights Holder: ___________________ Date: _______
-Licensee: ___________________ Date: _______`
-                    : `${tmpl.label.toUpperCase()}
-
-Date: ${today}
-Party A: ${user.name}
-Party B: [OTHER PARTY]
-Show: ${show?.title || '[SHOW TITLE]'}
-
-[Fill in terms...]
-
-Party A: ___________________ Date: _______
-Party B: ___________________ Date: _______`;
+                  const text = `${tmpl.label.toUpperCase()}\n\nDate: ${today}\nRights Holder: ${user.name}\nShow: ${show?.title || '[SHOW TITLE]'}\nCounter Party: [NAME / THEATRE]\nTerritory: [COUNTRY]\nDuration: [START DATE] to [END DATE]\nPerformances: [NUMBER]\nRoyalty: [X]% of gross box office\n\n[Additional terms...]\n\nRights Holder: _______________ Date: _______\nCounter Party: _______________ Date: _______`;
                   const w = window.open('', '_blank');
-                  if (w) { w.document.write('<pre style="font-family:monospace;padding:40px;font-size:14px;">' + filled + '</pre>'); w.print(); }
+                  if (w) { w.document.write('<pre style="font-family:monospace;padding:40px;font-size:14px;">' + text + '</pre>'); w.print(); }
                 }} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">
                   Fill & Print →
                 </button>
               </div>
             ))}
           </div>
-
-          {contracts.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">My Contracts</p>
-              {contracts.map((c, i) => (
-                <div key={c.id || i} className="border-2 border-white/10 px-4 py-3 hover:border-brand-yellow transition-all">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="font-black uppercase italic text-white text-sm truncate">{c.title}</p>
-                      <p className="text-white/30 text-xs">{c.party} · {c.show} · {c.date}</p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${c.status === 'signed' ? 'bg-brand-cyan text-black' : c.status === 'sent' ? 'bg-brand-yellow text-black' : c.status === 'expired' ? 'bg-red-500/30 text-red-400' : 'border border-white/20 text-white/40'}`}>{c.status}</span>
-                      <button onClick={() => { setContractTextIdx(i); setContractText(c.body || c.notes || ''); }} className="text-white/20 hover:text-brand-yellow transition-colors" title="Edit document">
-                        <span className="material-symbols-outlined text-sm">edit_document</span>
-                      </button>
-                      <button onClick={() => setContracts(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                    </div>
-                  </div>
-                  {/* Inline contract editor */}
-                  {contractTextIdx === i && (
-                    <div className="mt-3 space-y-2">
-                      <textarea
-                        value={contractText || ''}
-                        onChange={e => setContractText(e.target.value)}
-                        rows={12}
-                        className="w-full bg-black border-2 border-brand-yellow/40 p-4 text-white/80 font-mono text-xs outline-none focus:border-brand-yellow resize-y"
-                      />
-                      <div className="flex gap-2">
-                        <button onClick={() => {
-                          setContracts(prev => prev.map((x, j) => j === i ? { ...x, body: contractText } : x));
-                          setContractTextIdx(null);
-                          setContractText(null);
-                        }} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black">Save</button>
-                        <button onClick={() => {
-                          const blob = new Blob([contractText || ''], { type: 'text/plain' });
-                          const a = document.createElement('a');
-                          a.href = URL.createObjectURL(blob);
-                          a.download = (c.title || 'contract') + '.txt';
-                          a.click();
-                        }} className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">Download</button>
-                        <button onClick={() => { setContractTextIdx(null); setContractText(null); }} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
