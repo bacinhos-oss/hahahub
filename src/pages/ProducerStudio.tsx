@@ -43,6 +43,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [contracts, setContracts] = useState<any[]>([]);
   const [contractsLoading, setContractsLoading] = useState(false);
   const [showContractForm, setShowContractForm] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
+  const [templateParams, setTemplateParams] = useState<any>({});
   const [newContract, setNewContract] = useState({ title: '', show: '', show_id: '', party: '', type: 'licensing', status: 'draft', date: '', royalty_pct: '', territory: '', start_date: '', end_date: '', notes: '' });
   const [editContractIdx, setEditContractIdx] = useState<number | null>(null);
   const [contractText, setContractText] = useState<string | null>(null);
@@ -782,30 +784,151 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
           )}
 
-          {/* Templates */}
-          <div className="space-y-2 border-t-4 border-white/10 pt-5">
-            <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest mb-3">Quick Templates</p>
-            {[
-              { label: 'Licensing Agreement', type: 'licensing' },
-              { label: 'Co-production Agreement', type: 'coproduction' },
-              { label: 'Guest Performance Contract', type: 'guest' },
-            ].map((tmpl, i) => (
-              <div key={i} className="border-2 border-brand-cyan/20 px-4 py-3 flex items-center justify-between gap-4 hover:border-brand-cyan/40 transition-all">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-brand-cyan text-sm">description</span>
-                  <span className="text-white font-black uppercase italic text-xs">{tmpl.label}</span>
-                </div>
-                <button onClick={() => {
-                  const show = myShows[0];
-                  const today = new Date().toISOString().split('T')[0];
-                  const text = `${tmpl.label.toUpperCase()}\n\nDate: ${today}\nRights Holder: ${user.name}\nShow: ${show?.title || '[SHOW TITLE]'}\nCounter Party: [NAME / THEATRE]\nTerritory: [COUNTRY]\nDuration: [START DATE] to [END DATE]\nPerformances: [NUMBER]\nRoyalty: [X]% of gross box office\n\n[Additional terms...]\n\nRights Holder: _______________ Date: _______\nCounter Party: _______________ Date: _______`;
-                  const w = window.open('', '_blank');
-                  if (w) { w.document.write('<pre style="font-family:monospace;padding:40px;font-size:14px;">' + text + '</pre>'); w.print(); }
-                }} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">
-                  Fill & Print →
-                </button>
+          {/* SMART TEMPLATES */}
+          <div className="space-y-4 border-t-4 border-white/10 pt-5">
+            <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Smart Templates — Generate & Save</p>
+
+            {!activeTemplate && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {[
+                  { key: 'licensing', label: '📄 Licensing Agreement', desc: 'Script or Full Punch license between rights holder and producer', color: 'border-brand-yellow/30 hover:border-brand-yellow' },
+                  { key: 'coproduction', label: '🤝 Co-production Agreement', desc: 'Joint production between two theatre companies', color: 'border-brand-cyan/30 hover:border-brand-cyan' },
+                  { key: 'guest', label: '🎭 Guest Performance Contract', desc: 'Single or limited guest performance arrangement', color: 'border-brand-pink/30 hover:border-brand-pink' },
+                ].map(t => (
+                  <button key={t.key} onClick={() => {
+                    setActiveTemplate(t.key);
+                    setTemplateParams({
+                      show: myShows[0]?.title || '', show_id: myShows[0]?.id || '',
+                      royalty: myShows[0]?.scriptRoyaltyPct || '10',
+                      party: '', org: '', territory: '', city: '', performances: '',
+                      start_date: '', end_date: '', advance: '0', currency: 'EUR',
+                      rights_holder: user.name, date: new Date().toISOString().split('T')[0],
+                      package: 'Script License', governing_law: '', author: myShows[0]?.author || '',
+                    });
+                  }} className={"border-4 p-4 text-left transition-all space-y-2 " + t.color}>
+                    <p className="font-black uppercase italic text-white text-sm">{t.label}</p>
+                    <p className="text-white/30 text-[10px] italic">{t.desc}</p>
+                    <p className="text-[9px] font-black uppercase italic text-brand-cyan">Generate →</p>
+                  </button>
+                ))}
               </div>
-            ))}
+            )}
+
+            {activeTemplate && (() => {
+              const isLicensing = activeTemplate === 'licensing';
+              const isCoprod = activeTemplate === 'coproduction';
+              const p = templateParams;
+              const generateText = () => {
+                const today = p.date || new Date().toISOString().split('T')[0];
+                if (isLicensing) return `THEATRICAL LICENSING AGREEMENT\n\nDate: ${today}\nReference No: LIC-${Date.now().toString().slice(-6)}\n\nPARTIES:\nRights Holder: ${p.rights_holder || user.name}\nLicensee: ${p.party || '[LICENSEE NAME]'}\nOrganisation: ${p.org || '[ORGANISATION]'}\n\nSHOW:\nTitle: ${p.show || '[SHOW TITLE]'}\nAuthor: ${p.author || '[AUTHOR]'}\nPackage: ${p.package || 'Script License'}\n\nLICENSE TERMS:\nTerritory: ${p.territory || '[COUNTRY]'}\nCity / Venue: ${p.city || '[CITY]'}\nLicense Period: ${p.start_date || '[START]'} to ${p.end_date || '[END]'}\nNumber of Performances: ${p.performances || '[NUMBER]'}\n\nFINANCIAL TERMS:\nRoyalty Rate: ${p.royalty || '[X]'}% of gross box office\nAdvance Payment: ${p.currency || 'EUR'} ${p.advance || '0'}\nRoyalty Reports Due: Within 14 days of each performance\n\nOBLIGATIONS:\n1. Licensee shall not alter the script without written consent.\n2. Licensee shall provide royalty reports for each performance.\n3. Rights Holder shall deliver materials within 14 days of signing.\n4. This license is non-transferable unless stated otherwise.\n\nGOVERNING LAW: ${p.governing_law || '[COUNTRY]'}\n\nRights Holder: _________________________ Date: __________\nName: ${p.rights_holder || user.name}\n\nLicensee: _________________________ Date: __________\nName: ${p.party || '[LICENSEE]'}`;
+                if (isCoprod) return `CO-PRODUCTION AGREEMENT\n\nDate: ${today}\nReference No: COPROD-${Date.now().toString().slice(-6)}\n\nPARTIES:\nProducer A: ${p.rights_holder || user.name}\nProducer B: ${p.party || '[CO-PRODUCER]'}\nCompany B: ${p.org || '[ORGANISATION]'}\n\nPRODUCTION:\nShow Title: ${p.show || '[SHOW TITLE]'}\nPremiere: ${p.city || '[CITY]'}, ${p.start_date || '[DATE]'}\nTour Territory: ${p.territory || '[COUNTRIES]'}\n\nFINANCIAL SPLIT:\nProducer A Share: ${p.royalty || '50'}%\nProducer B Share: ${100 - Number(p.royalty || 50)}%\nTotal Budget: ${p.currency || 'EUR'} ${p.advance || '[AMOUNT]'}\n\nProducer A: _________________________ Date: __________\nName: ${p.rights_holder || user.name}\n\nProducer B: _________________________ Date: __________\nName: ${p.party || '[CO-PRODUCER]'}`;
+                return `GUEST PERFORMANCE CONTRACT\n\nDate: ${today}\nReference No: GUEST-${Date.now().toString().slice(-6)}\n\nPARTIES:\nHost Theatre: ${p.rights_holder || user.name}\nGuest Company: ${p.party || '[GUEST COMPANY]'}\n\nPERFORMANCE:\nShow Title: ${p.show || '[SHOW TITLE]'}\nVenue: ${p.city || '[VENUE]'}\nDate(s): ${p.start_date || '[DATE]'}\nPerformances: ${p.performances || '[NUMBER]'}\n\nFINANCIAL TERMS:\nFee: ${p.currency || 'EUR'} ${p.advance || '[AMOUNT]'}\nPayment Due: ${p.end_date || '[DATE]'}\n\nHost Theatre: _________________________ Date: __________\nName: ${p.rights_holder || user.name}\n\nGuest Company: _________________________ Date: __________\nName: ${p.party || '[GUEST COMPANY]'}`;
+              };
+
+              return (
+                <div className="border-4 border-brand-cyan/30 p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="font-black uppercase italic text-brand-cyan text-sm">
+                      {activeTemplate === 'licensing' ? '📄 Licensing Agreement' : activeTemplate === 'coproduction' ? '🤝 Co-production Agreement' : '🎭 Guest Performance Contract'}
+                    </p>
+                    <button onClick={() => setActiveTemplate(null)} className="text-white/30 hover:text-white font-black uppercase italic text-xs">← Back</button>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div><label className={lbl}>Show *</label>
+                      <select value={p.show} onChange={e => {
+                        const sel = myShows.find((s: any) => s.title === e.target.value);
+                        setTemplateParams((prev: any) => ({...prev, show: e.target.value, show_id: sel?.id || '', royalty: sel?.scriptRoyaltyPct || prev.royalty, author: sel?.author || prev.author}));
+                      }} className={inp}>
+                        <option value="">Select show...</option>
+                        {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
+                      </select>
+                    </div>
+                    <div><label className={lbl}>{isCoprod ? 'Co-producer' : 'Counter Party'} *</label>
+                      <input value={p.party} onChange={e => setTemplateParams((prev: any) => ({...prev, party: e.target.value}))} className={inp} placeholder="Name" />
+                    </div>
+                    <div><label className={lbl}>Organisation</label>
+                      <input value={p.org || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, org: e.target.value}))} className={inp} placeholder="Theatre / Company" />
+                    </div>
+                    <div><label className={lbl}>Territory</label>
+                      <input value={p.territory} onChange={e => setTemplateParams((prev: any) => ({...prev, territory: e.target.value}))} className={inp} placeholder="e.g. Slovenia" />
+                    </div>
+                    <div><label className={lbl}>City / Venue</label>
+                      <input value={p.city} onChange={e => setTemplateParams((prev: any) => ({...prev, city: e.target.value}))} className={inp} placeholder="e.g. Ljubljana" />
+                    </div>
+                    {isLicensing && <div><label className={lbl}>Package</label>
+                      <select value={p.package || 'Script License'} onChange={e => setTemplateParams((prev: any) => ({...prev, package: e.target.value}))} className={inp}>
+                        <option value="Script License">Script License</option>
+                        <option value="Full Punch Package">Full Punch Package</option>
+                      </select>
+                    </div>}
+                    <div><label className={lbl}>{isCoprod ? 'Share A %' : 'Royalty %'}</label>
+                      <input type="number" value={p.royalty} onChange={e => setTemplateParams((prev: any) => ({...prev, royalty: e.target.value}))} className={inp} placeholder="10" />
+                    </div>
+                    <div><label className={lbl}>{activeTemplate === 'guest' ? 'Fee (EUR)' : 'Advance (EUR)'}</label>
+                      <input type="number" value={p.advance} onChange={e => setTemplateParams((prev: any) => ({...prev, advance: e.target.value}))} className={inp} placeholder="0" />
+                    </div>
+                    <div><label className={lbl}>Performances</label>
+                      <input type="number" value={p.performances} onChange={e => setTemplateParams((prev: any) => ({...prev, performances: e.target.value}))} className={inp} />
+                    </div>
+                    <div><label className={lbl}>Start Date</label>
+                      <input type="date" value={p.start_date} onChange={e => setTemplateParams((prev: any) => ({...prev, start_date: e.target.value}))} className={inp} />
+                    </div>
+                    <div><label className={lbl}>End Date</label>
+                      <input type="date" value={p.end_date} onChange={e => setTemplateParams((prev: any) => ({...prev, end_date: e.target.value}))} className={inp} />
+                    </div>
+                    {isLicensing && <div><label className={lbl}>Governing Law</label>
+                      <input value={p.governing_law || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, governing_law: e.target.value}))} className={inp} placeholder="e.g. Slovenia" />
+                    </div>}
+                  </div>
+
+                  {/* Live preview */}
+                  <div>
+                    <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest mb-2">Live Preview</p>
+                    <pre className="w-full bg-brand-black border-2 border-white/10 p-4 text-white/50 font-mono text-[10px] leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto">
+                      {generateText().replace(/\\n/g, '\n')}
+                    </pre>
+                  </div>
+
+                  <div className="flex gap-2 flex-wrap">
+                    <button onClick={async () => {
+                      if (!p.party || !user?.id) return;
+                      const body = generateText().replace(/\\n/g, '\n');
+                      const title = `${activeTemplate === 'licensing' ? 'Licensing' : activeTemplate === 'coproduction' ? 'Co-production' : 'Guest'} — ${p.show || 'Show'} · ${p.party}`;
+                      const { data } = await supabase.from('contracts').insert({
+                        user_id: user.id, title, show: p.show, show_id: p.show_id || null,
+                        party: p.party, type: activeTemplate, status: 'draft',
+                        royalty_pct: p.royalty ? Number(p.royalty) : null,
+                        territory: p.territory || null, start_date: p.start_date || null,
+                        end_date: p.end_date || null, body,
+                        notes: `Generated ${new Date().toLocaleDateString('en-GB')}`,
+                      }).select().single();
+                      if (data) setContracts(prev => [data, ...prev]);
+                      setActiveTemplate(null);
+                    }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all">
+                      💾 Save to HAHAoffice
+                    </button>
+                    <button onClick={() => {
+                      const text = generateText().replace(/\\n/g, '\n');
+                      const blob = new Blob([text], { type: 'text/plain' });
+                      const a = document.createElement('a');
+                      a.href = URL.createObjectURL(blob);
+                      a.download = `contract_${p.show || 'show'}_${p.party || 'party'}.txt`.replace(/\s+/g, '_');
+                      a.click();
+                    }} className="border-4 border-brand-cyan/40 text-brand-cyan px-5 py-3 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
+                      📥 Download .txt
+                    </button>
+                    <button onClick={() => {
+                      const text = generateText().replace(/\\n/g, '\n');
+                      const w = window.open('', '_blank');
+                      if (w) { w.document.write(`<html><head><title>Contract</title><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${text}</pre></body></html>`); w.document.close(); w.print(); }
+                    }} className="border-4 border-white/20 text-white/40 px-5 py-3 font-black uppercase italic text-xs hover:text-white transition-all">
+                      🖨️ Print / PDF
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
