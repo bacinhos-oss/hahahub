@@ -12,9 +12,10 @@ interface ProducerPageProps {
   producerId?: string;
   shows: Show[];
   onUpdateStats: (showId: string, type: 'view' | 'inquiry') => void;
+  onViewShow?: (showId: string) => void;
 }
 
-const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user, producerId, shows, onUpdateStats }) => {
+const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user, producerId, shows, onUpdateStats, onViewShow }) => {
   const [producer, setProducer] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,7 +147,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3 flex-shrink-0">
+                  <div className="flex gap-3 flex-shrink-0 flex-wrap">
                     {isOwnProfile ? (
                       <button onClick={() => onNavigate('subscription')}
                         className="px-5 py-2 border-4 border-white text-white font-black uppercase italic text-xs hover:bg-white hover:text-black transition-all">
@@ -178,6 +179,22 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                       <button onClick={() => onNavigate('pricing')}
                         className="px-5 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-xs hover:bg-white transition-all">
                         LAFF+ to Contact →
+                      </button>
+                    )}
+                    {/* Add to HAHAfriends */}
+                    {user && !isOwnProfile && (
+                      <button onClick={async () => {
+                        await supabase.from('hahafriends').insert({
+                          user_id: user.id,
+                          friend_user_id: producerId,
+                          name: producer.name,
+                          email: producer.email || null,
+                          plan: producer.user_type || null,
+                          source: 'profile',
+                        });
+                        alert(`${producer.name} added to HAHAfriends! 🤝`);
+                      }} className="px-4 py-2 border-4 border-brand-cyan/40 text-brand-cyan font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
+                        🤝 Add to HAHAfriends
                       </button>
                     )}
                   </div>
@@ -238,7 +255,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {producerShows.map(show => (
-                  <div key={show.id} onClick={() => { onNavigate('discovery'); onUpdateStats(show.id, 'view'); }}
+                  <div key={show.id} onClick={() => { onUpdateStats(show.id, 'view'); if (onViewShow) onViewShow(show.id); else onNavigate('discovery'); }}
                     className="group cursor-pointer border-4 border-white/20 hover:border-brand-yellow transition-all overflow-hidden bg-brand-surface">
                     <div className="h-40 md:h-52 relative overflow-hidden">
                       {show.imageUrl ? (

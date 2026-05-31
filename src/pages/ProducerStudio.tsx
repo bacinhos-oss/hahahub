@@ -46,13 +46,14 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [newContract, setNewContract] = useState({ title: '', show: '', show_id: '', party: '', type: 'licensing', status: 'draft', date: '', royalty_pct: '', territory: '', start_date: '', end_date: '', notes: '' });
   const [editContractIdx, setEditContractIdx] = useState<number | null>(null);
   const [contractText, setContractText] = useState<string | null>(null);
-  const [contractTextIdx, setContractTextIdx] = useState<number | null>(null);
+  const [contractTextIdx, setContractTextIdx] = useState<string | null>(null);
 
   // CALCULATOR STATE
   const [calc, setCalc] = useState({ performances: '20', ticketPrice: '25', seats: '200', occupancy: '80', royaltyPct: '10', actorFee: '200', actorCount: '5', techFee: '150', techCount: '3', otherFee: '0', otherCount: '0' });
 
   // CONTACTS STATE
-  const [contacts, setContacts] = useState<any[]>(() => load('contacts'));
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [contactsLoading, setContactsLoading] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
   const [newContact, setNewContact] = useState({ name: '', role: '', email: '', phone: '', org: '', notes: '' });
 
@@ -61,8 +62,15 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [newLog, setNewLog] = useState({ date: new Date().toISOString().split('T')[0], show: '', venue: '', attendance: '', notes: '' });
 
   // Save to localStorage on change
-  useEffect(() => { save('contacts', contacts); }, [contacts]);
   useEffect(() => { save('logs', logs); }, [logs]);
+
+  // Load hahafriends from Supabase
+  useEffect(() => {
+    if (!user?.id) return;
+    setContactsLoading(true);
+    supabase.from('hahafriends').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
+      .then(({ data }) => { if (data) setContacts(data); setContactsLoading(false); });
+  }, [user?.id]);
 
   // Load contracts from Supabase
   useEffect(() => {
@@ -976,60 +984,92 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
       {/* ── CONTACTS ── */}
       {tab === 'contacts' && (
-        <div className="space-y-6">
-          <div className="border-l-4 border-brand-cyan pl-4">
-            <p className="text-white font-black uppercase italic text-sm">HAHAfriends</p>
-            <p className="text-white/50 text-sm italic mt-1">Your private network of producers, directors, agents and theatre contacts. Notes are private — only you can see them.</p>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contacts.length} contacts</p>
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-white font-black uppercase italic">HAHAfriends</p>
+              <p className="text-white/30 text-xs italic mt-0.5">{contacts.length} friends · saved in cloud</p>
+            </div>
             <button onClick={() => setShowContactForm(!showContactForm)}
-              className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-              + Add Contact
+              className="bg-brand-cyan text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+              + Add Friend
             </button>
           </div>
 
           {showContactForm && (
-            <div className="border-4 border-brand-yellow/30 p-4 space-y-4">
+            <div className="border-4 border-brand-cyan/30 p-4 space-y-4">
+              <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New HAHAfriend</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div><label className={lbl}>Name</label><input value={newContact.name} onChange={e => setNewContact(p => ({...p, name: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Role</label><input placeholder="Director / Tech / Agent..." value={newContact.role} onChange={e => setNewContact(p => ({...p, role: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Organisation</label><input value={newContact.org} onChange={e => setNewContact(p => ({...p, org: e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>Name *</label><input value={newContact.name} onChange={e => setNewContact(p => ({...p, name: e.target.value}))} className={inp} placeholder="Full name" /></div>
+                <div><label className={lbl}>Role</label><input placeholder="Director / Agent / Tech..." value={newContact.role} onChange={e => setNewContact(p => ({...p, role: e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>Organisation / Theatre</label><input value={newContact.org} onChange={e => setNewContact(p => ({...p, org: e.target.value}))} className={inp} /></div>
                 <div><label className={lbl}>Email</label><input type="email" value={newContact.email} onChange={e => setNewContact(p => ({...p, email: e.target.value}))} className={inp} /></div>
                 <div><label className={lbl}>Phone</label><input type="tel" value={newContact.phone} onChange={e => setNewContact(p => ({...p, phone: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Notes</label><input value={newContact.notes} onChange={e => setNewContact(p => ({...p, notes: e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>Country</label><input value={(newContact as any).country || ''} onChange={e => setNewContact(p => ({...p, country: e.target.value} as any))} className={inp} placeholder="e.g. Slovenia" /></div>
+                <div className="col-span-2 md:col-span-3"><label className={lbl}>Notes (private)</label><input value={newContact.notes} onChange={e => setNewContact(p => ({...p, notes: e.target.value}))} className={inp} placeholder="How you met, what they're interested in..." /></div>
               </div>
               <div className="flex gap-3">
-                <button onClick={() => {
-                  if (!newContact.name) return;
-                  setContacts(prev => [...prev, { ...newContact, id: Date.now().toString() }]);
+                <button onClick={async () => {
+                  if (!newContact.name || !user?.id) return;
+                  const { data } = await supabase.from('hahafriends').insert({
+                    user_id: user.id,
+                    name: newContact.name,
+                    email: newContact.email || null,
+                    plan: null,
+                    notes: [newContact.role, newContact.org, (newContact as any).country, newContact.phone, newContact.notes].filter(Boolean).join(' · ') || null,
+                    source: 'manual',
+                  }).select().single();
+                  if (data) setContacts(prev => [data, ...prev]);
                   setNewContact({ name: '', role: '', email: '', phone: '', org: '', notes: '' });
                   setShowContactForm(false);
-                }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black">Save</button>
+                }} className="bg-brand-cyan text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black">Save to Cloud</button>
                 <button onClick={() => setShowContactForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
               </div>
             </div>
           )}
 
-          {contacts.length === 0 ? (
-            <p className="text-white/20 italic text-sm">No contacts yet.</p>
+          {contactsLoading ? (
+            <p className="text-white/20 italic text-sm">Loading...</p>
+          ) : contacts.length === 0 ? (
+            <div className="py-12 text-center space-y-3">
+              <p className="text-4xl">🤝</p>
+              <p className="text-white/20 font-black uppercase italic text-sm">No HAHAfriends yet.</p>
+              <p className="text-white/10 text-xs italic">Add contacts manually or click "Add to HAHAfriends" on any producer profile.</p>
+            </div>
           ) : (
             <div className="space-y-2">
-              {contacts.map((c, i) => (
-                <div key={c.id || i} className="border-2 border-white/10 px-4 py-3 flex items-center justify-between gap-4 hover:border-brand-yellow transition-all">
+              {contacts.map((c: any) => (
+                <div key={c.id} className="border-4 border-white/10 px-5 py-4 flex items-center justify-between gap-4 hover:border-brand-cyan/40 transition-all group">
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-10 h-10 bg-brand-pink/20 border-2 border-brand-pink/30 flex items-center justify-center flex-shrink-0">
-                      <span className="font-black text-brand-pink text-sm">{c.name[0]}</span>
+                    <div className="w-10 h-10 bg-brand-cyan/15 border-2 border-brand-cyan/30 flex items-center justify-center flex-shrink-0">
+                      <span className="font-black text-brand-cyan text-sm">{c.name[0]}</span>
                     </div>
                     <div className="min-w-0">
-                      <p className="font-black uppercase italic text-white text-sm">{c.name}</p>
-                      <p className="text-white/30 text-xs">{c.role}{c.org ? ` · ${c.org}` : ''}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-black uppercase italic text-white">{c.name}</p>
+                        {c.plan && <span className={"text-[7px] font-black uppercase px-1.5 py-0.5 " + (c.plan === 'roar' ? 'bg-brand-pink/20 text-brand-pink' : c.plan === 'laff' ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-white/10 text-white/30')}>{c.plan?.toUpperCase()}</span>}
+                        {c.source && c.source !== 'manual' && <span className="text-[7px] font-black uppercase bg-brand-yellow/10 text-brand-yellow/60 px-1.5 py-0.5">{c.source}</span>}
+                      </div>
+                      {c.notes && <p className="text-white/30 text-xs mt-0.5">{c.notes}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    {c.email && <a href={`mailto:${c.email}`} className="text-brand-cyan text-[9px] font-black uppercase italic hover:underline">{c.email}</a>}
-                    {c.phone && <span className="text-white/40 text-xs">{c.phone}</span>}
-                    <button onClick={() => setContacts(prev => prev.filter((_, j) => j !== i))} className="text-white/20 hover:text-brand-pink transition-colors">
+                    {c.email && (
+                      <a href={`mailto:${c.email}`}
+                        className="text-brand-cyan text-[9px] font-black uppercase italic hover:underline hidden group-hover:block">
+                        {c.email}
+                      </a>
+                    )}
+                    {c.friend_user_id && (
+                      <button onClick={() => {/* navigate to profile */}}
+                        className="text-[8px] font-black uppercase italic text-white/30 border border-white/15 px-2 py-0.5 hover:border-brand-cyan hover:text-brand-cyan transition-all">
+                        View Profile →
+                      </button>
+                    )}
+                    <button onClick={async () => {
+                      await supabase.from('hahafriends').delete().eq('id', c.id);
+                      setContacts(prev => prev.filter(x => x.id !== c.id));
+                    }} className="text-white/20 hover:text-brand-pink transition-colors opacity-0 group-hover:opacity-100">
                       <span className="material-symbols-outlined text-sm">delete</span>
                     </button>
                   </div>
