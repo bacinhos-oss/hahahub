@@ -11,6 +11,7 @@ import PrivacyPage from './pages/PrivacyPage'
 import UploadPage from './pages/UploadPage'
 import CookieBanner from './components/CookieBanner'
 import FeedbackButton from './components/FeedbackButton'
+import OnboardingWizard from './components/OnboardingWizard'
 import NotFoundPage from './pages/NotFoundPage'
 import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   const [shows, setShows] = useState<Show[]>([])
   const [currentProducerId, setCurrentProducerId] = useState<string | undefined>(undefined)
   const [currentShowId, setCurrentShowId] = useState<string | null>(null)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
 
@@ -86,6 +88,7 @@ const App: React.FC = () => {
       }
       setCurrentUser(user)
       if (isAdmin) setIsAdminAuthenticated(true)
+      if (!data?.onboarded && !isAdmin) setShowOnboarding(true)
       setLoading(false)
     } catch { 
       setCurrentUser(null)
@@ -442,6 +445,17 @@ const App: React.FC = () => {
       <CookieBanner />
       <FeedbackButton />
       <Analytics />
+      {showOnboarding && currentUser?.id && (
+        <OnboardingWizard
+          userId={currentUser.id}
+          userName={currentUser.name}
+          onComplete={(result) => {
+            setShowOnboarding(false);
+            const page = result.split('|')[1];
+            if (page) setCurrentPage(page as any);
+          }}
+        />
+      )}
     </div>
   )
 }
