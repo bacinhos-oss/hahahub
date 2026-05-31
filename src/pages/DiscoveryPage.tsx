@@ -135,12 +135,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
                 <div className="flex flex-col h-full">
                   {/* POSTER */}
-                  <div className="relative flex-shrink-0" style={{height: '55%', minHeight: '280px'}}>
+                  <div className="relative flex-shrink-0 aspect-[2/3]">
                     <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center" alt={selectedShow.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                    <div className="absolute top-4 left-4 z-10">
-   
-                    </div>
                     <div className="absolute bottom-3 left-4 z-10">
                       <p className="text-[8px] font-black uppercase tracking-widest text-white/50 italic">Poster</p>
                     </div>
@@ -332,8 +329,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                              <span className="text-2xl font-black">{selectedShow.femaleRoles}</span>
                           </div>
                           <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center col-span-2">
-                             <span className="text-xs font-black uppercase italic text-brand-cyan">Can Merge Roles</span>
-                             <span className="text-sm font-black">{selectedShow.canMergeRoles ? 'YES' : 'NO'}</span>
+                             <span className="text-xs font-black uppercase italic text-brand-cyan">Intermission</span>
+                             <span className="text-sm font-black">{selectedShow.hasIntermission ? 'YES' : 'NO'}</span>
                           </div>
                         </div>
                         {selectedShow.translationsAvailable && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
@@ -362,25 +359,83 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>
                   </section>
 
-                  {/* 02. CREATIVE ASSETS */}
+                  {/* 02. FULL PUNCH */}
                   <section className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. CREATIVE ASSETS</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">02. FULL PUNCH</h4>
+
+                    {(selectedShow as any).has_full_punch_package ? (
+                      <div className="border-4 border-brand-pink/40 bg-brand-pink/5 p-5 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <p className="font-black uppercase italic text-brand-pink text-sm">🥊 Full Punch Available</p>
+                          <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5">
+                            {(selectedShow as any).full_punch_royalty_pct || '15'}% royalty
+                          </span>
+                        </div>
+                        <p className="text-white/40 text-xs italic">Complete know-how package. Everything you need to produce this show.</p>
+
+                        {/* Contents */}
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                          {[
+                            { key: 'fp_the_script',           label: '📄 The Script',          always: true },
+                            { key: 'fp_the_playbook',         label: '📋 The Playbook' },
+                            { key: 'fp_the_soundtrack',       label: '🎵 The Soundtrack' },
+                            { key: 'fp_the_visuals',          label: '🎬 The Visuals' },
+                            { key: 'fp_the_wardrobe',         label: '👗 The Wardrobe' },
+                            { key: 'fp_the_set_blueprint',    label: '🏗️ The Set Blueprint' },
+                            { key: 'fp_the_tech_rider',       label: '🔧 The Tech Rider' },
+                            { key: 'fp_the_promo_kit',        label: '📸 The Promo Kit' },
+                            { key: 'fp_the_handover_session', label: '🤝 The Handover Session' },
+                          ].map(({ key, label, always }) => {
+                            const included = always || (selectedShow as any)[key];
+                            return (
+                              <div key={key} className={"flex items-center gap-2 " + (included ? '' : 'opacity-25')}>
+                                <span className={"text-[10px] font-black " + (included ? 'text-brand-pink' : 'text-white/20')}>{included ? '✓' : '✗'}</span>
+                                <span className={"text-[10px] font-bold uppercase italic " + (included ? 'text-white/80' : 'text-white/30')}>{label}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Badges */}
+                        <div className="flex gap-2 flex-wrap border-t border-white/10 pt-3">
+                          {(selectedShow as any).fp_punch_language && (
+                            <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
+                              Lang: {(selectedShow as any).fp_punch_language}
+                            </span>
+                          )}
+                          {(selectedShow as any).fp_punch_support && (
+                            <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">
+                              🤝 Punch Support Included
+                            </span>
+                          )}
+                          {(selectedShow as any).full_punch_advance_fee > 0 && (
+                            <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
+                              + €{(selectedShow as any).full_punch_advance_fee} advance
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-white/10 p-4">
+                        <p className="text-white/20 text-xs italic font-black uppercase">Full Punch not offered — Script only</p>
+                      </div>
+                    )}
+
+                    {/* Production Assets Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* MUSIC */}
                       <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                         <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
                         {(selectedShow as any).music_author ? (
                           <>
                             <p className="text-sm font-black italic">{(selectedShow as any).music_author}</p>
                             <p className="text-[8px] text-brand-yellow/60 italic mt-1">
-                              {(selectedShow as any).has_original_music ? 'Original composition — included in Full Punch royalty' : 'Licensed / existing music'}
+                              {(selectedShow as any).has_original_music ? 'Original composition' : 'Licensed / existing music'}
                             </p>
                           </>
                         ) : (
                           <p className="text-sm font-black italic text-white/30">Not specified</p>
                         )}
                       </div>
-                      {/* VIDEO */}
                       <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
                         <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video / AV</p>
                         {(selectedShow as any).has_video_projections ? (
@@ -393,12 +448,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           <p className="text-sm font-black italic text-white/30">No video projections</p>
                         )}
                       </div>
-                      {/* SCRIPT */}
                       <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
                         <p className="text-[8px] font-black uppercase text-brand-pink italic">📄 Script in English</p>
-                        {selectedShow.translationsAvailable ? (
-                          <p className="text-sm font-black italic">{selectedShow.translationsAvailable}</p>
-                        ) : (selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (
+                        {(selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (
                           <p className="text-sm font-black italic">Full script available</p>
                         ) : (selectedShow as any).script_in_english === 'partial' ? (
                           <p className="text-sm font-black italic">Synopsis only</p>
@@ -406,9 +458,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           <p className="text-sm font-black italic text-white/30">Not specified</p>
                         )}
                       </div>
-                      {/* TRANSLATIONS */}
                       <div className="border-l-4 border-white/20 pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-white/40 italic">🌍 Translations Available</p>
+                        <p className="text-[8px] font-black uppercase text-white/40 italic">🌍 Translations</p>
                         {(selectedShow as any).translations_available || selectedShow.translationsAvailable ? (
                           <p className="text-sm font-black italic">{(selectedShow as any).translations_available || selectedShow.translationsAvailable}</p>
                         ) : (
