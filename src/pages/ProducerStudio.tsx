@@ -34,6 +34,10 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [reportSaved, setReportSaved] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
 
+  // ANALYTICS STATE
+  const [analyticsInquiries, setAnalyticsInquiries] = useState<any[]>([]);
+  const [analyticsDeals, setAnalyticsDeals] = useState<any[]>([]);
+
   // CONTRACTS STATE
   const [contracts, setContracts] = useState<any[]>(() => load('contracts'));
   const [showContractForm, setShowContractForm] = useState(false);
@@ -106,6 +110,18 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
     if (myShows.length > 0 || user?.id) loadRoyaltyData();
   }, [myShows]);
 
+  // Load analytics data
+  useEffect(() => {
+    if (!user?.id) return;
+    const myShowIds = shows.filter((s: any) => s.user_id === user.id).map((s: any) => s.id).filter(Boolean);
+    if (myShowIds.length > 0) {
+      supabase.from('inquiries').select('*').in('show_id', myShowIds).order('created_at', { ascending: false })
+        .then(({ data }) => { if (data) setAnalyticsInquiries(data); });
+    }
+    supabase.from('inquiries').select('*').eq('producer_id', user.id).order('created_at', { ascending: false })
+      .then(({ data }) => { if (data) setAnalyticsDeals(data); });
+  }, [user?.id, myShows.length]);
+
   const inp = 'w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm';
   const lbl = 'text-[9px] font-black uppercase tracking-widest text-white/40 italic mb-1 block';
 
@@ -142,64 +158,146 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
       {/* ── DASHBOARD ── */}
       {tab === 'dashboard' && (
-        <div className="space-y-6">
-          <div className="border-l-4 border-brand-yellow pl-4">
-            <p className="text-white/50 text-sm italic">Overview of all your shows — performances logged, contracts active, and total audience reached. Use this as your production scoreboard.</p>
-          </div>
-          {myShows.length === 0 ? (
-            <p className="text-white/20 italic">No shows uploaded yet.</p>
-          ) : myShows.map((show: any) => {
-            const showPerfs = royaltyReports.filter((p: any) => p.show === show.title);
-            const nextPerf = showPerfs.slice(-1)[0];
-            const showContracts = contracts.filter(c => c.show === show.title);
-            const showLogs = logs.filter(l => l.show === show.title);
-            const totalAtt = showLogs.reduce((s: number, l: any) => s + (Number(l.attendance) || 0), 0);
-            return (
-              <div key={show.id} className="border-4 border-white/20 hover:border-brand-yellow transition-all">
-                <div className="flex items-center justify-between gap-4 p-4 border-b-2 border-white/10">
-                  <div>
-                    <p className="font-black uppercase italic text-white text-lg">{show.title}</p>
-                    <p className="text-white/30 text-xs">{show.genre} · {show.location}</p>
+        <div className="space-y-8">
+
+          {/* GLOBAL STATS */}
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan italic mb-3">Your Numbers</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: 'Total Views', value: myShows.reduce((s: number, sh: any) => s + (sh.viewsCount || 0), 0).toLocaleString(), color: 'text-brand-yellow', icon: 'visibility', sub: 'dossier opens' },
+                { label: 'Total Inquiries', value: analyticsInquiries.length.toString(), color: 'text-brand-pink', icon: 'touch_app', sub: 'tickles received' },
+                { label: 'Conversion', value: (() => { const v = myShows.reduce((s: number, sh: any) => s + (sh.viewsCount || 0), 0); return v > 0 ? Math.round((analyticsInquiries.length / v) * 100) + '%' : '—'; })(), color: 'text-brand-cyan', icon: 'trending_up', sub: 'inquiries / views' },
+                { label: 'Active Deals', value: analyticsInquiries.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length.toString(), color: 'text-green-400', icon: 'handshake', sub: 'in pipeline' },
+              ].map((s, i) => (
+                <div key={i} className="border-4 border-white/10 p-4 space-y-2 hover:border-white/20 transition-all">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[8px] font-black uppercase italic text-white/30 tracking-widest">{s.label}</p>
+                    <span className="material-symbols-outlined text-sm text-white/15">{s.icon}</span>
                   </div>
-                  <select 
-                    value={(() => { try { return JSON.parse(localStorage.getItem('hahahub_studio_status') || '{}')[show.id] || 'available'; } catch { return 'available'; } })()}
-                    onChange={e => {
-                      try {
-                        const st = JSON.parse(localStorage.getItem('hahahub_studio_status') || '{}');
-                        st[show.id] = e.target.value;
-                        localStorage.setItem('hahahub_studio_status', JSON.stringify(st));
-                      } catch {}
-                    }}
-                    className="bg-brand-black border-2 border-white/20 text-white font-black uppercase italic text-xs px-3 py-2 outline-none focus:border-brand-yellow">
-                    <option value="available">Available</option>
-                    <option value="negotiating">In Negotiation</option>
-                    <option value="licensed">Licensed</option>
-                    <option value="running">Running</option>
-                    <option value="closed">Closed</option>
-                  </select>
+                  <p className={"text-3xl font-black " + s.color}>{s.value}</p>
+                  <p className="text-[8px] text-white/20 italic">{s.sub}</p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
-                  <div className="p-4 border-r border-white/10">
-                    <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Performances</p>
-                    <p className="text-2xl font-black text-brand-yellow">{showPerfs.length}</p>
-                  </div>
-                  <div className="p-4 border-r border-white/10">
-                    <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Last Show</p>
-                    <p className="text-sm font-black text-white">{nextPerf ? new Date(nextPerf.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'}</p>
-                    <p className="text-[9px] text-white/30 italic">{nextPerf?.venue || ''}</p>
-                  </div>
-                  <div className="p-4 border-r border-white/10">
-                    <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Contracts</p>
-                    <p className="text-2xl font-black text-brand-cyan">{showContracts.length}</p>
-                  </div>
-                  <div className="p-4">
-                    <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Total Audience</p>
-                    <p className="text-2xl font-black text-brand-pink">{totalAtt.toLocaleString()}</p>
-                  </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ROYALTY SUMMARY */}
+          {sellerReports.length > 0 && (
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic mb-3">Royalty Income</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="border-4 border-brand-yellow/30 p-4">
+                  <p className="text-[8px] font-black uppercase italic text-white/30 mb-2">Total Earned</p>
+                  <p className="text-3xl font-black text-brand-yellow">€{sellerReports.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0).toLocaleString()}</p>
+                  <p className="text-[8px] text-white/20 italic mt-1">from {sellerReports.length} performance{sellerReports.length !== 1 ? 's' : ''}</p>
+                </div>
+                <div className="border-4 border-white/10 p-4">
+                  <p className="text-[8px] font-black uppercase italic text-white/30 mb-2">Total Audience</p>
+                  <p className="text-3xl font-black text-white">{sellerReports.reduce((s: number, r: any) => s + Number(r.tickets || 0), 0).toLocaleString()}</p>
+                  <p className="text-[8px] text-white/20 italic mt-1">tickets sold internationally</p>
+                </div>
+                <div className="border-4 border-white/10 p-4">
+                  <p className="text-[8px] font-black uppercase italic text-white/30 mb-2">Last Performance</p>
+                  <p className="text-lg font-black text-white">{sellerReports[0] ? new Date(sellerReports[0].date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</p>
+                  <p className="text-[8px] text-white/20 italic mt-1">{sellerReports[0]?.venue || ''}</p>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          )}
+
+          {/* PER SHOW BREAKDOWN */}
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-3">Show Breakdown</p>
+            {myShows.length === 0 ? (
+              <div className="py-12 text-center space-y-3">
+                <p className="text-4xl">📊</p>
+                <p className="text-white/20 font-black uppercase italic">No shows yet.</p>
+                <p className="text-white/10 text-xs italic">Upload a show to start tracking.</p>
+              </div>
+            ) : myShows.map((show: any) => {
+              const showInquiries = analyticsInquiries.filter((i: any) => i.show_id === show.id);
+              const showReports = sellerReports.filter((r: any) => r.show_id === show.id);
+              const totalRoyalties = showReports.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0);
+              const totalAudience = showReports.reduce((s: number, r: any) => s + Number(r.tickets || 0), 0);
+              const views = show.viewsCount || 0;
+              const conversion = views > 0 ? Math.round((showInquiries.length / views) * 100) : 0;
+              const signedDeals = showInquiries.filter((i: any) => ['signed','royalties','completed'].includes(i.deal_status || '')).length;
+              const activeDeals = showInquiries.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
+              const territories = [...new Set(showInquiries.map((i: any) => i.territory).filter(Boolean))] as string[];
+              const packages = showInquiries.reduce((acc: any, i: any) => { const k = i.package_type === 'full_punch' ? 'Full Punch' : 'Script'; acc[k] = (acc[k] || 0) + 1; return acc; }, {});
+              return (
+                <div key={show.id} className="border-4 border-white/10 hover:border-white/20 transition-all mb-4">
+                  <div className="flex items-center justify-between gap-4 px-5 py-4 border-b-2 border-white/10">
+                    <div className="flex items-center gap-3">
+                      {show.imageUrl && <img src={show.imageUrl} className="w-10 h-14 object-cover flex-shrink-0" alt="" />}
+                      <div>
+                        <p className="font-black uppercase italic text-white text-lg leading-tight">{show.title}</p>
+                        <p className="text-white/30 text-xs">{show.genre}{(show as any).subgenre ? ' · ' + (show as any).subgenre : ''} · {show.duration} min</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 flex-wrap justify-end">
+                      {signedDeals > 0 && <span className="text-[7px] font-black uppercase bg-green-500/20 text-green-400 px-2 py-1 border border-green-500/30">{signedDeals} SIGNED</span>}
+                      {activeDeals > 0 && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-2 py-1 border border-brand-yellow/30">{activeDeals} ACTIVE</span>}
+                      {(show as any).hasFullPunchPackage && <span className="text-[7px] font-black uppercase bg-brand-pink/20 text-brand-pink px-2 py-1 border border-brand-pink/30">🥊 FULL PUNCH</span>}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 md:grid-cols-6 divide-x divide-white/10">
+                    {[
+                      { label: 'Views', value: views.toLocaleString(), color: 'text-brand-yellow' },
+                      { label: 'Inquiries', value: showInquiries.length.toString(), color: 'text-brand-pink' },
+                      { label: 'Conversion', value: conversion + '%', color: 'text-brand-cyan' },
+                      { label: 'Performances', value: showReports.length.toString(), color: 'text-white' },
+                      { label: 'Audience', value: totalAudience.toLocaleString(), color: 'text-white' },
+                      { label: 'Royalties', value: '€' + totalRoyalties.toLocaleString(), color: 'text-brand-yellow' },
+                    ].map((s, i) => (
+                      <div key={i} className="p-3 text-center">
+                        <p className="text-[8px] font-black uppercase italic text-white/25 mb-1">{s.label}</p>
+                        <p className={"text-xl font-black " + s.color}>{s.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {(territories.length > 0 || Object.keys(packages).length > 0) && (
+                    <div className="px-5 py-3 border-t border-white/10 flex flex-wrap gap-4">
+                      {territories.length > 0 && (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-[8px] font-black uppercase italic text-white/20">Territories:</p>
+                          {territories.map((t: string) => <span key={t} className="text-[8px] font-black uppercase border border-white/15 text-white/40 px-2 py-0.5">{t}</span>)}
+                        </div>
+                      )}
+                      {Object.keys(packages).length > 0 && (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-[8px] font-black uppercase italic text-white/20">Packages:</p>
+                          {Object.entries(packages).map(([k, v]: any) => (
+                            <span key={k} className={"text-[8px] font-black uppercase px-2 py-0.5 " + (k === 'Full Punch' ? 'bg-brand-pink/15 text-brand-pink border border-brand-pink/25' : 'bg-brand-yellow/15 text-brand-yellow border border-brand-yellow/25')}>{k}: {v}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {showInquiries.length > 0 && (
+                    <div className="border-t border-white/10 px-5 py-3">
+                      <p className="text-[8px] font-black uppercase italic text-white/20 mb-2">Recent Inquiries</p>
+                      <div className="space-y-1">
+                        {showInquiries.slice(0, 3).map((inq: any) => (
+                          <div key={inq.id} className="flex items-center justify-between text-xs">
+                            <span className="font-black text-white/60">{inq.from_name}</span>
+                            <div className="flex items-center gap-2">
+                              {inq.territory && <span className="text-white/25 text-[9px]">{inq.territory}</span>}
+                              <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.deal_status === 'signed' ? 'bg-green-500/20 text-green-400' : inq.deal_status === 'new' ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>{inq.deal_status || 'new'}</span>
+                              <span className="text-white/20 text-[9px]">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                            </div>
+                          </div>
+                        ))}
+                        {showInquiries.length > 3 && <p className="text-white/20 text-[9px] italic">+{showInquiries.length - 3} more</p>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       )}
 
