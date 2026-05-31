@@ -260,10 +260,11 @@ const App: React.FC = () => {
         inquiriesCount: type === 'inquiry' ? s.inquiriesCount + 1 : s.inquiriesCount,
       }
     }))
-    // Always use direct DB read + write to avoid RPC/RLS issues
     if (type === 'view') {
       const { data } = await supabase.from('shows').select('views_count').eq('id', showId).maybeSingle()
       await supabase.from('shows').update({ views_count: (data?.views_count || 0) + 1 }).eq('id', showId)
+      // Log timestamped view for analytics
+      await supabase.from('show_views').insert({ show_id: showId, user_id: currentUser?.id || null })
     }
     if (type === 'inquiry') {
       const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()

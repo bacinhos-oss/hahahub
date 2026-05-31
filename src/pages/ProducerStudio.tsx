@@ -37,6 +37,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   // ANALYTICS STATE
   const [analyticsInquiries, setAnalyticsInquiries] = useState<any[]>([]);
   const [analyticsDeals, setAnalyticsDeals] = useState<any[]>([]);
+  const [showViews, setShowViews] = useState<any[]>([]);
 
   // CONTRACTS STATE
   const [contracts, setContracts] = useState<any[]>(() => load('contracts'));
@@ -113,12 +114,19 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   // Load analytics data
   useEffect(() => {
     if (!user?.id) return;
-    // Inquiries na moje showe (TICKLED — jaz sem producer)
+    const myShowIds = shows.filter((s: any) => s.user_id === user.id).map((s: any) => s.id).filter(Boolean);
+    // Inquiries na moje showe (TICKLED)
     supabase.from('inquiries').select('*').eq('producer_id', user.id).order('created_at', { ascending: false })
       .then(({ data }) => { if (data) setAnalyticsInquiries(data); });
-    // Inquiries ki sem jih jaz poslal (TICKLER — jaz sem recipient)
+    // Inquiries ki sem jih jaz poslal (TICKLER)
     supabase.from('inquiries').select('*').eq('recipient_id', user.id).order('created_at', { ascending: false })
       .then(({ data }) => { if (data) setAnalyticsDeals(data); });
+    // Timestamped views
+    if (myShowIds.length > 0) {
+      supabase.from('show_views').select('show_id, created_at').in('show_id', myShowIds)
+        .gte('created_at', new Date(Date.now() - 56 * 24 * 60 * 60 * 1000).toISOString()) // last 8 weeks
+        .then(({ data }) => { if (data) setShowViews(data); });
+    }
   }, [user?.id]);
 
   const inp = 'w-full bg-brand-black border-2 border-white/20 p-2 text-white font-bold outline-none focus:border-brand-yellow text-sm';
@@ -156,129 +164,254 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       </div>}
 
       {/* ── DASHBOARD ── */}
-      {tab === 'dashboard' && (
-        <div className="space-y-6">
+      {tab === 'dashboard' && (() => {
+        // ── HELPERS ──
+        const totalViews = myShows.reduce((s: number, sh: any) => s + (sh.viewsCount || 0), 0);
+        const totalInq = analyticsInquiries.length;
+        const conversion = totalViews > 0 ? Math.round((totalInq / totalViews) * 100) : 0;
+        const activeDeals = analyticsInquiries.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
+        const signedDeals = analyticsInquiries.filter((i: any) => ['signed','royalties','completed'].includes(i.deal_status || '')).length;
+        const totalRoyaltiesEarned = sellerReports.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0);
 
-          {/* TOP STATS */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { label: 'Total Views', value: myShows.reduce((s: number, sh: any) => s + (sh.viewsCount || 0), 0).toLocaleString(), color: 'text-brand-yellow', icon: 'visibility' },
-              { label: 'Tickles Received', value: analyticsInquiries.length.toString(), color: 'text-brand-pink', icon: 'touch_app' },
-              { label: 'Conversion', value: (() => { const v = myShows.reduce((s: number, sh: any) => s + (sh.viewsCount || 0), 0); return v > 0 ? Math.round((analyticsInquiries.length / v) * 100) + '%' : '—'; })(), color: 'text-brand-cyan', icon: 'trending_up' },
-              { label: 'Active Deals', value: analyticsInquiries.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length.toString(), color: 'text-green-400', icon: 'handshake' },
-            ].map((s, i) => (
-              <div key={i} className="border-4 border-white/10 p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-[8px] font-black uppercase italic text-white/30">{s.label}</p>
-                  <span className="material-symbols-outlined text-sm text-white/15">{s.icon}</span>
+        // ── WEEKLY VIEWS CHART (last 8 weeks) ──
+        const now = new Date();
+        const weeks = Array.from({ length: 8 }, (_, i) => {
+          const weekStart = new Date(now);
+          weekStart.setDate(now.getDate() - (7 * (7 - i)));
+          weekStart.setHours(0, 0, 0, 0);
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 7);
+          const label = weekStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+          const count = showViews.filter(v => {
+            const d = new Date(v.created_at);
+            return d >= weekStart && d < weekEnd;
+          }).length;
+          return { label, count };
+        });
+        const maxViews = Math.max(...weeks.map(w => w.count), 1);
+
+        // ── MONTHLY INQUIRIES (last 6 months) ──
+        const months = Array.from({ length: 6 }, (_, i) => {
+          const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+          const label = d.toLocaleDateString('en-GB', { month: 'short' });
+          const count = analyticsInquiries.filter(inq => {
+            const id = new Date(inq.created_at);
+            return id.getMonth() === d.getMonth() && id.getFullYear() === d.getFullYear();
+          }).length;
+          return { label, count };
+        });
+        const maxInq = Math.max(...months.map(m => m.count), 1);
+
+        // ── TOP TERRITORIES ──
+        const terrCount: Record<string, number> = {};
+        analyticsInquiries.forEach((i: any) => { if (i.territory) terrCount[i.territory] = (terrCount[i.territory] || 0) + 1; });
+        const topTerritories = Object.entries(terrCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const maxTerrCount = topTerritories[0]?.[1] || 1;
+
+        // ── PACKAGE SPLIT ──
+        const fpCount = analyticsInquiries.filter((i: any) => i.package_type === 'full_punch').length;
+        const scriptCount = analyticsInquiries.filter((i: any) => i.package_type !== 'full_punch').length;
+        const fpPct = totalInq > 0 ? Math.round((fpCount / totalInq) * 100) : 0;
+
+        return (
+          <div className="space-y-6">
+
+            {/* TOP KPI CARDS */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: 'Total Views', value: totalViews.toLocaleString(), color: 'text-brand-yellow', sub: 'all time', icon: 'visibility' },
+                { label: 'Tickles', value: totalInq.toString(), color: 'text-brand-pink', sub: 'inquiries received', icon: 'touch_app' },
+                { label: 'Conversion', value: conversion + '%', color: 'text-brand-cyan', sub: 'views → inquiries', icon: 'trending_up' },
+                { label: 'Royalties', value: '€' + totalRoyaltiesEarned.toLocaleString(), color: 'text-green-400', sub: 'earned to date', icon: 'payments' },
+              ].map((s, i) => (
+                <div key={i} className="border-4 border-white/10 p-4 hover:border-white/20 transition-all">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[8px] font-black uppercase italic text-white/30">{s.label}</p>
+                    <span className="material-symbols-outlined text-sm text-white/15">{s.icon}</span>
+                  </div>
+                  <p className={"text-3xl font-black " + s.color}>{s.value}</p>
+                  <p className="text-[8px] text-white/20 mt-1">{s.sub}</p>
                 </div>
-                <p className={"text-3xl font-black " + s.color}>{s.value}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* ROYALTIES */}
-          {sellerReports.length > 0 && (
-            <div className="grid grid-cols-3 gap-3">
-              <div className="border-4 border-brand-yellow/30 p-4">
-                <p className="text-[8px] font-black uppercase italic text-white/30 mb-1">Royalties Earned</p>
-                <p className="text-2xl font-black text-brand-yellow">€{sellerReports.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0).toLocaleString()}</p>
-                <p className="text-[8px] text-white/20 mt-1">{sellerReports.length} performances</p>
-              </div>
-              <div className="border-4 border-white/10 p-4">
-                <p className="text-[8px] font-black uppercase italic text-white/30 mb-1">International Audience</p>
-                <p className="text-2xl font-black text-white">{sellerReports.reduce((s: number, r: any) => s + Number(r.tickets || 0), 0).toLocaleString()}</p>
-                <p className="text-[8px] text-white/20 mt-1">tickets sold</p>
-              </div>
-              <div className="border-4 border-white/10 p-4">
-                <p className="text-[8px] font-black uppercase italic text-white/30 mb-1">Last Performance</p>
-                <p className="text-base font-black text-white">{sellerReports[0] ? new Date(sellerReports[0].date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</p>
-                <p className="text-[8px] text-white/20 mt-1">{sellerReports[0]?.venue || ''}</p>
+            {/* CONVERSION FUNNEL */}
+            <div className="border-4 border-white/10 p-5">
+              <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan italic mb-4">Conversion Funnel</p>
+              <div className="flex items-end gap-0">
+                {[
+                  { label: 'Views', value: totalViews, color: 'bg-brand-yellow', pct: 100 },
+                  { label: 'Inquiries', value: totalInq, color: 'bg-brand-pink', pct: totalViews > 0 ? Math.round((totalInq / totalViews) * 100) : 0 },
+                  { label: 'Active', value: activeDeals, color: 'bg-brand-cyan', pct: totalInq > 0 ? Math.round((activeDeals / totalInq) * 100) : 0 },
+                  { label: 'Signed', value: signedDeals, color: 'bg-green-500', pct: totalInq > 0 ? Math.round((signedDeals / totalInq) * 100) : 0 },
+                ].map((f, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                    <p className="text-sm font-black text-white">{f.value}</p>
+                    <div className="w-full flex justify-center">
+                      <div className={f.color + " transition-all"} style={{ width: '80%', height: Math.max(f.pct * 0.6, 4) + 'px', minHeight: '4px' }} />
+                    </div>
+                    <p className="text-[8px] font-black uppercase italic text-white/30">{f.label}</p>
+                    {i > 0 && <p className="text-[8px] text-white/20">{f.pct}%</p>}
+                  </div>
+                ))}
               </div>
             </div>
-          )}
 
-          {/* PER SHOW */}
-          <div>
-            <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-3">Per Show</p>
-            {myShows.length === 0 ? (
-              <div className="py-12 text-center">
-                <p className="text-4xl mb-3">📊</p>
-                <p className="text-white/20 font-black uppercase italic">No shows yet. Upload one to start tracking.</p>
-              </div>
-            ) : myShows.map((show: any) => {
-              const showInquiries = analyticsInquiries.filter((i: any) => i.show_id === show.id);
-              const showReports = sellerReports.filter((r: any) => r.show_id === show.id);
-              const totalRoyalties = showReports.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0);
-              const totalAudience = showReports.reduce((s: number, r: any) => s + Number(r.tickets || 0), 0);
-              const views = show.viewsCount || 0;
-              const conversion = views > 0 ? Math.round((showInquiries.length / views) * 100) : 0;
-              const signedDeals = showInquiries.filter((i: any) => ['signed','royalties','completed'].includes(i.deal_status || '')).length;
-              const activeDeals = showInquiries.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
-              const territories = [...new Set(showInquiries.map((i: any) => i.territory).filter(Boolean))] as string[];
-              const fpCount = showInquiries.filter((i: any) => i.package_type === 'full_punch').length;
-              const scriptCount = showInquiries.filter((i: any) => i.package_type !== 'full_punch').length;
-              return (
-                <div key={show.id} className="border-4 border-white/10 hover:border-white/20 transition-all mb-3">
-                  {/* Header */}
-                  <div className="flex items-center justify-between gap-4 px-5 py-3 border-b border-white/10">
-                    <div className="flex items-center gap-3">
-                      {show.imageUrl && <img src={show.imageUrl} className="w-8 h-12 object-cover flex-shrink-0" alt="" />}
-                      <div>
-                        <p className="font-black uppercase italic text-white">{show.title}</p>
-                        <p className="text-white/30 text-[10px]">{show.genre} · {show.duration} min</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {/* WEEKLY VIEWS CHART */}
+              <div className="border-4 border-white/10 p-5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic mb-4">
+                  Weekly Views — Last 8 Weeks
+                  {showViews.length === 0 && <span className="text-white/20 normal-case font-normal ml-2">(tracking starts now)</span>}
+                </p>
+                <div className="flex items-end gap-1.5 h-24">
+                  {weeks.map((w, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <p className="text-[7px] text-white/30 font-black">{w.count > 0 ? w.count : ''}</p>
+                      <div className="w-full bg-brand-yellow/20 relative" style={{ height: '60px' }}>
+                        <div className="w-full bg-brand-yellow absolute bottom-0 transition-all"
+                          style={{ height: Math.max((w.count / maxViews) * 60, w.count > 0 ? 3 : 0) + 'px' }} />
                       </div>
+                      <p className="text-[6px] text-white/20 font-black text-center leading-tight">{w.label}</p>
                     </div>
-                    <div className="flex gap-1.5 flex-wrap justify-end">
-                      {signedDeals > 0 && <span className="text-[7px] font-black uppercase bg-green-500/20 text-green-400 px-2 py-0.5">{signedDeals} SIGNED</span>}
-                      {activeDeals > 0 && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-2 py-0.5">{activeDeals} ACTIVE</span>}
+                  ))}
+                </div>
+              </div>
+
+              {/* MONTHLY INQUIRIES */}
+              <div className="border-4 border-white/10 p-5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Monthly Inquiries — Last 6 Months</p>
+                <div className="flex items-end gap-1.5 h-24">
+                  {months.map((m, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <p className="text-[7px] text-white/30 font-black">{m.count > 0 ? m.count : ''}</p>
+                      <div className="w-full bg-brand-pink/20 relative" style={{ height: '60px' }}>
+                        <div className="w-full bg-brand-pink absolute bottom-0 transition-all"
+                          style={{ height: Math.max((m.count / maxInq) * 60, m.count > 0 ? 3 : 0) + 'px' }} />
+                      </div>
+                      <p className="text-[7px] text-white/30 font-black">{m.label}</p>
                     </div>
-                  </div>
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 md:grid-cols-6 divide-x divide-white/10">
-                    {[
-                      { label: 'Views', value: views.toLocaleString(), color: 'text-brand-yellow' },
-                      { label: 'Inquiries', value: showInquiries.length, color: 'text-brand-pink' },
-                      { label: 'Conversion', value: conversion + '%', color: 'text-brand-cyan' },
-                      { label: 'Performances', value: showReports.length, color: 'text-white' },
-                      { label: 'Audience', value: totalAudience.toLocaleString(), color: 'text-white' },
-                      { label: 'Royalties', value: '€' + totalRoyalties.toLocaleString(), color: 'text-brand-yellow' },
-                    ].map((s, i) => (
-                      <div key={i} className="p-3 text-center">
-                        <p className="text-[8px] font-black uppercase italic text-white/25 mb-1">{s.label}</p>
-                        <p className={"text-lg font-black " + s.color}>{s.value}</p>
+                  ))}
+                </div>
+              </div>
+
+              {/* TOP TERRITORIES */}
+              <div className="border-4 border-white/10 p-5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan italic mb-4">Top Territories</p>
+                {topTerritories.length === 0 ? (
+                  <p className="text-white/20 text-xs italic">No territory data yet.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {topTerritories.map(([territory, count]) => (
+                      <div key={territory} className="flex items-center gap-3">
+                        <p className="text-xs font-black text-white w-24 flex-shrink-0 uppercase">{territory}</p>
+                        <div className="flex-1 bg-white/5 h-5 relative">
+                          <div className="bg-brand-cyan h-5 absolute left-0 top-0 transition-all"
+                            style={{ width: Math.round((count / maxTerrCount) * 100) + '%' }} />
+                          <p className="absolute right-2 top-0 h-5 flex items-center text-[8px] font-black text-black z-10"
+                            style={{ color: (count / maxTerrCount) > 0.4 ? '#000' : 'rgba(255,255,255,0.5)' }}>{count}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
-                  {/* Territories + packages + recent */}
-                  {(territories.length > 0 || showInquiries.length > 0) && (
-                    <div className="px-5 py-3 border-t border-white/10 space-y-2">
-                      {territories.length > 0 && (
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="text-[8px] font-black uppercase italic text-white/20">From:</p>
-                          {territories.map((t: string) => <span key={t} className="text-[8px] font-black uppercase border border-white/15 text-white/40 px-1.5 py-0.5">{t}</span>)}
-                          {fpCount > 0 && <span className="text-[8px] font-black uppercase bg-brand-pink/15 text-brand-pink border border-brand-pink/25 px-1.5 py-0.5 ml-2">🥊 {fpCount} Full Punch</span>}
-                          {scriptCount > 0 && <span className="text-[8px] font-black uppercase bg-brand-yellow/15 text-brand-yellow border border-brand-yellow/25 px-1.5 py-0.5">📄 {scriptCount} Script</span>}
+                )}
+              </div>
+
+              {/* PACKAGE SPLIT */}
+              <div className="border-4 border-white/10 p-5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Package Interest</p>
+                {totalInq === 0 ? (
+                  <p className="text-white/20 text-xs italic">No inquiries yet.</p>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-[9px] font-black uppercase text-brand-pink">🥊 Full Punch</span>
+                        <span className="text-[9px] font-black text-white">{fpCount} · {fpPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/5 h-4">
+                        <div className="bg-brand-pink h-4 transition-all" style={{ width: fpPct + '%' }} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-[9px] font-black uppercase text-brand-yellow">📄 Script Only</span>
+                        <span className="text-[9px] font-black text-white">{scriptCount} · {100 - fpPct}%</span>
+                      </div>
+                      <div className="w-full bg-white/5 h-4">
+                        <div className="bg-brand-yellow h-4 transition-all" style={{ width: (100 - fpPct) + '%' }} />
+                      </div>
+                    </div>
+                    <p className="text-[8px] text-white/20 italic">{totalInq} total inquiries</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* PER SHOW */}
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-white/30 italic mb-3">Per Show Breakdown</p>
+              {myShows.length === 0 ? (
+                <div className="py-10 text-center">
+                  <p className="text-4xl mb-2">📊</p>
+                  <p className="text-white/20 font-black uppercase italic text-sm">No shows yet.</p>
+                </div>
+              ) : myShows.map((show: any) => {
+                const showInq = analyticsInquiries.filter((i: any) => i.show_id === show.id);
+                const showRep = sellerReports.filter((r: any) => r.show_id === show.id);
+                const showViewsData = showViews.filter((v: any) => v.show_id === show.id);
+                const royaltiesShow = showRep.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0);
+                const audienceShow = showRep.reduce((s: number, r: any) => s + Number(r.tickets || 0), 0);
+                const viewsShow = show.viewsCount || 0;
+                const convShow = viewsShow > 0 ? Math.round((showInq.length / viewsShow) * 100) : 0;
+                const signed = showInq.filter((i: any) => ['signed','royalties','completed'].includes(i.deal_status || '')).length;
+                const active = showInq.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
+                const territories = [...new Set(showInq.map((i: any) => i.territory).filter(Boolean))] as string[];
+                return (
+                  <div key={show.id} className="border-4 border-white/10 hover:border-white/20 transition-all mb-3">
+                    <div className="flex items-center justify-between gap-4 px-5 py-3 border-b border-white/10">
+                      <div className="flex items-center gap-3">
+                        {show.imageUrl && <img src={show.imageUrl} className="w-8 h-12 object-cover" alt="" />}
+                        <div>
+                          <p className="font-black uppercase italic text-white">{show.title}</p>
+                          <p className="text-white/30 text-[10px]">{show.genre} · {show.duration} min</p>
                         </div>
-                      )}
-                      {showInquiries.slice(0, 3).map((inq: any) => (
-                        <div key={inq.id} className="flex items-center justify-between">
-                          <span className="text-[10px] font-black text-white/50">{inq.from_name}</span>
-                          <div className="flex items-center gap-2">
-                            {inq.territory && <span className="text-white/25 text-[9px]">{inq.territory}</span>}
-                            <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.deal_status === 'signed' ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/30')}>{inq.deal_status || 'new'}</span>
-                            <span className="text-white/20 text-[9px]">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
-                          </div>
+                      </div>
+                      <div className="flex gap-1.5">
+                        {signed > 0 && <span className="text-[7px] font-black uppercase bg-green-500/20 text-green-400 px-2 py-0.5">{signed} SIGNED</span>}
+                        {active > 0 && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-2 py-0.5">{active} ACTIVE</span>}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 md:grid-cols-6 divide-x divide-white/10">
+                      {[
+                        { label: 'Views', value: viewsShow.toLocaleString(), color: 'text-brand-yellow' },
+                        { label: 'Inquiries', value: showInq.length, color: 'text-brand-pink' },
+                        { label: 'Conv.', value: convShow + '%', color: 'text-brand-cyan' },
+                        { label: 'Perfs.', value: showRep.length, color: 'text-white' },
+                        { label: 'Audience', value: audienceShow.toLocaleString(), color: 'text-white' },
+                        { label: 'Royalties', value: '€' + royaltiesShow.toLocaleString(), color: 'text-brand-yellow' },
+                      ].map((s, i) => (
+                        <div key={i} className="p-3 text-center">
+                          <p className="text-[7px] font-black uppercase italic text-white/25 mb-1">{s.label}</p>
+                          <p className={"text-lg font-black " + s.color}>{s.value}</p>
                         </div>
                       ))}
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                    {territories.length > 0 && (
+                      <div className="px-5 py-2 border-t border-white/10 flex items-center gap-2 flex-wrap">
+                        <p className="text-[8px] font-black uppercase italic text-white/20">From:</p>
+                        {territories.map((t: string) => <span key={t} className="text-[8px] font-black uppercase border border-white/15 text-white/40 px-1.5 py-0.5">{t}</span>)}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── SCHEDULE ── */}
       {/* ── ROYALTY TRACKER ── */}
