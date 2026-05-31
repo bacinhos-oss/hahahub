@@ -376,15 +376,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         {/* Contents */}
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
                           {[
-                            { key: 'fp_the_script',           label: '📄 The Script',          always: true },
-                            { key: 'fp_the_playbook',         label: '📋 The Playbook' },
-                            { key: 'fp_the_soundtrack',       label: '🎵 The Soundtrack' },
-                            { key: 'fp_the_visuals',          label: '🎬 The Visuals' },
-                            { key: 'fp_the_wardrobe',         label: '👗 The Wardrobe' },
-                            { key: 'fp_the_set_blueprint',    label: '🏗️ The Set Blueprint' },
-                            { key: 'fp_the_tech_rider',       label: '🔧 The Tech Rider' },
-                            { key: 'fp_the_promo_kit',        label: '📸 The Promo Kit' },
-                            { key: 'fp_the_handover_session', label: '🤝 The Handover Session' },
+                            { key: 'fpTheScript',           label: '📄 The Script',          always: true },
+                            { key: 'fpThePlaybook',         label: '📋 The Playbook' },
+                            { key: 'fpTheSoundtrack',       label: '🎵 The Soundtrack' },
+                            { key: 'fpTheVisuals',          label: '🎬 The Visuals' },
+                            { key: 'fpTheWardrobe',         label: '👗 The Wardrobe' },
+                            { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
+                            { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
+                            { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
+                            { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
                           ].map(({ key, label, always }) => {
                             const included = always || (selectedShow as any)[key];
                             return (
@@ -398,12 +398,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                         {/* Badges */}
                         <div className="flex gap-2 flex-wrap border-t border-white/10 pt-3">
-                          {(selectedShow as any).fp_punch_language && (
+                          {(selectedShow as any).fpPunchLanguage && (
                             <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
-                              Lang: {(selectedShow as any).fp_punch_language}
+                              Lang: {(selectedShow as any).fpPunchLanguage}
                             </span>
                           )}
-                          {(selectedShow as any).fp_punch_support && (
+                          {(selectedShow as any).fpPunchSupport && (
                             <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">
                               🤝 Punch Support Included
                             </span>
@@ -471,7 +471,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                   {/* 03. TECHNICAL STACK */}
                   <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">02. TECHNICAL STACK & PRODUCTION SCALE</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">03. TECHNICAL STACK & PRODUCTION SCALE</h4>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                        <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
@@ -516,7 +516,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                   {/* 03. MARKET PERFORMANCE */}
                   <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">03. MARKET PERFORMANCE</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">04. MARKET PERFORMANCE</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
                            <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'N/A'}</p></div>
@@ -555,7 +555,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                   {/* 04. RIGHTS */}
                   <section className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">04. Rights & Licensing</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">05. RIGHTS & LICENSING</h4>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       <div className="bg-brand-surface border-4 border-white p-4">
                         <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
@@ -680,15 +680,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           {/* What's included */}
                           <div className="grid grid-cols-2 gap-1">
                             {[
-                              { key: 'fp_the_script',           label: '📄 The Script',          always: true },
-                              { key: 'fp_the_playbook',         label: '📋 The Playbook' },
-                              { key: 'fp_the_soundtrack',       label: '🎵 The Soundtrack' },
-                              { key: 'fp_the_visuals',          label: '🎬 The Visuals' },
-                              { key: 'fp_the_wardrobe',         label: '👗 The Wardrobe' },
-                              { key: 'fp_the_set_blueprint',    label: '🏗️ The Set Blueprint' },
-                              { key: 'fp_the_tech_rider',       label: '🔧 The Tech Rider' },
-                              { key: 'fp_the_promo_kit',        label: '📸 The Promo Kit' },
-                              { key: 'fp_the_handover_session', label: '🤝 The Handover Session' },
+                              { key: 'fpTheScript',           label: '📄 The Script',          always: true },
+                              { key: 'fpThePlaybook',         label: '📋 The Playbook' },
+                              { key: 'fpTheSoundtrack',       label: '🎵 The Soundtrack' },
+                              { key: 'fpTheVisuals',          label: '🎬 The Visuals' },
+                              { key: 'fpTheWardrobe',         label: '👗 The Wardrobe' },
+                              { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
+                              { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
+                              { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
+                              { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
                             ].filter(({ key, always }) => always || (selectedShow as any)[key]).map(({ label }) => (
                               <div key={label} className="flex items-center gap-1.5">
                                 <span className="text-brand-pink text-[10px]">✓</span>
@@ -699,12 +699,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                           {/* Language + Support badges */}
                           <div className="flex gap-2 flex-wrap">
-                            {(selectedShow as any).fp_punch_language && (
+                            {(selectedShow as any).fpPunchLanguage && (
                               <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
-                                Lang: {(selectedShow as any).fp_punch_language}
+                                Lang: {(selectedShow as any).fpPunchLanguage}
                               </span>
                             )}
-                            {(selectedShow as any).fp_punch_support && (
+                            {(selectedShow as any).fpPunchSupport && (
                               <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">
                                 🤝 Punch Support Included
                               </span>
@@ -870,15 +870,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           {/* Contents grid */}
                           <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2">
                             {[
-                              { key: 'fp_the_script',           label: '📄 The Script',          always: true },
-                              { key: 'fp_the_playbook',         label: '📋 The Playbook' },
-                              { key: 'fp_the_soundtrack',       label: '🎵 The Soundtrack' },
-                              { key: 'fp_the_visuals',          label: '🎬 The Visuals' },
-                              { key: 'fp_the_wardrobe',         label: '👗 The Wardrobe' },
-                              { key: 'fp_the_set_blueprint',    label: '🏗️ The Set Blueprint' },
-                              { key: 'fp_the_tech_rider',       label: '🔧 The Tech Rider' },
-                              { key: 'fp_the_promo_kit',        label: '📸 The Promo Kit' },
-                              { key: 'fp_the_handover_session', label: '🤝 The Handover Session' },
+                              { key: 'fpTheScript',           label: '📄 The Script',          always: true },
+                              { key: 'fpThePlaybook',         label: '📋 The Playbook' },
+                              { key: 'fpTheSoundtrack',       label: '🎵 The Soundtrack' },
+                              { key: 'fpTheVisuals',          label: '🎬 The Visuals' },
+                              { key: 'fpTheWardrobe',         label: '👗 The Wardrobe' },
+                              { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
+                              { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
+                              { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
+                              { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
                             ].filter(({ key, always }) => always || (inquiryShow as any)?.[key]).map(({ label }) => (
                               <div key={label} className="flex items-center gap-1">
                                 <span className="text-brand-pink text-[9px]">✓</span>
@@ -886,7 +886,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                               </div>
                             ))}
                           </div>
-                          {(inquiryShow as any)?.fp_punch_support && (
+                          {(inquiryShow as any)?.fpPunchSupport && (
                             <p className="text-brand-cyan text-[9px] font-black uppercase italic mt-1.5">🤝 Punch Support Included</p>
                           )}
                         </div>
