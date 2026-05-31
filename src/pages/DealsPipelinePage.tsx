@@ -309,7 +309,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
     const unread = msgCounts[deal.id] || 0;
     return (
       <div onClick={() => openDeal(deal)}
-        className={"border-b border-white/10 last:border-b-0 cursor-pointer transition-all " + (isActive ? 'bg-brand-yellow/5 border-l-4 border-l-brand-yellow' : isOverdue ? 'border-l-4 border-l-brand-pink hover:bg-white/3' : 'hover:bg-white/3')}>
+        className={"border-b border-white/10 last:border-b-0 cursor-pointer transition-all group " + (isActive ? 'bg-brand-yellow/10 border-l-4 border-l-brand-yellow' : isOverdue ? 'border-l-4 border-l-brand-pink hover:bg-white/5' : 'hover:bg-white/5')}>
         <div className="px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className={"w-2 h-2 rounded-full flex-shrink-0 " + s.dot} />
@@ -323,7 +323,12 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
               <p className="text-white/30 text-xs">{fmtShort(deal.created_at)}{deal.territory && ` · ${deal.territory}`}</p>
             </div>
           </div>
-          <span className={"text-[7px] font-black uppercase px-2 py-1 flex-shrink-0 text-black " + s.bg}>{s.label}</span>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className={"text-[7px] font-black uppercase px-2 py-1 text-black " + s.bg}>{s.label}</span>
+            <span className={"text-[9px] font-black uppercase italic transition-all " + (isActive ? 'text-brand-yellow' : 'text-white/20 group-hover:text-white/60')}>
+              {isActive ? '✕ CLOSE' : '→ OPEN'}
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -404,7 +409,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
 
           {/* LEFT */}
-          <div className="space-y-2 min-h-96">
+          <div className="space-y-2" style={{ minHeight: '600px', height: 'auto' }}>
             {viewMode === 'list' ? (
               <div className="border-4 border-white/20 overflow-hidden">
                 <div className="px-4 py-2 border-b border-white/10 flex items-center gap-1.5">
@@ -436,7 +441,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           </div>
 
           {/* RIGHT */}
-          <div className="lg:sticky lg:top-4">
+          <div className="lg:sticky lg:top-4" style={{ minHeight: '600px' }}>
             {!activeDeal ? (
               <div className="border-4 border-white/10 overflow-hidden">
                 <div className="bg-white/5 px-5 py-4 border-b-2 border-white/10">
