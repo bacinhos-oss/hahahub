@@ -624,10 +624,42 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                             <p className="font-black uppercase italic text-white text-lg">🥊 FULL PUNCH</p>
                             {selectedPackage === 'full_punch' && <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5">✓ SELECTED</span>}
                           </div>
-                          <p className="text-white/40 text-xs italic">Script + know-how: director notes, set/costume reference, video, music.</p>
-                          {(selectedShow as any).full_punch_includes && (
-                            <p className="text-brand-pink text-[9px] italic">Includes: {(selectedShow as any).full_punch_includes}</p>
-                          )}
+                          <p className="text-white/40 text-xs italic">Complete know-how package. Everything you need to produce this show.</p>
+
+                          {/* What's included */}
+                          <div className="grid grid-cols-2 gap-1">
+                            {[
+                              { key: 'fp_the_script',           label: '📄 The Script',          always: true },
+                              { key: 'fp_the_playbook',         label: '📋 The Playbook' },
+                              { key: 'fp_the_soundtrack',       label: '🎵 The Soundtrack' },
+                              { key: 'fp_the_visuals',          label: '🎬 The Visuals' },
+                              { key: 'fp_the_wardrobe',         label: '👗 The Wardrobe' },
+                              { key: 'fp_the_set_blueprint',    label: '🏗️ The Set Blueprint' },
+                              { key: 'fp_the_tech_rider',       label: '🔧 The Tech Rider' },
+                              { key: 'fp_the_promo_kit',        label: '📸 The Promo Kit' },
+                              { key: 'fp_the_handover_session', label: '🤝 The Handover Session' },
+                            ].filter(({ key, always }) => always || (selectedShow as any)[key]).map(({ label }) => (
+                              <div key={label} className="flex items-center gap-1.5">
+                                <span className="text-brand-pink text-[10px]">✓</span>
+                                <span className="text-white/70 text-[10px] font-bold uppercase italic">{label}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Language + Support badges */}
+                          <div className="flex gap-2 flex-wrap">
+                            {(selectedShow as any).fp_punch_language && (
+                              <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
+                                Lang: {(selectedShow as any).fp_punch_language}
+                              </span>
+                            )}
+                            {(selectedShow as any).fp_punch_support && (
+                              <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">
+                                🤝 Punch Support Included
+                              </span>
+                            )}
+                          </div>
+
                           <div className="border-t border-white/10 pt-3 space-y-1">
                             <p className="text-brand-pink font-black text-2xl">
                               {(selectedShow as any).full_punch_royalty_pct || '15'}%
@@ -636,7 +668,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                             {(selectedShow as any).full_punch_advance_fee > 0 && (
                               <p className="text-white/40 text-xs">+ €{(selectedShow as any).full_punch_advance_fee} advance</p>
                             )}
-                            <p className="text-[8px] text-white/20 italic">Video + music royalties included</p>
+                            <p className="text-[8px] text-white/20 italic">All royalties included in one rate</p>
                           </div>
                           {selectedPackage === 'full_punch' && (
                             <button
@@ -783,9 +815,28 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <p className="font-black uppercase italic text-white text-sm">🥊 FULL PUNCH</p>
-                          <p className="text-white/40 text-xs italic mt-1">Script + full know-how: director's notes, set/costume design reference, video material, original music. You decide what to use.</p>
-                          {(inquiryShow as any)?.full_punch_includes && (
-                            <p className="text-brand-pink text-[9px] italic mt-1">Includes: {(inquiryShow as any).full_punch_includes}</p>
+                          <p className="text-white/40 text-xs italic mt-1">Complete know-how package. Everything you need to produce this show.</p>
+                          {/* Contents grid */}
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2">
+                            {[
+                              { key: 'fp_the_script',           label: '📄 The Script',          always: true },
+                              { key: 'fp_the_playbook',         label: '📋 The Playbook' },
+                              { key: 'fp_the_soundtrack',       label: '🎵 The Soundtrack' },
+                              { key: 'fp_the_visuals',          label: '🎬 The Visuals' },
+                              { key: 'fp_the_wardrobe',         label: '👗 The Wardrobe' },
+                              { key: 'fp_the_set_blueprint',    label: '🏗️ The Set Blueprint' },
+                              { key: 'fp_the_tech_rider',       label: '🔧 The Tech Rider' },
+                              { key: 'fp_the_promo_kit',        label: '📸 The Promo Kit' },
+                              { key: 'fp_the_handover_session', label: '🤝 The Handover Session' },
+                            ].filter(({ key, always }) => always || (inquiryShow as any)?.[key]).map(({ label }) => (
+                              <div key={label} className="flex items-center gap-1">
+                                <span className="text-brand-pink text-[9px]">✓</span>
+                                <span className="text-white/60 text-[9px] font-bold uppercase italic">{label}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {(inquiryShow as any)?.fp_punch_support && (
+                            <p className="text-brand-cyan text-[9px] font-black uppercase italic mt-1.5">🤝 Punch Support Included</p>
                           )}
                         </div>
                         <div className="text-right flex-shrink-0">
@@ -795,7 +846,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           {(inquiryShow as any)?.full_punch_advance_fee && (
                             <p className="text-white/40 text-xs">+ €{(inquiryShow as any).full_punch_advance_fee} advance</p>
                           )}
-                          <p className="text-[8px] text-white/20 italic mt-1">Incl. video + music</p>
+                          <p className="text-[8px] text-white/20 italic mt-1">All royalties included</p>
                         </div>
                       </div>
                       {selectedPackage === 'full_punch' && (

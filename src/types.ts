@@ -91,7 +91,18 @@ export interface Show {
   hasFullPunchPackage: boolean;
   fullPunchRoyaltyPct?: number;
   fullPunchAdvanceFee?: number;
-  fullPunchIncludes?: string;
+  // Full Punch contents (The Know-How)
+  fpTheScript?: boolean;       // always true if Full Punch
+  fpThePlaybook?: boolean;     // Director's production notes
+  fpTheSoundtrack?: boolean;   // Original music files
+  fpTheVisuals?: boolean;      // Video projection files
+  fpTheWardrobe?: boolean;     // Costume design docs
+  fpTheSetBlueprint?: boolean; // Set design plans
+  fpTheTechRider?: boolean;    // Technical rider
+  fpThePromoKit?: boolean;     // Press photos + trailer
+  fpTheHandoverSession?: boolean; // Live session with director
+  fpPunchLanguage?: string;    // Language of documentation
+  fpPunchSupport?: boolean;    // Creative team available for handover
 
   // Legacy fields (kept for compatibility)
   licensingModel?: 'Royalty-based' | 'Flat fee' | 'Hybrid';

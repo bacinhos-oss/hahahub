@@ -521,7 +521,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       hasFullPunchPackage: (show as any).has_full_punch_package || (show as any).hasFullPunchPackage || false,
       fullPunchRoyaltyPct: (show as any).full_punch_royalty_pct || (show as any).fullPunchRoyaltyPct || '',
       fullPunchAdvanceFee: (show as any).full_punch_advance_fee || (show as any).fullPunchAdvanceFee || '',
-      fullPunchIncludes: (show as any).full_punch_includes || (show as any).fullPunchIncludes || '',
+      fpTheScript: true,
+      fpThePlaybook: (show as any).fp_the_playbook || (show as any).fpThePlaybook || false,
+      fpTheSoundtrack: (show as any).fp_the_soundtrack || (show as any).fpTheSoundtrack || false,
+      fpTheVisuals: (show as any).fp_the_visuals || (show as any).fpTheVisuals || false,
+      fpTheWardrobe: (show as any).fp_the_wardrobe || (show as any).fpTheWardrobe || false,
+      fpTheSetBlueprint: (show as any).fp_the_set_blueprint || (show as any).fpTheSetBlueprint || false,
+      fpTheTechRider: (show as any).fp_the_tech_rider || (show as any).fpTheTechRider || false,
+      fpThePromoKit: (show as any).fp_the_promo_kit || (show as any).fpThePromoKit || false,
+      fpTheHandoverSession: (show as any).fp_the_handover_session || (show as any).fpTheHandoverSession || false,
+      fpPunchLanguage: (show as any).fp_punch_language || (show as any).fpPunchLanguage || 'EN',
+      fpPunchSupport: (show as any).fp_punch_support || (show as any).fpPunchSupport || false,
     } as any);
     setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]);
   };
@@ -591,7 +601,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         has_full_punch_package: (editForm as any).hasFullPunchPackage === true || (editForm as any).hasFullPunchPackage === 'true',
         full_punch_royalty_pct: (editForm as any).fullPunchRoyaltyPct ? Number((editForm as any).fullPunchRoyaltyPct) : null,
         full_punch_advance_fee: (editForm as any).fullPunchAdvanceFee ? Number((editForm as any).fullPunchAdvanceFee) : null,
-        full_punch_includes: (editForm as any).fullPunchIncludes || null,
+        fp_the_script: true,
+        fp_the_playbook: !!(editForm as any).fpThePlaybook,
+        fp_the_soundtrack: !!(editForm as any).fpTheSoundtrack,
+        fp_the_visuals: !!(editForm as any).fpTheVisuals,
+        fp_the_wardrobe: !!(editForm as any).fpTheWardrobe,
+        fp_the_set_blueprint: !!(editForm as any).fpTheSetBlueprint,
+        fp_the_tech_rider: !!(editForm as any).fpTheTechRider,
+        fp_the_promo_kit: !!(editForm as any).fpThePromoKit,
+        fp_the_handover_session: !!(editForm as any).fpTheHandoverSession,
+        fp_punch_language: (editForm as any).fpPunchLanguage || 'EN',
+        fp_punch_support: !!(editForm as any).fpPunchSupport,
       }).eq('id', manageShow.id);
 
       if (error) { console.error('Error:', error.message); }
@@ -754,10 +774,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               {/* 05. PACKAGES */}
               <section className="border-4 border-brand-yellow/30 p-5 space-y-4">
                 <h3 className="text-sm font-black uppercase italic text-brand-yellow border-b border-white/10 pb-2">05. Licensing Packages</h3>
+
+                {/* SCRIPT */}
                 <div className="border-2 border-white/10 p-4 space-y-3">
                   <div className="flex items-center gap-3">
                     <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
-                    <span className="font-black uppercase italic text-white text-sm">Script Package</span>
+                    <span className="font-black uppercase italic text-white text-sm">📄 The Script — Script Only License</span>
                   </div>
                   {(editForm as any).hasScriptPackage && (
                     <div className="grid grid-cols-2 gap-3 pl-7">
@@ -766,18 +788,58 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     </div>
                   )}
                 </div>
-                <div className="border-2 border-white/10 p-4 space-y-3">
+
+                {/* FULL PUNCH */}
+                <div className={"border-2 p-4 space-y-4 " + ((editForm as any).hasFullPunchPackage ? "border-brand-pink/40" : "border-white/10")}>
                   <div className="flex items-center gap-3">
                     <input type="checkbox" checked={!!(editForm as any).hasFullPunchPackage} onChange={e => setEditForm((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))} className="w-4 h-4 accent-brand-pink" />
-                    <span className="font-black uppercase italic text-white text-sm">Full Punch Package</span>
+                    <span className="font-black uppercase italic text-white text-sm">🥊 Full Punch — Complete Know-How Package</span>
                   </div>
                   {(editForm as any).hasFullPunchPackage && (
-                    <div className="space-y-3 pl-7">
+                    <div className="space-y-4 pl-7">
                       <div className="grid grid-cols-2 gap-3">
                         {F('fullPunchRoyaltyPct', 'Royalty % *', 'number')}
                         {F('fullPunchAdvanceFee', 'Advance Fee (EUR)', 'number')}
                       </div>
-                      {F('fullPunchIncludes', "What's Included")}
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-brand-pink/60 tracking-widest mb-2">What's In The Package</p>
+                        <div className="space-y-1.5">
+                          {[
+                            { key: 'fpTheScript',          label: '📄 The Script',             locked: true },
+                            { key: 'fpThePlaybook',        label: '📋 The Playbook' },
+                            { key: 'fpTheSoundtrack',      label: '🎵 The Soundtrack' },
+                            { key: 'fpTheVisuals',         label: '🎬 The Visuals' },
+                            { key: 'fpTheWardrobe',        label: '👗 The Wardrobe' },
+                            { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
+                            { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
+                            { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
+                            { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
+                          ].map(({ key, label, locked }) => (
+                            <div key={key} className="flex items-center gap-2">
+                              <input type="checkbox" checked={locked ? true : !!(editForm as any)[key]} disabled={locked}
+                                onChange={e => setEditForm((p: any) => ({...p, [key]: e.target.checked}))}
+                                className="w-3.5 h-3.5 accent-brand-pink" />
+                              <span className={"text-xs font-black uppercase italic " + (locked ? 'text-white/40' : 'text-white')}>{label}</span>
+                              {locked && <span className="text-[8px] text-brand-yellow/50 uppercase">always included</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[9px] font-black uppercase text-white/40 mb-1.5 italic tracking-widest">Punch Language</label>
+                          <select value={(editForm as any).fpPunchLanguage || 'EN'} onChange={e => setEditForm((p: any) => ({...p, fpPunchLanguage: e.target.value}))}
+                            className="w-full bg-brand-black border-2 border-white/20 px-3 py-2 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan">
+                            {['EN','SI','DE','FR','IT','ES','HR','PL','CZ','HU','RO'].map(l => <option key={l} value={l}>{l}</option>)}
+                          </select>
+                        </div>
+                        <div className="flex items-center gap-2 pt-5">
+                          <input type="checkbox" checked={!!(editForm as any).fpPunchSupport}
+                            onChange={e => setEditForm((p: any) => ({...p, fpPunchSupport: e.target.checked}))}
+                            className="w-3.5 h-3.5 accent-brand-pink" />
+                          <span className="text-xs font-black uppercase italic text-white">🤝 Punch Support</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

@@ -72,7 +72,12 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     licensedCountries: '', exclusivityLevel: 'Exclusive', licenseType: 'License',
     // 05. PACKAGES
     hasScriptPackage: true, scriptRoyaltyPct: '', scriptAdvanceFee: '',
-    hasFullPunchPackage: false, fullPunchRoyaltyPct: '', fullPunchAdvanceFee: '', fullPunchIncludes: '',
+    hasFullPunchPackage: false, fullPunchRoyaltyPct: '', fullPunchAdvanceFee: '',
+    // Full Punch contents
+    fpTheScript: true, fpThePlaybook: false, fpTheSoundtrack: false,
+    fpTheVisuals: false, fpTheWardrobe: false, fpTheSetBlueprint: false,
+    fpTheTechRider: false, fpThePromoKit: false, fpTheHandoverSession: false,
+    fpPunchLanguage: 'EN', fpPunchSupport: false,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -197,7 +202,17 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       has_full_punch_package: formData.hasFullPunchPackage === true || (formData.hasFullPunchPackage as any) === 'true',
       full_punch_royalty_pct: formData.fullPunchRoyaltyPct ? Number(formData.fullPunchRoyaltyPct) : null,
       full_punch_advance_fee: formData.fullPunchAdvanceFee ? Number(formData.fullPunchAdvanceFee) : null,
-      full_punch_includes: formData.fullPunchIncludes || null,
+      fp_the_script: true,
+      fp_the_playbook: !!(formData as any).fpThePlaybook,
+      fp_the_soundtrack: !!(formData as any).fpTheSoundtrack,
+      fp_the_visuals: !!(formData as any).fpTheVisuals,
+      fp_the_wardrobe: !!(formData as any).fpTheWardrobe,
+      fp_the_set_blueprint: !!(formData as any).fpTheSetBlueprint,
+      fp_the_tech_rider: !!(formData as any).fpTheTechRider,
+      fp_the_promo_kit: !!(formData as any).fpThePromoKit,
+      fp_the_handover_session: !!(formData as any).fpTheHandoverSession,
+      fp_punch_language: (formData as any).fpPunchLanguage || 'EN',
+      fp_punch_support: !!(formData as any).fpPunchSupport,
       production_photos: uploadedPhotos,
       is_produced: true,
       likes_count: 0, views_count: 0, inquiries_count: 0,
@@ -470,15 +485,15 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <p className="text-white/30 text-xs italic mt-0.5">What you offer and at what price. Buyers choose when they send an inquiry.</p>
                 </div>
 
-                {/* SCRIPT */}
+                {/* SCRIPT PACKAGE */}
                 <div className={"border-4 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/50" : "border-white/10")}>
                   <div className="flex items-center gap-3">
                     <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
                       onChange={e => setFormData(p => ({ ...p, hasScriptPackage: e.target.checked }))}
                       className="w-4 h-4 accent-brand-yellow" />
-                    <label htmlFor="hasScript" className="font-black uppercase italic text-white cursor-pointer">Script Package</label>
+                    <label htmlFor="hasScript" className="font-black uppercase italic text-white cursor-pointer">📄 The Script — Script Only License</label>
                   </div>
-                  <p className="text-white/30 text-xs italic pl-7">Script only license. Buyer produces independently.</p>
+                  <p className="text-white/30 text-xs italic pl-7">Buyer gets the script and produces independently.</p>
                   {formData.hasScriptPackage && (
                     <div className="grid grid-cols-2 gap-3 pl-7">
                       <div>
@@ -495,29 +510,80 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   )}
                 </div>
 
-                {/* FULL PUNCH */}
-                <div className={"border-4 p-4 space-y-3 " + (formData.hasFullPunchPackage ? "border-brand-pink/50" : "border-white/10")}>
+                {/* FULL PUNCH PACKAGE */}
+                <div className={"border-4 p-4 space-y-4 " + ((formData as any).hasFullPunchPackage ? "border-brand-pink/50" : "border-white/10")}>
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" id="hasFullPunch" checked={!!formData.hasFullPunchPackage}
+                    <input type="checkbox" id="hasFullPunch" checked={!!(formData as any).hasFullPunchPackage}
                       onChange={e => setFormData(p => ({ ...p, hasFullPunchPackage: e.target.checked }))}
                       className="w-4 h-4 accent-brand-pink" />
-                    <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white cursor-pointer">Full Punch Package</label>
+                    <label htmlFor="hasFullPunch" className="font-black uppercase italic text-white cursor-pointer">🥊 Full Punch — Complete Know-How Package</label>
                   </div>
-                  <p className="text-white/30 text-xs italic pl-7">Script + complete know-how: director notes, video, music. All royalties in one rate.</p>
-                  {formData.hasFullPunchPackage && (
-                    <div className="space-y-3 pl-7">
+                  <p className="text-white/30 text-xs italic pl-7">Everything a buyer needs to produce your show. No calls, no guesswork.</p>
+
+                  {(formData as any).hasFullPunchPackage && (
+                    <div className="space-y-4 pl-7">
+                      {/* Pricing */}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className={lbl}>Royalty % *</label>
-                          <input type="number" name="fullPunchRoyaltyPct" value={formData.fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="15" />
-                          <p className="text-white/20 text-[9px] italic mt-1">Includes video + music</p>
+                          <input type="number" name="fullPunchRoyaltyPct" value={(formData as any).fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="15" />
+                          <p className="text-white/20 text-[9px] italic mt-1">All royalties included</p>
                         </div>
                         <div>
                           <label className={lbl}>Advance Fee (EUR)</label>
-                          <input type="number" name="fullPunchAdvanceFee" value={formData.fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
+                          <input type="number" name="fullPunchAdvanceFee" value={(formData as any).fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
                         </div>
                       </div>
-                      <div><label className={lbl}>What's Included (optional)</label><input name="fullPunchIncludes" value={formData.fullPunchIncludes} onChange={handleInputChange} className={inp} placeholder="e.g. 4 video projections, original score by..." /></div>
+
+                      {/* Know-How Contents */}
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-brand-pink/60 tracking-widest mb-3">What's In The Package</p>
+                        <div className="grid grid-cols-1 gap-2">
+                          {[
+                            { key: 'fpTheScript',          label: '📄 The Script',             desc: 'Complete script + stage directions', locked: true },
+                            { key: 'fpThePlaybook',        label: '📋 The Playbook',            desc: "Director's complete production notes" },
+                            { key: 'fpTheSoundtrack',      label: '🎵 The Soundtrack',          desc: 'Original music files + cue sheet' },
+                            { key: 'fpTheVisuals',         label: '🎬 The Visuals',             desc: 'Video projection files + technical specs' },
+                            { key: 'fpTheWardrobe',        label: '👗 The Wardrobe',            desc: 'Costume design sketches + supplier list' },
+                            { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint',       desc: 'Set design plans + construction notes' },
+                            { key: 'fpTheTechRider',       label: '🔧 The Tech Rider',          desc: 'Full technical requirements document' },
+                            { key: 'fpThePromoKit',        label: '📸 The Promo Kit',           desc: 'Press photos, trailer, marketing assets' },
+                            { key: 'fpTheHandoverSession', label: '🤝 The Handover Session',    desc: 'Live session with director / creative team' },
+                          ].map(({ key, label, desc, locked }) => (
+                            <div key={key} className={"flex items-start gap-3 p-3 border " + ((formData as any)[key] ? 'border-brand-pink/40 bg-brand-pink/5' : 'border-white/10')}>
+                              <input type="checkbox" id={key} checked={locked ? true : !!(formData as any)[key]}
+                                disabled={locked}
+                                onChange={e => setFormData(p => ({ ...p, [key]: e.target.checked }))}
+                                className="w-4 h-4 accent-brand-pink mt-0.5 flex-shrink-0" />
+                              <label htmlFor={key} className={"cursor-pointer " + (locked ? 'opacity-50' : '')}>
+                                <span className="font-black uppercase italic text-white text-xs">{label}</span>
+                                {locked && <span className="text-[8px] text-brand-yellow/60 ml-2 uppercase">always included</span>}
+                                <p className="text-white/30 text-[9px] italic mt-0.5">{desc}</p>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Punch Language + Support */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={lbl}>Punch Language</label>
+                          <select name="fpPunchLanguage" value={(formData as any).fpPunchLanguage || 'EN'} onChange={handleInputChange} className={sel}>
+                            {['EN','SI','DE','FR','IT','ES','HR','PL','CZ','HU','RO'].map(l => <option key={l} value={l}>{l}</option>)}
+                          </select>
+                          <p className="text-white/20 text-[9px] italic mt-1">Language of all documentation</p>
+                        </div>
+                        <div className="flex flex-col justify-center gap-2 pt-4">
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" id="fpPunchSupport" checked={!!(formData as any).fpPunchSupport}
+                              onChange={e => setFormData(p => ({ ...p, fpPunchSupport: e.target.checked }))}
+                              className="w-4 h-4 accent-brand-pink" />
+                            <label htmlFor="fpPunchSupport" className="font-black uppercase italic text-white text-xs cursor-pointer">Punch Support</label>
+                          </div>
+                          <p className="text-white/20 text-[9px] italic pl-7">Creative team available for buyer onboarding</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
