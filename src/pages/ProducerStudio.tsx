@@ -739,64 +739,176 @@ Party B: ___________________ Date: _______`;
       )}
 
       {/* ── CALCULATOR ── */}
-      {tab === 'calculator' && (
-        <div className="space-y-6">
-          <div className="border-l-4 border-brand-yellow pl-4">
-            <p className="text-white font-black uppercase italic text-sm">Break-Even Calculator</p>
-            <p className="text-white/50 text-sm italic mt-1">Calculate how many performances you need to break even on a production. Enter revenue parameters and costs — the calculator shows your break-even point and profit projection. Use this before signing a licensing deal.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4 border-4 border-white/10 p-4">
-              <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Revenue</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className={lbl}>Performances</label><input type="number" value={calc.performances} onChange={e => setCalc(p => ({...p, performances: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Ticket Price (€)</label><input type="number" value={calc.ticketPrice} onChange={e => setCalc(p => ({...p, ticketPrice: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Seats</label><input type="number" value={calc.seats} onChange={e => setCalc(p => ({...p, seats: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Occupancy (%)</label><input type="number" value={calc.occupancy} onChange={e => setCalc(p => ({...p, occupancy: e.target.value}))} className={inp} /></div>
-                <div className="col-span-2"><label className={lbl}>Royalty / Author Fee (%)</label><input type="number" value={calc.royaltyPct} onChange={e => setCalc(p => ({...p, royaltyPct: e.target.value}))} className={inp} /></div>
+      {tab === 'calculator' && (() => {
+        // Per performance calculations
+        const revenuePerf = Number(calc.ticketPrice) * Number(calc.seats) * (Number(calc.occupancy) / 100);
+        const royaltyPerf = revenuePerf * Number(calc.royaltyPct) / 100;
+        const costsPerf = actors / Number(calc.performances || 1) + techs / Number(calc.performances || 1) + other / Number(calc.performances || 1);
+        const fixedCosts = Number((calc as any).fixedCosts || 0);
+        const netPerf = revenuePerf - royaltyPerf - (costsPerf);
+        const breakEven = netPerf > 0 ? Math.ceil(fixedCosts / netPerf) : null;
+        const totalNet = net - fixedCosts;
+
+        // Scenarios (pessimistic 60%, realistic calc.occupancy, optimistic 100%)
+        const scenario = (occ: number) => {
+          const r = Number(calc.ticketPrice) * Number(calc.seats) * (occ / 100) * Number(calc.performances);
+          const roy = r * Number(calc.royaltyPct) / 100;
+          const c = actors + techs + other + fixedCosts;
+          return r - roy - c;
+        };
+
+        // Break-even chart — performances 1 to max
+        const maxPerf = Math.max(Number(calc.performances), breakEven ? breakEven + 5 : 20, 20);
+        const chartPoints = Array.from({ length: Math.min(maxPerf, 30) }, (_, i) => {
+          const p = i + 1;
+          const r = Number(calc.ticketPrice) * Number(calc.seats) * (Number(calc.occupancy) / 100) * p;
+          const roy = r * Number(calc.royaltyPct) / 100;
+          const c = (Number(calc.actorFee) * Number(calc.actorCount) + Number(calc.techFee) * Number(calc.techCount) + Number(calc.otherFee) * Number(calc.otherCount)) * p + fixedCosts;
+          return { p, net: r - roy - c };
+        });
+        const maxNet = Math.max(...chartPoints.map(p => Math.abs(p.net)), 1);
+
+        return (
+          <div className="space-y-5">
+            <div className="border-l-4 border-brand-yellow pl-4">
+              <p className="text-white font-black uppercase italic text-sm">Break-Even Calculator</p>
+              <p className="text-white/40 text-xs italic mt-1">Enter your production parameters — see break-even point, profit scenarios, and per-performance net. Use before signing a licensing deal.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* REVENUE */}
+              <div className="space-y-3 border-4 border-white/10 p-4">
+                <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Revenue</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div><label className={lbl}>Performances</label><input type="number" value={calc.performances} onChange={e => setCalc(p => ({...p, performances: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>Ticket Price (€)</label><input type="number" value={calc.ticketPrice} onChange={e => setCalc(p => ({...p, ticketPrice: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>Seats</label><input type="number" value={calc.seats} onChange={e => setCalc(p => ({...p, seats: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>Occupancy (%)</label><input type="number" value={calc.occupancy} onChange={e => setCalc(p => ({...p, occupancy: e.target.value}))} className={inp} /></div>
+                  <div className="col-span-2"><label className={lbl}>Royalty / Author Fee (%)</label><input type="number" value={calc.royaltyPct} onChange={e => setCalc(p => ({...p, royaltyPct: e.target.value}))} className={inp} /></div>
+                </div>
+              </div>
+
+              {/* VARIABLE COSTS */}
+              <div className="space-y-3 border-4 border-white/10 p-4">
+                <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Variable Costs (per perf.)</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div><label className={lbl}>Actor Fee (€)</label><input type="number" value={calc.actorFee} onChange={e => setCalc(p => ({...p, actorFee: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>No. of Actors</label><input type="number" value={calc.actorCount} onChange={e => setCalc(p => ({...p, actorCount: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>Tech Fee (€)</label><input type="number" value={calc.techFee} onChange={e => setCalc(p => ({...p, techFee: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>No. of Techs</label><input type="number" value={calc.techCount} onChange={e => setCalc(p => ({...p, techCount: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>Other Staff (€)</label><input type="number" value={calc.otherFee} onChange={e => setCalc(p => ({...p, otherFee: e.target.value}))} className={inp} /></div>
+                  <div><label className={lbl}>No. of Other</label><input type="number" value={calc.otherCount} onChange={e => setCalc(p => ({...p, otherCount: e.target.value}))} className={inp} /></div>
+                </div>
+              </div>
+
+              {/* FIXED COSTS */}
+              <div className="space-y-3 border-4 border-brand-cyan/20 p-4">
+                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Fixed Costs (one-time)</p>
+                <p className="text-white/30 text-[9px] italic">Set, costumes, marketing, rights advance fee — paid once regardless of performances.</p>
+                <div>
+                  <label className={lbl}>Fixed Costs (€)</label>
+                  <input type="number" value={(calc as any).fixedCosts || ''} placeholder="e.g. 15000"
+                    onChange={e => setCalc(p => ({...p, fixedCosts: e.target.value} as any))} className={inp} />
+                </div>
+                {fixedCosts > 0 && breakEven && (
+                  <div className="border-2 border-brand-cyan/30 p-3 bg-brand-cyan/5">
+                    <p className="text-[8px] font-black uppercase italic text-brand-cyan mb-1">Break-Even Point</p>
+                    <p className="text-2xl font-black text-brand-cyan">{breakEven} perfs</p>
+                    <p className="text-[9px] text-white/30 italic">to cover fixed costs</p>
+                  </div>
+                )}
+                {fixedCosts > 0 && !breakEven && (
+                  <div className="border-2 border-red-500/30 p-3 bg-red-500/5">
+                    <p className="text-[8px] font-black uppercase italic text-red-400 mb-1">⚠ Break-Even</p>
+                    <p className="text-sm font-black text-red-400">Never — per-perf loss</p>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="space-y-4 border-4 border-white/10 p-4">
-              <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Costs per Performance</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className={lbl}>Actor Fee (€)</label><input type="number" value={calc.actorFee} onChange={e => setCalc(p => ({...p, actorFee: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>No. of Actors</label><input type="number" value={calc.actorCount} onChange={e => setCalc(p => ({...p, actorCount: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Tech Fee (€)</label><input type="number" value={calc.techFee} onChange={e => setCalc(p => ({...p, techFee: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>No. of Techs</label><input type="number" value={calc.techCount} onChange={e => setCalc(p => ({...p, techCount: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Other Staff (€)</label><input type="number" value={calc.otherFee} onChange={e => setCalc(p => ({...p, otherFee: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>No. of Other</label><input type="number" value={calc.otherCount} onChange={e => setCalc(p => ({...p, otherCount: e.target.value}))} className={inp} /></div>
+            {/* RESULTS */}
+            <div className="border-4 border-brand-yellow p-4 grid grid-cols-2 md:grid-cols-6 gap-3">
+              {[
+                { label: 'Gross Revenue', value: '€' + Math.round(gross).toLocaleString(), color: 'text-white' },
+                { label: 'Royalty / Author', value: '€' + Math.round(royalty).toLocaleString(), color: 'text-brand-yellow' },
+                { label: 'Variable Costs', value: '€' + Math.round(totalCosts).toLocaleString(), color: 'text-brand-pink' },
+                { label: 'Fixed Costs', value: '€' + Math.round(fixedCosts).toLocaleString(), color: 'text-brand-cyan' },
+                { label: 'Net / Performance', value: '€' + Math.round(netPerf).toLocaleString(), color: netPerf >= 0 ? 'text-green-400' : 'text-red-400' },
+                { label: 'Total Net', value: '€' + Math.round(totalNet).toLocaleString(), color: totalNet >= 0 ? 'text-green-400' : 'text-red-400' },
+              ].map((s, i) => (
+                <div key={i} className={"text-center p-2 " + (i === 5 ? (totalNet >= 0 ? 'bg-green-500/10' : 'bg-red-500/10') : '')}>
+                  <p className="text-[7px] font-black uppercase italic text-white/30 mb-1">{s.label}</p>
+                  <p className={"text-lg font-black " + s.color}>{s.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* SCENARIOS */}
+            <div className="border-4 border-white/10 p-4">
+              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest mb-3">Scenarios — Total Net</p>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: '😬 Pessimistic', occ: 60, color: 'border-red-500/40 text-red-400' },
+                  { label: '😐 Realistic', occ: Number(calc.occupancy), color: 'border-brand-yellow/40 text-brand-yellow' },
+                  { label: '😄 Optimistic', occ: 100, color: 'border-green-500/40 text-green-400' },
+                ].map(s => {
+                  const v = scenario(s.occ);
+                  return (
+                    <div key={s.label} className={"border-4 p-4 text-center " + s.color.split(' ')[0]}>
+                      <p className="text-[9px] font-black uppercase italic text-white/40 mb-1">{s.label}</p>
+                      <p className="text-[9px] text-white/25 mb-2">{s.occ}% occupancy</p>
+                      <p className={"text-2xl font-black " + s.color.split(' ')[1]}>€{Math.round(v).toLocaleString()}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </div>
 
-          {/* RESULTS */}
-          <div className="border-4 border-brand-yellow p-6 grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="text-center">
-              <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Gross Revenue</p>
-              <p className="text-xl font-black text-white">€{Math.round(gross).toLocaleString()}</p>
+            {/* BREAK-EVEN CHART */}
+            <div className="border-4 border-white/10 p-4">
+              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest mb-4">
+                Cumulative Net by Performance
+                {breakEven && <span className="text-brand-cyan ml-2">Break-even at perf #{breakEven}</span>}
+              </p>
+              <div className="relative h-32">
+                {/* Zero line */}
+                <div className="absolute w-full border-t border-white/20" style={{ top: '50%' }} />
+                <div className="flex items-end gap-0.5 h-full">
+                  {chartPoints.map((pt, i) => {
+                    const isBreakEven = breakEven && pt.p === breakEven;
+                    const pct = pt.net / maxNet;
+                    const barH = Math.abs(pct) * 50;
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center justify-center h-full relative group">
+                        {pt.net >= 0 ? (
+                          <div className="w-full flex flex-col justify-end" style={{ height: '50%' }}>
+                            <div className={`w-full transition-all ${isBreakEven ? 'bg-brand-cyan' : 'bg-green-500/60'}`}
+                              style={{ height: barH + '%' }} />
+                          </div>
+                        ) : (
+                          <div className="w-full flex flex-col justify-start" style={{ height: '50%', marginTop: '50%' }}>
+                            <div className="w-full bg-red-500/60 transition-all" style={{ height: barH + '%' }} />
+                          </div>
+                        )}
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full mb-1 hidden group-hover:block bg-brand-black border border-white/20 px-2 py-1 text-[8px] font-black text-white whitespace-nowrap z-10">
+                          P{pt.p}: €{Math.round(pt.net).toLocaleString()}
+                        </div>
+                        {(pt.p % 5 === 0 || pt.p === 1) && (
+                          <p className="absolute bottom-0 text-[6px] text-white/20 font-black" style={{ bottom: '-14px' }}>{pt.p}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <p className="text-[8px] text-white/20 italic mt-5 text-center">Number of performances → hover for value</p>
             </div>
-            <div className="text-center border-l border-white/10">
-              <p className="text-[9px] font-black uppercase text-brand-yellow/60 italic mb-1">Royalty / Author</p>
-              <p className="text-xl font-black text-brand-yellow">€{Math.round(royalty).toLocaleString()}</p>
-            </div>
-            <div className="text-center border-l border-white/10">
-              <p className="text-[9px] font-black uppercase text-brand-pink/60 italic mb-1">Total Costs</p>
-              <p className="text-xl font-black text-brand-pink">€{Math.round(totalCosts).toLocaleString()}</p>
-            </div>
-            <div className="text-center border-l border-white/10 col-span-2 md:col-span-1">
-              <p className="text-[9px] font-black uppercase text-white/30 italic mb-1">Breakdown</p>
-              <p className="text-xs text-white/40 italic">Actors: €{Math.round(actors).toLocaleString()}</p>
-              <p className="text-xs text-white/40 italic">Techs: €{Math.round(techs).toLocaleString()}</p>
-              {other > 0 && <p className="text-xs text-white/40 italic">Other: €{Math.round(other).toLocaleString()}</p>}
-            </div>
-            <div className={`text-center border-l border-white/10 col-span-2 md:col-span-1 ${net >= 0 ? 'bg-brand-cyan/10' : 'bg-red-500/10'}`}>
-              <p className="text-[9px] font-black uppercase italic mb-1" style={{color: net >= 0 ? '#03DAC6' : '#ef4444'}}>Net for Producer</p>
-              <p className="text-2xl font-black" style={{color: net >= 0 ? '#03DAC6' : '#ef4444'}}>€{Math.round(net).toLocaleString()}</p>
-            </div>
+
           </div>
-        </div>
-      )}
+        );
+      })()}
+
 
       {/* ── CONTACTS ── */}
       {tab === 'contacts' && (
