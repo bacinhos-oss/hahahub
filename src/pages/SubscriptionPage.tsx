@@ -428,10 +428,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       setInquiries(data);
       const unread = data.filter((inq: any) => !inq.is_read);
       const toastKey = 'hahahub_toast_shown_' + user?.id;
-      const alreadyShown = sessionStorage.getItem(toastKey);
+      const alreadyShown = localStorage.getItem(toastKey);
       if (unread.length > 0 && !alreadyShown) {
         setTickledToast({ show: true, showTitle: unread[0].show_title });
-        sessionStorage.setItem(toastKey, '1');
+        localStorage.setItem(toastKey, '1');
         setTimeout(() => setTickledToast({ show: false, showTitle: '' }), 5000);
         // Send email notification for new inquiries
         unread.forEach(async (inq: any) => {
