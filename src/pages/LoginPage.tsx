@@ -136,9 +136,15 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     setLoading(true)
     try {
       if (isNew) {
-        // Check if invited (free access)
+        // Check if invited
         const { data: invite } = await supabase.from('invitations').select('*').eq('email', email).eq('status', 'pending').maybeSingle()
         const isAdmin = email === ADMIN_EMAIL
+        // BETA: invite required to register
+        if (!invite && !isAdmin) {
+          setError('HahaHub is currently in private beta. You need an invite to join. Contact us at info@hahahub.art')
+          setLoading(false)
+          return
+        }
         const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
         if (signUpError) throw signUpError
         if (data.user) {
