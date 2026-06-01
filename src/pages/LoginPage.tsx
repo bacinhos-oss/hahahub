@@ -149,8 +149,9 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         if (signUpError) throw signUpError
         if (data.user) {
           const isPaid = isAdmin || !!invite
+          const userType = isAdmin ? 'roar' : (invite?.plan || 'gigl')
           if (invite) await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
-          await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), is_paid: isPaid, favorites: [], uploaded_show_ids: [], onboarded: false }])
+          await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), is_paid: isPaid, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
           if (isPaid) {
             // Invited or admin — skip payment
             setCurrentUser({
