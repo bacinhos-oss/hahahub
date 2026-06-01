@@ -16,11 +16,11 @@ const FAQ_ITEMS = [
   { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your direct route.' },
   { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
   { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery tools and contract templates — the deal is between you and the producer. No commission.' },
-  { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
-  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on The Laff Exchange.' },
+  { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer Tickle. Set Up. Punch.. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
+  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on Tickle. Set Up. Punch..' },
   { q: 'What payment methods do you accept?', a: 'We accept Stripe — all major credit and debit cards. All prices are in EUR. Subscriptions are annual and non-refundable.' },
   { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
-  { q: 'What languages are supported?', a: 'The Laff Exchange is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
+  { q: 'What languages are supported?', a: 'Tickle. Set Up. Punch. is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
 ];
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess, shows }) => {
@@ -92,7 +92,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
       {/* BETA BANNER */}
       <div className="fixed top-[72px] left-0 right-0 z-40 bg-brand-pink border-b-4 border-black text-white text-center py-2 px-4">
         <p className="font-black uppercase italic text-[10px] tracking-widest">
-          Beta · Platform under development · Not live yet · For testing only
+          🎭 Private Beta · Founding Members Only · <span className="text-brand-yellow">hahahub.art/beta-guide.html</span>
         </p>
       </div>
 
@@ -101,7 +101,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         {/* HERO */}
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Laff Exchange</span>
+            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">Tickle. Set Up. Punch.</span>
             <h1 className="font-display text-white text-6xl sm:text-8xl md:text-[130px] leading-[0.85] tracking-tighter uppercase mb-4 md:mb-6 italic">
               TICKLE.<br/>
               <span className="text-brand-yellow">SET UP.</span><br/>
@@ -272,7 +272,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   Founding<br/>Producer
                 </h2>
                 <p className="text-black/70 font-bold italic text-lg md:text-xl max-w-xl leading-relaxed">
-                  The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show with full data and help shape The Laff Exchange.
+                  The first {FOUNDING_TOTAL} producers join <strong className="text-black">free forever</strong>. No annual fee. No credit card. Upload at least one show with full data and help shape Tickle. Set Up. Punch..
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   {['Free Forever ✓', 'Founding Producer Badge ✓', 'Unlimited Uploads ✓', 'Shape the Product ✓'].map((b, i) => (
@@ -373,6 +373,33 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
+        {/* YOUR COMEDY BUSINESS. IN ONE PLACE. */}
+        <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10 bg-white/[0.02]">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-10 md:mb-14">
+              <span className="text-brand-cyan text-xs font-black uppercase tracking-[0.5em] italic">Your Comedy Business</span>
+              <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-[0.9] mt-2">
+                IN ONE <span className="text-brand-yellow">PLACE.</span>
+              </h2>
+              <p className="text-white/40 font-bold italic text-lg mt-4 max-w-2xl">Everything a comedy producer needs to license internationally. No spreadsheets. No agents. No waiting.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { icon: 'search', color: 'brand-cyan', title: 'The Vault', desc: 'Browse the international catalog. Filter by cast, language, humor type. Miss Stefunny AI search finds shows by description.' },
+                { icon: 'touch_app', color: 'brand-pink', title: 'Tickle & Pipeline', desc: 'Send an inquiry in 30 seconds. Track every deal from first tickle to signed contract. Messages and files in one place.' },
+                { icon: 'analytics', color: 'brand-yellow', title: 'Analytics', desc: 'Views, inquiries, conversion rate, top territories, royalties earned. Know exactly which markets want your show.' },
+                { icon: 'description', color: 'white', title: 'HAHAoffice', desc: 'Smart contract templates. Fill in details, generate, edit, download. Your private contract workspace.' },
+              ].map((c, i) => (
+                <div key={i} className="border-4 border-white/10 p-6 hover:border-brand-yellow/40 transition-all">
+                  <span className={`material-symbols-outlined text-3xl mb-4 block text-${c.color}`}>{c.icon}</span>
+                  <h3 className="font-black uppercase italic text-white text-lg mb-2">{c.title}</h3>
+                  <p className="text-white/40 text-sm font-medium leading-relaxed">{c.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* PRICING — 3 tieri */}
         <section className="px-4 md:px-12 py-16 md:py-32" id="pricing">
           <div className="max-w-7xl mx-auto">
@@ -413,7 +440,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
                 <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Full catalog — unlimited browsing', 'Upload up to 10 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Inquiry history — sent & received', 'Deal tracking', 'Royalty Tracker — log & calculate', 'Laff Wire — 7 days + post', 'Producer Profile + Dashboard'].map((f, i) => (
+                  {['Full catalog — unlimited browsing', 'Upload up to 5 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Inquiry history — sent & received', 'Deal tracking', 'Royalty Tracker — log & calculate', 'Laff Wire — 7 days + post', 'Producer Profile + Dashboard'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
@@ -472,7 +499,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         <section className="px-4 md:px-12 py-16 border-t-4 border-white/10">
           <div className="max-w-4xl mx-auto space-y-6 text-white/30 text-xs font-bold italic leading-relaxed">
             <h3 className="text-white/60 font-black uppercase text-sm tracking-widest not-italic">Terms of Use — Summary</h3>
-            <p>HAHAHUB is a producer-to-producer The Laff Exchange for discovering and licensing international theatrical productions. By registering, you confirm you are a professional acting in a commercial capacity and are at least 18 years of age.</p>
+            <p>HAHAHUB is a producer-to-producer Tickle. Set Up. Punch. for discovering and licensing international theatrical productions. By registering, you confirm you are a professional acting in a commercial capacity and are at least 18 years of age.</p>
             <p>Subscriptions are annual, non-refundable, and do not auto-renew. HAHAHUB is a discovery tool only — we are not party to any licensing agreements between users. Contract templates are provided for reference and do not constitute legal advice.</p>
             <p>All content uploaded by users remains the property of the respective rights holders. HAHAHUB reserves the right to remove listings that violate these terms. Governing law: Slovenia.</p>
             <p>Questions: <span className="text-brand-yellow">info@hahahub.art</span></p>
