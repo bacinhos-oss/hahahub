@@ -950,17 +950,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </div>
 
               {/* GIGL rate limit opozorilo */}
-              {user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 3 && (
+              {user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 5 && (
                 <div className="bg-brand-yellow text-black p-4 border-4 border-black font-black uppercase text-sm italic mb-2">
-                  ⚡ GIGL plan: 3 inquiries per month used. Upgrade to LAFF for unlimited.
+                  ⚡ GIGL plan: 5 inquiries per month used. Upgrade to LAFF for unlimited.
                   <button onClick={() => onNavigate('pricing')} className="ml-2 underline">Upgrade →</button>
                 </div>
               )}
 
               <button
-                disabled={!!(user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 3) || inquirySending}
+                disabled={!!(user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 5) || inquirySending}
                 onClick={async () => {
-                  // Rate limit check za GIGL — max 3 inquiries na mesec
+                  // Rate limit check za GIGL — max 5 inquiries na mesec
                   if (user && user.plan === 'gigl') {
                     const now = new Date();
                     const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
@@ -971,7 +971,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       .gte('created_at', firstOfMonth);
                     const monthCount = count || 0;
                     setInquiryRateLimit(monthCount);
-                    if (monthCount >= 3) return;
+                    if (monthCount >= 5) return;
                   }
 
                   setInquirySending(true);
@@ -1520,7 +1520,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </div>
             ) : filteredShows.map((show, index) => {
               const plan = (user as any)?.plan || 'gigl';
-              const freeLimit = !user ? 5 : plan === 'gigl' ? 5 : 9999;
+              const freeLimit = !user ? 5 : plan === 'gigl' ? 15 : 9999;
               const isFreeBlocked = plan === 'gigl' && !user?.isAdmin && index >= freeLimit;
               return (
               <div

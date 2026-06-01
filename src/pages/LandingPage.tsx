@@ -417,11 +417,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <p className="text-white/30 text-xs font-bold italic mb-8">forever</p>
                 <ul className="space-y-3 mb-8">
                   {[
-                    { t: 'Browse 5 shows', ok: false },
+                    { t: 'Browse 15 shows', ok: true },
                     { t: 'Upload 1 show', ok: true },
-                    { t: 'Wire — read only', ok: false },
-                    { t: 'No contact access', ok: false },
-                    { t: 'No Dossier', ok: false },
+                    { t: 'LaffWire — read & post', ok: true },
+                    { t: 'Pipeline — deal tracking', ok: true },
+                    { t: '5 inquiries per month', ok: true },
+                    { t: 'Break-even Calculator', ok: true },
+                    { t: 'No Dossier PDF download', ok: false },
+                    { t: 'No HAHAoffice', ok: false },
+                    { t: 'No HAHAfriends', ok: false },
                   ].map((f, i) => (
                     <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/60' : 'text-white/25'}`}>
                       <span className={`material-symbols-outlined text-base ${f.ok ? 'text-brand-cyan' : 'text-white/20'}`}>{f.ok ? 'check' : 'remove'}</span>{f.t}
