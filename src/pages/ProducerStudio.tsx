@@ -21,6 +21,35 @@ function save(key: string, data: any) {
   localStorage.setItem(STORAGE_KEY + key, JSON.stringify(data));
 }
 
+// ── CONTRACT EDITOR — defined outside to prevent re-mount on parent render ──
+const ContractEditor: React.FC<{
+  c: any;
+  initialText: string;
+  onSave: (id: string, text: string) => void;
+  onClose: () => void;
+}> = ({ c, initialText, onSave, onClose }) => {
+  const [localText, setLocalText] = React.useState(initialText);
+  return (
+    <div className="border-t-4 border-brand-yellow/30 p-4 space-y-3 bg-black/20">
+      <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Edit Contract</p>
+      <textarea value={localText} onChange={e => setLocalText(e.target.value)} rows={16}
+        className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed" />
+      <div className="flex gap-2 flex-wrap">
+        <button onClick={() => onSave(c.id, localText)}
+          className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">💾 Save</button>
+        <button onClick={() => { if (window.confirm('Restore last saved version?')) setLocalText(c.body || ''); }}
+          className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:border-brand-pink hover:text-brand-pink transition-all">↩ Restore</button>
+        <button onClick={() => { const blob = new Blob([localText], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (c.title || 'contract').replace(/\s+/g, '_') + '.txt'; a.click(); }}
+          className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">📥 .txt</button>
+        <button onClick={() => { const w = window.open('', '_blank'); if (w) { w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${localText}</pre></body></html>`); w.document.close(); w.print(); } }}
+          className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all">🖨️ Print</button>
+        <button onClick={onClose}
+          className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">Close</button>
+      </div>
+    </div>
+  );
+};
+
 const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab, hideHeader = false, hideTabs = false }) => {
   const [tab, setTab] = useState<StudioTab>(initialTab || 'dashboard');
 
@@ -54,32 +83,6 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [contractTextIdx, setContractTextIdx] = useState<string | null>(null);
 
   // Stable contract editor component — prevents re-render focus loss
-  const ContractEditor = ({ c }: { c: any }) => {
-    const [localText, setLocalText] = React.useState(contractText || '');
-    return (
-      <div className="border-t-4 border-brand-yellow/30 p-4 space-y-3 bg-black/20">
-        <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Edit Contract</p>
-        <textarea value={localText} onChange={e => setLocalText(e.target.value)} rows={16}
-          className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed" />
-        <div className="flex gap-2 flex-wrap">
-          <button onClick={async () => {
-            await supabase.from('contracts').update({ body: localText }).eq('id', c.id);
-            setContracts(prev => prev.map(x => x.id === c.id ? { ...x, body: localText } : x));
-            setContractText(localText);
-          }} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">💾 Save</button>
-          <button onClick={() => { if (window.confirm('Restore last saved version?')) setLocalText(c.body || ''); }}
-            className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:border-brand-pink hover:text-brand-pink transition-all">↩ Restore</button>
-          <button onClick={() => { const blob = new Blob([localText], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (c.title || 'contract').replace(/\s+/g, '_') + '.txt'; a.click(); }}
-            className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">📥 .txt</button>
-          <button onClick={() => { const w = window.open('', '_blank'); if (w) { w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${localText}</pre></body></html>`); w.document.close(); w.print(); } }}
-            className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all">🖨️ Print</button>
-          <button onClick={() => setContractTextIdx(null)}
-            className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">Close</button>
-        </div>
-      </div>
-    );
-  };
-
   // CALCULATOR STATE
   const [calc, setCalc] = useState({ performances: '20', ticketPrice: '25', seats: '200', occupancy: '80', royaltyPct: '10', actorFee: '200', actorCount: '5', techFee: '150', techCount: '3', otherFee: '0', otherCount: '0' });
 
@@ -804,7 +807,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 </div>
               </div>
 
-              {contractTextIdx===c.id && <ContractEditor key={c.id} c={c} />}
+              {contractTextIdx===c.id && <ContractEditor key={c.id} c={c} initialText={contractText || ''} onSave={async (id, text) => { await supabase.from('contracts').update({ body: text }).eq('id', id); setContracts(prev => prev.map(x => x.id === id ? { ...x, body: text } : x)); }} onClose={() => setContractTextIdx(null)} />}
             </div>
           ))}
 
