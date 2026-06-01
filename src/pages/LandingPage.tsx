@@ -90,7 +90,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
       </header>
 
       {/* BETA BANNER */}
-      <div className="fixed top-[72px] left-0 right-0 z-40 bg-brand-pink border-b-4 border-black text-white text-center py-2 px-4">
+      <div className="fixed top-16 left-0 right-0 z-50 bg-brand-pink border-b-2 border-black text-white text-center py-1.5 px-4">
         <p className="font-black uppercase italic text-[10px] tracking-widest">
           🎭 Private Beta · Founding Members Only · <span className="text-brand-yellow">info@hahahub.art</span>
         </p>
@@ -125,7 +125,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
 
         </section>
 
-        {/* SLIDER — top shows autoplay */}
+{/* YOUR COMEDY BUSINESS. IN ONE PLACE. */}
+        <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10 bg-white/[0.02]">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-10 md:mb-14">
+              <span className="text-brand-cyan text-xs font-black uppercase tracking-[0.5em] italic">Your Comedy Business</span>
+              <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-[0.9] mt-2">
+                IN ONE <span className="text-brand-yellow">PLACE.</span>
+              </h2>
+              <p className="text-white/40 font-bold italic text-lg mt-4 max-w-2xl">Everything a comedy producer needs to license internationally. No spreadsheets. No agents. No waiting.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { icon: 'search', color: 'text-brand-cyan', title: 'The Vault', desc: 'Browse the international catalog. Filter by cast, language, humor type. Miss Stefunny AI search finds shows by description.' },
+                { icon: 'touch_app', color: 'text-brand-pink', title: 'Tickle & Pipeline', desc: 'Send an inquiry in 30 seconds. Track every deal from first tickle to signed contract. Messages and files in one place.' },
+                { icon: 'analytics', color: 'text-brand-yellow', title: 'Analytics', desc: 'Views, inquiries, conversion rate, top territories, royalties earned. Know exactly which markets want your show.' },
+                { icon: 'description', color: 'text-white', title: 'HAHAoffice', desc: 'Smart contract templates. Fill in details, generate, edit, download. Your private contract workspace.' },
+              ].map((c, i) => (
+                <div key={i} className="border-4 border-white/10 p-6 hover:border-brand-yellow/40 transition-all">
+                  <span className={`material-symbols-outlined text-3xl mb-4 block ${c.color}`}>{c.icon}</span>
+                  <h3 className="font-black uppercase italic text-white text-lg mb-2">{c.title}</h3>
+                  <p className="text-white/40 text-sm font-medium leading-relaxed">{c.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+                {/* SLIDER — top shows autoplay */}
         {sliderShows.length > 0 && (
           <section className="py-16 md:py-24 border-b-4 border-white/10 overflow-hidden">
             <div className="px-4 md:px-12 max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
@@ -370,33 +397,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
             <button onClick={() => onNavigate('about')} className="text-[9px] font-black uppercase italic text-white/30 border border-white/20 px-4 py-2 hover:border-white hover:text-white transition-all tracking-widest">
               Full Guide on Mission →
             </button>
-          </div>
-        </section>
-
-        {/* YOUR COMEDY BUSINESS. IN ONE PLACE. */}
-        <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10 bg-white/[0.02]">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-10 md:mb-14">
-              <span className="text-brand-cyan text-xs font-black uppercase tracking-[0.5em] italic">Your Comedy Business</span>
-              <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-[0.9] mt-2">
-                IN ONE <span className="text-brand-yellow">PLACE.</span>
-              </h2>
-              <p className="text-white/40 font-bold italic text-lg mt-4 max-w-2xl">Everything a comedy producer needs to license internationally. No spreadsheets. No agents. No waiting.</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { icon: 'search', color: 'text-brand-cyan', title: 'The Vault', desc: 'Browse the international catalog. Filter by cast, language, humor type. Miss Stefunny AI search finds shows by description.' },
-                { icon: 'touch_app', color: 'text-brand-pink', title: 'Tickle & Pipeline', desc: 'Send an inquiry in 30 seconds. Track every deal from first tickle to signed contract. Messages and files in one place.' },
-                { icon: 'analytics', color: 'text-brand-yellow', title: 'Analytics', desc: 'Views, inquiries, conversion rate, top territories, royalties earned. Know exactly which markets want your show.' },
-                { icon: 'description', color: 'text-white', title: 'HAHAoffice', desc: 'Smart contract templates. Fill in details, generate, edit, download. Your private contract workspace.' },
-              ].map((c, i) => (
-                <div key={i} className="border-4 border-white/10 p-6 hover:border-brand-yellow/40 transition-all">
-                  <span className={`material-symbols-outlined text-3xl mb-4 block ${c.color}`}>{c.icon}</span>
-                  <h3 className="font-black uppercase italic text-white text-lg mb-2">{c.title}</h3>
-                  <p className="text-white/40 text-sm font-medium leading-relaxed">{c.desc}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
