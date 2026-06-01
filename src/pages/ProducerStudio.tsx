@@ -639,16 +639,16 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             {tab === 'contracts' && (
         <div className="space-y-6">
 
-          {/* ══ MOJE POGODBE ══ */}
+          {/* ══ MY CONTRACTS ══ */}
           <div className="flex items-center justify-between">
-            <p className="font-black uppercase italic text-white">HAHAoffice <span className="text-white/30 font-normal text-xs">· {contracts.length} pogodb</span></p>
+            <p className="font-black uppercase italic text-white">HAHAoffice <span className="text-white/30 font-normal text-xs">· {contracts.length} contract{contracts.length !== 1 ? 's' : ''}</span></p>
             <button onClick={() => setShowContractForm(true)}
               className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
               + New Contract
             </button>
           </div>
 
-          {/* NOVA POGODBA — izbira predloge */}
+          {/* NEW CONTRACT — choose template */}
           {showContractForm && (
             <div className="border-4 border-brand-yellow/40 p-5 space-y-4">
               <div className="flex items-center justify-between">
@@ -757,7 +757,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
           )}
 
-          {/* LISTA POGODB */}
+          {/* CONTRACTS LIST */}
           {contractsLoading ? (
             <p className="text-white/20 italic text-sm">Loading...</p>
           ) : contracts.length === 0 ? (
@@ -856,17 +856,15 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               </div>
             )}
 
+            {/* HahaHub templates */}
             <div className="space-y-2">
-              {contractTemplates.map((tmpl:any) => (
-                <div key={tmpl.id} className="border-2 border-white/10 hover:border-white/20 px-4 py-3 flex items-center justify-between gap-4 transition-all">
+              <p className="text-[8px] font-black uppercase italic text-brand-yellow/50 tracking-widest">HahaHub Templates</p>
+              {contractTemplates.filter((t:any) => t.is_default).map((tmpl:any) => (
+                <div key={tmpl.id} className="border-2 border-white/10 hover:border-brand-yellow/30 px-4 py-3 flex items-center justify-between gap-4 transition-all">
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="material-symbols-outlined text-white/30 text-sm">description</span>
+                    <span className="material-symbols-outlined text-brand-yellow/40 text-sm">description</span>
                     <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
-                        {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
-                        {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/20 px-1.5 py-0.5">Mine</span>}
-                      </div>
+                      <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
                       {tmpl.description && <p className="text-white/25 text-[9px] italic">{tmpl.description}</p>}
                     </div>
                   </div>
@@ -879,19 +877,41 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       if (!user?.id) return;
                       const { data } = await supabase.from('contract_templates').insert({ user_id:user.id, title:`${tmpl.title} (copy)`, type:tmpl.type, description:tmpl.description||'', body:tmpl.body, is_default:false, created_by:user.name }).select().single();
                       if (data) setContractTemplates(prev=>[...prev, data]);
-                    }} className="text-[9px] font-black uppercase italic text-white/30 border border-white/15 px-2 py-1.5 hover:border-brand-cyan hover:text-brand-cyan transition-all" title="Copy as my own editable template">
+                    }} className="text-[9px] font-black uppercase italic text-white/30 border border-white/15 px-2 py-1.5 hover:border-brand-cyan hover:text-brand-cyan transition-all">
                       📋 Copy
                     </button>
-                    {!tmpl.is_default && tmpl.user_id===user?.id && (
-                      <button onClick={async () => { await supabase.from('contract_templates').delete().eq('id',tmpl.id); setContractTemplates(prev=>prev.filter(t=>t.id!==tmpl.id)); }}
-                        className="text-white/20 hover:text-brand-pink transition-colors">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                    )}
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* My templates */}
+            {contractTemplates.filter((t:any) => !t.is_default).length > 0 && (
+              <div className="space-y-2">
+                <p className="text-[8px] font-black uppercase italic text-brand-cyan/50 tracking-widest">My Templates</p>
+                {contractTemplates.filter((t:any) => !t.is_default).map((tmpl:any) => (
+                  <div key={tmpl.id} className="border-2 border-brand-cyan/20 hover:border-brand-cyan/40 px-4 py-3 flex items-center justify-between gap-4 transition-all">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="material-symbols-outlined text-brand-cyan/40 text-sm">description</span>
+                      <div>
+                        <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
+                        {tmpl.description && <p className="text-white/25 text-[9px] italic">{tmpl.description}</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
+                        className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
+                        Use →
+                      </button>
+                      <button onClick={async () => { await supabase.from('contract_templates').delete().eq('id',tmpl.id); setContractTemplates(prev=>prev.filter(t=>t.id!==tmpl.id)); }}
+                        className="text-white/20 hover:text-brand-pink transition-colors">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
