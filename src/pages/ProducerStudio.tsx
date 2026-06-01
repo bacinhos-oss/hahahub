@@ -614,7 +614,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             <p className="font-black uppercase italic text-white">HAHAoffice <span className="text-white/30 font-normal text-xs">· {contracts.length} pogodb</span></p>
             <button onClick={() => setShowContractForm(true)}
               className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-              + Nova Pogodba
+              + New Contract
             </button>
           </div>
 
@@ -622,8 +622,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           {showContractForm && (
             <div className="border-4 border-brand-yellow/40 p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Izberi predlogo</p>
-                <button onClick={() => { setShowContractForm(false); setActiveTemplate(null); }} className="text-white/30 hover:text-white font-black uppercase italic text-xs">✕ Zapri</button>
+                <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Choose a template</p>
+                <button onClick={() => { setShowContractForm(false); setActiveTemplate(null); }} className="text-white/30 hover:text-white font-black uppercase italic text-xs">✕ Close</button>
               </div>
 
               {!activeTemplate ? (
@@ -645,11 +645,11 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                         <div className="flex items-center gap-2">
                           <p className="font-black uppercase italic text-white text-sm">{tmpl.title}</p>
                           {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
-                          {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/30 px-1.5 py-0.5">Moja</span>}
+                          {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/30 px-1.5 py-0.5">Mine</span>}
                         </div>
                         {tmpl.description && <p className="text-white/30 text-[9px] italic mt-0.5">{tmpl.description}</p>}
                       </div>
-                      <span className="text-brand-yellow font-black uppercase italic text-xs flex-shrink-0">Uporabi →</span>
+                      <span className="text-brand-yellow font-black uppercase italic text-xs flex-shrink-0">Use →</span>
                     </button>
                   ))}
                 </div>
@@ -657,7 +657,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 const tmpl = activeTemplate;
                 const p = templateParams;
                 const placeholders = [...new Set((tmpl.body.match(/\{\{(\w+)\}\}/g) || []).map((m: string) => m.replace(/\{\{|\}\}/g, '')))].filter((ph: string) => !['ref','share_b'].includes(ph as string)) as string[];
-                const labels: any = { show:'Show', party:'Sopogodbenica', org:'Organizacija / Gledališče', rights_holder:'Imetnik pravic', royalty:'Royalty %', territory:'Ozemlje', city:'Mesto / Prizorišče', start_date:'Datum začetka', end_date:'Datum konca', advance:'Akontacija (EUR)', performances:'Število predstav', governing_law:'Veljavno pravo', author:'Avtor', package:'Paket', currency:'Valuta', date:'Datum pogodbe' };
+                const labels: any = { show:'Show', party:'Counter Party', org:'Organisation / Theatre', rights_holder:'Rights Holder', royalty:'Royalty %', territory:'Territory', city:'City / Venue', start_date:'Start Date', end_date:'End Date', advance:'Advance (EUR)', performances:'Performances', governing_law:'Governing Law', author:'Avtor', package:'Package', currency:'Currency', date:'Contract Date' };
                 const inputType: any = { start_date:'date', end_date:'date', date:'date', royalty:'number', advance:'number', performances:'number' };
                 const selectOptions: any = { package:['Script License','Full Punch Package'], currency:['EUR','USD','GBP','CHF'] };
 
@@ -673,7 +673,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <p className="font-black uppercase italic text-brand-yellow">{tmpl.title}</p>
-                      <button onClick={() => setActiveTemplate(null)} className="text-white/30 hover:text-white font-black uppercase italic text-xs">← Nazaj</button>
+                      <button onClick={() => setActiveTemplate(null)} className="text-white/30 hover:text-white font-black uppercase italic text-xs">← Back</button>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -682,7 +682,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                           <label className={lbl}>{labels[ph] || ph.replace(/_/g,' ')}</label>
                           {ph === 'show' ? (
                             <select value={p[ph]||''} onChange={e => { const sel = myShows.find((s:any) => s.title===e.target.value); setTemplateParams((prev:any) => ({...prev, show:e.target.value, show_id:sel?.id||'', author:sel?.author||prev.author, royalty:sel?.scriptRoyaltyPct||prev.royalty})); }} className={inp}>
-                              <option value="">Izberi show...</option>
+                              <option value="">Select show...</option>
                               {myShows.map((s:any) => <option key={s.id} value={s.title}>{s.title}</option>)}
                             </select>
                           ) : selectOptions[ph] ? (
@@ -697,7 +697,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     </div>
 
                     <div>
-                      <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest mb-1">Predogled</p>
+                      <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest mb-1">Preview</p>
                       <pre className="w-full bg-black border-2 border-white/10 p-4 text-white/50 font-mono text-[10px] leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">{generateText()}</pre>
                     </div>
 
@@ -710,7 +710,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                         if (data) setContracts(prev => [data,...prev]);
                         setShowContractForm(false); setActiveTemplate(null);
                       }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all">
-                        💾 Shrani pogodbo
+                        💾 Save Contract
                       </button>
                       <button onClick={() => { const blob = new Blob([generateText()],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`pogodba_${p.party||'stranka'}.txt`.replace(/\s+/g,'_'); a.click(); }}
                         className="border-4 border-brand-cyan/40 text-brand-cyan px-4 py-3 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all">
@@ -729,12 +729,12 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
           {/* LISTA POGODB */}
           {contractsLoading ? (
-            <p className="text-white/20 italic text-sm">Nalagam...</p>
+            <p className="text-white/20 italic text-sm">Loading...</p>
           ) : contracts.length === 0 ? (
             <div className="py-10 text-center space-y-2">
               <p className="text-4xl">📄</p>
-              <p className="text-white/20 font-black uppercase italic text-sm">Še ni pogodb.</p>
-              <p className="text-white/10 text-xs italic">Klikni + Nova Pogodba zgoraj.</p>
+              <p className="text-white/20 font-black uppercase italic text-sm">No contracts yet.</p>
+              <p className="text-white/10 text-xs italic">Click + New Contract above.</p>
             </div>
           ) : contracts.map((c: any) => (
             <div key={c.id} className="border-4 border-white/10 hover:border-white/20 transition-all">
@@ -777,12 +777,12 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed" />
                   <div className="flex gap-2 flex-wrap">
                     <button onClick={async () => { await supabase.from('contracts').update({body:contractText}).eq('id',c.id); setContracts(prev=>prev.map(x=>x.id===c.id?{...x,body:contractText}:x)); }}
-                      className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">💾 Shrani</button>
+                      className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">💾 Save</button>
                     <button onClick={() => { const blob=new Blob([contractText||''],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(c.title||'pogodba').replace(/\s+/g,'_')+'.txt'; a.click(); }}
                       className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">📥 .txt</button>
                     <button onClick={() => { const w=window.open('','_blank'); if(w){w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${contractText||''}</pre></body></html>`); w.document.close(); w.print(); }}}
                       className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all">🖨️ Print</button>
-                    <button onClick={() => setContractTextIdx(null)} className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">Zapri</button>
+                    <button onClick={() => setContractTextIdx(null)} className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">Close</button>
                   </div>
                 </div>
               )}
@@ -792,18 +792,18 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           {/* ══ PREDLOGE ══ */}
           <div className="border-t-4 border-white/10 pt-5 space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Predloge</p>
+              <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Templates</p>
               <button onClick={() => setShowNewTemplateForm(!showNewTemplateForm)}
                 className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
-                + Nova predloga
+                + New Template
               </button>
             </div>
 
             {showNewTemplateForm && (
               <div className="border-4 border-brand-cyan/30 p-4 space-y-3">
-                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Nova predloga — samo zase</p>
+                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New Template — private, only you see it</p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className={lbl}>Naslov *</label><input value={newTemplate.title} onChange={e=>setNewTemplate(p=>({...p,title:e.target.value}))} className={inp} placeholder="npr. Avtorska pogodba — scenograf" /></div>
+                  <div><label className={lbl}>Title *</label><input value={newTemplate.title} onChange={e=>setNewTemplate(p=>({...p,title:e.target.value}))} className={inp} placeholder="e.g. Set Designer Contract" /></div>
                   <div><label className={lbl}>Tip</label>
                     <select value={newTemplate.type} onChange={e=>setNewTemplate(p=>({...p,type:e.target.value}))} className={inp}>
                       <option value="licensing">Licensing</option>
@@ -812,10 +812,10 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       <option value="custom">Drugo</option>
                     </select>
                   </div>
-                  <div className="col-span-2"><label className={lbl}>Opis (opcijsko)</label><input value={newTemplate.description} onChange={e=>setNewTemplate(p=>({...p,description:e.target.value}))} className={inp} placeholder="Za kaj je ta predloga?" /></div>
+                  <div className="col-span-2"><label className={lbl}>Description (optional)</label><input value={newTemplate.description} onChange={e=>setNewTemplate(p=>({...p,description:e.target.value}))} className={inp} placeholder="What is this template for?" /></div>
                 </div>
                 <div>
-                  <label className={lbl}>Besedilo predloge *</label>
+                  <label className={lbl}>Template Body *</label>
                   <p className="text-[8px] text-white/20 italic mb-1">Uporabi {'{{placeholders}}'} za polja ki se izpolnijo: {'{{party}}'}, {'{{show}}'}, {'{{royalty}}'}, {'{{territory}}'}, {'{{start_date}}'}, {'{{end_date}}'}, {'{{advance}}'}</p>
                   <textarea value={newTemplate.body} onChange={e=>setNewTemplate(p=>({...p,body:e.target.value}))} rows={10}
                     className={inp+' font-mono text-xs resize-y'}
@@ -828,8 +828,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     if (data) setContractTemplates(prev=>[...prev,data]);
                     setNewTemplate({title:'',type:'custom',description:'',body:''});
                     setShowNewTemplateForm(false);
-                  }} className="bg-brand-cyan text-black px-5 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Shrani predlogo</button>
-                  <button onClick={()=>setShowNewTemplateForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Prekliči</button>
+                  }} className="bg-brand-cyan text-black px-5 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Save Template</button>
+                  <button onClick={()=>setShowNewTemplateForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
                 </div>
               </div>
             )}
@@ -843,7 +843,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
                         {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
-                        {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/20 px-1.5 py-0.5">Moja</span>}
+                        {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/20 px-1.5 py-0.5">Mine</span>}
                       </div>
                       {tmpl.description && <p className="text-white/25 text-[9px] italic">{tmpl.description}</p>}
                     </div>
@@ -851,7 +851,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
                       className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-3 py-1.5 hover:bg-brand-yellow hover:text-black transition-all">
-                      Uporabi →
+                      Use →
                     </button>
                     {!tmpl.is_default && tmpl.user_id===user?.id && (
                       <button onClick={async () => { await supabase.from('contract_templates').delete().eq('id',tmpl.id); setContractTemplates(prev=>prev.filter(t=>t.id!==tmpl.id)); }}
