@@ -773,16 +773,23 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
               {contractTextIdx===c.id && (
                 <div className="border-t-4 border-brand-yellow/30 p-4 space-y-3 bg-black/20">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Edit Contract</p>
+                    {contractText !== c.body && <span className="text-[8px] font-black uppercase text-brand-pink animate-pulse">● Unsaved changes</span>}
+                  </div>
                   <textarea value={contractText||''} onChange={e=>setContractText(e.target.value)} rows={14}
                     className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed" />
                   <div className="flex gap-2 flex-wrap">
                     <button onClick={async () => { await supabase.from('contracts').update({body:contractText}).eq('id',c.id); setContracts(prev=>prev.map(x=>x.id===c.id?{...x,body:contractText}:x)); }}
                       className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">💾 Save</button>
-                    <button onClick={() => { const blob=new Blob([contractText||''],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(c.title||'pogodba').replace(/\s+/g,'_')+'.txt'; a.click(); }}
+                    <button onClick={() => { if (window.confirm('Restore original saved version? Unsaved changes will be lost.')) setContractText(c.body||''); }}
+                      className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:border-brand-pink hover:text-brand-pink transition-all">↩ Restore</button>
+                    <button onClick={() => { const blob=new Blob([contractText||''],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(c.title||'contract').replace(/\s+/g,'_')+'.txt'; a.click(); }}
                       className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">📥 .txt</button>
                     <button onClick={() => { const w=window.open('','_blank'); if(w){w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${contractText||''}</pre></body></html>`); w.document.close(); w.print(); }}}
                       className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all">🖨️ Print</button>
-                    <button onClick={() => setContractTextIdx(null)} className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">Close</button>
+                    <button onClick={() => { if (contractText !== c.body && !window.confirm('Close without saving?')) return; setContractTextIdx(null); }}
+                      className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">Close</button>
                   </div>
                 </div>
               )}
