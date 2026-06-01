@@ -753,7 +753,13 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => { setContractTextIdx(contractTextIdx===c.id?null:c.id); setContractText(c.body||''); }}
+                  <button onClick={async () => {
+                    if (contractTextIdx === c.id) { setContractTextIdx(null); return; }
+                    // Always load fresh from DB
+                    const { data } = await supabase.from('contracts').select('body').eq('id', c.id).single();
+                    setContractText(data?.body || '');
+                    setContractTextIdx(c.id);
+                  }}
                     className={"text-[8px] font-black uppercase italic px-2 py-1 border transition-all "+(contractTextIdx===c.id?'border-brand-yellow text-brand-yellow':'border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow')}>
                     ✏️ Edit
                   </button>
@@ -859,6 +865,13 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
                       className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-3 py-1.5 hover:bg-brand-yellow hover:text-black transition-all">
                       Use →
+                    </button>
+                    <button onClick={async () => {
+                      if (!user?.id) return;
+                      const { data } = await supabase.from('contract_templates').insert({ user_id:user.id, title:`${tmpl.title} (copy)`, type:tmpl.type, description:tmpl.description||'', body:tmpl.body, is_default:false, created_by:user.name }).select().single();
+                      if (data) setContractTemplates(prev=>[...prev, data]);
+                    }} className="text-[9px] font-black uppercase italic text-white/30 border border-white/15 px-2 py-1.5 hover:border-brand-cyan hover:text-brand-cyan transition-all" title="Copy as my own editable template">
+                      📋 Copy
                     </button>
                     {!tmpl.is_default && tmpl.user_id===user?.id && (
                       <button onClick={async () => { await supabase.from('contract_templates').delete().eq('id',tmpl.id); setContractTemplates(prev=>prev.filter(t=>t.id!==tmpl.id)); }}
