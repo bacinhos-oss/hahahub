@@ -607,417 +607,264 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       )}
 
             {tab === 'contracts' && (
-        <div className="space-y-5">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div>
-              <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">{contracts.length} contract{contracts.length !== 1 ? 's' : ''} · HAHAoffice · saved in cloud</p>
-            </div>
-            <button onClick={() => setShowContractForm(!showContractForm)}
+        <div className="space-y-6">
+
+          {/* ══ MOJE POGODBE ══ */}
+          <div className="flex items-center justify-between">
+            <p className="font-black uppercase italic text-white">HAHAoffice <span className="text-white/30 font-normal text-xs">· {contracts.length} pogodb</span></p>
+            <button onClick={() => setShowContractForm(true)}
               className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-              + New Contract
+              + Nova Pogodba
             </button>
           </div>
 
+          {/* NOVA POGODBA — izbira predloge */}
           {showContractForm && (
-            <div className="border-4 border-brand-yellow/30 p-4 space-y-4">
-              <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">New Contract</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="col-span-2"><label className={lbl}>Contract Title *</label><input placeholder="e.g. Licensing — Show Title · Country" value={newContract.title} onChange={e => setNewContract(p => ({...p, title: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Show</label>
-                  <select value={newContract.show} onChange={e => {
-                    const sel = myShows.find((s: any) => s.title === e.target.value);
-                    setNewContract(p => ({...p, show: e.target.value, show_id: sel?.id || ''}));
-                  }} className={inp}>
-                    <option value="">Select show...</option>
-                    {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
-                  </select>
+            <div className="border-4 border-brand-yellow/40 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Izberi predlogo</p>
+                <button onClick={() => { setShowContractForm(false); setActiveTemplate(null); }} className="text-white/30 hover:text-white font-black uppercase italic text-xs">✕ Zapri</button>
+              </div>
+
+              {!activeTemplate ? (
+                <div className="space-y-2">
+                  {contractTemplates.map((tmpl: any) => (
+                    <button key={tmpl.id} onClick={() => {
+                      setActiveTemplate(tmpl);
+                      setTemplateParams({
+                        show: myShows[0]?.title || '', show_id: myShows[0]?.id || '',
+                        royalty: myShows[0]?.scriptRoyaltyPct || '10',
+                        party: '', org: '', territory: '', city: '', performances: '',
+                        start_date: '', end_date: '', advance: '0', currency: 'EUR',
+                        rights_holder: user.name, date: new Date().toISOString().split('T')[0],
+                        package: 'Script License', governing_law: '', author: myShows[0]?.author || '',
+                        ref: Date.now().toString().slice(-6),
+                      });
+                    }} className="w-full text-left border-2 border-white/10 hover:border-brand-yellow px-4 py-3 transition-all flex items-center justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-black uppercase italic text-white text-sm">{tmpl.title}</p>
+                          {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
+                          {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/30 px-1.5 py-0.5">Moja</span>}
+                        </div>
+                        {tmpl.description && <p className="text-white/30 text-[9px] italic mt-0.5">{tmpl.description}</p>}
+                      </div>
+                      <span className="text-brand-yellow font-black uppercase italic text-xs flex-shrink-0">Uporabi →</span>
+                    </button>
+                  ))}
                 </div>
-                <div><label className={lbl}>Counter Party</label><input placeholder="Name / Theatre / Company" value={newContract.party} onChange={e => setNewContract(p => ({...p, party: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Type</label>
-                  <select value={newContract.type} onChange={e => setNewContract(p => ({...p, type: e.target.value}))} className={inp}>
-                    <option value="licensing">Licensing Agreement</option>
-                    <option value="coproduction">Co-production</option>
-                    <option value="guest">Guest Performance</option>
-                    <option value="actor">Actor Contract</option>
-                    <option value="tech">Technical Contract</option>
-                    <option value="other">Other</option>
-                  </select>
+              ) : (() => {
+                const tmpl = activeTemplate;
+                const p = templateParams;
+                const placeholders = [...new Set((tmpl.body.match(/\{\{(\w+)\}\}/g) || []).map((m: string) => m.replace(/\{\{|\}\}/g, '')))].filter((ph: string) => !['ref','share_b'].includes(ph as string)) as string[];
+                const labels: any = { show:'Show', party:'Sopogodbenica', org:'Organizacija / Gledališče', rights_holder:'Imetnik pravic', royalty:'Royalty %', territory:'Ozemlje', city:'Mesto / Prizorišče', start_date:'Datum začetka', end_date:'Datum konca', advance:'Akontacija (EUR)', performances:'Število predstav', governing_law:'Veljavno pravo', author:'Avtor', package:'Paket', currency:'Valuta', date:'Datum pogodbe' };
+                const inputType: any = { start_date:'date', end_date:'date', date:'date', royalty:'number', advance:'number', performances:'number' };
+                const selectOptions: any = { package:['Script License','Full Punch Package'], currency:['EUR','USD','GBP','CHF'] };
+
+                const generateText = () => {
+                  let text = tmpl.body;
+                  const vals: any = { ...p, date: p.date || new Date().toISOString().split('T')[0], ref: p.ref || Date.now().toString().slice(-6), share_b: String(100 - Number(p.royalty || 50)) };
+                  Object.entries(vals).forEach(([k, v]) => { text = text.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v || `[${k.toUpperCase()}]`)); });
+                  text = text.replace(/\{\{(\w+)\}\}/g, (_: string, k: string) => `[${k.toUpperCase()}]`);
+                  return text;
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-black uppercase italic text-brand-yellow">{tmpl.title}</p>
+                      <button onClick={() => setActiveTemplate(null)} className="text-white/30 hover:text-white font-black uppercase italic text-xs">← Nazaj</button>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {placeholders.map((ph: string) => (
+                        <div key={ph}>
+                          <label className={lbl}>{labels[ph] || ph.replace(/_/g,' ')}</label>
+                          {ph === 'show' ? (
+                            <select value={p[ph]||''} onChange={e => { const sel = myShows.find((s:any) => s.title===e.target.value); setTemplateParams((prev:any) => ({...prev, show:e.target.value, show_id:sel?.id||'', author:sel?.author||prev.author, royalty:sel?.scriptRoyaltyPct||prev.royalty})); }} className={inp}>
+                              <option value="">Izberi show...</option>
+                              {myShows.map((s:any) => <option key={s.id} value={s.title}>{s.title}</option>)}
+                            </select>
+                          ) : selectOptions[ph] ? (
+                            <select value={p[ph]||''} onChange={e => setTemplateParams((prev:any) => ({...prev,[ph]:e.target.value}))} className={inp}>
+                              {selectOptions[ph].map((o:string) => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          ) : (
+                            <input type={inputType[ph]||'text'} value={p[ph]||''} onChange={e => setTemplateParams((prev:any) => ({...prev,[ph]:e.target.value}))} className={inp} placeholder={labels[ph]||ph} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div>
+                      <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest mb-1">Predogled</p>
+                      <pre className="w-full bg-black border-2 border-white/10 p-4 text-white/50 font-mono text-[10px] leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">{generateText()}</pre>
+                    </div>
+
+                    <div className="flex gap-2 flex-wrap">
+                      <button onClick={async () => {
+                        if (!user?.id) return;
+                        const body = generateText();
+                        const title = `${tmpl.title}${p.party ? ' — ' + p.party : ''}${p.show ? ' · ' + p.show : ''}`;
+                        const { data } = await supabase.from('contracts').insert({ user_id:user.id, title, show:p.show, show_id:p.show_id||null, party:p.party, type:tmpl.type, status:'draft', royalty_pct:p.royalty?Number(p.royalty):null, territory:p.territory||null, start_date:p.start_date||null, end_date:p.end_date||null, body, notes:`Predloga: ${tmpl.title}` }).select().single();
+                        if (data) setContracts(prev => [data,...prev]);
+                        setShowContractForm(false); setActiveTemplate(null);
+                      }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all">
+                        💾 Shrani pogodbo
+                      </button>
+                      <button onClick={() => { const blob = new Blob([generateText()],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`pogodba_${p.party||'stranka'}.txt`.replace(/\s+/g,'_'); a.click(); }}
+                        className="border-4 border-brand-cyan/40 text-brand-cyan px-4 py-3 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all">
+                        📥 .txt
+                      </button>
+                      <button onClick={() => { const w=window.open('','_blank'); if(w){w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${generateText()}</pre></body></html>`); w.document.close(); w.print(); }}}
+                        className="border-4 border-white/20 text-white/40 px-4 py-3 font-black uppercase italic text-sm hover:text-white transition-all">
+                        🖨️ Print
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* LISTA POGODB */}
+          {contractsLoading ? (
+            <p className="text-white/20 italic text-sm">Nalagam...</p>
+          ) : contracts.length === 0 ? (
+            <div className="py-10 text-center space-y-2">
+              <p className="text-4xl">📄</p>
+              <p className="text-white/20 font-black uppercase italic text-sm">Še ni pogodb.</p>
+              <p className="text-white/10 text-xs italic">Klikni + Nova Pogodba zgoraj.</p>
+            </div>
+          ) : contracts.map((c: any) => (
+            <div key={c.id} className="border-4 border-white/10 hover:border-white/20 transition-all">
+              <div className="px-5 py-4 flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <p className="font-black uppercase italic text-white">{c.title}</p>
+                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 flex-shrink-0 ${c.status==='signed'?'bg-green-500/20 text-green-400 border border-green-500/30':c.status==='sent'?'bg-brand-yellow text-black':c.status==='expired'?'bg-red-500/20 text-red-400':'border border-white/20 text-white/30'}`}>{c.status}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-0.5">
+                    {c.party && <p className="text-white/40 text-xs">👤 {c.party}</p>}
+                    {c.show && <p className="text-white/40 text-xs">🎭 {c.show}</p>}
+                    {c.territory && <p className="text-white/40 text-xs">🌍 {c.territory}</p>}
+                    {c.royalty_pct && <p className="text-brand-yellow text-xs font-black">{c.royalty_pct}%</p>}
+                    {c.start_date && <p className="text-white/30 text-xs">{c.start_date}{c.end_date?' → '+c.end_date:''}</p>}
+                  </div>
                 </div>
-                <div><label className={lbl}>Status</label>
-                  <select value={newContract.status} onChange={e => setNewContract(p => ({...p, status: e.target.value}))} className={inp}>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button onClick={() => { setContractTextIdx(contractTextIdx===c.id?null:c.id); setContractText(c.body||''); }}
+                    className={"text-[8px] font-black uppercase italic px-2 py-1 border transition-all "+(contractTextIdx===c.id?'border-brand-yellow text-brand-yellow':'border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow')}>
+                    ✏️ Edit
+                  </button>
+                  <select value={c.status} onChange={async e => { await supabase.from('contracts').update({status:e.target.value}).eq('id',c.id); setContracts(prev=>prev.map(x=>x.id===c.id?{...x,status:e.target.value}:x)); }}
+                    className="bg-brand-black border border-white/20 text-white/50 font-black uppercase italic text-[8px] px-2 py-1 outline-none">
                     <option value="draft">Draft</option>
                     <option value="sent">Sent</option>
                     <option value="signed">Signed</option>
                     <option value="expired">Expired</option>
                   </select>
+                  <button onClick={async () => { await supabase.from('contracts').delete().eq('id',c.id); setContracts(prev=>prev.filter(x=>x.id!==c.id)); }}
+                    className="text-white/20 hover:text-brand-pink transition-colors">
+                    <span className="material-symbols-outlined text-sm">delete</span>
+                  </button>
                 </div>
-                <div><label className={lbl}>Royalty %</label><input type="number" placeholder="e.g. 10" value={newContract.royalty_pct} onChange={e => setNewContract(p => ({...p, royalty_pct: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Territory</label><input placeholder="e.g. Slovenia, Croatia" value={newContract.territory} onChange={e => setNewContract(p => ({...p, territory: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>Start Date</label><input type="date" value={newContract.start_date} onChange={e => setNewContract(p => ({...p, start_date: e.target.value}))} className={inp} /></div>
-                <div><label className={lbl}>End Date</label><input type="date" value={newContract.end_date} onChange={e => setNewContract(p => ({...p, end_date: e.target.value}))} className={inp} /></div>
-                <div className="col-span-2"><label className={lbl}>Notes</label><textarea rows={2} value={newContract.notes} onChange={e => setNewContract(p => ({...p, notes: e.target.value}))} className={inp + ' resize-none'} /></div>
               </div>
-              <div className="flex gap-3">
-                <button onClick={async () => {
-                  if (!newContract.title || !user?.id) return;
-                  const { data, error } = await supabase.from('contracts').insert({
-                    user_id: user.id,
-                    title: newContract.title,
-                    show: newContract.show,
-                    show_id: newContract.show_id || null,
-                    party: newContract.party,
-                    type: newContract.type,
-                    status: newContract.status,
-                    royalty_pct: newContract.royalty_pct ? Number(newContract.royalty_pct) : null,
-                    territory: newContract.territory || null,
-                    start_date: newContract.start_date || null,
-                    end_date: newContract.end_date || null,
-                    notes: newContract.notes,
-                  }).select().single();
-                  if (data) setContracts(prev => [data, ...prev]);
-                  setNewContract({ title: '', show: '', show_id: '', party: '', type: 'licensing', status: 'draft', date: '', royalty_pct: '', territory: '', start_date: '', end_date: '', notes: '' });
-                  setShowContractForm(false);
-                }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black">Save to Cloud</button>
-                <button onClick={() => setShowContractForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
-              </div>
-            </div>
-          )}
 
-          {/* My Contracts */}
-          {contractsLoading ? (
-            <p className="text-white/20 italic text-sm">Loading...</p>
-          ) : contracts.length === 0 ? (
-            <div className="py-12 text-center space-y-3">
-              <p className="text-4xl">📄</p>
-              <p className="text-white/20 font-black uppercase italic text-sm">No contracts yet.</p>
-              <p className="text-white/10 text-xs italic">Add a contract above or sign a deal in the Pipeline.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {contracts.map((c: any) => (
-                <div key={c.id} className="border-4 border-white/10 hover:border-white/20 transition-all">
-                  <div className="px-5 py-4 flex items-start justify-between gap-4">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <p className="font-black uppercase italic text-white truncate">{c.title}</p>
-                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 flex-shrink-0 ${c.status === 'signed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : c.status === 'sent' ? 'bg-brand-yellow text-black' : c.status === 'expired' ? 'bg-red-500/20 text-red-400' : 'border border-white/20 text-white/30'}`}>{c.status}</span>
-                        <span className="text-[8px] font-black uppercase border border-white/10 text-white/20 px-2 py-0.5">{c.type}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-x-4 gap-y-0.5">
-                        {c.party && <p className="text-white/40 text-xs">👤 {c.party}</p>}
-                        {c.show && <p className="text-white/40 text-xs">🎭 {c.show}</p>}
-                        {c.territory && <p className="text-white/40 text-xs">🌍 {c.territory}</p>}
-                        {c.royalty_pct && <p className="text-brand-yellow text-xs font-black">{c.royalty_pct}% royalty</p>}
-                        {c.start_date && <p className="text-white/30 text-xs">{c.start_date}{c.end_date ? ' → ' + c.end_date : ''}</p>}
-                      </div>
-                      {c.notes && <p className="text-white/25 text-xs italic mt-1">{c.notes}</p>}
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {/* Edit body */}
-                      <button onClick={() => {
-                        if (contractTextIdx === c.id) { setContractTextIdx(null); setContractText(null); }
-                        else { setContractTextIdx(c.id); setContractText(c.body || ''); }
-                      }} className={"text-[8px] font-black uppercase italic px-2 py-1 border transition-all " + (contractTextIdx === c.id ? 'border-brand-yellow text-brand-yellow' : 'border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow')}>
-                        ✏️ Edit
-                      </button>
-                      {/* Status update */}
-                      <select value={c.status} onChange={async e => {
-                        await supabase.from('contracts').update({ status: e.target.value }).eq('id', c.id);
-                        setContracts(prev => prev.map(x => x.id === c.id ? {...x, status: e.target.value} : x));
-                      }} className="bg-brand-black border border-white/20 text-white/50 font-black uppercase italic text-[8px] px-2 py-1 outline-none">
-                        <option value="draft">Draft</option>
-                        <option value="sent">Sent</option>
-                        <option value="signed">Signed</option>
-                        <option value="expired">Expired</option>
-                      </select>
-                      <button onClick={async () => {
-                        await supabase.from('contracts').delete().eq('id', c.id);
-                        setContracts(prev => prev.filter(x => x.id !== c.id));
-                      }} className="text-white/20 hover:text-brand-pink transition-colors">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                    </div>
+              {contractTextIdx===c.id && (
+                <div className="border-t-4 border-brand-yellow/30 p-4 space-y-3 bg-black/20">
+                  <textarea value={contractText||''} onChange={e=>setContractText(e.target.value)} rows={14}
+                    className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed" />
+                  <div className="flex gap-2 flex-wrap">
+                    <button onClick={async () => { await supabase.from('contracts').update({body:contractText}).eq('id',c.id); setContracts(prev=>prev.map(x=>x.id===c.id?{...x,body:contractText}:x)); }}
+                      className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">💾 Shrani</button>
+                    <button onClick={() => { const blob=new Blob([contractText||''],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(c.title||'pogodba').replace(/\s+/g,'_')+'.txt'; a.click(); }}
+                      className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">📥 .txt</button>
+                    <button onClick={() => { const w=window.open('','_blank'); if(w){w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${contractText||''}</pre></body></html>`); w.document.close(); w.print(); }}}
+                      className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all">🖨️ Print</button>
+                    <button onClick={() => setContractTextIdx(null)} className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">Zapri</button>
                   </div>
-
-                  {/* INLINE EDITOR */}
-                  {contractTextIdx === c.id && (
-                    <div className="border-t-4 border-brand-yellow/30 p-4 space-y-3 bg-black/20">
-                      <div className="flex items-center justify-between">
-                        <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Contract Document</p>
-                        {c.body && <span className="text-[8px] text-green-400 font-black">✓ Saved</span>}
-                      </div>
-                      <textarea
-                        value={contractText || ''}
-                        onChange={e => setContractText(e.target.value)}
-                        rows={16}
-                        placeholder={`${c.title?.toUpperCase() || 'CONTRACT'}\n\nDate: ${new Date().toISOString().split('T')[0]}\nRights Holder: \nCounter Party: ${c.party || ''}\nShow: ${c.show || ''}\nTerritory: ${c.territory || ''}\nRoyalty: ${c.royalty_pct ? c.royalty_pct + '%' : ''} of gross box office\nDuration: ${c.start_date || ''} to ${c.end_date || ''}\n\n[Terms and conditions...]\n\nRights Holder: _______________ Date: _______\nCounter Party: _______________ Date: _______`}
-                        className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed"
-                      />
-                      <div className="flex gap-2 flex-wrap">
-                        <button onClick={async () => {
-                          await supabase.from('contracts').update({ body: contractText }).eq('id', c.id);
-                          setContracts(prev => prev.map(x => x.id === c.id ? {...x, body: contractText} : x));
-                        }} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-                          💾 Save
-                        </button>
-                        <button onClick={() => {
-                          const blob = new Blob([contractText || ''], { type: 'text/plain' });
-                          const a = document.createElement('a');
-                          a.href = URL.createObjectURL(blob);
-                          a.download = (c.title || 'contract').replace(/\s+/g, '_') + '.txt';
-                          a.click();
-                        }} className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-2 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
-                          📥 Download .txt
-                        </button>
-                        <button onClick={() => {
-                          const w = window.open('', '_blank');
-                          if (w) {
-                            w.document.write(`<html><head><title>${c.title || 'Contract'}</title><style>body{font-family:monospace;padding:40px;font-size:14px;line-height:1.8;}h1{font-size:18px;margin-bottom:24px;}</style></head><body><h1>${c.title || 'CONTRACT'}</h1><pre>${contractText || ''}</pre></body></html>`);
-                            w.document.close();
-                            w.print();
-                          }
-                        }} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs hover:border-white/40 hover:text-white transition-all">
-                          🖨️ Print / PDF
-                        </button>
-                        <button onClick={() => { setContractTextIdx(null); setContractText(null); }}
-                          className="border-2 border-white/10 text-white/20 px-4 py-2 font-black uppercase italic text-xs hover:text-white transition-all ml-auto">
-                          Close
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          ))}
 
-          {/* SMART TEMPLATES */}
-          <div className="space-y-4 border-t-4 border-white/10 pt-5">
+          {/* ══ PREDLOGE ══ */}
+          <div className="border-t-4 border-white/10 pt-5 space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Templates — Fill & Generate</p>
+              <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Predloge</p>
               <button onClick={() => setShowNewTemplateForm(!showNewTemplateForm)}
-                className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-all">
-                + New Template
+                className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
+                + Nova predloga
               </button>
             </div>
 
-            {/* NEW TEMPLATE FORM */}
             {showNewTemplateForm && (
               <div className="border-4 border-brand-cyan/30 p-4 space-y-3">
-                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Create New Template (visible to all users)</p>
+                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Nova predloga — samo zase</p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className={lbl}>Template Title *</label><input value={newTemplate.title} onChange={e => setNewTemplate(p => ({...p, title: e.target.value}))} className={inp} placeholder="e.g. Festival License Agreement" /></div>
-                  <div><label className={lbl}>Type</label>
-                    <select value={newTemplate.type} onChange={e => setNewTemplate(p => ({...p, type: e.target.value}))} className={inp}>
+                  <div><label className={lbl}>Naslov *</label><input value={newTemplate.title} onChange={e=>setNewTemplate(p=>({...p,title:e.target.value}))} className={inp} placeholder="npr. Avtorska pogodba — scenograf" /></div>
+                  <div><label className={lbl}>Tip</label>
+                    <select value={newTemplate.type} onChange={e=>setNewTemplate(p=>({...p,type:e.target.value}))} className={inp}>
                       <option value="licensing">Licensing</option>
                       <option value="coproduction">Co-production</option>
                       <option value="guest">Guest Performance</option>
-                      <option value="custom">Custom</option>
+                      <option value="custom">Drugo</option>
                     </select>
                   </div>
-                  <div className="col-span-2"><label className={lbl}>Description</label><input value={newTemplate.description} onChange={e => setNewTemplate(p => ({...p, description: e.target.value}))} className={inp} placeholder="What is this template for?" /></div>
+                  <div className="col-span-2"><label className={lbl}>Opis (opcijsko)</label><input value={newTemplate.description} onChange={e=>setNewTemplate(p=>({...p,description:e.target.value}))} className={inp} placeholder="Za kaj je ta predloga?" /></div>
                 </div>
                 <div>
-                  <label className={lbl}>Template Body *</label>
-                  <p className="text-[8px] text-white/20 italic mb-1">Use {'{{'} {'}}'}placeholders{'{{'} {'}}'}  like {'{{party}}'}, {'{{show}}'}, {'{{royalty}}'}, {'{{territory}}'}, {'{{start_date}}'}, {'{{end_date}}'}, {'{{advance}}'}, {'{{performances}}'}</p>
-                  <textarea value={newTemplate.body} onChange={e => setNewTemplate(p => ({...p, body: e.target.value}))}
-                    rows={12} className={inp + ' font-mono text-xs resize-y'}
-                    placeholder={"MY AGREEMENT\n\nDate: {{date}}\n\nRights Holder: {{rights_holder}}\nCounter Party: {{party}}\nShow: {{show}}\nTerritory: {{territory}}\nRoyalty: {{royalty}}%\n\n[Your terms here...]\n\nSigned: _____________"} />
+                  <label className={lbl}>Besedilo predloge *</label>
+                  <p className="text-[8px] text-white/20 italic mb-1">Uporabi {'{{placeholders}}'} za polja ki se izpolnijo: {'{{party}}'}, {'{{show}}'}, {'{{royalty}}'}, {'{{territory}}'}, {'{{start_date}}'}, {'{{end_date}}'}, {'{{advance}}'}</p>
+                  <textarea value={newTemplate.body} onChange={e=>setNewTemplate(p=>({...p,body:e.target.value}))} rows={10}
+                    className={inp+' font-mono text-xs resize-y'}
+                    placeholder={"AVTORSKA POGODBA\n\nDatum: {{date}}\n\nNaročnik: {{rights_holder}}\nIzvajalec: {{party}}\nProjekt: {{show}}\n\nHonorar: {{advance}} EUR\nRok izvedbe: {{end_date}}\n\n[Pogoji...]\n\nNaročnik: _______________ Datum: _______\nIzvajalec: _______________ Datum: _______"} />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={async () => {
-                    if (!newTemplate.title || !newTemplate.body || !user?.id) return;
-                    const { data } = await supabase.from('contract_templates').insert({
-                      user_id: user.id,
-                      title: newTemplate.title,
-                      type: newTemplate.type,
-                      description: newTemplate.description,
-                      body: newTemplate.body,
-                      is_default: false,
-                      created_by: user.name,
-                    }).select().single();
-                    if (data) setContractTemplates(prev => [...prev, data]);
-                    setNewTemplate({ title: '', type: 'custom', description: '', body: '' });
+                    if (!newTemplate.title||!newTemplate.body||!user?.id) return;
+                    const { data } = await supabase.from('contract_templates').insert({ user_id:user.id, title:newTemplate.title, type:newTemplate.type, description:newTemplate.description, body:newTemplate.body, is_default:false, created_by:user.name }).select().single();
+                    if (data) setContractTemplates(prev=>[...prev,data]);
+                    setNewTemplate({title:'',type:'custom',description:'',body:''});
                     setShowNewTemplateForm(false);
-                  }} className="bg-brand-cyan text-black px-5 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
-                    Publish Template
-                  </button>
-                  <button onClick={() => setShowNewTemplateForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
+                  }} className="bg-brand-cyan text-black px-5 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Shrani predlogo</button>
+                  <button onClick={()=>setShowNewTemplateForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Prekliči</button>
                 </div>
               </div>
             )}
 
-            {/* TEMPLATE LIST */}
-            {!activeTemplate && (
-              <div className="space-y-2">
-                {contractTemplates.map((tmpl: any) => (
-                  <div key={tmpl.id} className="border-2 border-white/10 hover:border-brand-cyan/40 transition-all">
-                    <div className="px-4 py-3 flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="material-symbols-outlined text-brand-cyan text-sm flex-shrink-0">description</span>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
-                            {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
-                            {!tmpl.is_default && tmpl.created_by && <span className="text-[7px] font-black uppercase bg-brand-cyan/15 text-brand-cyan px-1.5 py-0.5">by {tmpl.created_by}</span>}
-                            <span className="text-[7px] font-black uppercase border border-white/10 text-white/20 px-1.5 py-0.5">{tmpl.type}</span>
-                          </div>
-                          {tmpl.description && <p className="text-white/25 text-[9px] italic mt-0.5">{tmpl.description}</p>}
-                        </div>
-                      </div>
-                      <div className="flex gap-2 flex-shrink-0">
-                        <button onClick={() => {
-                          setActiveTemplate(tmpl);
-                          setTemplateParams({
-                            show: myShows[0]?.title || '', show_id: myShows[0]?.id || '',
-                            royalty: myShows[0]?.scriptRoyaltyPct || '10',
-                            party: '', org: '', territory: '', city: '', performances: '',
-                            start_date: '', end_date: '', advance: '0', currency: 'EUR',
-                            rights_holder: user.name, date: new Date().toISOString().split('T')[0],
-                            package: 'Script License', governing_law: '', author: myShows[0]?.author || '',
-                            ref: Date.now().toString().slice(-6),
-                          });
-                        }} className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
-                          Fill →
-                        </button>
-                        {!tmpl.is_default && tmpl.user_id === user?.id && (
-                          <button onClick={async () => {
-                            await supabase.from('contract_templates').delete().eq('id', tmpl.id);
-                            setContractTemplates(prev => prev.filter(t => t.id !== tmpl.id));
-                          }} className="text-white/20 hover:text-brand-pink transition-colors">
-                            <span className="material-symbols-outlined text-sm">delete</span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* FILL FORM */}
-            {activeTemplate && (() => {
-              const tmpl = activeTemplate;
-              const p = templateParams;
-
-              // Extract placeholders from template body
-              const placeholders = [...new Set((tmpl.body.match(/\{\{(\w+)\}\}/g) || []).map((m: string) => m.replace(/\{\{|\}\}/g, '')))];
-
-              const generateText = () => {
-                let text = tmpl.body;
-                const vals: any = {
-                  ...p,
-                  date: p.date || new Date().toISOString().split('T')[0],
-                  ref: p.ref || Date.now().toString().slice(-6),
-                  share_b: String(100 - Number(p.royalty || 50)),
-                };
-                Object.entries(vals).forEach(([k, v]) => {
-                  text = text.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v || `[${k.toUpperCase()}]`));
-                });
-                // Replace any remaining placeholders
-                text = text.replace(/\{\{(\w+)\}\}/g, (_: string, k: string) => `[${k.toUpperCase()}]`);
-                return text;
-              };
-
-              // Nice labels for common placeholders
-              const labels: any = {
-                show: 'Show', party: 'Counter Party', org: 'Organisation', rights_holder: 'Rights Holder',
-                royalty: 'Royalty %', territory: 'Territory', city: 'City / Venue',
-                start_date: 'Start Date', end_date: 'End Date', advance: 'Advance / Fee (EUR)',
-                performances: 'Performances', governing_law: 'Governing Law', author: 'Author',
-                package: 'Package', currency: 'Currency', date: 'Contract Date',
-              };
-              const inputType: any = {
-                start_date: 'date', end_date: 'date', date: 'date',
-                royalty: 'number', advance: 'number', performances: 'number',
-              };
-              const selectOptions: any = {
-                package: ['Script License', 'Full Punch Package'],
-                currency: ['EUR', 'USD', 'GBP', 'CHF'],
-              };
-
-              return (
-                <div className="border-4 border-brand-cyan/30 p-5 space-y-4">
-                  <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              {contractTemplates.map((tmpl:any) => (
+                <div key={tmpl.id} className="border-2 border-white/10 hover:border-white/20 px-4 py-3 flex items-center justify-between gap-4 transition-all">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="material-symbols-outlined text-white/30 text-sm">description</span>
                     <div>
-                      <p className="font-black uppercase italic text-brand-cyan">{tmpl.title}</p>
-                      {tmpl.description && <p className="text-white/30 text-[9px] italic">{tmpl.description}</p>}
-                    </div>
-                    <button onClick={() => setActiveTemplate(null)} className="text-white/30 hover:text-white font-black uppercase italic text-xs">← Back</button>
-                  </div>
-
-                  {/* Auto-detected fields */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {placeholders.filter((ph: string) => !['ref', 'share_b'].includes(ph)).map((ph: string) => (
-                      <div key={ph}>
-                        <label className={lbl}>{labels[ph] || ph.replace(/_/g, ' ')}</label>
-                        {ph === 'show' ? (
-                          <select value={p[ph] || ''} onChange={e => {
-                            const sel = myShows.find((s: any) => s.title === e.target.value);
-                            setTemplateParams((prev: any) => ({...prev, show: e.target.value, show_id: sel?.id || '', author: sel?.author || prev.author, royalty: sel?.scriptRoyaltyPct || prev.royalty}));
-                          }} className={inp}>
-                            <option value="">Select show...</option>
-                            {myShows.map((s: any) => <option key={s.id} value={s.title}>{s.title}</option>)}
-                          </select>
-                        ) : selectOptions[ph] ? (
-                          <select value={p[ph] || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, [ph]: e.target.value}))} className={inp}>
-                            {selectOptions[ph].map((o: string) => <option key={o} value={o}>{o}</option>)}
-                          </select>
-                        ) : (
-                          <input type={inputType[ph] || 'text'} value={p[ph] || ''} onChange={e => setTemplateParams((prev: any) => ({...prev, [ph]: e.target.value}))} className={inp} placeholder={labels[ph] || ph} />
-                        )}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
+                        {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
+                        {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/20 px-1.5 py-0.5">Moja</span>}
                       </div>
-                    ))}
+                      {tmpl.description && <p className="text-white/25 text-[9px] italic">{tmpl.description}</p>}
+                    </div>
                   </div>
-
-                  {/* Live preview */}
-                  <div>
-                    <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest mb-2">Live Preview</p>
-                    <pre className="w-full bg-brand-black border-2 border-white/10 p-4 text-white/50 font-mono text-[10px] leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto">
-                      {generateText()}
-                    </pre>
-                  </div>
-
-                  <div className="flex gap-2 flex-wrap">
-                    <button onClick={async () => {
-                      if (!p.party || !user?.id) return;
-                      const body = generateText();
-                      const title = `${tmpl.title} — ${p.show || 'Show'} · ${p.party}`;
-                      const { data } = await supabase.from('contracts').insert({
-                        user_id: user.id, title, show: p.show, show_id: p.show_id || null,
-                        party: p.party, type: tmpl.type, status: 'draft',
-                        royalty_pct: p.royalty ? Number(p.royalty) : null,
-                        territory: p.territory || null, start_date: p.start_date || null,
-                        end_date: p.end_date || null, body,
-                        notes: `From template: ${tmpl.title}`,
-                      }).select().single();
-                      if (data) setContracts(prev => [data, ...prev]);
-                      setActiveTemplate(null);
-                    }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all">
-                      💾 Save to HAHAoffice
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
+                      className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-3 py-1.5 hover:bg-brand-yellow hover:text-black transition-all">
+                      Uporabi →
                     </button>
-                    <button onClick={() => {
-                      const text = generateText();
-                      const blob = new Blob([text], { type: 'text/plain' });
-                      const a = document.createElement('a');
-                      a.href = URL.createObjectURL(blob);
-                      a.download = `${tmpl.title}_${p.party || 'contract'}.txt`.replace(/\s+/g, '_');
-                      a.click();
-                    }} className="border-4 border-brand-cyan/40 text-brand-cyan px-5 py-3 font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all">
-                      📥 Download .txt
-                    </button>
-                    <button onClick={() => {
-                      const text = generateText();
-                      const w = window.open('', '_blank');
-                      if (w) { w.document.write(`<html><head><title>${tmpl.title}</title><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${text}</pre></body></html>`); w.document.close(); w.print(); }
-                    }} className="border-4 border-white/20 text-white/40 px-5 py-3 font-black uppercase italic text-xs hover:text-white transition-all">
-                      🖨️ Print / PDF
-                    </button>
+                    {!tmpl.is_default && tmpl.user_id===user?.id && (
+                      <button onClick={async () => { await supabase.from('contract_templates').delete().eq('id',tmpl.id); setContractTemplates(prev=>prev.filter(t=>t.id!==tmpl.id)); }}
+                        className="text-white/20 hover:text-brand-pink transition-colors">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    )}
                   </div>
                 </div>
-              );
-            })()}
+              ))}
+            </div>
           </div>
+
         </div>
       )}
 
