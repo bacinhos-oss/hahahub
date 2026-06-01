@@ -712,7 +712,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all">
                         💾 Save Contract
                       </button>
-                      <button onClick={() => { const blob = new Blob([generateText()],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`pogodba_${p.party||'stranka'}.txt`.replace(/\s+/g,'_'); a.click(); }}
+                      <button onClick={() => { const blob = new Blob([generateText()],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`contract_${p.party||'party'}.txt`.replace(/\s+/g,'_'); a.click(); }}
                         className="border-4 border-brand-cyan/40 text-brand-cyan px-4 py-3 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all">
                         📥 .txt
                       </button>
@@ -796,7 +796,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
           ))}
 
-          {/* ══ PREDLOGE ══ */}
+          {/* ══ TEMPLATES ══ */}
           <div className="border-t-4 border-white/10 pt-5 space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Templates</p>
@@ -808,7 +808,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
             {showNewTemplateForm && (
               <div className="border-4 border-brand-cyan/30 p-4 space-y-3">
-                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New Template — private, only you see it</p>
+                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New Template — private, only you</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div><label className={lbl}>Title *</label><input value={newTemplate.title} onChange={e=>setNewTemplate(p=>({...p,title:e.target.value}))} className={inp} placeholder="e.g. Set Designer Contract" /></div>
                   <div><label className={lbl}>Tip</label>
@@ -816,7 +816,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       <option value="licensing">Licensing</option>
                       <option value="coproduction">Co-production</option>
                       <option value="guest">Guest Performance</option>
-                      <option value="custom">Drugo</option>
+                      <option value="custom">Custom</option>
                     </select>
                   </div>
                   <div className="col-span-2"><label className={lbl}>Description (optional)</label><input value={newTemplate.description} onChange={e=>setNewTemplate(p=>({...p,description:e.target.value}))} className={inp} placeholder="What is this template for?" /></div>
@@ -826,7 +826,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                   <p className="text-[8px] text-white/20 italic mb-1">Uporabi {'{{placeholders}}'} za polja ki se izpolnijo: {'{{party}}'}, {'{{show}}'}, {'{{royalty}}'}, {'{{territory}}'}, {'{{start_date}}'}, {'{{end_date}}'}, {'{{advance}}'}</p>
                   <textarea value={newTemplate.body} onChange={e=>setNewTemplate(p=>({...p,body:e.target.value}))} rows={10}
                     className={inp+' font-mono text-xs resize-y'}
-                    placeholder={"AVTORSKA POGODBA\n\nDatum: {{date}}\n\nNaročnik: {{rights_holder}}\nIzvajalec: {{party}}\nProjekt: {{show}}\n\nHonorar: {{advance}} EUR\nRok izvedbe: {{end_date}}\n\n[Pogoji...]\n\nNaročnik: _______________ Datum: _______\nIzvajalec: _______________ Datum: _______"} />
+                    placeholder={"AUTHOR CONTRACT\n\nDate: {{date}}\n\nClient: {{rights_holder}}\nContractor: {{party}}\nProject: {{show}}\n\nFee: {{advance}} EUR\nDelivery: {{end_date}}\n\n[Pogoji...]\n\nNaročnik: _______________ Datum: _______\nIzvajalec: _______________ Datum: _______"} />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={async () => {
