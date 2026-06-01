@@ -1099,12 +1099,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   { key: 'royalties', label: 'ROYALTIES', badge: 0 },
                   { key: 'incoming', label: 'INCOMING', badge: 0 },
                   { key: 'analytics', label: 'ANALYTICS', badge: 0 },
-                  { key: 'contracts', label: 'HAHAOFFICE', badge: 0 },
+                  { key: 'contracts', label: 'HAHAOFFICE 🧪', badge: 0 },
                   { key: 'contacts', label: 'HAHAFRIENDS', badge: 0 },
                   { key: 'calculator', label: 'CALCULATOR', badge: 0 },
                 ] as {key: string; label: string; badge: number}[]).map(t => (
                   <button key={t.key} onClick={() => setStudioTab(t.key as any)}
-                    className={"px-3 py-3 font-black uppercase italic text-[10px] tracking-wide transition-all whitespace-nowrap flex items-center gap-1.5 border-b-4 -mb-1 " + (studioTab === t.key ? 'border-brand-yellow text-brand-yellow' : 'border-transparent text-white/30 hover:text-white')}>
+                    className={"px-2 py-3 font-black uppercase italic text-[9px] tracking-wide transition-all whitespace-nowrap flex items-center gap-1 border-b-4 -mb-1 " + (studioTab === t.key ? 'border-brand-yellow text-brand-yellow' : 'border-transparent text-white/30 hover:text-white')}>
                     {t.label}
                     {t.badge > 0 && <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full bg-brand-pink text-white">{t.badge}</span>}
                   </button>
