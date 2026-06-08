@@ -190,7 +190,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { key: 'royalty', label: 'Royalty Tracker', icon: 'receipt_long' },
     { key: 'incoming', label: 'Incoming Royalties', icon: 'savings' },
-    { key: 'contracts', label: 'HAHAoffice', icon: 'description' },
+    { key: 'contracts', label: 'PAPERWORK', icon: 'description' },
     { key: 'calculator', label: 'Calculator', icon: 'calculate' },
     { key: 'contacts', label: 'HAHAfriends', icon: 'contacts' },
     { key: 'log', label: 'Show Log', icon: 'history' },
@@ -641,7 +641,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
           {/* ══ MY CONTRACTS ══ */}
           <div className="flex items-center justify-between">
-            <p className="font-black uppercase italic text-white">HAHAoffice <span className="text-white/30 font-normal text-xs">· {contracts.length} contract{contracts.length !== 1 ? 's' : ''}</span></p>
+            <p className="font-black uppercase italic text-white">PAPERWORK <span className="text-white/30 font-normal text-xs">· {contracts.length} contract{contracts.length !== 1 ? 's' : ''}</span></p>
             <button onClick={() => setShowContractForm(true)}
               className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
               + New Contract

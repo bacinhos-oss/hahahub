@@ -140,7 +140,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 { icon: 'search', color: 'text-brand-cyan', title: 'The Vault', desc: 'Browse the international catalog. Filter by cast, language, humor type. Miss Stefunny AI search finds shows by description.' },
                 { icon: 'touch_app', color: 'text-brand-pink', title: 'Tickle & Pipeline', desc: 'Send an inquiry in 30 seconds. Track every deal from first tickle to signed contract. Messages and files in one place.' },
                 { icon: 'analytics', color: 'text-brand-yellow', title: 'Analytics', desc: 'Views, inquiries, conversion rate, top territories, royalties earned. Know exactly which markets want your show.' },
-                { icon: 'description', color: 'text-white', title: 'HAHAoffice', desc: 'Smart contract templates. Fill in details, generate, edit, download. Your private contract workspace.' },
+                { icon: 'description', color: 'text-white', title: 'PAPERWORK', desc: 'Smart contract templates. Fill in details, generate, edit, download. Your private contract workspace.' },
               ].map((c, i) => (
                 <div key={i} className="border-4 border-white/10 p-6 hover:border-brand-yellow/40 transition-all">
                   <span className={`material-symbols-outlined text-3xl mb-4 block ${c.color}`}>{c.icon}</span>
@@ -424,7 +424,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                     { t: '5 inquiries per month', ok: true },
                     { t: 'Break-even Calculator', ok: true },
                     { t: 'No Dossier PDF download', ok: false },
-                    { t: 'No HAHAoffice', ok: false },
+                    { t: 'No PAPERWORK', ok: false },
                     { t: 'No HAHAfriends', ok: false },
                   ].map((f, i) => (
                     <li key={i} className={`flex items-center gap-3 text-sm font-bold ${f.ok ? 'text-white/60' : 'text-white/25'}`}>
@@ -444,7 +444,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
                 <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Full catalog — unlimited browsing', 'Upload up to 5 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Pipeline — deal tracking & messages', 'Royalty Tracker — log & calculate', 'LaffWire — post & read', 'Analytics — views & inquiries', 'HAHAoffice — contracts & templates', 'HAHAfriends — private network', 'Break-even Calculator'].map((f, i) => (
+                  {['Full catalog — unlimited browsing', 'Upload up to 5 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Pipeline — deal tracking & messages', 'Royalty Tracker — log & calculate', 'LaffWire — post & read', 'Analytics — views & inquiries', 'PAPERWORK — contracts & templates', 'HAHAfriends — private network', 'Break-even Calculator'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>
@@ -462,7 +462,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <div className="text-5xl font-black text-brand-pink mb-1">€189</div>
                 <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
                 <ul className="space-y-3 mb-8">
-                  {['Full catalog — unlimited + Priority listing', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge + VERIFIED badge', 'LaffWire — live real-time', 'Pipeline — deal tracking & messages', 'Royalty Tracker — log, calculate, report', 'Analytics — views, inquiries, territories', 'HAHAoffice — contracts & templates', 'HAHAfriends — private network', 'Break-even Calculator', 'Deal tracking + rights holder reports'].map((f, i) => (
+                  {['Full catalog — unlimited + Priority listing', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge + VERIFIED badge', 'LaffWire — live real-time', 'Pipeline — deal tracking & messages', 'Royalty Tracker — log, calculate, report', 'Analytics — views, inquiries, territories', 'PAPERWORK — contracts & templates', 'HAHAfriends — private network', 'Break-even Calculator', 'Deal tracking + rights holder reports'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
                       <span className="material-symbols-outlined text-brand-pink text-base">check_circle</span>{f}
                     </li>

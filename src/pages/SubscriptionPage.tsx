@@ -1099,7 +1099,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   { key: 'royalties', label: 'ROYALTIES', badge: 0 },
                   { key: 'incoming', label: 'INCOMING', badge: 0 },
                   { key: 'analytics', label: 'ANALYTICS', badge: 0 },
-                  { key: 'contracts', label: 'HAHAOFFICE 🧪', badge: 0 },
+                  { key: 'contracts', label: 'PAPERWORK 🧪', badge: 0 },
                   { key: 'contacts', label: 'HAHAFRIENDS', badge: 0 },
                   { key: 'calculator', label: 'CALCULATOR', badge: 0 },
                 ] as {key: string; label: string; badge: number}[]).map(t => (
