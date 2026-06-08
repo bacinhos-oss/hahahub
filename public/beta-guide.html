@@ -2,757 +2,250 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>HahaHub — Beta User Guide</title>
+<title>HahaHub — Beta User Guide v2</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Space+Grotesk:wght@400;500;700;900&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Space Grotesk', sans-serif;
-    background: #050505;
-    color: #fff;
-    width: 210mm;
-  }
-
-  @media print {
-    body { width: 210mm; }
-    .page { page-break-after: always; }
-    .page:last-child { page-break-after: avoid; }
-    @page { size: A4; margin: 0; }
-  }
-
-  .page {
-    width: 210mm;
-    min-height: 297mm;
-    padding: 12mm 14mm 10mm;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: #050505;
-    overflow: hidden;
-  }
-
+  body { font-family: 'Space Grotesk', sans-serif; background: #050505; color: #fff; width: 210mm; }
+  @media print { body { width: 210mm; } .page { page-break-after: always; } .page:last-child { page-break-after: avoid; } @page { size: A4; margin: 0; } }
+  .page { width: 210mm; min-height: 297mm; padding: 12mm 14mm 10mm; display: flex; flex-direction: column; position: relative; background: #050505; overflow: hidden; }
   .page-alt { background: #080808; }
-
-  /* BG deco */
   .deco { position: absolute; border-radius: 50%; opacity: 0.03; pointer-events: none; }
-
-  /* HEADER */
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 3px solid #FFDE03;
-    padding-bottom: 7px;
-    margin-bottom: 11px;
-  }
-  .logo {
-    font-family: 'Bowlby One SC', cursive;
-    font-size: 28px;
-    color: #FFDE03;
-    text-shadow: 2px 2px 0 #FF0266;
-    line-height: 1;
-  }
-  .logo-sub {
-    font-size: 7px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.25);
-    margin-top: 2px;
-  }
-  .page-badge {
-    font-size: 7px;
-    font-weight: 900;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border: 1.5px solid;
-  }
+  .page-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #FFDE03; padding-bottom: 7px; margin-bottom: 11px; }
+  .logo { font-family: 'Bowlby One SC', cursive; font-size: 28px; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; line-height: 1; }
+  .logo-sub { font-size: 7px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 2px; }
+  .page-badge { font-size: 7px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; padding: 4px 10px; border: 1.5px solid; }
   .badge-yellow { border-color: #FFDE03; color: #FFDE03; }
   .badge-pink { border-color: #FF0266; color: #FF0266; }
   .badge-cyan { border-color: #03DAC6; color: #03DAC6; }
   .badge-white { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.4); }
-
-  /* SECTION LABEL */
-  .sec-label {
-    font-size: 7px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 7px;
-  }
-  .sec-label.yellow { color: #FFDE03; }
-  .sec-label.cyan { color: #03DAC6; }
-  .sec-label.pink { color: #FF0266; }
-  .sec-label.white { color: rgba(255,255,255,0.3); }
-
-  /* SECTION TITLE */
-  .sec-title {
-    font-family: 'Bowlby One SC', cursive;
-    font-size: 22px;
-    line-height: 1;
-    margin-bottom: 10px;
-  }
-
-  /* STEPS */
-  .steps { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-  .step {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    padding: 8px 10px;
-    border: 1px solid rgba(255,255,255,0.07);
-    background: rgba(255,255,255,0.02);
-  }
-  .step-num {
-    font-family: 'Bowlby One SC', cursive;
-    font-size: 16px;
-    flex-shrink: 0;
-    width: 24px;
-    line-height: 1.2;
-  }
-  .step-num.yellow { color: #FFDE03; }
-  .step-num.cyan { color: #03DAC6; }
-  .step-num.pink { color: #FF0266; }
-  .step-content {}
-  .step-content strong {
-    font-size: 10px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: block;
-    margin-bottom: 2px;
-    color: #fff;
-  }
-  .step-content p {
-    font-size: 9.5px;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.6;
-    font-weight: 500;
-  }
-  .step-content .tip {
-    font-size: 8.5px;
-    color: #03DAC6;
-    font-style: italic;
-    margin-top: 3px;
-  }
-
-  /* INFO BOX */
-  .info-box {
-    border-left: 3px solid;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    background: rgba(255,255,255,0.02);
-  }
-  .info-box.yellow { border-color: #FFDE03; }
-  .info-box.cyan { border-color: #03DAC6; }
-  .info-box.pink { border-color: #FF0266; }
-  .info-box strong {
-    font-size: 8px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    display: block;
-    margin-bottom: 3px;
-  }
-  .info-box.yellow strong { color: #FFDE03; }
-  .info-box.cyan strong { color: #03DAC6; }
-  .info-box.pink strong { color: #FF0266; }
-  .info-box p {
-    font-size: 9.5px;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.6;
-    font-weight: 500;
-  }
-
-  /* 2-COL GRID */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; margin-bottom: 10px; }
-
-  /* MINI CARD */
-  .mini-card {
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 8px 10px;
-    background: rgba(255,255,255,0.02);
-  }
-  .mini-card strong {
-    font-size: 9px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: block;
-    margin-bottom: 3px;
-    color: #fff;
-  }
-  .mini-card p {
-    font-size: 8.5px;
-    color: rgba(255,255,255,0.45);
-    line-height: 1.55;
-    font-weight: 500;
-  }
-
-  /* TAG */
-  .tag {
-    display: inline-block;
-    font-size: 7.5px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 2px 7px;
-    border: 1px solid;
-    margin: 2px 2px 2px 0;
-  }
-  .tag.yellow { border-color: rgba(255,222,3,0.4); color: #FFDE03; }
-  .tag.cyan { border-color: rgba(3,218,198,0.4); color: #03DAC6; }
-  .tag.pink { border-color: rgba(255,2,102,0.4); color: #FF0266; }
-  .tag.white { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.4); }
-
-  /* STATUS FLOW */
-  .status-flow { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
-  .status-dot {
-    font-size: 8px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 3px 8px;
-    border: 1px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.5);
-  }
-  .status-arrow { color: rgba(255,255,255,0.2); font-size: 10px; }
-
-  /* WARNING BOX */
-  .warn-box {
-    background: rgba(255,2,102,0.08);
-    border: 1px solid rgba(255,2,102,0.3);
-    padding: 8px 12px;
-    margin-bottom: 10px;
-  }
-  .warn-box p { font-size: 9px; color: rgba(255,255,255,0.6); line-height: 1.6; }
-  .warn-box p strong { color: #FF0266; }
-
-  /* FOOTER */
-  .page-footer {
-    margin-top: auto;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding-top: 7px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .page-footer span {
-    font-size: 7px;
-    color: rgba(255,255,255,0.2);
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .page-footer .pg { color: rgba(255,255,255,0.15); }
-
-  .divider {
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    margin: 10px 0;
-  }
-
-  .highlight { color: #FFDE03; }
-  .hl-cyan { color: #03DAC6; }
-  .hl-pink { color: #FF0266; }
+  .sl { font-size: 7px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 7px; }
+  .sl.y { color: #FFDE03; } .sl.c { color: #03DAC6; } .sl.p { color: #FF0266; } .sl.w { color: rgba(255,255,255,0.3); }
+  .st { font-family: 'Bowlby One SC', cursive; font-size: 20px; line-height: 1; margin-bottom: 10px; }
+  .steps { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+  .step { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); }
+  .sn { font-family: 'Bowlby One SC', cursive; font-size: 14px; flex-shrink: 0; width: 22px; line-height: 1.2; }
+  .sn.y { color: #FFDE03; } .sn.c { color: #03DAC6; } .sn.p { color: #FF0266; }
+  .sc strong { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 2px; color: #fff; }
+  .sc p { font-size: 9px; color: rgba(255,255,255,0.5); line-height: 1.6; font-weight: 500; }
+  .sc .tip { font-size: 8.5px; color: #03DAC6; font-style: italic; margin-top: 3px; }
+  .ib { border-left: 3px solid; padding: 7px 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); }
+  .ib.y { border-color: #FFDE03; } .ib.c { border-color: #03DAC6; } .ib.p { border-color: #FF0266; }
+  .ib strong { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 3px; }
+  .ib.y strong { color: #FFDE03; } .ib.c strong { color: #03DAC6; } .ib.p strong { color: #FF0266; }
+  .ib p { font-size: 9px; color: rgba(255,255,255,0.5); line-height: 1.6; font-weight: 500; }
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 8px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .mc { border: 1px solid rgba(255,255,255,0.1); padding: 7px 10px; background: rgba(255,255,255,0.02); }
+  .mc strong { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 3px; color: #fff; }
+  .mc p { font-size: 8.5px; color: rgba(255,255,255,0.45); line-height: 1.55; font-weight: 500; }
+  .div { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 9px 0; }
+  .pf { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 7px; display: flex; justify-content: space-between; align-items: center; }
+  .pf span { font-size: 7px; color: rgba(255,255,255,0.2); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .wb { background: rgba(255,2,102,0.08); border: 1px solid rgba(255,2,102,0.3); padding: 7px 12px; margin-bottom: 8px; }
+  .wb p { font-size: 9px; color: rgba(255,255,255,0.6); line-height: 1.6; }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════ PAGE 1 — COVER -->
+<!-- PAGE 1 COVER -->
 <div class="page">
   <div class="deco" style="width:400px;height:400px;background:#FFDE03;top:-150px;right:-100px;"></div>
   <div class="deco" style="width:250px;height:250px;background:#FF0266;bottom:60px;left:-80px;"></div>
-
   <div class="page-header">
-    <div>
-      <div class="logo">HAHAHUB</div>
-      <div class="logo-sub">The Comedy Rights Marketplace</div>
-    </div>
-    <div class="page-badge badge-pink">🎭 Private Beta · Founding Member</div>
+    <div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div>
+    <div class="page-badge badge-pink">🎭 Private Beta · Founding Member · v2</div>
   </div>
-
-  <!-- BIG TITLE -->
-  <div style="margin: 16mm 0 12mm;">
+  <div style="margin:14mm 0 10mm;">
     <p style="font-size:8px;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#03DAC6;margin-bottom:10px;">Producer's Field Guide</p>
-    <div style="font-family:'Bowlby One SC',cursive;font-size:52px;line-height:0.9;color:#fff;">
-      HOW TO<br/><span style="color:#FFDE03;">TICKLE.</span><br/>SET UP.<br/><span style="color:#FF0266;">PUNCH.</span>
-    </div>
-    <p style="font-size:12px;color:rgba(255,255,255,0.4);font-style:italic;font-weight:500;margin-top:14px;max-width:120mm;line-height:1.7;">
-      Everything you need to start licensing comedy shows on HahaHub. Step by step. No agents. No commission. Just you, another producer, and a show that deserves a new stage.
-    </p>
+    <div style="font-family:'Bowlby One SC',cursive;font-size:48px;line-height:0.9;color:#fff;">HOW TO<br/><span style="color:#FFDE03;">TICKLE.</span><br/>SET UP.<br/><span style="color:#FF0266;">PUNCH.</span></div>
+    <p style="font-size:11px;color:rgba(255,255,255,0.4);font-style:italic;font-weight:500;margin-top:12px;max-width:120mm;line-height:1.7;">Everything you need to start licensing comedy shows on HahaHub. Step by step. No agents. No commission. Just you, another producer, and a show that deserves a new stage.</p>
   </div>
-
-  <!-- CONTENTS -->
-  <div style="margin-bottom:10mm;">
-    <p class="sec-label yellow">Contents</p>
-    <div class="grid2">
-      <div class="mini-card">
-        <strong>01 — First Login</strong>
-        <p>Onboarding wizard, setting up your profile, navigating the platform.</p>
-      </div>
-      <div class="mini-card">
-        <strong>02 — Showload</strong>
-        <p>How to list your show, fill in all sections, set packages and pricing.</p>
-      </div>
-      <div class="mini-card">
-        <strong>03 — Catalog & Tickle</strong>
-        <p>How to browse, search, shortlist and send an inquiry.</p>
-      </div>
-      <div class="mini-card">
-        <strong>04 — Pipeline</strong>
-        <p>Track every deal from first tickle to signed contract.</p>
-      </div>
-      <div class="mini-card">
-        <strong>05 — My Hub</strong>
-        <p>Your producer dashboard — shows, royalties, analytics, contracts.</p>
-      </div>
-      <div class="mini-card">
-        <strong>06 — Full Punch</strong>
-        <p>What it is, how to set it up, what buyers see.</p>
-      </div>
+  <div style="margin-bottom:8mm;">
+    <p class="sl y">Contents</p>
+    <div class="g2">
+      <div class="mc"><strong>01 — First Login</strong><p>Onboarding wizard, navigation, your plan badge.</p></div>
+      <div class="mc"><strong>02 — Showload</strong><p>Upload your show, all 6 sections, Full Punch setup.</p></div>
+      <div class="mc"><strong>03 — Catalog &amp; Tickle</strong><p>Browse, search, shortlist, send inquiry.</p></div>
+      <div class="mc"><strong>04 — Pipeline</strong><p>Track deals from tickle to signed contract.</p></div>
+      <div class="mc"><strong>05 — My Hub Overview</strong><p>All 6 tabs explained: Pipeline, Royalties, Analytics...</p></div>
+      <div class="mc"><strong>06 — Full Punch Package</strong><p>What it is, how to set it up, what buyers see.</p></div>
+      <div class="mc"><strong>07 — Analytics Dashboard</strong><p>Views, conversion funnel, territories, royalties.</p></div>
+      <div class="mc"><strong>08 — HAHAoffice &amp; HAHAfriends</strong><p>Contracts, smart templates, your private network.</p></div>
     </div>
   </div>
-
-  <div class="info-box cyan" style="margin-bottom:0;">
-    <strong>Beta Note</strong>
-    <p>You're using an early version of HahaHub. Some features are still being polished. If you find a bug or have an idea — hit the <strong style="color:#fff;">Feedback</strong> button (bottom right on every page) or just reply to any email we send you. We read everything.</p>
-  </div>
-
-  <div class="page-footer">
-    <span>HahaHub · info@hahahub.art · hahahub.art</span>
-    <span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span>
-    <span class="pg">1 / 6</span>
-  </div>
+  <div class="ib c"><strong>Beta Note</strong><p>You're using an early version of HahaHub. Found a bug or have an idea? Hit the <strong style="color:#fff;">Feedback</strong> button bottom right — or just reply to any email we send. On day 9 you'll get a check-in email. We read everything.</p></div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>1 / 8</span></div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════ PAGE 2 — FIRST LOGIN -->
+<!-- PAGE 2 FIRST LOGIN -->
 <div class="page page-alt">
-  <div class="deco" style="width:300px;height:300px;background:#03DAC6;top:-100px;left:-80px;"></div>
-
-  <div class="page-header">
-    <div>
-      <div class="logo">HAHAHUB</div>
-      <div class="logo-sub">The Comedy Rights Marketplace</div>
-    </div>
-    <div class="page-badge badge-cyan">01 — First Login</div>
-  </div>
-
-  <div class="sec-label cyan">Step by step</div>
-  <div class="sec-title hl-cyan">First Login &<br/>Onboarding</div>
-
+  <div class="page-header"><div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div><div class="page-badge badge-cyan">01 — First Login</div></div>
+  <div class="sl c">Step by step</div>
+  <div class="st" style="color:#03DAC6;">First Login &amp; Onboarding</div>
   <div class="steps">
-    <div class="step">
-      <div class="step-num cyan">01</div>
-      <div class="step-content">
-        <strong>Open your invite email</strong>
-        <p>You received an email from HahaHub with your login credentials — email address and password. Keep it handy.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num cyan">02</div>
-      <div class="step-content">
-        <strong>Go to hahahub.art → Tickle In</strong>
-        <p>Click "TICKLE IN →" in the top right corner of the page. Enter your email and the password from the invite email.</p>
-        <p class="tip">💡 You can change your password later in My Hub → My Profile.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num cyan">03</div>
-      <div class="step-content">
-        <strong>Welcome Wizard — Who are you?</strong>
-        <p>On your first login, a 2-step wizard appears. Step 1: choose your role — Buyer (you license shows), Seller (you offer shows), or Both. This helps the platform show you the right things first.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num cyan">04</div>
-      <div class="step-content">
-        <strong>Welcome Wizard — What's your first move?</strong>
-        <p>Step 2: choose your first action — Browse Catalog, Upload a Show, or Check LaffWire. Click and you land directly on the right page. The wizard appears only once.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num cyan">05</div>
-      <div class="step-content">
-        <strong>Navigation</strong>
-        <p>Top menu: <strong style="color:#fff;">CATALOG</strong> (browse shows) · <strong style="color:#fff;">LAFFWIRE</strong> (industry feed) · <strong style="color:#fff;">MY HUB</strong> (your dashboard) · <strong style="color:#fff;">SHOWLOAD</strong> (upload a show). Your name and plan badge are top right.</p>
-      </div>
-    </div>
+    <div class="step"><div class="sn c">01</div><div class="sc"><strong>Open your invite email</strong><p>You received an email with your email and password. Go to <strong style="color:#fff;">hahahub.art</strong> → <strong style="color:#fff;">TICKLE IN →</strong> top right corner.</p></div></div>
+    <div class="step"><div class="sn c">02</div><div class="sc"><strong>Welcome Wizard — Who are you?</strong><p>Appears only on first login. Choose: <strong style="color:#fff;">Buyer</strong> (license shows), <strong style="color:#fff;">Seller</strong> (offer shows), or <strong style="color:#fff;">Both</strong>. This shapes your experience.</p></div></div>
+    <div class="step"><div class="sn c">03</div><div class="sc"><strong>Welcome Wizard — First move</strong><p>Choose your first action: Browse Catalog / Upload a Show / Check LaffWire. You land there directly.</p></div></div>
+    <div class="step"><div class="sn c">04</div><div class="sc"><strong>Navigation</strong><p><strong style="color:#fff;">CATALOG</strong> · <strong style="color:#fff;">LAFFWIRE</strong> · <strong style="color:#fff;">MY HUB</strong> · <strong style="color:#fff;">SHOWLOAD</strong> · Your name + plan badge top right.</p></div></div>
   </div>
-
-  <hr class="divider"/>
-
-  <div class="grid2">
-    <div class="info-box yellow">
-      <strong>Your Plan Badge</strong>
-      <p>Under your name in the top right you'll see your plan: <strong style="color:#FFDE03;">GIGL</strong> (free), <strong style="color:#03DAC6;">LAFF</strong>, or <strong style="color:#FF0266;">ROAR</strong>. Beta users typically get LAFF or ROAR access.</p>
-    </div>
-    <div class="info-box cyan">
-      <strong>FOUNDING Badge</strong>
-      <p>As a beta user, you'll have a special <strong style="color:#FFDE03;">FOUNDING</strong> badge on your profile — permanently. It marks you as one of the first producers on the platform.</p>
-    </div>
+  <hr class="div"/>
+  <div class="g2">
+    <div class="ib y"><strong>Your Plan Badge</strong><p>Under your name: <strong style="color:#FFDE03;">GIGL</strong> (free, 1 show) · <strong style="color:#03DAC6;">LAFF</strong> (5 shows, full features) · <strong style="color:#FF0266;">ROAR</strong> (unlimited + featured + verified)</p></div>
+    <div class="ib c"><strong>FOUNDING Badge</strong><p>Beta users get a permanent <strong style="color:#FFDE03;">FOUNDING</strong> badge on their profile — forever. You're one of the first producers on this platform.</p></div>
   </div>
-
-  <div class="warn-box">
-    <p><strong>Important:</strong> If the page loads slowly on your first visit — wait up to 20 seconds. The server wakes up from sleep mode. This will be fixed before public launch (Supabase Pro upgrade).</p>
-  </div>
-
-  <div class="page-footer">
-    <span>HahaHub · info@hahahub.art · hahahub.art</span>
-    <span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span>
-    <span class="pg">2 / 6</span>
-  </div>
+  <div class="wb"><p><strong>Slow first load?</strong> Server wakes from sleep mode — wait up to 20 seconds. Fixed before public launch (Supabase Pro upgrade).</p></div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>2 / 8</span></div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════ PAGE 3 — SHOWLOAD -->
+<!-- PAGE 3 SHOWLOAD -->
 <div class="page">
-  <div class="deco" style="width:300px;height:300px;background:#FFDE03;bottom:-80px;right:-80px;"></div>
-
-  <div class="page-header">
-    <div>
-      <div class="logo">HAHAHUB</div>
-      <div class="logo-sub">The Comedy Rights Marketplace</div>
-    </div>
-    <div class="page-badge badge-yellow">02 — Showload</div>
+  <div class="page-header"><div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div><div class="page-badge badge-yellow">02 — Showload</div></div>
+  <div class="sl y">Listing your show</div>
+  <div class="st" style="color:#FFDE03;">Showload — Upload Your Show</div>
+  <p style="font-size:9px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:8px;">Click <strong style="color:#fff;">SHOWLOAD</strong> in the top menu. The form has 6 sections. Starred fields (*) are required. You can edit everything later in My Hub.</p>
+  <div class="g2" style="margin-bottom:7px;">
+    <div class="mc"><strong>00. Basic Info</strong><p>Title (+ English title), author, genre, language, humor type, synopsis in English. Trailer URL optional.</p></div>
+    <div class="mc"><strong>01. Production</strong><p>Cast size, duration, stage type, tech complexity, staff needed, touring friendly, director info.</p></div>
+    <div class="mc"><strong>02. Full Punch ★</strong><p>Enable the Full Punch package + set royalty %. Check elements you have. Also: music author, video info, script availability. See page 6.</p></div>
+    <div class="mc"><strong>03. Market Performance</strong><p>Premiere date &amp; location, performances, total audience, where it's been played, awards.</p></div>
+    <div class="mc"><strong>04. Rights &amp; Identity</strong><p>Copyright holder, rights status (Available/Licensed), license type, territories, exclusivity level.</p></div>
+    <div class="mc"><strong>05. Licensing Packages</strong><p>Script-only license — set royalty % and optional advance fee. Full Punch pricing is set in section 02.</p></div>
   </div>
-
-  <div class="sec-label yellow">Listing your show</div>
-  <div class="sec-title highlight">Showload —<br/>Upload Your Show</div>
-
-  <p style="font-size:9.5px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:10px;font-weight:500;">Click <strong style="color:#fff;">SHOWLOAD</strong> in the top menu. The form has 6 sections. You don't need to fill everything — starred fields (*) are required. You can edit everything later in My Hub.</p>
-
-  <div class="grid2" style="margin-bottom:8px;">
-    <div class="mini-card">
-      <strong>00. Basic Info</strong>
-      <p>Title (+ English title if not in English), author, genre, language, humor type, synopsis in English. Trailer URL if you have one.</p>
-    </div>
-    <div class="mini-card">
-      <strong>01. Production</strong>
-      <p>Cast size, duration, stage type, technical complexity, tech staff needed, touring friendly, director info.</p>
-    </div>
-    <div class="mini-card">
-      <strong>02. Full Punch</strong>
-      <p>Enable the Full Punch package here — see page 6 for full details. Also: music author, video info, script availability.</p>
-    </div>
-    <div class="mini-card">
-      <strong>03. Market Performance</strong>
-      <p>Premiere date & location, number of performances, total audience, where it's been played, awards.</p>
-    </div>
-    <div class="mini-card">
-      <strong>04. Rights & Identity</strong>
-      <p>Copyright holder, rights status (Available / Licensed), license type, territories, exclusivity.</p>
-    </div>
-    <div class="mini-card">
-      <strong>05. Licensing Packages</strong>
-      <p>Script-only license — set royalty % and optional advance fee. Full Punch pricing is set in section 02.</p>
-    </div>
+  <div class="g2">
+    <div class="ib y"><strong>Show Poster</strong><p>Upload A4 ratio image (portrait 2:3). High resolution recommended — it's your first impression in the catalog.</p></div>
+    <div class="ib c"><strong>Production Photos</strong><p>Up to 3 photos from the production. Appear in your dossier. Buyers want to see the real thing.</p></div>
   </div>
-
-  <div class="grid2">
-    <div class="info-box yellow">
-      <strong>Show Poster</strong>
-      <p>Upload an A4 ratio image (portrait 2:3). This is your main visual in the catalog. High resolution recommended — it's your first impression.</p>
-    </div>
-    <div class="info-box cyan">
-      <strong>Production Photos</strong>
-      <p>Upload up to 3 photos from the production. They appear in your show dossier. Buyers want to see the real thing.</p>
-    </div>
-  </div>
-
-  <div class="steps" style="margin-top:2px;">
-    <div class="step">
-      <div class="step-num yellow">→</div>
-      <div class="step-content">
-        <strong>Click "SHOWLOAD IT →" to publish</strong>
-        <p>Your show appears in the catalog immediately. You can edit it anytime in <strong style="color:#fff;">My Hub → My Shows → Manage / Edit</strong>.</p>
-        <p class="tip">💡 GIGL (free) plan allows 1 show. LAFF allows 5. ROAR is unlimited.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="page-footer">
-    <span>HahaHub · info@hahahub.art · hahahub.art</span>
-    <span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span>
-    <span class="pg">3 / 6</span>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════ PAGE 4 — CATALOG & TICKLE -->
-<div class="page page-alt">
-  <div class="deco" style="width:280px;height:280px;background:#FF0266;top:-80px;right:-60px;"></div>
-
-  <div class="page-header">
-    <div>
-      <div class="logo">HAHAHUB</div>
-      <div class="logo-sub">The Comedy Rights Marketplace</div>
-    </div>
-    <div class="page-badge badge-pink">03 — Catalog & Tickle</div>
-  </div>
-
-  <div class="sec-label pink">Finding & contacting shows</div>
-  <div class="sec-title hl-pink">Catalog &<br/>Tickle</div>
-
   <div class="steps">
-    <div class="step">
-      <div class="step-num pink">01</div>
-      <div class="step-content">
-        <strong>Browse the Catalog</strong>
-        <p>Go to <strong style="color:#fff;">CATALOG</strong> in the top menu. Shows are displayed as poster cards. Use filters on the left: genre, language, humor type, cast size, touring friendly.</p>
-        <p class="tip">💡 Miss Stefunny search (top of catalog) understands natural language — try "funny show for 3 actors, no video".</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num pink">02</div>
-      <div class="step-content">
-        <strong>Open a Show Dossier</strong>
-        <p>Click any show card to open the full dossier. It contains: Synopsis, Rights & Identity, Creative Engine (cast, director), Full Punch package details, Technical Stack, Market Performance, and the Select Package section at the bottom.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num pink">03</div>
-      <div class="step-content">
-        <strong>Add to Tickle List</strong>
-        <p>See the <strong style="color:#fff;">hand icon (☝)</strong> on each show card — click it to save the show to your Tickle List (shortlist). Access your list in My Hub. You're not committing to anything yet.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num pink">04</div>
-      <div class="step-content">
-        <strong>Select a Package & Tickle</strong>
-        <p>In the dossier, scroll to the bottom. Choose: <strong style="color:#FFDE03;">Script</strong> (script only) or <strong style="color:#FF0266;">Full Punch</strong> (complete know-how). Click the Tickle button. A form opens.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num pink">05</div>
-      <div class="step-content">
-        <strong>Fill in the Inquiry Form</strong>
-        <p>Your name and email are pre-filled. Write a message to the rights holder — introduce yourself, your theatre, what interests you. You can attach a PDF (company profile, etc.). Click <strong style="color:#FF0266;">TICKLE IT →</strong>.</p>
-        <p class="tip">💡 You'll receive a confirmation email. The rights holder is notified immediately.</p>
-      </div>
-    </div>
+    <div class="step"><div class="sn y">→</div><div class="sc"><strong>Click "Showload It →" to publish</strong><p>Your show is live immediately. Edit anytime: <strong style="color:#fff;">My Hub → My Shows → Manage / Edit</strong>. GIGL: 1 show · LAFF: 5 · ROAR: unlimited</p></div></div>
   </div>
-
-  <div class="info-box pink">
-    <strong>Download Dossier PDF</strong>
-    <p>In every show dossier, there's a <strong style="color:#fff;">"THE DOSSIER"</strong> button at the bottom. Click it to download a full PDF of the show — useful for internal review or sharing with your team.</p>
-  </div>
-
-  <div class="page-footer">
-    <span>HahaHub · info@hahahub.art · hahahub.art</span>
-    <span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span>
-    <span class="pg">4 / 6</span>
-  </div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>3 / 8</span></div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════ PAGE 5 — PIPELINE & MY HUB -->
-<div class="page">
-  <div class="deco" style="width:300px;height:300px;background:#03DAC6;bottom:-60px;left:-80px;"></div>
-
-  <div class="page-header">
-    <div>
-      <div class="logo">HAHAHUB</div>
-      <div class="logo-sub">The Comedy Rights Marketplace</div>
-    </div>
-    <div class="page-badge badge-white">04–05 — Pipeline & My Hub</div>
-  </div>
-
-  <!-- PIPELINE -->
-  <div class="sec-label cyan">04 — Deal management</div>
-  <div class="sec-title hl-cyan" style="font-size:18px;margin-bottom:8px;">Pipeline</div>
-
-  <p style="font-size:9.5px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:8px;font-weight:500;">Go to <strong style="color:#fff;">My Hub → Pipeline tab</strong> (or direct link in nav). Two views: <strong style="color:#FFDE03;">TICKLED</strong> (inquiries you received) and <strong style="color:#03DAC6;">TICKLER</strong> (inquiries you sent).</p>
-
-  <div class="status-flow">
-    <span class="status-dot" style="background:rgba(255,2,102,0.2);border-color:#FF0266;color:#FF0266;">New</span>
-    <span class="status-arrow">→</span>
-    <span class="status-dot">Contacted</span>
-    <span class="status-arrow">→</span>
-    <span class="status-dot">Negotiating</span>
-    <span class="status-arrow">→</span>
-    <span class="status-dot">Contract Sent</span>
-    <span class="status-arrow">→</span>
-    <span class="status-dot" style="background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;">Signed</span>
-    <span class="status-arrow">→</span>
-    <span class="status-dot">Royalties</span>
-    <span class="status-arrow">→</span>
-    <span class="status-dot">Completed</span>
-  </div>
-
-  <div class="grid2" style="margin-bottom:8px;">
-    <div class="mini-card">
-      <strong>Messages</strong>
-      <p>Click any deal to open the message thread. Send text, files, or PDFs directly in the deal. Real-time — no email needed.</p>
-    </div>
-    <div class="mini-card">
-      <strong>Change Status</strong>
-      <p>Click the status dropdown in the deal header to move it forward. When you reach <strong style="color:#4ade80;">Signed</strong>, fill in deal terms — royalty %, territory, dates.</p>
-    </div>
-  </div>
-
-  <hr class="divider"/>
-
-  <!-- MY HUB -->
-  <div class="sec-label yellow">05 — Producer dashboard</div>
-  <div class="sec-title highlight" style="font-size:18px;margin-bottom:8px;">My Hub</div>
-
-  <p style="font-size:9.5px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:8px;font-weight:500;">Click <strong style="color:#fff;">MY HUB</strong> in the top menu. Six tabs across the top:</p>
-
-  <div class="grid3">
-    <div class="mini-card">
-      <strong style="color:#FFDE03;">Pipeline</strong>
-      <p>All your deals in one place. TICKLED + TICKLER views.</p>
-    </div>
-    <div class="mini-card">
-      <strong style="color:#03DAC6;">Royalties</strong>
-      <p>Log performances. System calculates royalties owed. Rights holders see it instantly.</p>
-    </div>
-    <div class="mini-card">
-      <strong style="color:#FF0266;">Incoming</strong>
-      <p>All inquiries you've received as a seller. Quick overview with status.</p>
-    </div>
-    <div class="mini-card">
-      <strong>Analytics</strong>
-      <p>Views, inquiries, and performance data for your listed shows.</p>
-    </div>
-    <div class="mini-card">
-      <strong>Contracts</strong>
-      <p>Signed deal summaries — territory, royalty %, dates, all in one place.</p>
-    </div>
-    <div class="mini-card">
-      <strong>Calculator</strong>
-      <p>Estimate royalty earnings based on ticket price and performances.</p>
-    </div>
-  </div>
-
-  <div class="info-box yellow" style="margin-top:2px;">
-    <strong>Edit Your Shows</strong>
-    <p>In My Hub, scroll down to <strong style="color:#fff;">My Shows</strong>. Click <strong style="color:#fff;">Manage / Edit</strong> on any show to update all 6 sections — including Full Punch package, photos, pricing, and rights info.</p>
-  </div>
-
-  <div class="page-footer">
-    <span>HahaHub · info@hahahub.art · hahahub.art</span>
-    <span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span>
-    <span class="pg">5 / 6</span>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════ PAGE 6 — FULL PUNCH -->
+<!-- PAGE 4 CATALOG & TICKLE -->
 <div class="page page-alt">
-  <div class="deco" style="width:350px;height:350px;background:#FF0266;top:-120px;right:-100px;"></div>
-
-  <div class="page-header">
-    <div>
-      <div class="logo">HAHAHUB</div>
-      <div class="logo-sub">The Comedy Rights Marketplace</div>
-    </div>
-    <div class="page-badge badge-pink">06 — Full Punch</div>
+  <div class="page-header"><div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div><div class="page-badge badge-pink">03 — Catalog &amp; Tickle</div></div>
+  <div class="sl p">Finding &amp; contacting shows</div>
+  <div class="st" style="color:#FF0266;">Catalog &amp; Tickle</div>
+  <div class="steps">
+    <div class="step"><div class="sn p">01</div><div class="sc"><strong>Browse the Catalog</strong><p>Go to <strong style="color:#fff;">CATALOG</strong>. Use filters: genre, language, humor type, cast size, touring. Miss Stefunny AI search understands natural language — try "funny show for 3 actors, no video".</p></div></div>
+    <div class="step"><div class="sn p">02</div><div class="sc"><strong>Open a Show Dossier</strong><p>Click any show card. Sections: Synopsis · Rights &amp; Identity · Creative Engine (cast, director) · Full Punch details · Technical Stack · Market Performance. Download PDF: <strong style="color:#fff;">"THE DOSSIER"</strong> button at bottom.</p></div></div>
+    <div class="step"><div class="sn p">03</div><div class="sc"><strong>Tickle List</strong><p>Click the <strong style="color:#fff;">☝ hand icon</strong> on any show card to save to your shortlist. Access in My Hub. No commitment yet.</p></div></div>
+    <div class="step"><div class="sn p">04</div><div class="sc"><strong>Select Package &amp; Tickle</strong><p>In the dossier, scroll to bottom. Choose: <strong style="color:#FFDE03;">Script</strong> (script only) or <strong style="color:#FF0266;">Full Punch</strong> (complete know-how). Click the Tickle button.</p></div></div>
+    <div class="step"><div class="sn p">05</div><div class="sc"><strong>Fill in the Inquiry Form</strong><p>Write a message to the rights holder. Attach a PDF if needed (company profile, etc.). Click <strong style="color:#FF0266;">TICKLE IT →</strong>. You get a confirmation email. Rights holder notified immediately.</p><p class="tip">💡 Track inquiries: My Hub → Pipeline → TICKLER</p></div></div>
   </div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>4 / 8</span></div>
+</div>
 
-  <div class="sec-label pink">The franchise package</div>
-  <div class="sec-title hl-pink">🥊 Full Punch —<br/>Complete Know-How</div>
+<!-- PAGE 5 PIPELINE -->
+<div class="page">
+  <div class="page-header"><div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div><div class="page-badge badge-white">04 — Pipeline</div></div>
+  <div class="sl c">Deal management</div>
+  <div class="st" style="color:#03DAC6;">Pipeline</div>
+  <p style="font-size:9px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:7px;">Go to <strong style="color:#fff;">My Hub → Pipeline tab</strong>. Two views: <strong style="color:#FFDE03;">TICKLED</strong> (received as seller) · <strong style="color:#03DAC6;">TICKLER</strong> (sent as buyer). Click any deal row to open messages &amp; details.</p>
+  <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:9px;">
+    <span style="font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;background:rgba(255,2,102,0.2);border:1px solid #FF0266;color:#FF0266;">New</span>
+    <span style="color:rgba(255,255,255,0.2);">→</span><span style="font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);">Contacted</span>
+    <span style="color:rgba(255,255,255,0.2);">→</span><span style="font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);">Negotiating</span>
+    <span style="color:rgba(255,255,255,0.2);">→</span><span style="font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);">Contract Sent</span>
+    <span style="color:rgba(255,255,255,0.2);">→</span><span style="font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;background:rgba(74,222,128,0.15);border:1px solid #4ade80;color:#4ade80;">Signed ✓</span>
+    <span style="color:rgba(255,255,255,0.2);">→</span><span style="font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);">Royalties</span>
+    <span style="color:rgba(255,255,255,0.2);">→</span><span style="font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);">Completed</span>
+  </div>
+  <div class="g2" style="margin-bottom:8px;">
+    <div class="mc"><strong>→ OPEN / ✕ CLOSE</strong><p>Each deal row shows an arrow on the right. Click to open the message thread and deal details. Right panel shows HOW PIPELINE WORKS when no deal is open.</p></div>
+    <div class="mc"><strong>Messages &amp; Files</strong><p>Send text or attach files directly in the deal thread. Real-time updates — no email needed for negotiations.</p></div>
+    <div class="mc"><strong>Change Status</strong><p>Status dropdown in the deal header. Move deals forward manually. At <strong style="color:#4ade80;">Signed</strong> — fill in deal terms (royalty %, territory, start/end dates).</p></div>
+    <div class="mc"><strong>Stats Bar</strong><p>Top of Pipeline: New / Active / Signed counts + total royalties from all signed deals. Updates in real time.</p></div>
+  </div>
+  <div class="ib y"><strong>Pro Tip — After Signing</strong><p>When a deal reaches <strong style="color:#fff;">Signed</strong> status, go to <strong style="color:#fff;">My Hub → HAHAoffice</strong> and generate a proper licensing contract using the smart templates. Fill in the deal terms automatically.</p></div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>5 / 8</span></div>
+</div>
 
-  <p style="font-size:9.5px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:10px;font-weight:500;">Full Punch is the complete production package — everything a buyer needs to produce your show without a single phone call. Think of it as a franchise model: the buyer gets not just the script, but the entire production know-how.</p>
-
-  <div class="grid2" style="margin-bottom:10px;">
+<!-- PAGE 6 FULL PUNCH -->
+<div class="page page-alt">
+  <div class="page-header"><div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div><div class="page-badge badge-pink">06 — Full Punch</div></div>
+  <div class="sl p">The complete know-how package</div>
+  <div class="st" style="color:#FF0266;">🥊 Full Punch</div>
+  <p style="font-size:9px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:10px;">Full Punch = complete production package. Everything a buyer needs to produce your show without a single phone call. Think franchise: buyer gets not just the script, but the entire production know-how.</p>
+  <div class="g2">
     <div>
-      <p class="sec-label pink" style="margin-bottom:6px;">What's in the package</p>
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FFDE03;font-size:9px;font-weight:900;">✓</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">📄 The Script</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">always included</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">📋 The Playbook</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">director's production notes</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🎵 The Soundtrack</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">original music files + cue sheet</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🎬 The Visuals</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">video projection files + specs</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">👗 The Wardrobe</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">costume design + supplier list</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🏗️ The Set Blueprint</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">set design plans</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🔧 The Tech Rider</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">full technical requirements</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">📸 The Promo Kit</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">press photos + marketing assets</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;">
-          <span style="color:#FF0266;font-size:9px;font-weight:900;">○</span>
-          <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🤝 The Handover Session</span>
-          <span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">live session with your team</span>
-        </div>
+      <p class="sl p" style="margin-bottom:5px;">What's in the package</p>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FFDE03;font-size:9px;font-weight:900;">✓</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.8);">📄 The Script</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">always included</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">📋 The Playbook</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">director's production notes</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🎵 The Soundtrack</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">music files + cue sheet</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🎬 The Visuals</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">video projection files + specs</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">👗 The Wardrobe</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">costume design + supplier list</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🏗️ The Set Blueprint</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">set design plans</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🔧 The Tech Rider</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">full technical requirements</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">📸 The Promo Kit</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">press photos + marketing assets</span></div>
+        <div style="display:flex;align-items:center;gap:5px;padding:3px 0;"><span style="color:#FF0266;font-size:9px;">○</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);">🤝 The Handover Session</span><span style="font-size:8px;color:rgba(255,255,255,0.3);font-style:italic;">live session with your team</span></div>
       </div>
-      <p style="font-size:8px;color:rgba(255,255,255,0.25);margin-top:6px;font-style:italic;">✓ = always included · ○ = you choose what to offer</p>
+      <p style="font-size:8px;color:rgba(255,255,255,0.2);margin-top:5px;font-style:italic;">✓ always · ○ you choose what to offer</p>
     </div>
     <div>
-      <p class="sec-label yellow" style="margin-bottom:6px;">How to set it up</p>
-      <div class="steps" style="gap:5px;">
-        <div class="step" style="padding:6px 8px;">
-          <div class="step-num pink" style="font-size:13px;width:20px;">01</div>
-          <div class="step-content">
-            <strong>Go to Showload or Edit Show</strong>
-            <p>Section <strong style="color:#FF0266;">02. Full Punch</strong> — enable the checkbox "Offer Full Punch Package".</p>
-          </div>
-        </div>
-        <div class="step" style="padding:6px 8px;">
-          <div class="step-num pink" style="font-size:13px;width:20px;">02</div>
-          <div class="step-content">
-            <strong>Set your royalty % and advance fee</strong>
-            <p>Typically 15% for Full Punch vs 10% for script only. Advance fee is optional.</p>
-          </div>
-        </div>
-        <div class="step" style="padding:6px 8px;">
-          <div class="step-num pink" style="font-size:13px;width:20px;">03</div>
-          <div class="step-content">
-            <strong>Check what you're including</strong>
-            <p>Tick the elements you actually have prepared. Buyers see exactly what they get — no surprises.</p>
-          </div>
-        </div>
-        <div class="step" style="padding:6px 8px;">
-          <div class="step-num pink" style="font-size:13px;width:20px;">04</div>
-          <div class="step-content">
-            <strong>Set Punch Language & Support</strong>
-            <p>Language of all documentation (EN, SI, DE...). Enable Punch Support if your team is available for buyer onboarding.</p>
-          </div>
-        </div>
+      <p class="sl y" style="margin-bottom:5px;">How to set it up</p>
+      <div class="steps" style="gap:4px;">
+        <div class="step" style="padding:5px 8px;"><div class="sn p" style="font-size:12px;width:18px;">01</div><div class="sc"><strong>Showload or Edit Show → Section 02</strong><p>Enable "Offer Full Punch Package" checkbox.</p></div></div>
+        <div class="step" style="padding:5px 8px;"><div class="sn p" style="font-size:12px;width:18px;">02</div><div class="sc"><strong>Set royalty % + advance</strong><p>Typically 15% Full Punch vs 10% script only.</p></div></div>
+        <div class="step" style="padding:5px 8px;"><div class="sn p" style="font-size:12px;width:18px;">03</div><div class="sc"><strong>Check your elements</strong><p>Tick only what you actually have prepared. Buyers see exactly what they get.</p></div></div>
+        <div class="step" style="padding:5px 8px;"><div class="sn p" style="font-size:12px;width:18px;">04</div><div class="sc"><strong>Punch Language + Support</strong><p>Language of docs. Enable Punch Support if your team is available for buyer onboarding.</p></div></div>
       </div>
-      <div class="info-box cyan" style="margin-top:6px;">
-        <strong>What buyers see</strong>
-        <p>In the catalog dossier, buyers see a Full Punch card with all your checked elements, language, and whether Punch Support is available — before they even send an inquiry.</p>
-      </div>
+      <div class="ib c" style="margin-top:6px;"><strong>What Buyers See</strong><p>Full Punch card in dossier shows all checked elements + language + Punch Support availability — before they even send an inquiry.</p></div>
     </div>
   </div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>6 / 8</span></div>
+</div>
 
-  <div class="page-footer">
-    <span>HahaHub · info@hahahub.art · hahahub.art · Break a Laffing Leg. 🦵</span>
-    <span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span>
-    <span class="pg">6 / 6</span>
+<!-- PAGE 7 ANALYTICS -->
+<div class="page">
+  <div class="page-header"><div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div><div class="page-badge badge-yellow">05+07 — My Hub &amp; Analytics</div></div>
+  <div class="sl y">05 — producer dashboard</div>
+  <div class="st" style="color:#FFDE03;font-size:17px;margin-bottom:7px;">My Hub — 6 Tabs</div>
+  <div class="g3" style="margin-bottom:8px;">
+    <div class="mc"><strong style="color:#FFDE03;">Pipeline</strong><p>All your deals. TICKLED (seller) + TICKLER (buyer). Messages, files, status updates in real time.</p></div>
+    <div class="mc"><strong style="color:#03DAC6;">Royalties</strong><p>Log performances as buyer. System calculates royalties for rights holder automatically.</p></div>
+    <div class="mc"><strong style="color:#FF0266;">Incoming</strong><p>Quick list of all inquiries received. Who tickled you, which show, when.</p></div>
+    <div class="mc"><strong>Analytics</strong><p>Views, conversion funnel, weekly chart, territories, package split, royalties earned.</p></div>
+    <div class="mc"><strong>HAHAoffice 🧪</strong><p>Contracts. Smart templates. Fill, edit, download, print. Beta feature.</p></div>
+    <div class="mc"><strong>HAHAfriends</strong><p>Private network of producers, directors, agents. Add from profiles or manually.</p></div>
   </div>
+  <div class="sl c" style="margin-top:4px;">07 — analytics explained</div>
+  <div class="st" style="color:#03DAC6;font-size:17px;margin-bottom:7px;">Analytics Dashboard</div>
+  <div class="g2" style="margin-bottom:6px;">
+    <div class="mc"><strong>4 Global KPIs</strong><p>Total Views · Tickles Received · Conversion % (inquiries/views) · Royalties Earned to date</p></div>
+    <div class="mc"><strong>Conversion Funnel</strong><p>Visual bars: Views → Inquiries → Active → Signed. See where you lose potential buyers.</p></div>
+    <div class="mc"><strong>Weekly Views Chart</strong><p>Last 8 weeks. Tracking starts from your join date — data builds over time.</p></div>
+    <div class="mc"><strong>Monthly Inquiries</strong><p>Last 6 months of incoming tickles. See peak periods and seasonality.</p></div>
+    <div class="mc"><strong>Top Territories</strong><p>Countries sending most inquiries. Know exactly which markets are interested.</p></div>
+    <div class="mc"><strong>Package Split</strong><p>Full Punch vs Script % of total inquiries. Helps you price and position packages.</p></div>
+  </div>
+  <div class="ib c"><strong>Per Show Breakdown</strong><p>Each show: Views · Inquiries · Conversion % · Performances · Audience · Royalties. Plus territory tags + last 3 inquiries with status and date.</p></div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>7 / 8</span></div>
+</div>
+
+<!-- PAGE 8 HAHAOFFICE & HAHAFRIENDS -->
+<div class="page page-alt">
+  <div class="page-header"><div><div class="logo">HAHAHUB</div><div class="logo-sub">The Comedy Rights Marketplace</div></div><div class="page-badge badge-white">08 — HAHAoffice &amp; HAHAfriends</div></div>
+  <div class="sl y">HAHAoffice 🧪 — beta feature</div>
+  <div class="st" style="color:#FFDE03;font-size:17px;margin-bottom:7px;">Contracts Management</div>
+  <p style="font-size:9px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:7px;">My Hub → HAHAoffice. Your private contract workspace. Generate from templates, edit manually, save to cloud, download or print.</p>
+  <div class="steps" style="margin-bottom:8px;">
+    <div class="step"><div class="sn y">01</div><div class="sc"><strong>Choose a Template</strong><p>3 HahaHub templates: Licensing Agreement · Co-production · Guest Performance. Click <strong style="color:#FFDE03;">Use →</strong> to start. Or <strong style="color:#03DAC6;">📋 Copy</strong> to get an editable private copy.</p></div></div>
+    <div class="step"><div class="sn y">02</div><div class="sc"><strong>Fill in Details — Live Preview</strong><p>Form auto-detects all <strong style="color:#fff;">{{placeholders}}</strong>. Fill: show, counter party, royalty %, territory, dates. Preview updates as you type.</p></div></div>
+    <div class="step"><div class="sn y">03</div><div class="sc"><strong>Save to HAHAoffice</strong><p>Click <strong style="color:#FFDE03;">💾 Save Contract</strong> — goes to your private contracts list (only you see it). Status: Draft → Sent → Signed → Expired.</p></div></div>
+    <div class="step"><div class="sn y">04</div><div class="sc"><strong>Edit Manually</strong><p>Click <strong style="color:#FFDE03;">✏️ Edit</strong> on any saved contract. Inline text editor opens — type freely. <strong style="color:#fff;">↩ Restore</strong> to undo changes. <strong style="color:#03DAC6;">📥 .txt</strong> or <strong style="color:#fff;">🖨️ Print/PDF</strong> to export.</p></div></div>
+    <div class="step"><div class="sn y">05</div><div class="sc"><strong>Create Your Own Template</strong><p>Click <strong style="color:#03DAC6;">+ New Template</strong>. Write any contract text using <strong style="color:#fff;">{{party}}, {{show}}, {{royalty}}, {{territory}}, {{start_date}}</strong> etc. as placeholders. Saved privately.</p></div></div>
+  </div>
+  <hr class="div"/>
+  <div class="sl c">HAHAfriends — your private network</div>
+  <div class="g2">
+    <div class="mc"><strong>Add from Profile</strong><p>On any producer's profile page, click <strong style="color:#03DAC6;">🤝 Add to HAHAfriends</strong>. Their name, email, and plan are saved. Only you see your list.</p></div>
+    <div class="mc"><strong>Add Manually</strong><p>My Hub → HAHAfriends → <strong style="color:#03DAC6;">+ Add Friend</strong>. Name, role, organisation, email, country, private notes.</p></div>
+  </div>
+  <div class="ib c"><strong>Cloud Saved · Private</strong><p>HAHAfriends saved in Supabase — accessible from any device. Nobody else can see your contacts or notes. Your private address book of the comedy world.</p></div>
+  <div class="pf"><span>HahaHub · info@hahahub.art · hahahub.art · Break a Laffing Leg. 🦵</span><span style="font-family:'Bowlby One SC',cursive;font-size:8px;color:rgba(255,255,255,0.1);">TICKLE. SET UP. PUNCH.</span><span>8 / 8</span></div>
 </div>
 
 </body>
