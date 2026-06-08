@@ -687,7 +687,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 const tmpl = activeTemplate;
                 const p = templateParams;
                 const placeholders = [...new Set((tmpl.body.match(/\{\{(\w+)\}\}/g) || []).map((m: string) => m.replace(/\{\{|\}\}/g, '')))].filter((ph: string) => !['ref','share_b'].includes(ph as string)) as string[];
-                const labels: any = { show:'Show', party:'Counter Party', org:'Organisation / Theatre', rights_holder:'Rights Holder', royalty:'Royalty %', territory:'Territory', city:'City / Venue', start_date:'Start Date', end_date:'End Date', advance:'Advance (EUR)', performances:'Performances', governing_law:'Governing Law', author:'Avtor', package:'Package', currency:'Currency', date:'Contract Date' };
+                const labels: any = { show:'Show', party:'Counter Party', org:'Organisation / Theatre', rights_holder:'Rights Holder', rights_holder_org:'Rights Holder Organisation', rights_holder_address:'Rights Holder Address', rights_holder_email:'Rights Holder Email', licensee_address:'Licensee Address', licensee_email:'Licensee Email', royalty:'Royalty %', share_b:'Counter Party Share %', territory:'Territory', city:'City / Venue', start_date:'Start Date', end_date:'End Date', advance:'Fee / Advance (EUR)', performances:'Number of Performances', governing_law:'Governing Law', author:'Author', language:'Original Language', package:'Package', currency:'Currency', date:'Contract Date' };
                 const inputType: any = { start_date:'date', end_date:'date', date:'date', royalty:'number', advance:'number', performances:'number' };
                 const selectOptions: any = { package:['Script License','Full Punch Package'], currency:['EUR','USD','GBP','CHF'] };
 
@@ -869,7 +869,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
+                    <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', share_b:'', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, rights_holder_org:'', rights_holder_address:'', rights_holder_email:user.email||'', licensee_address:'', licensee_email:'', language:'', date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
                       className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-3 py-1.5 hover:bg-brand-yellow hover:text-black transition-all">
                       Use →
                     </button>
@@ -899,7 +899,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
+                      <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', share_b:'', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, rights_holder_org:'', rights_holder_address:'', rights_holder_email:user.email||'', licensee_address:'', licensee_email:'', language:'', date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
                         className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
                         Use →
                       </button>
