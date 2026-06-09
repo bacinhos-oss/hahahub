@@ -508,6 +508,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       hasOriginalMusic: (show as any).has_original_music ? 'true' : 'false',
       videoAuthor: (show as any).video_author || (show as any).videoAuthor || '',
       hasVideoProjections: (show as any).has_video_projections ? 'true' : 'false',
+      scenographer: (show as any).scenographer || '',
+      setAvailable: (show as any).set_available || 'false',
+      lightingDesigner: (show as any).lighting_designer || '',
+      lightingDesignAvailable: (show as any).lighting_design_available || 'false',
       videoDescription: (show as any).video_description || (show as any).videoDescription || '',
       scriptInEnglish: (show as any).script_in_english || (show as any).scriptInEnglish || 'false',
       translationsAvailable: (show as any).translations_available || show.translationsAvailable || '',
@@ -590,6 +594,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         has_original_music: (editForm as any).hasOriginalMusic === 'true',
         video_author: (editForm as any).videoAuthor || null,
         has_video_projections: (editForm as any).hasVideoProjections === 'true',
+        scenographer: (editForm as any).scenographer || null,
+        set_available: (editForm as any).setAvailable || 'false',
+        lighting_designer: (editForm as any).lightingDesigner || null,
+        lighting_design_available: (editForm as any).lightingDesignAvailable || 'false',
         video_description: (editForm as any).videoDescription || null,
         script_in_english: (editForm as any).scriptInEnglish || 'false',
         translations_available: (editForm as any).translationsAvailable || null,
@@ -788,6 +796,20 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       {F('videoAuthor', 'Video Author')}
                       {S('hasVideoProjections', 'Has Video', ['false','true'])}
                       <div className="col-span-2">{F('videoDescription', 'Video Description')}</div>
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Scenography</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {F('scenographer', 'Scenographer')}
+                      {S('setAvailable', 'Set Available', ['false','rent','purchase','plans'])}
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Lighting Design</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {F('lightingDesigner', 'Lighting Designer')}
+                      {S('lightingDesignAvailable', 'Lighting Design Available', ['false','cue_sheet','full'])}
                     </div>
                   </div>
                   <div className="border-2 border-white/10 p-4 space-y-3">
