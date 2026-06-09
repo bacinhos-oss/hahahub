@@ -449,6 +449,28 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           <p className="text-sm font-black italic text-white/30">No video projections</p>
                         )}
                       </div>
+                      {((selectedShow as any).scenographer || (selectedShow as any).set_available !== 'false') && (
+                        <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                          <p className="text-[8px] font-black uppercase text-white/50 italic">🏗️ Scenography</p>
+                          {(selectedShow as any).scenographer && <p className="text-sm font-black italic">{(selectedShow as any).scenographer}</p>}
+                          {(selectedShow as any).set_available && (selectedShow as any).set_available !== 'false' && (
+                            <p className="text-[8px] text-white/40 italic mt-1">
+                              Set: {(selectedShow as any).set_available === 'rent' ? 'Available for rent' : (selectedShow as any).set_available === 'purchase' ? 'Available for purchase' : 'Plans/blueprints available'}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      {((selectedShow as any).lighting_designer || (selectedShow as any).lighting_design_available !== 'false') && (
+                        <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                          <p className="text-[8px] font-black uppercase text-white/50 italic">💡 Lighting Design</p>
+                          {(selectedShow as any).lighting_designer && <p className="text-sm font-black italic">{(selectedShow as any).lighting_designer}</p>}
+                          {(selectedShow as any).lighting_design_available && (selectedShow as any).lighting_design_available !== 'false' && (
+                            <p className="text-[8px] text-white/40 italic mt-1">
+                              {(selectedShow as any).lighting_design_available === 'full' ? 'Full design + cue sheet available' : 'Cue sheet available'}
+                            </p>
+                          )}
+                        </div>
+                      )}
                       <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
                         <p className="text-[8px] font-black uppercase text-brand-pink italic">📄 Script in English</p>
                         {(selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (

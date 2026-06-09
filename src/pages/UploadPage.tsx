@@ -467,7 +467,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                     </div>
                   </div>
                   <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
+                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Video & AV</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div><label className={lbl}>Video / AV Author</label><input name="videoAuthor" value={formData.videoAuthor} onChange={handleInputChange} className={inp} placeholder="Video artist name" /></div>
                       <div><label className={lbl}>Has Video Projections</label>
@@ -479,6 +479,33 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       {formData.hasVideoProjections === 'true' && (
                         <div className="sm:col-span-2"><label className={lbl}>Video Description</label><input name="videoDescription" value={formData.videoDescription} onChange={handleInputChange} className={inp} placeholder="e.g. 4 back projections, 20min, abstract animations" /></div>
                       )}
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Scenography</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label className={lbl}>Scenographer</label><input name="scenographer" value={(formData as any).scenographer || ''} onChange={handleInputChange} className={inp} placeholder="Set designer name" /></div>
+                      <div><label className={lbl}>Set Available for Licensing</label>
+                        <select name="setAvailable" value={(formData as any).setAvailable || 'false'} onChange={handleInputChange} className={sel}>
+                          <option value="false">No — buyer builds own set</option>
+                          <option value="rent">Yes — available for rent</option>
+                          <option value="purchase">Yes — available for purchase</option>
+                          <option value="plans">Plans/blueprints only</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Lighting Design</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label className={lbl}>Lighting Designer</label><input name="lightingDesigner" value={(formData as any).lightingDesigner || ''} onChange={handleInputChange} className={inp} placeholder="Lighting designer name" /></div>
+                      <div><label className={lbl}>Lighting Design Available</label>
+                        <select name="lightingDesignAvailable" value={(formData as any).lightingDesignAvailable || 'false'} onChange={handleInputChange} className={sel}>
+                          <option value="false">No</option>
+                          <option value="cue_sheet">Cue sheet only</option>
+                          <option value="full">Full design + cue sheet</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                   <div className="border-2 border-white/10 p-4 space-y-3">
