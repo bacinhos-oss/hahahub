@@ -174,7 +174,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                     onClick={() => onNavigate('login')}
                     className={`group relative flex-shrink-0 w-48 md:w-64 aspect-[2/3] cursor-pointer overflow-hidden border-4 transition-all duration-500 snap-start ${i === sliderIdx ? 'border-brand-yellow shadow-neo-yellow scale-105' : 'border-white/30 grayscale hover:grayscale-0'}`}
                   >
-                    <img src={(show as any).thumbnailUrl || show.imageUrl} className="w-full h-full object-cover scale-105 group-hover:scale-110 transition-all duration-700" alt={show.title} />
+                    <img src={show.imageUrl} className="w-full h-full object-cover scale-105 group-hover:scale-110 transition-all duration-700" alt={show.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="bg-brand-pink text-white px-3 py-2 border-4 border-black font-black uppercase italic rotate-[-3deg] text-xs">Access Locked</div>

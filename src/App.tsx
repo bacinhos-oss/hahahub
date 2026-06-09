@@ -132,7 +132,6 @@ const App: React.FC = () => {
       trailer_url: s.trailer_url || '',
       script_in_english: s.script_in_english || 'false',
       imageUrl: s.image_url || '',
-      thumbnailUrl: s.image_url ? s.image_url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=400&quality=75' : '',
       genre: s.genre || '',
       language: s.language || '',
       location: s.location || '',

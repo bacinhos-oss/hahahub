@@ -1540,7 +1540,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 {/* IMAGE */}
                 <div className="relative overflow-hidden" style={{aspectRatio:'2/3'}}>
                   {show.imageUrl ? (
-                    <img src={(show as any).thumbnailUrl || show.imageUrl} alt={show.title}
+                    <img src={show.imageUrl} alt={show.title}
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                   ) : (
                     <div className="w-full h-full bg-brand-black flex items-center justify-center">
