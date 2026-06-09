@@ -663,10 +663,12 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       setActiveTemplate(tmpl);
                       setTemplateParams({
                         show: myShows[0]?.title || '', show_id: myShows[0]?.id || '',
-                        royalty: myShows[0]?.scriptRoyaltyPct || '10',
+                        royalty: myShows[0]?.scriptRoyaltyPct || '10', share_b: '',
                         party: '', org: '', territory: '', city: '', performances: '',
                         start_date: '', end_date: '', advance: '0', currency: 'EUR',
-                        rights_holder: user.name, date: new Date().toISOString().split('T')[0],
+                        rights_holder: user.name, rights_holder_org: '', rights_holder_address: '',
+                        rights_holder_email: (user as any).email || '', licensee_address: '', licensee_email: '',
+                        language: '', date: new Date().toISOString().split('T')[0],
                         package: 'Script License', governing_law: '', author: myShows[0]?.author || '',
                         ref: Date.now().toString().slice(-6),
                       });
