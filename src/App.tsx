@@ -179,6 +179,10 @@ const App: React.FC = () => {
       video_author: s.video_author || '',
       has_video_projections: s.has_video_projections || false,
       video_description: s.video_description || '',
+      scenographer: s.scenographer || '',
+      set_available: s.set_available || 'false',
+      lighting_designer: s.lighting_designer || '',
+      lighting_design_available: s.lighting_design_available || 'false',
       // Packages
       hasScriptPackage: s.has_script_package !== false,
       scriptRoyaltyPct: s.script_royalty_pct || null,
