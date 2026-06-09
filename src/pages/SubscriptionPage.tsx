@@ -715,7 +715,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
               {/* 02. FULL PUNCH */}
               <section className="border-4 border-brand-pink/30 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">02. Full Punch</h3>
+                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">02. Licensing Packages</h3>
 
                 {/* ENABLE */}
                 <div className={"border-2 p-4 space-y-4 " + ((editForm as any).hasFullPunchPackage ? "border-brand-pink/40 bg-brand-pink/5" : "border-white/10")}>
@@ -803,6 +803,24 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     </div>
                   </div>
                 </div>
+
+                {/* SCRIPT PACKAGE — moved from 05 */}
+                <div className="border-t-2 border-white/10 pt-4">
+                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-3">Script Only Package</p>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
+                      <span className="font-black uppercase italic text-white text-sm">📄 The Script — Script Only License</span>
+                    </div>
+                    <p className="text-white/30 text-[9px] italic pl-7">Buyer gets the script and produces independently.</p>
+                    {(editForm as any).hasScriptPackage && (
+                      <div className="grid grid-cols-2 gap-3 pl-7">
+                        {F('scriptRoyaltyPct', 'Royalty % *', 'number')}
+                        {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </section>
 
               {/* 03. MARKET PERFORMANCE */}
@@ -828,24 +846,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
                   {F('territoriesAvailable', 'Territories Available')}
                   {F('licensedCountries', 'Licensed Countries')}
-                </div>
-              </section>
-
-              {/* 05. LICENSING PACKAGES */}
-              <section className="border-4 border-brand-yellow/30 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-yellow border-b border-white/10 pb-2">05. Licensing Packages</h3>
-                <p className="text-white/30 text-[9px] italic">Script only license. Full Punch is configured in section 02.</p>
-                <div className="border-2 border-white/10 p-4 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
-                    <span className="font-black uppercase italic text-white text-sm">📄 The Script — Script Only License</span>
-                  </div>
-                  {(editForm as any).hasScriptPackage && (
-                    <div className="grid grid-cols-2 gap-3 pl-7">
-                      {F('scriptRoyaltyPct', 'Royalty % *', 'number')}
-                      {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
-                    </div>
-                  )}
                 </div>
               </section>
 

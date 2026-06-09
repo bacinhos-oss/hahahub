@@ -368,8 +368,8 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
               {/* 02. FULL PUNCH */}
               <section className={sec + " shadow-neo-magenta border-brand-pink"}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
-                  <h3 className="text-xl font-black uppercase italic text-brand-pink">02. Full Punch</h3>
-                  <p className="text-white/30 text-xs italic mt-0.5">Your complete know-how package. Mark what you have — buyers see exactly what they get.</p>
+                  <h3 className="text-xl font-black uppercase italic text-brand-pink">02. Licensing Packages</h3>
+                  <p className="text-white/30 text-xs italic mt-0.5">Set up your licensing packages — Script Only and Full Punch. Buyers choose which they want.</p>
                 </div>
 
                 {/* ENABLE FULL PUNCH */}
@@ -502,6 +502,35 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                     <div><label className={lbl}>Script Excerpt / Scenario (3 pages in English)</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={4} className={inp} placeholder="Paste a short excerpt or scene description..." /></div>
                   </div>
                 </div>
+
+
+                {/* SCRIPT PACKAGE */}
+                <div className="border-t-2 border-white/10 mt-4 pt-4">
+                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-3">Script Only Package</p>
+                <div className={"border-4 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/50" : "border-white/10")}>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
+                      onChange={e => setFormData(p => ({ ...p, hasScriptPackage: e.target.checked }))}
+                      className="w-4 h-4 accent-brand-yellow" />
+                    <label htmlFor="hasScript" className="font-black uppercase italic text-white cursor-pointer">📄 The Script — Script Only License</label>
+                  </div>
+                  <p className="text-white/30 text-xs italic pl-7">Buyer gets the script and produces independently.</p>
+                  {formData.hasScriptPackage && (
+                    <div className="grid grid-cols-2 gap-3 pl-7">
+                      <div>
+                        <label className={lbl}>Royalty % *</label>
+                        <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="10" />
+                        <p className="text-white/20 text-[9px] italic mt-1">% of gross box office</p>
+                      </div>
+                      <div>
+                        <label className={lbl}>Advance Fee (EUR)</label>
+                        <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
+                        <p className="text-white/20 text-[9px] italic mt-1">Optional upfront payment</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                </div>
               </section>
 
               {/* 03. MARKET PERFORMANCE */}
@@ -557,39 +586,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       <option value="Non-exclusive">Non-exclusive</option>
                     </select>
                   </div>
-                </div>
-              </section>
-
-              {/* 05. LICENSING PACKAGES */}
-              <section className={sec + " border-brand-yellow shadow-neo-yellow"}>
-                <div className="border-b-2 border-white/10 pb-3 mb-2">
-                  <h3 className="text-xl font-black uppercase italic text-brand-yellow">05. Licensing Packages</h3>
-                  <p className="text-white/30 text-xs italic mt-0.5">Script only license — for buyers who produce independently. Full Punch is configured in section 02.</p>
-                </div>
-
-                {/* SCRIPT PACKAGE */}
-                <div className={"border-4 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/50" : "border-white/10")}>
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
-                      onChange={e => setFormData(p => ({ ...p, hasScriptPackage: e.target.checked }))}
-                      className="w-4 h-4 accent-brand-yellow" />
-                    <label htmlFor="hasScript" className="font-black uppercase italic text-white cursor-pointer">📄 The Script — Script Only License</label>
-                  </div>
-                  <p className="text-white/30 text-xs italic pl-7">Buyer gets the script and produces independently.</p>
-                  {formData.hasScriptPackage && (
-                    <div className="grid grid-cols-2 gap-3 pl-7">
-                      <div>
-                        <label className={lbl}>Royalty % *</label>
-                        <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="10" />
-                        <p className="text-white/20 text-[9px] italic mt-1">% of gross box office</p>
-                      </div>
-                      <div>
-                        <label className={lbl}>Advance Fee (EUR)</label>
-                        <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
-                        <p className="text-white/20 text-[9px] italic mt-1">Optional upfront payment</p>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </section>
 
