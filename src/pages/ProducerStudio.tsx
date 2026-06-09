@@ -702,12 +702,16 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 };
 
                 return (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <p className="font-black uppercase italic text-brand-yellow">{tmpl.title}</p>
-                      <button onClick={() => setActiveTemplate(null)} className="text-white/30 hover:text-white font-black uppercase italic text-xs">← Back</button>
-                    </div>
-
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.85)'}}>
+                    <div className="bg-brand-black border-4 border-brand-yellow w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                      <div className="sticky top-0 bg-brand-black border-b-4 border-brand-yellow px-6 py-4 flex items-center justify-between z-10">
+                        <div>
+                          <p className="font-black uppercase italic text-brand-yellow text-lg">{tmpl.title}</p>
+                          {tmpl.description && <p className="text-white/30 text-[9px] italic">{tmpl.description}</p>}
+                        </div>
+                        <button onClick={() => setActiveTemplate(null)} className="text-white/40 hover:text-white font-black uppercase italic text-sm border-2 border-white/20 px-3 py-1 hover:border-white transition-all">✕ Close</button>
+                      </div>
+                      <div className="p-6 space-y-5">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {placeholders.map((ph: string) => (
                         <div key={ph}>
@@ -752,6 +756,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                         className="border-4 border-white/20 text-white/40 px-4 py-3 font-black uppercase italic text-sm hover:text-white transition-all">
                         🖨️ Print
                       </button>
+                    </div>
+                      </div>
                     </div>
                   </div>
                 );
