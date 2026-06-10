@@ -9,20 +9,29 @@ const LiveActivity: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const [{ data: profiles }, { data: inquiries }, { count: pCount }, { count: sCount }, { count: dCount }] = await Promise.all([
-          supabase.from('profiles').select('name, created_at').order('created_at', { ascending: false }).limit(4),
-          supabase.from('inquiries').select('from_name, territory, created_at, package_type').order('created_at', { ascending: false }).limit(4),
+        const [{ data: profiles }, { data: inquiries }, { data: allInquiries }, { count: pCount }, { count: sCount }, { count: dCount }] = await Promise.all([
+          supabase.from('profiles').select('created_at').eq('onboarded', true).order('created_at', { ascending: false }).limit(4),
+          supabase.from('inquiries').select('territory, created_at, package_type').order('created_at', { ascending: false }).limit(4),
+          supabase.from('inquiries').select('territory'),
           supabase.from('profiles').select('*', { count: 'exact', head: true }),
           supabase.from('shows').select('*', { count: 'exact', head: true }),
           supabase.from('inquiries').select('*', { count: 'exact', head: true }),
         ]);
 
+        const countries = new Set(allInquiries?.map((i: any) => i.territory).filter(Boolean)).size;
+
         const items: any[] = [];
-        profiles?.forEach(p => items.push({ text: `${p.name} joined HahaHub`, time: p.created_at, icon: '🎭', color: 'text-brand-cyan' }));
-        inquiries?.forEach(i => items.push({ text: `${i.from_name}${i.territory ? ' from ' + i.territory : ''} sent a ${i.package_type === 'full_punch' ? '🥊 Full Punch' : '📄 Script'} inquiry`, time: i.created_at, icon: '👆', color: 'text-brand-pink' }));
+        profiles?.forEach(p => items.push({ 
+          text: `A producer joined HahaHub`, 
+          time: p.created_at, color: 'text-brand-cyan' 
+        }));
+        inquiries?.forEach(i => items.push({ 
+          text: `A producer${i.territory ? ' from ' + i.territory : ''} sent a ${i.package_type === 'full_punch' ? 'Full Punch' : 'Script'} inquiry`, 
+          time: i.created_at, color: 'text-brand-pink' 
+        }));
         items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
         setActivity(items.slice(0, 6));
-        setStats({ producers: pCount || 0, shows: sCount || 0, deals: dCount || 0, countries: 12 });
+        setStats({ producers: pCount || 0, shows: sCount || 0, deals: dCount || 0, countries: countries || 0 });
         setLoaded(true);
       } catch (e) {
         // silently fail — never crash parent
@@ -75,7 +84,6 @@ const LiveActivity: React.FC = () => {
             <div className="space-y-2">
               {activity.map((a, i) => (
                 <div key={i} className="flex items-center gap-3 border-l-2 border-white/10 pl-3 py-1">
-                  <span className="text-sm flex-shrink-0">{a.icon}</span>
                   <p className={`text-xs font-black italic truncate flex-1 ${a.color}`}>{a.text}</p>
                   <p className="text-[8px] text-white/20 flex-shrink-0">{timeAgo(a.time)}</p>
                 </div>
