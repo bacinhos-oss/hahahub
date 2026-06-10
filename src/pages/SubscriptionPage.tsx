@@ -406,14 +406,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   };
 
   const loadInquiries = async () => {
-    // PREJETE — inquiries on my shows (recipient_id = me OR show is mine)
-    const myShowIds = shows.filter((s: any) => s.user_id === user?.id).map((s: any) => s.id);
+    // PREJETE — inquiries where I am the recipient (rights holder)
     const { data } = await supabase
       .from('inquiries')
       .select('*')
-      .in('show_id', myShowIds.length > 0 ? myShowIds : ['none'])
+      .eq('producer_id', user?.id)
       .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(50);
 
     // POSLANE — inquiries I sent (producer_id = me, type = sent)
     const { data: sent } = await supabase
