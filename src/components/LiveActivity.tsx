@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 
 const LiveActivity: React.FC = () => {
   const [activity, setActivity] = useState<any[]>([]);
-  const [stats, setStats] = useState({ producers: 0, shows: 0, deals: 0, countries: 0 });
+  const [stats, setStats] = useState({ producers: 0, shows: 0, views: 0, countries: 0 });
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -12,23 +12,22 @@ const LiveActivity: React.FC = () => {
         const [
           { data: profiles },
           { data: inquiries },
-          { data: allShows },
+          { data: profileLocations },
           { count: pCount },
           { count: sCount },
-          { count: dCount },
+          { count: vCount },
         ] = await Promise.all([
           supabase.from('profiles').select('created_at, location').eq('onboarded', true).order('created_at', { ascending: false }).limit(4),
           supabase.from('inquiries').select('territory, created_at, package_type').order('created_at', { ascending: false }).limit(4),
-          supabase.from('shows').select('location'),
+          supabase.from('profiles').select('location').eq('onboarded', true).not('location', 'is', null),
           supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('onboarded', true),
           supabase.from('shows').select('*', { count: 'exact', head: true }),
-          supabase.from('inquiries').select('*', { count: 'exact', head: true }),
+          supabase.from('show_views').select('*', { count: 'exact', head: true }),
         ]);
 
-        // Count unique countries from shows + inquiry territories
-        const countrySet = new Set<string>();
-        allShows?.forEach((s: any) => { if (s.location) s.location.split(',').forEach((l: string) => countrySet.add(l.trim())); });
-        inquiries?.forEach((i: any) => { if (i.territory) countrySet.add(i.territory.trim()); });
+        // Count unique countries from producer profiles — start at 1 (Slovenia)
+        const countrySet = new Set<string>(['Slovenia']);
+        profileLocations?.forEach((p: any) => { if (p.location) countrySet.add(p.location.trim()); });
 
         const items: any[] = [];
         profiles?.forEach((p: any) => {
@@ -48,7 +47,7 @@ const LiveActivity: React.FC = () => {
         });
         items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
         setActivity(items.slice(0, 6));
-        setStats({ producers: pCount || 0, shows: sCount || 0, deals: dCount || 0, countries: countrySet.size });
+        setStats({ producers: pCount || 0, shows: sCount || 0, views: vCount || 0, countries: countrySet.size });
         setLoaded(true);
       } catch (e) {
         // silently fail
@@ -72,7 +71,7 @@ const LiveActivity: React.FC = () => {
   const statItems = [
     { label: 'Producers', value: stats.producers, color: '#03DAC6', border: '#03DAC6' },
     { label: 'Shows', value: stats.shows, color: '#FFDE03', border: '#FFDE03' },
-    { label: 'Deals', value: stats.deals, color: '#FF0266', border: '#FF0266' },
+    { label: 'Views', value: stats.views, color: '#FF0266', border: '#FF0266' },
     { label: 'Countries', value: stats.countries, color: '#fff', border: 'rgba(255,255,255,0.3)' },
   ];
 
