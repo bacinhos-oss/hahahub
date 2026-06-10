@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import { Page, Show } from '../types';
 import PaymentModal from '../components/PaymentModal';
 import { supabase } from '../lib/supabase';
+import LiveActivity from '../components/LiveActivity';
 
 interface LandingPageProps {
   onNavigate: (page: Page) => void;
@@ -128,6 +129,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
 
 
 {/* YOUR COMEDY BUSINESS. IN ONE PLACE. */}
+        <LiveActivity />
         <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10 bg-white/[0.02]">
           <div className="max-w-7xl mx-auto">
             <div className="mb-10 md:mb-14">
