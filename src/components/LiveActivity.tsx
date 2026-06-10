@@ -3,38 +3,55 @@ import { supabase } from '../lib/supabase';
 
 const LiveActivity: React.FC = () => {
   const [activity, setActivity] = useState<any[]>([]);
-  const [stats, setStats] = useState({ producers: 0, shows: 0, deals: 0, countries: 12 });
+  const [stats, setStats] = useState({ producers: 0, shows: 0, deals: 0, countries: 0 });
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [{ data: profiles }, { data: inquiries }, { data: allInquiries }, { count: pCount }, { count: sCount }, { count: dCount }] = await Promise.all([
-          supabase.from('profiles').select('created_at').eq('onboarded', true).order('created_at', { ascending: false }).limit(4),
+        const [
+          { data: profiles },
+          { data: inquiries },
+          { data: allShows },
+          { count: pCount },
+          { count: sCount },
+          { count: dCount },
+        ] = await Promise.all([
+          supabase.from('profiles').select('created_at, location').eq('onboarded', true).order('created_at', { ascending: false }).limit(4),
           supabase.from('inquiries').select('territory, created_at, package_type').order('created_at', { ascending: false }).limit(4),
-          supabase.from('inquiries').select('territory'),
-          supabase.from('profiles').select('*', { count: 'exact', head: true }),
+          supabase.from('shows').select('location'),
+          supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('onboarded', true),
           supabase.from('shows').select('*', { count: 'exact', head: true }),
           supabase.from('inquiries').select('*', { count: 'exact', head: true }),
         ]);
 
-        const countries = new Set(allInquiries?.map((i: any) => i.territory).filter(Boolean)).size;
+        // Count unique countries from shows + inquiry territories
+        const countrySet = new Set<string>();
+        allShows?.forEach((s: any) => { if (s.location) s.location.split(',').forEach((l: string) => countrySet.add(l.trim())); });
+        inquiries?.forEach((i: any) => { if (i.territory) countrySet.add(i.territory.trim()); });
 
         const items: any[] = [];
-        profiles?.forEach(p => items.push({ 
-          text: `A producer joined HahaHub`, 
-          time: p.created_at, color: 'text-brand-cyan' 
-        }));
-        inquiries?.forEach(i => items.push({ 
-          text: `A producer${i.territory ? ' from ' + i.territory : ''} sent a ${i.package_type === 'full_punch' ? 'Full Punch' : 'Script'} inquiry`, 
-          time: i.created_at, color: 'text-brand-pink' 
-        }));
+        profiles?.forEach((p: any) => {
+          const loc = (p as any).location;
+          items.push({
+            text: `A producer${loc ? ' from ' + loc : ''} joined HahaHub`,
+            time: p.created_at,
+            color: 'cyan',
+          });
+        });
+        inquiries?.forEach((i: any) => {
+          items.push({
+            text: `A producer${i.territory ? ' from ' + i.territory : ''} sent a ${i.package_type === 'full_punch' ? 'Full Punch' : 'Script'} inquiry`,
+            time: i.created_at,
+            color: 'pink',
+          });
+        });
         items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
         setActivity(items.slice(0, 6));
-        setStats({ producers: pCount || 0, shows: sCount || 0, deals: dCount || 0, countries: countries || 0 });
+        setStats({ producers: pCount || 0, shows: sCount || 0, deals: dCount || 0, countries: countrySet.size });
         setLoaded(true);
       } catch (e) {
-        // silently fail — never crash parent
+        // silently fail
       }
     };
     load();
@@ -52,40 +69,53 @@ const LiveActivity: React.FC = () => {
     return `${Math.floor(diff / 1440)}d ago`;
   };
 
-  return (
-    <section className="px-4 md:px-12 py-8 border-b-4 border-white/10">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-6 items-start">
+  const statItems = [
+    { label: 'Producers', value: stats.producers, color: '#03DAC6', border: '#03DAC6' },
+    { label: 'Shows', value: stats.shows, color: '#FFDE03', border: '#FFDE03' },
+    { label: 'Deals', value: stats.deals, color: '#FF0266', border: '#FF0266' },
+    { label: 'Countries', value: stats.countries, color: '#fff', border: 'rgba(255,255,255,0.3)' },
+  ];
 
-          {/* Stats */}
-          <div className="flex-shrink-0 space-y-2 w-full md:w-44">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-brand-pink animate-pulse"></span>
-              <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic">Live</p>
-            </div>
-            <div className="grid grid-cols-4 md:grid-cols-1 gap-2">
-              {[
-                { label: 'Producers', value: stats.producers, color: 'text-brand-cyan' },
-                { label: 'Shows', value: stats.shows, color: 'text-brand-yellow' },
-                { label: 'Deals', value: stats.deals, color: 'text-brand-pink' },
-                { label: 'Countries', value: stats.countries, color: 'text-white' },
-              ].map((s, i) => (
-                <div key={i} className="border-2 border-white/10 px-3 py-2">
-                  <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
-                  <p className="text-[8px] font-black uppercase italic text-white/30">{s.label}</p>
-                </div>
-              ))}
-            </div>
+  return (
+    <section style={{ borderBottom: '4px solid rgba(255,255,255,0.08)', padding: '32px 0' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FF0266', display: 'inline-block', animation: 'pulse 2s infinite' }}></span>
+          <p style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', color: '#FF0266', fontStyle: 'italic', margin: 0 }}>Live on HahaHub</p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '32px', alignItems: 'start' }}>
+
+          {/* Stats grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', minWidth: '240px' }}>
+            {statItems.map((s, i) => (
+              <div key={i} style={{ border: `2px solid ${s.border}20`, padding: '12px 16px', background: `${s.border}08` }}>
+                <p style={{ fontSize: '32px', fontWeight: 900, color: s.color, margin: '0 0 2px', lineHeight: 1, fontStyle: 'italic' }}>{s.value}</p>
+                <p style={{ fontSize: '8px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>{s.label}</p>
+              </div>
+            ))}
           </div>
 
           {/* Activity feed */}
-          <div className="flex-1 min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 italic mb-3">Latest Activity</p>
-            <div className="space-y-2">
-              {activity.map((a, i) => (
-                <div key={i} className="flex items-center gap-3 border-l-2 border-white/10 pl-3 py-1">
-                  <p className={`text-xs font-black italic truncate flex-1 ${a.color}`}>{a.text}</p>
-                  <p className="text-[8px] text-white/20 flex-shrink-0">{timeAgo(a.time)}</p>
+          <div>
+            <p style={{ fontSize: '8px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '3px', color: 'rgba(255,255,255,0.2)', marginBottom: '12px', fontStyle: 'italic' }}>Latest Activity</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {activity.length === 0 ? (
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', fontStyle: 'italic' }}>No activity yet — be the first.</p>
+              ) : activity.map((a, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  borderLeft: `3px solid ${a.color === 'cyan' ? '#03DAC6' : '#FF0266'}30`,
+                  paddingLeft: '12px', paddingTop: '6px', paddingBottom: '6px',
+                }}>
+                  <p style={{
+                    fontSize: '11px', fontWeight: 900, fontStyle: 'italic',
+                    color: a.color === 'cyan' ? '#03DAC6' : '#FF0266',
+                    margin: 0, flex: 1,
+                  }}>{a.text}</p>
+                  <p style={{ fontSize: '8px', color: 'rgba(255,255,255,0.2)', flexShrink: 0, margin: 0, fontWeight: 700 }}>{timeAgo(a.time)}</p>
                 </div>
               ))}
             </div>
@@ -93,6 +123,7 @@ const LiveActivity: React.FC = () => {
 
         </div>
       </div>
+      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }`}</style>
     </section>
   );
 };
