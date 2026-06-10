@@ -56,6 +56,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
     return () => clearInterval(t);
   }, []);
 
+  const sliderShows = shows.slice(0, 6);
+
   useEffect(() => {
     if (sliderShows.length === 0) return;
     sliderRef.current = setInterval(() => setSliderIdx(i => (i + 1) % sliderShows.length), 3000);
