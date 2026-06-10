@@ -127,7 +127,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-xl" onClick={() => setSelectedShowId(null)}></div>
-        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-yellow animate-in fade-in zoom-in-95 duration-500 ease-out text-white pb-12">
+        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-yellow animate-in fade-in zoom-in-95 duration-500 ease-out text-white pb-12">
           <button onClick={() => setSelectedShowId(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all z-20">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
@@ -290,7 +290,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 01. CREATIVE ENGINE */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">01. CREATIVE ENGINE</h4>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-4 md:gap-12">
                       <div className="space-y-6">
                         <div className="flex gap-4">
                           <div className="flex-1 border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
@@ -302,7 +302,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                              <p className="text-xl font-black italic uppercase">{selectedShow.director || 'TBD'}</p>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-2 md:gap-4">
                           <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                              <p className="text-[8px] font-black uppercase text-brand-yellow italic">Subgenre</p>
                              <p className="text-sm font-black italic break-words">{selectedShow.subgenre || 'N/A'}</p>
@@ -320,7 +320,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                              <p className="text-sm font-black italic break-words">{selectedShow.creativeTeamAvailability}</p>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-2 md:gap-4">
                           <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
                              <span className="text-xs font-black uppercase italic text-brand-yellow">Male Roles</span>
                              <span className="text-2xl font-black">{selectedShow.maleRoles}</span>
@@ -343,7 +343,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-sm italic text-gray-300 break-words">{selectedShow.internationalSuccessNotes}</p>
                         </div>}
                       </div>
-                      <div className="bg-brand-surface border-4 border-white p-8 space-y-6 shadow-neo-magenta">
+                      <div className="bg-brand-surface border-4 border-white p-4 md:p-8 space-y-4 md:space-y-6 shadow-neo-magenta">
                          <div className="border-b-2 border-white/10 pb-4">
                             <p className="text-[10px] font-black uppercase text-brand-pink italic mb-2">Director's Vision Notes</p>
                             <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.directorNotes || 'Standard staging permitted.'}</p>
@@ -423,7 +423,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     )}
 
                     {/* Production Assets Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                         <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
                         {(selectedShow as any).music_author ? (
@@ -495,33 +495,33 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 03. TECHNICAL STACK */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">03. TECHNICAL STACK & PRODUCTION SCALE</h4>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-cyan">
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
-                          <p className="text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
+                          <p className="text-lg md:text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-magenta">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-magenta">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Sound</p>
-                          <p className="text-2xl font-black text-brand-pink">{selectedShow.techStaffSound}</p>
+                          <p className="text-lg md:text-2xl font-black text-brand-pink">{selectedShow.techStaffSound}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-yellow">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-yellow">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Stagehands</p>
-                          <p className="text-2xl font-black text-brand-yellow">{selectedShow.techStaffStagehands}</p>
+                          <p className="text-lg md:text-2xl font-black text-brand-yellow">{selectedShow.techStaffStagehands}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Prompter</p>
-                          <p className="text-2xl font-black text-white">{selectedShow.techStaffPrompter}</p>
+                          <p className="text-lg md:text-2xl font-black text-white">{selectedShow.techStaffPrompter}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-cyan">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Scale</p>
-                          <p className="text-xl font-black uppercase italic text-brand-cyan">{selectedShow.productionScale}</p>
+                          <p className="text-sm md:text-xl font-black uppercase italic text-brand-cyan">{selectedShow.productionScale}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-6 text-center shadow-neo-magenta">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-magenta">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Touring</p>
-                          <p className="text-xl font-black uppercase italic text-brand-pink">{selectedShow.isTouringFriendly ? 'YES' : 'NO'}</p>
+                          <p className="text-sm md:text-xl font-black uppercase italic text-brand-pink">{selectedShow.isTouringFriendly ? 'YES' : 'NO'}</p>
                        </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                        {[
                          { label: 'Technical', value: selectedShow.technicalComplexity },
                          { label: 'Costumes', value: selectedShow.costumeComplexity },
@@ -540,7 +540,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 03. MARKET PERFORMANCE */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">04. MARKET PERFORMANCE</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
                            <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'N/A'}</p></div>
                            <span className="material-symbols-outlined text-brand-yellow">calendar_today</span>
@@ -645,14 +645,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   })()}
 
                   {/* CTA SECTION — PACKAGE SELECTOR */}
-                  <div className="bg-brand-surface border-8 border-brand-cyan p-6 md:p-10 space-y-6 shadow-neo-magenta">
+                  <div className="bg-brand-surface border-4 md:border-8 border-brand-cyan p-4 md:p-10 space-y-4 md:space-y-6 shadow-neo-magenta">
                     <div className="text-center">
                       <h4 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter">Select Package &amp; Tickle</h4>
                       <p className="text-white/30 text-xs italic mt-1">Choose your licensing package. Royalty is calculated per performance.</p>
                     </div>
 
                     {/* PACKAGES */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       {/* SCRIPT */}
                       {(selectedShow as any).has_script_package !== false && (
                         <div className={"border-4 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-brand-yellow/60')}
@@ -937,7 +937,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               </div>
 
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-gray-500 italic">Full Name</label>
                     <input type="text" value={inquiryName} onChange={e => setInquiryName(e.target.value)} className="w-full bg-brand-black border-2 border-white/20 p-3 text-white font-bold uppercase outline-none focus:border-brand-cyan" />

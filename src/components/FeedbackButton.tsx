@@ -6,8 +6,14 @@ const FeedbackButton: React.FC = () => {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-
   const [error, setError] = useState('');
+
+  // Listen for mobile menu trigger
+  React.useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener('openFeedback', handler);
+    return () => window.removeEventListener('openFeedback', handler);
+  }, []);
 
   const handleSend = async () => {
     if (!message.trim()) return;

@@ -96,6 +96,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             <button onClick={() => { onNavigate('subscription'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/70 hover:text-white transition-colors">MY HUB</button>
             {user && <button onClick={() => { onNavigate('upload'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-cyan/70 hover:text-brand-cyan transition-colors">SHOWLOAD</button>}
             {isAdmin && <button onClick={() => { onNavigate('admin'); setMenuOpen(false); }} className="text-left text-lg font-black uppercase italic tracking-widest text-brand-pink/70 hover:text-brand-pink transition-colors">ADMIN</button>}
+            <button onClick={() => { setMenuOpen(false); window.dispatchEvent(new CustomEvent('openFeedback')); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/30 hover:text-white transition-colors">FEEDBACK</button>
           </div>
           <div className="border-t-2 border-white/10 pt-6">
             {user ? (
