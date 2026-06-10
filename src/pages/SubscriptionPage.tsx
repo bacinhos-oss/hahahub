@@ -1044,13 +1044,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             </div>
 
             {/* TABS — by plan */}
-            <div className="flex border-4 border-white/20 w-fit overflow-x-auto">
+            <div className="flex border-4 border-white/20 w-full overflow-x-auto">
               {(['studio', 'assets', 'profile'] as const).map(tab => {
                 const unread = tab === 'studio' ? inquiries.filter((i: any) => !i.is_read).length : 0;
                 return (
                   <button key={tab} onClick={() => setActiveTab(tab)}
-                    className={`px-5 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
-                    {tab === 'studio' ? 'STUDIO' : tab === 'assets' ? 'MY SHOWS' : 'MY PROFILE'}
+                    className={`flex-1 px-3 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === tab ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white'}`}>
+                    {tab === 'studio' ? 'STUDIO' : tab === 'assets' ? 'MY SHOWS' : 'PROFILE'}
                     {unread > 0 && (
                       <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full ${activeTab === tab ? 'bg-black text-brand-yellow' : 'bg-brand-pink text-white'}`}>{unread}</span>
                     )}

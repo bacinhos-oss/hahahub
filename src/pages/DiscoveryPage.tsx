@@ -622,7 +622,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     return (
                       <section className="space-y-4">
                         <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 italic">Similar Shows</h4>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                           {similar.map(s => (
                             <div
                               key={s.id}

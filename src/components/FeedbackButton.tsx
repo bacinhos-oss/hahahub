@@ -38,7 +38,7 @@ const FeedbackButton: React.FC = () => {
       {/* Floating button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 bg-brand-surface border-4 border-white/20 hover:border-brand-yellow text-white/50 hover:text-brand-yellow transition-all px-3 py-2 font-black uppercase italic text-[10px] tracking-widest flex items-center gap-2 shadow-lg"
+        className="hidden md:flex fixed bottom-6 right-6 z-40 bg-brand-surface border-2 border-white/20 hover:border-brand-yellow text-white/40 hover:text-brand-yellow transition-all px-3 py-2 font-black uppercase italic text-[10px] tracking-widest items-center gap-1.5 shadow-lg"
         style={{ display: open ? 'none' : 'flex' }}
       >
         <span className="material-symbols-outlined text-sm">bug_report</span>
