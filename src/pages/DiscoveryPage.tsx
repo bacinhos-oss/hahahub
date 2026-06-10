@@ -338,6 +338,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-[8px] font-black uppercase text-brand-cyan italic">Translations Available</p>
                            <p className="text-sm font-black italic break-words">{selectedShow.translationsAvailable}</p>
                         </div>}
+                        {(selectedShow as any).translationRightsIncluded === true || (selectedShow as any).translation_rights_included === true ? (
+                          <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
+                            <p className="text-[8px] font-black uppercase text-brand-cyan italic">Translation Rights</p>
+                            <p className="text-sm font-black italic">Included in license</p>
+                          </div>
+                        ) : null}
                         {selectedShow.internationalSuccessNotes && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                            <p className="text-[8px] font-black uppercase text-brand-yellow italic">International Success</p>
                            <p className="text-sm italic text-gray-300 break-words">{selectedShow.internationalSuccessNotes}</p>
