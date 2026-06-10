@@ -42,9 +42,47 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
     { quote: "We are all in the gutter, but some of us are looking at the stars.", author: "Oscar Wilde", org: "1854–1900" },
   ];
 
-  const sliderShows = shows.slice(0, 6);
+  const [liveActivity, setLiveActivity] = useState<any[]>([]);
+  const [platformStats, setPlatformStats] = useState({ producers: 0, shows: 0, countries: 0, deals: 0 });
+  const activityRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load real founding producer count + punch count from Supabase
+  // Load live activity
+  useEffect(() => {
+    const loadActivity = async () => {
+      const [{ data: recentProfiles }, { data: recentInquiries }, { data: recentViews }] = await Promise.all([
+        supabase.from('profiles').select('name, created_at').order('created_at', { ascending: false }).limit(5),
+        supabase.from('inquiries').select('from_name, territory, created_at, package_type').order('created_at', { ascending: false }).limit(5),
+        supabase.from('show_views').select('created_at, show_id').order('created_at', { ascending: false }).limit(5),
+      ]);
+
+      const activities: any[] = [];
+
+      recentProfiles?.forEach(p => {
+        activities.push({ type: 'join', text: `${p.name} joined HahaHub`, time: p.created_at, icon: '🎭', color: 'text-brand-cyan' });
+      });
+      recentInquiries?.forEach(i => {
+        activities.push({ type: 'tickle', text: `${i.from_name}${i.territory ? ' from ' + i.territory : ''} sent a ${i.package_type === 'full_punch' ? '🥊 Full Punch' : '📄 Script'} inquiry`, time: i.created_at, icon: '👆', color: 'text-brand-pink' });
+      });
+      recentViews?.slice(0, 3).forEach(() => {
+        activities.push({ type: 'view', text: `A producer opened a show dossier`, time: new Date().toISOString(), icon: '👀', color: 'text-brand-yellow' });
+      });
+
+      // Sort by time
+      activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+      setLiveActivity(activities.slice(0, 6));
+
+      // Platform stats
+      const [{ count: pCount }, { count: sCount }, { count: dCount }] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('shows').select('*', { count: 'exact', head: true }),
+        supabase.from('inquiries').select('*', { count: 'exact', head: true }),
+      ]);
+      setPlatformStats({ producers: pCount || 0, shows: sCount || 0, countries: 12, deals: dCount || 0 });
+    };
+    loadActivity();
+    activityRef.current = setInterval(loadActivity, 1800000);
+    return () => { if (activityRef.current) clearInterval(activityRef.current); };
+  }, []);
   useEffect(() => {
     const loadStats = async () => {
       const { count: paidCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true);
@@ -123,6 +161,61 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
             </div>
           </div>
 
+        </section>
+
+        {/* LIVE ACTIVITY */}
+        <section className="px-4 md:px-12 py-8 border-b-4 border-white/10">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              {/* Left — stats */}
+              <div className="flex-shrink-0 space-y-3 md:w-48">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-brand-pink animate-pulse flex-shrink-0"></span>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic">Live Now</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
+                  {[
+                    { label: 'Producers', value: platformStats.producers, color: 'text-brand-cyan' },
+                    { label: 'Shows', value: platformStats.shows, color: 'text-brand-yellow' },
+                    { label: 'Deals', value: platformStats.deals, color: 'text-brand-pink' },
+                    { label: 'Countries', value: platformStats.countries, color: 'text-white' },
+                  ].map((s, i) => (
+                    <div key={i} className="border-2 border-white/10 px-3 py-2">
+                      <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
+                      <p className="text-[8px] font-black uppercase italic text-white/30">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Right — activity feed */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 italic mb-3">Latest Activity</p>
+                <div className="space-y-2">
+                  {liveActivity.length === 0 ? (
+                    <div className="space-y-2">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="h-8 bg-white/5 animate-pulse rounded" />
+                      ))}
+                    </div>
+                  ) : liveActivity.map((a, i) => (
+                    <div key={i} className="flex items-center gap-3 border-l-2 border-white/10 pl-3 py-1">
+                      <span className="text-sm flex-shrink-0">{a.icon}</span>
+                      <p className={`text-xs font-black italic truncate ${a.color}`}>{a.text}</p>
+                      <p className="text-[8px] text-white/20 flex-shrink-0 ml-auto">
+                        {(() => {
+                          const diff = Math.floor((Date.now() - new Date(a.time).getTime()) / 60000);
+                          if (diff < 1) return 'just now';
+                          if (diff < 60) return `${diff}m ago`;
+                          if (diff < 1440) return `${Math.floor(diff/60)}h ago`;
+                          return `${Math.floor(diff/1440)}d ago`;
+                        })()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
 {/* YOUR COMEDY BUSINESS. IN ONE PLACE. */}
