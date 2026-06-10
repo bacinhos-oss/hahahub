@@ -127,7 +127,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-xl" onClick={() => setSelectedShowId(null)}></div>
-        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-yellow animate-in fade-in zoom-in-95 duration-500 ease-out text-white pb-12">
+        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden md:shadow-neo-yellow animate-in fade-in zoom-in-95 duration-500 ease-out text-white pb-12">
           <button onClick={() => setSelectedShowId(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all z-20">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
@@ -496,15 +496,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">03. TECHNICAL STACK & PRODUCTION SCALE</h4>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-cyan">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
                           <p className="text-lg md:text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-magenta">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-magenta">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Sound</p>
                           <p className="text-lg md:text-2xl font-black text-brand-pink">{selectedShow.techStaffSound}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-yellow">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-yellow">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Stagehands</p>
                           <p className="text-lg md:text-2xl font-black text-brand-yellow">{selectedShow.techStaffStagehands}</p>
                        </div>
@@ -512,11 +512,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Prompter</p>
                           <p className="text-lg md:text-2xl font-black text-white">{selectedShow.techStaffPrompter}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-cyan">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Scale</p>
                           <p className="text-sm md:text-xl font-black uppercase italic text-brand-cyan">{selectedShow.productionScale}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center shadow-neo-magenta">
+                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-magenta">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Touring</p>
                           <p className="text-sm md:text-xl font-black uppercase italic text-brand-pink">{selectedShow.isTouringFriendly ? 'YES' : 'NO'}</p>
                        </div>
