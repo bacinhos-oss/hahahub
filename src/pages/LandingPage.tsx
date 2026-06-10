@@ -11,14 +11,14 @@ interface LandingPageProps {
   shows: Show[];
 }
 
-const FOUNDING_TOTAL = 30;
+const FOUNDING_TOTAL = 20;
 
 const FAQ_ITEMS = [
   { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your direct route.' },
   { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
   { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery tools and contract templates — the deal is between you and the producer. No commission.' },
   { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
-  { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on The Laff Exchange.' },
+  { q: 'What is the Founding Producer offer?', a: 'The first 20 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback on The Laff Exchange.' },
   { q: 'What payment methods do you accept?', a: 'We accept Stripe — all major credit and debit cards. All prices are in EUR. Subscriptions are annual and non-refundable.' },
   { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
   { q: 'What languages are supported?', a: 'The Laff Exchange is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
@@ -313,19 +313,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               </div>
               <div className="flex-shrink-0 text-center w-full md:w-auto">
                 <div className="bg-black border-8 border-black p-8 md:p-12 inline-block w-full md:w-auto">
-                  <p className="text-brand-yellow text-[10px] font-black uppercase tracking-[0.4em] mb-2">Spots Remaining</p>
+                  <p className="text-brand-yellow text-[10px] font-black uppercase tracking-[0.4em] mb-2">
+                    <span className="inline-block w-2 h-2 rounded-full bg-brand-pink animate-pulse mr-2"></span>
+                    Spots Remaining
+                  </p>
                   <div className="text-8xl md:text-9xl font-black text-white leading-none mb-2">
                     {foundingLeft !== null ? foundingLeft : '—'}
                   </div>
-                  <p className="text-white/40 text-xs font-black uppercase tracking-widest">of {FOUNDING_TOTAL} total</p>
+                  <p className="text-white/40 text-xs font-black uppercase tracking-widest">of {FOUNDING_TOTAL} founding spots</p>
                   <div className="mt-6 h-3 bg-white/10 border-2 border-white/20 w-full md:w-48 mx-auto">
                     <div
-                      className="h-full bg-brand-yellow transition-all duration-1000"
+                      className="h-full bg-brand-pink transition-all duration-1000"
                       style={{ width: foundingTaken !== null ? `${Math.min(100, (foundingTaken / FOUNDING_TOTAL) * 100)}%` : '0%' }}
                     ></div>
                   </div>
                   <p className="text-white/30 text-[9px] font-black uppercase mt-2">
-                    {foundingTaken !== null ? foundingTaken : '...'} taken
+                    {foundingTaken !== null ? foundingTaken : '...'} of {FOUNDING_TOTAL} claimed
                   </p>
                 </div>
                 <button
