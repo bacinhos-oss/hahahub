@@ -153,6 +153,17 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           if (invite) await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
           await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), is_paid: isPaid, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
           if (isPaid) {
+            // Send founding welcome email
+            const houseAccounts = ['bacinhos@gmail.com', 'batocaninmaj@gmail.com', 'usmerjeni.prosti.cas@gmail.com'];
+            if (!houseAccounts.includes(email)) {
+              const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true).eq('onboarded', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
+              const spotNumber = count || 1;
+              await fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'founding_welcome', to: email, data: { name: name.toUpperCase(), spotNumber } })
+              });
+            }
             // Invited or admin — skip payment
             setCurrentUser({
               id: data.user.id, email, name: name.toUpperCase(), role: isAdmin ? 'admin' : 'Producer',

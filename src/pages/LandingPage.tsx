@@ -46,7 +46,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
 
   useEffect(() => {
     const loadStats = async () => {
-      const { count: paidCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true);
+      const { count: paidCount } = await supabase.from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_paid', true)
+        .eq('onboarded', true)
+        .not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
       setFoundingTaken(paidCount || 0);
     };
     loadStats();
@@ -337,6 +341,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 >
                   Claim Your Spot →
                 </button>
+                {/* Who's already in */}
+                {foundingTaken !== null && foundingTaken > 0 && (
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className="flex -space-x-2">
+                      {[...Array(Math.min(foundingTaken, 8))].map((_, i) => (
+                        <div key={i} className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center text-xs font-black"
+                          style={{ background: ['#FFDE03','#FF0266','#03DAC6','#FF0266','#FFDE03','#03DAC6','#FF0266','#FFDE03'][i % 8], color: '#000' }}>
+                          {String.fromCharCode(65 + i)}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-black/70 text-xs font-black italic">
+                      {foundingTaken} producer{foundingTaken !== 1 ? 's' : ''} already in
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </section>

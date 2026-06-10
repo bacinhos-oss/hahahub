@@ -466,6 +466,41 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </body>
 </html>`
   }),
+
+  founding_welcome: ({ name, spotNumber }) => ({
+    subject: `You're Founding Member #${spotNumber} — Welcome to HahaHub 🥊`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #FFDE03;padding:32px 40px;">
+  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><span style="color:#FFDE03">HAHA</span>HUB</p>
+  <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#FF0266">Tickle. Set Up. Punch.</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <div style="background:#FFDE03;color:#000;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:6px 14px;display:inline-block;margin-bottom:24px;">⭐ FOUNDING MEMBER #${spotNumber}</div>
+  <h1 style="color:#fff;font-size:32px;font-weight:900;text-transform:uppercase;margin:0 0 16px;letter-spacing:-1px">${name}.<br/>You're in the history books. 🥊</h1>
+  <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin:0 0 24px">You're one of the first 20 producers to join HahaHub. That means your <strong style="color:#FFDE03">FOUNDING</strong> badge is permanent — it will be on your profile forever, long after we're running thousands of shows worldwide.</p>
+  <div style="background:#050505;border-left:4px solid #FFDE03;padding:20px 24px;margin:24px 0;">
+    <p style="color:#FFDE03;font-size:10px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">What to do now</p>
+    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">1. <strong>Upload your show</strong> — SHOWLOAD → fill all sections → publish</p>
+    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">2. <strong>Browse the catalog</strong> — find shows you want to license</p>
+    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">3. <strong>Send feedback</strong> — hit the Feedback button, we read everything</p>
+  </div>
+  <div style="margin:32px 0 20px">
+    <a href="https://www.hahahub.art" style="background:#FFDE03;color:#000;padding:16px 32px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:13px;border:3px solid #000">Enter HahaHub →</a>
+  </div>
+  <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.3);">New to HahaHub? <a href="https://hahahub.art/beta-guide.html" style="color:#03DAC6;text-decoration:none;font-weight:700;">Read the Beta Guide →</a></p>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">Break a Laffing Leg. 🦵<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
+  }),
 };
 
 module.exports = async function handler(req, res) {
