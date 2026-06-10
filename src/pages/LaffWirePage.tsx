@@ -59,7 +59,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
       .select('*, profiles(id, name, is_verified, is_founding)')
       .eq('is_private', false)
       .order('created_at', { ascending: false });
-    if (!isLaff) q = q.limit(3);
+    if (!isLaff) q = q.limit(10); // GIGL sees 10 posts
     else if (!isRoar) q = q.gte('created_at', new Date(Date.now() - 7*86400000).toISOString());
     const { data } = await q;
     setPosts(data || []);
@@ -122,11 +122,6 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                   <span className="w-2 h-2 rounded-full bg-brand-pink animate-pulse"></span>LIVE
                 </div>
               )}
-              {!isLaff && (
-                <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black">
-                  Upgrade →
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -137,7 +132,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
 
           {/* PUBLIC FEED */}
           <div className="space-y-0">
-              {isLaff && (
+              {user && (
                 <div className="border-b-4 border-white/10 pb-6 mb-2">
                   <div className="flex gap-3">
                     <Avatar name={user?.name || '?'} size={44} badges={getProfileBadges(user)} />
@@ -195,7 +190,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                 <div className="space-y-0">
                   {posts.map((post, i) => {
                     const type = POST_TYPES[post.type] || POST_TYPES.news;
-                    const isBlurred = !isLaff && i >= 3;
+                    const isBlurred = !isLaff && i >= 10;
                     const pid = post.profiles?.id;
                     const isVerified = post.profiles?.is_verified;
                     const isFounding = post.profiles?.is_founding;
@@ -268,14 +263,14 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                 </div>
               )}
 
-              {!isLaff && (
+              {!user && (
                 <div className="mt-8 border-4 border-brand-yellow p-8 text-center shadow-neo-yellow">
-                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-2">Members only</p>
-                  <h2 className="text-3xl font-black uppercase italic text-white mb-1">Full Wire Access</h2>
-                  <p className="text-white/40 font-bold italic text-sm mb-6">LAFF — 7 days · ROAR — live, real-time, post & engage</p>
-                  <button onClick={() => onNavigate('pricing')}
+                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-2">Join HahaHub</p>
+                  <h2 className="text-3xl font-black uppercase italic text-white mb-1">Post on LaffWire</h2>
+                  <p className="text-white/40 font-bold italic text-sm mb-6">GIGL — free · LAFF — 7 days · ROAR — live real-time</p>
+                  <button onClick={() => onNavigate('login')}
                     className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all">
-                    Upgrade Now →
+                    Join Free →
                   </button>
                 </div>
               )}

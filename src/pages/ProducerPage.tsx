@@ -184,6 +184,10 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                     {/* Add to HAHAfriends */}
                     {user && !isOwnProfile && (
                       <button onClick={async () => {
+                        // Check if already added
+                        const { data: existing } = await supabase.from('hahafriends')
+                          .select('id').eq('user_id', user.id).eq('friend_user_id', producerId).maybeSingle();
+                        if (existing) { alert(`${producer.name} is already in your HAHAfriends! 🤝`); return; }
                         await supabase.from('hahafriends').insert({
                           user_id: user.id,
                           friend_user_id: producerId,

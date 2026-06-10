@@ -742,7 +742,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                         if (!user?.id) return;
                         const body = generateText();
                         const title = `${tmpl.title}${p.party ? ' — ' + p.party : ''}${p.show ? ' · ' + p.show : ''}`;
-                        const { data } = await supabase.from('contracts').insert({ user_id:user.id, title, show:p.show, show_id:p.show_id||null, party:p.party, type:tmpl.type, status:'draft', royalty_pct:p.royalty?Number(p.royalty):null, territory:p.territory||null, start_date:p.start_date||null, end_date:p.end_date||null, body, notes:`Predloga: ${tmpl.title}` }).select().single();
+                        const { data } = await supabase.from('contracts').insert({ user_id:user.id, title, show:p.show, show_id:p.show_id||null, party:p.party, type:tmpl.type, status:'draft', royalty_pct:p.royalty?Number(p.royalty):null, territory:p.territory||null, start_date:p.start_date||null, end_date:p.end_date||null, body, notes:`Template: ${tmpl.title}` }).select().single();
                         if (data) setContracts(prev => [data,...prev]);
                         setShowContractForm(false); setActiveTemplate(null);
                       }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all">
