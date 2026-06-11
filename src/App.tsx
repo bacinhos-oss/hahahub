@@ -25,7 +25,8 @@ import DealsPipelinePage from './pages/DealsPipelinePage'
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('landing')
+  const [currentPage, setCurrentPageRaw] = useState<Page>('landing')
+  const setCurrentPage = (page: Page) => { window.scrollTo(0, 0); setCurrentPageRaw(page); }
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [shows, setShows] = useState<Show[]>([])
   const [currentProducerId, setCurrentProducerId] = useState<string | undefined>(undefined)
