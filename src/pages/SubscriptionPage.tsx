@@ -498,6 +498,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     setEditForm({
       ...show,
       // Map snake_case DB fields to camelCase form
+      imageUrl: show.imageUrl || '',
       englishTitle: (show as any).english_title || (show as any).englishTitle || show.title || '',
       synopsisEn: (show as any).synopsis_en || (show as any).synopsisEn || '',
       originalLanguage: (show as any).original_language || (show as any).originalLanguage || show.language || '',
@@ -584,6 +585,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         script_scenario: editForm.scriptScenario,
         is_produced: true,
         production_photos: editForm.productionPhotos || [],
+        image_url: (editForm as any).imageUrl || null,
         english_title: (editForm as any).englishTitle || '',
         synopsis_en: (editForm as any).synopsis_en || (editForm as any).synopsisEn || '',
         original_language: (editForm as any).originalLanguage || '',
@@ -872,25 +874,68 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             </div>
 
+            {/* POSTER IMAGE */}
+            <div className="mt-8 space-y-4">
+              <h3 className="text-lg font-black uppercase italic text-brand-yellow border-b-2 border-brand-yellow/20 pb-2">Poster / Main Image</h3>
+              <div className="flex items-start gap-4">
+                {(editForm as any).imageUrl && (
+                  <img src={(editForm as any).imageUrl} alt="Current poster" className="w-24 h-32 object-cover border-2 border-white/20 flex-shrink-0" />
+                )}
+                <div className="flex-1">
+                  <label className="block border-4 border-dashed border-white/20 hover:border-brand-yellow p-6 text-center cursor-pointer transition-all">
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const ext = file.name.split('.').pop();
+                      const path = 'shows/' + Date.now() + '_poster.' + ext;
+                      const { data: uploadData } = await supabase.storage.from('show-images').upload(path, file, { upsert: true });
+                      if (uploadData) {
+                        const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(uploadData.path);
+                        setEditForm((prev: any) => ({ ...prev, imageUrl: urlData.publicUrl }));
+                      }
+                    }} />
+                    <span className="material-symbols-outlined text-3xl text-white/30 block mb-2">upload</span>
+                    <p className="text-white/40 text-xs font-black uppercase italic">Click to upload new poster</p>
+                    <p className="text-white/20 text-[9px] mt-1">JPG, PNG — recommended 400×600px</p>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             {/* PRODUCTION PHOTOS */}
             <div className="mt-8 space-y-4">
               <h3 className="text-lg font-black uppercase italic text-brand-cyan border-b-2 border-brand-cyan/20 pb-2">Photos from Production</h3>
               <div className="space-y-2">
                 {[0, 1, 2].map(i => (
                   <div key={i}>
-                    <div
-                      onClick={() => editPhotoRefs[i].current?.click()}
-                      className="w-full border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-black/40 relative group" style={{aspectRatio:"16/9"}}
-                    >
-                      {editPhotoPreviews[i] ? (
-                        <>
-                          <img src={editPhotoPreviews[i]!} className="w-full h-full object-cover" alt={"Photo " + (i+1)} />
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white text-2xl">edit</span>
-                          </div>
-                        </>
-                      ) : (
-                        <span className="material-symbols-outlined text-white/20 text-3xl">add_photo_alternate</span>
+                    <div className="relative">
+                      <div
+                        onClick={() => editPhotoRefs[i].current?.click()}
+                        className="w-full border-2 border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-brand-cyan overflow-hidden bg-black/40 relative group" style={{aspectRatio:"16/9"}}
+                      >
+                        {editPhotoPreviews[i] ? (
+                          <>
+                            <img src={editPhotoPreviews[i]!} className="w-full h-full object-cover" alt={"Photo " + (i+1)} />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="material-symbols-outlined text-white text-2xl">edit</span>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="material-symbols-outlined text-white/20 text-3xl">add_photo_alternate</span>
+                        )}
+                      </div>
+                      {editPhotoPreviews[i] && (
+                        <button onClick={(e) => {
+                          e.stopPropagation();
+                          const newPreviews = [...editPhotoPreviews];
+                          newPreviews[i] = null;
+                          setEditPhotoPreviews(newPreviews);
+                          const newPhotos = [...(editForm.productionPhotos || [null, null, null])];
+                          newPhotos[i] = null;
+                          setEditForm(prev => ({ ...prev, productionPhotos: newPhotos }));
+                        }} className="absolute top-2 right-2 bg-brand-pink text-white w-7 h-7 flex items-center justify-center hover:bg-red-600 transition-all z-10" title="Remove photo">
+                          <span className="material-symbols-outlined text-sm">close</span>
+                        </button>
                       )}
                     </div>
                     <input
