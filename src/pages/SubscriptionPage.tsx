@@ -262,6 +262,7 @@ const lbl = "block text-[9px] font-black uppercase text-gray-500 mb-1 italic";
 const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, shows, onDeleteShow, onUpdateShow }) => {
   const [manageShow, setManageShow] = useState<Show | null>(null);
   const [editForm, setEditForm] = useState<Partial<Show>>({});
+  const [pendingPosterFile, setPendingPosterFile] = useState<File | null>(null);
   const [editPhotoPreviews, setEditPhotoPreviews] = useState<(string | null)[]>([null, null, null]);
   const editPhotoRef0 = React.useRef<HTMLInputElement>(null);
   const editPhotoRef1 = React.useRef<HTMLInputElement>(null);
@@ -551,8 +552,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     try {
       // Upload poster if new file selected
       let finalImageUrl = (editForm as any).imageUrl || null;
-      if ((editForm as any).pendingPosterFile) {
-        const file = (editForm as any).pendingPosterFile;
+      if (pendingPosterFile) {
+        const file = pendingPosterFile;
         const ext = file.name.split('.').pop();
         const path = 'posters/' + Date.now() + '_poster.' + ext;
         const { data: uploadData } = await supabase.storage.from('show-images').upload(path, file, { cacheControl: '31536000', upsert: false });
@@ -642,6 +643,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         setTimeout(() => { setSaveSuccess(false); setManageShow(null); }, 1500);
       }
     } catch (err: any) { console.error('Error:', err.message || err); }
+    setPendingPosterFile(null);
     setIsSaving(false);
   };
 
@@ -899,7 +901,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       const file = e.target.files?.[0];
                       if (!file) return;
                       const localUrl = URL.createObjectURL(file);
-                      setEditForm((prev: any) => ({ ...prev, imageUrl: localUrl, pendingPosterFile: file }));
+                      setPendingPosterFile(file);
+                      setEditForm((prev: any) => ({ ...prev, imageUrl: localUrl }));
                     }} />
                     <span className="material-symbols-outlined text-3xl text-white/30 block mb-2">upload</span>
                     <p className="text-white/40 text-xs font-black uppercase italic">Click to upload new poster</p>
