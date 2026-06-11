@@ -791,19 +791,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                     {/* DOSSIER BUTTON */}
                     <div className="border-t border-white/10 pt-4 flex justify-center">
-                      {user?.isPaid || user?.isAdmin ? (
-                        <button onClick={() => downloadDossier(selectedShow)}
-                          className="bg-transparent text-white px-8 py-3 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic text-sm flex items-center gap-3">
-                          <span className="material-symbols-outlined text-xl">download</span>
-                          The Dossier
-                        </button>
-                      ) : (
-                        <button onClick={() => onNavigate('pricing')}
-                          className="bg-transparent text-white/30 px-8 py-3 font-black uppercase border-4 border-white/20 hover:border-brand-yellow hover:text-brand-yellow transition-all italic text-sm flex items-center gap-3">
-                          <span className="material-symbols-outlined text-xl">lock</span>
-                          Dossier — LAFF+
-                        </button>
-                      )}
+                      <button onClick={() => downloadDossier(selectedShow)}
+                        className="bg-transparent text-white px-8 py-3 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic text-sm flex items-center gap-3">
+                        <span className="material-symbols-outlined text-xl">download</span>
+                        The Dossier
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1581,6 +1573,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                     {(show as any).producer_plan === 'roar' && (
                       <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-2 py-0.5 italic border border-black">FEATURED</span>
+                    )}
+                    {(show as any).rights_holder === 'Demo Productions' && (
+                      <span className="text-[7px] font-black uppercase bg-white/20 text-white px-2 py-0.5 italic border border-white/40">SAMPLE</span>
                     )}
                     {(() => {
                       const days = (show as any).created_at ? Math.floor((Date.now() - new Date((show as any).created_at).getTime()) / 86400000) : 999;
