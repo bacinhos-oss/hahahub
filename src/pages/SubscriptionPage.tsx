@@ -549,6 +549,18 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     if (!manageShow) return;
     setIsSaving(true);
     try {
+      // Upload poster if new file selected
+      let finalImageUrl = (editForm as any).imageUrl || null;
+      if ((editForm as any).pendingPosterFile) {
+        const file = (editForm as any).pendingPosterFile;
+        const ext = file.name.split('.').pop();
+        const path = 'posters/' + Date.now() + '_poster.' + ext;
+        const { data: uploadData } = await supabase.storage.from('show-images').upload(path, file, { cacheControl: '31536000', upsert: false });
+        if (uploadData) {
+          const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(uploadData.path);
+          finalImageUrl = urlData.publicUrl;
+        }
+      }
       const { error } = await supabase.from('shows').update({
         title: editForm.title, author: editForm.author, director: editForm.director,
         director_notes: editForm.directorNotes, original_production_solutions: editForm.originalProductionSolutions,
@@ -585,7 +597,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         script_scenario: editForm.scriptScenario,
         is_produced: true,
         production_photos: editForm.productionPhotos || [],
-        image_url: (editForm as any).imageUrl || null,
+        image_url: finalImageUrl,
         english_title: (editForm as any).englishTitle || '',
         synopsis_en: (editForm as any).synopsis_en || (editForm as any).synopsisEn || '',
         original_language: (editForm as any).originalLanguage || '',
@@ -883,16 +895,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 )}
                 <div className="flex-1">
                   <label className="block border-4 border-dashed border-white/20 hover:border-brand-yellow p-6 text-center cursor-pointer transition-all">
-                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      const ext = file.name.split('.').pop();
-                      const path = 'posters/' + Date.now() + '_poster.' + ext;
-                      const { data: uploadData } = await supabase.storage.from('show-images').upload(path, file, { upsert: true });
-                      if (uploadData) {
-                        const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(uploadData.path);
-                        setEditForm((prev: any) => ({ ...prev, imageUrl: urlData.publicUrl }));
-                      }
+                      const localUrl = URL.createObjectURL(file);
+                      setEditForm((prev: any) => ({ ...prev, imageUrl: localUrl, pendingPosterFile: file }));
                     }} />
                     <span className="material-symbols-outlined text-3xl text-white/30 block mb-2">upload</span>
                     <p className="text-white/40 text-xs font-black uppercase italic">Click to upload new poster</p>
@@ -958,7 +965,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         const path = `production-photos/${manageShow.id}/photo_${i}_${Date.now()}.${ext}`;
                         const { data: uploadData, error: uploadError } = await supabase.storage
                           .from('show-images')
-                          .upload(path, file, { upsert: true });
+                          .upload(path, file, { upsert: false, cacheControl: '31536000' });
 
                         if (uploadError) {
                           // Fallback to base64 if storage fails
