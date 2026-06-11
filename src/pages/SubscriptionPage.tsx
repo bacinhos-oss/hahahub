@@ -887,7 +887,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       const file = e.target.files?.[0];
                       if (!file) return;
                       const ext = file.name.split('.').pop();
-                      const path = 'shows/' + Date.now() + '_poster.' + ext;
+                      const path = 'posters/' + Date.now() + '_poster.' + ext;
                       const { data: uploadData } = await supabase.storage.from('show-images').upload(path, file, { upsert: true });
                       if (uploadData) {
                         const { data: urlData } = supabase.storage.from('show-images').getPublicUrl(uploadData.path);
