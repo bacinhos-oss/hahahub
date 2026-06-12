@@ -449,9 +449,24 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <p className="font-black uppercase italic text-white text-xs">{inv.recipient}</p>
                       <p className="text-white/30 text-[9px]">{inv.email}</p>
                     </div>
-                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${(inv as any).status === 'used' ? 'bg-green-500/20 text-green-400' : 'bg-brand-pink/20 text-brand-pink'}`}>
-                      {(inv as any).status === 'used' ? 'Joined ✓' : 'Invited'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${inv.status === 'used' ? 'bg-green-500/20 text-green-400' : 'bg-brand-pink/20 text-brand-pink'}`}>
+                        {inv.status === 'used' ? 'Joined ✓' : 'Invited'}
+                      </span>
+                      {inv.status !== 'used' && (
+                        <button onClick={async () => {
+                          await fetch('/api/send-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ type: 'founding_invite', to: inv.email, data: { name: inv.recipient } })
+                          });
+                          triggerMailLog(`Founding Invite Resent to ${inv.recipient}`, `Dispatched to: ${inv.email}`);
+                        }} className="text-[8px] font-black uppercase px-2 py-1 border border-brand-pink/40 text-brand-pink hover:bg-brand-pink hover:text-white transition-all flex items-center gap-1">
+                          <span className="material-symbols-outlined text-xs">send</span>
+                          Resend
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
