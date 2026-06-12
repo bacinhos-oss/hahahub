@@ -438,17 +438,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             </div>
 
             {/* FOUNDING INVITE LIST */}
-            {invites.filter((i: any) => i.type === 'founding').length > 0 && (
+            {invites.filter((i: any) => ((i as any).type || 'access') === 'founding').length > 0 && (
               <div className="space-y-2 border-4 border-brand-pink/30 p-4">
-                <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">⭐ Founding Invites — {invites.filter((i: any) => i.type === 'founding').length} sent</p>
-                {invites.filter((i: any) => i.type === 'founding').map((inv: any) => (
+                <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">⭐ Founding Invites — {invites.filter((i: any) => ((i as any).type || 'access') === 'founding').length} sent</p>
+                {invites.filter((i: any) => ((i as any).type || 'access') === 'founding').map((inv: any) => (
                   <div key={inv.id} className="flex items-center justify-between gap-3 border border-white/10 px-3 py-2">
                     <div>
                       <p className="font-black uppercase italic text-white text-xs">{inv.recipient}</p>
                       <p className="text-white/30 text-[9px]">{inv.email}</p>
                     </div>
-                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${inv.status === 'used' ? 'bg-green-500/20 text-green-400' : 'bg-brand-pink/20 text-brand-pink'}`}>
-                      {inv.status === 'used' ? 'Joined ✓' : 'Invited'}
+                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${(inv as any).status === 'used' ? 'bg-green-500/20 text-green-400' : 'bg-brand-pink/20 text-brand-pink'}`}>
+                      {(inv as any).status === 'used' ? 'Joined ✓' : 'Invited'}
                     </span>
                   </div>
                 ))}
@@ -458,7 +458,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             {/* INVITE LIST */}
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-4 flex-wrap">
-                <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">{filteredInvites.filter((i: any) => i.type !== 'founding').length} access invites dispatched</p>
+                <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">{filteredInvites.filter((i: any) => ((i as any).type || 'access') !== 'founding').length} access invites dispatched</p>
                 {/* Search */}
                 <input
                   type="text"
@@ -483,8 +483,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                         </p>
                       )}
                     </div>
-                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase italic border ${inv.status === 'used' ? 'bg-brand-yellow text-black border-brand-yellow' : 'text-white/40 border-white/20'}`}>
-                      {inv.status === 'used' ? '🥊 Tickled' : 'Sent'}
+                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase italic border ${(inv as any).status === 'used' ? 'bg-brand-yellow text-black border-brand-yellow' : 'text-white/40 border-white/20'}`}>
+                      {(inv as any).status === 'used' ? '🥊 Tickled' : 'Sent'}
                     </span>
                   </div>
                   <div className="bg-brand-black border border-white/10 p-3 mb-3 font-mono">
