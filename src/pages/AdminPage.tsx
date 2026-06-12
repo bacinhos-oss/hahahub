@@ -534,16 +534,23 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 </div>
                 <button onClick={async () => {
                   if (!window.confirm(`Delete "${show.title}"? This cannot be undone.`)) return;
-                  // Find show owner email
+                  // Find show owner
                   const { data: profile } = await supabase.from('profiles').select('name, email').eq('id', (show as any).user_id).maybeSingle();
-                  if (profile?.email) {
+                  // Try auth.users if profile email is null
+                  let ownerEmail = profile?.email;
+                  let ownerName = profile?.name || 'Producer';
+                  if (!ownerEmail && (show as any).user_id) {
+                    const { data: authUser } = await supabase.auth.admin?.getUserById?.((show as any).user_id) || { data: null };
+                    ownerEmail = (authUser as any)?.user?.email;
+                  }
+                  if (ownerEmail) {
                     await fetch('/api/send-email', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
                         type: 'show_removed',
-                        to: profile.email,
-                        data: { name: profile.name || 'Producer', showTitle: show.title, reason: '' }
+                        to: ownerEmail,
+                        data: { name: ownerName, showTitle: show.title, reason: '' }
                       })
                     });
                   }
