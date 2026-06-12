@@ -6,54 +6,49 @@ const FROM = 'HahaHub <info@hahahub.art>';
 
 const templates = {
   inquiry: ({ producerName, buyerName, buyerEmail, showTitle, message }) => ({
-    subject: `You've Been Tickled! 🎭 — ${showTitle}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: 'Arial', sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.badge { background: #FFDE03; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
-.show { background: #111; border: 2px solid #FFDE03; padding: 16px 20px; margin: 24px 0; }
-.show-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: #FFDE03; }
-.buyer { background: #111; border: 2px solid rgba(255,255,255,0.1); padding: 16px 20px; margin: 16px 0; }
-.message { background: #111; border-left: 4px solid #03DAC6; padding: 16px 20px; margin: 16px 0; font-style: italic; color: rgba(255,255,255,0.7); }
-.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <div class="logo">HAHAHUB</div>
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">🎭 You've Been Tickled!</div>
-  <h1>New Inquiry<br/>Incoming.</h1>
-  <p style="color:rgba(255,255,255,0.6);font-style:italic;">Someone wants your show. Don't leave them hanging.</p>
-  
-  <div class="show">
-    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Show</div>
-    <div class="show-title">${showTitle}</div>
-  </div>
-
-  <div class="buyer">
-    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">From</div>
-    <div style="font-weight:700;font-size:16px;">${buyerName}</div>
-    <div style="color:#03DAC6;font-size:13px;margin-top:4px;">${buyerEmail}</div>
-  </div>
-
-  ${message ? `<div class="message">"${message}"</div>` : ''}
-
-  <a href="https://hahahub.art" class="cta">Go to My Hub → Tickle Back</a>
-
-  <div class="footer">
-    <p>HahaHub — The Comedy Rights Marketplace</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
-</body>
-</html>`
+    subject: `You've Been Tickled! — ${showTitle}`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #FFDE03;padding:32px 40px;">
+  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><span style="color:#FFDE03">HAHA</span>HUB</p>
+  <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:rgba(255,255,255,0.3)">Tickle. Set Up. Punch.</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <div style="background:#FFDE03;color:#000;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:6px 14px;display:inline-block;margin-bottom:24px;">🎭 You've Been Tickled!</div>
+  <h1 style="color:#fff;font-size:36px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 8px;letter-spacing:-1px">New Inquiry<br/>Incoming.</h1>
+  <p style="color:rgba(255,255,255,0.5);font-style:italic;font-size:14px;margin:0 0 32px">Someone wants your show. Don't leave them hanging.</p>
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px">
+    <tr><td style="background:#111;border:2px solid #FFDE03;padding:16px 20px;">
+      <p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 6px">Show</p>
+      <p style="font-size:20px;font-weight:900;text-transform:uppercase;color:#FFDE03;margin:0">${showTitle}</p>
+    </td></tr>
+  </table>
+  <table width="100%" cellpadding="0" cellspacing="8" style="margin-bottom:16px">
+    <tr>
+      <td width="50%" style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:16px 20px;">
+        <p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 6px">Name</p>
+        <p style="font-size:16px;font-weight:900;color:#fff;margin:0">${buyerName}</p>
+      </td>
+      <td width="8"></td>
+      <td width="50%" style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:16px 20px;">
+        <p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 6px">Email</p>
+        <p style="font-size:13px;font-weight:700;color:#03DAC6;margin:0">${buyerEmail}</p>
+      </td>
+    </tr>
+  </table>
+  ${message ? `<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px"><tr><td style="background:#111;border-left:4px solid #03DAC6;padding:16px 20px;"><p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 8px">Message</p><p style="color:rgba(255,255,255,0.7);font-style:italic;font-size:14px;line-height:1.6;margin:0">"${message}"</p></td></tr></table>` : ''}
+  <a href="https://hahahub.art" style="background:#FFDE03;color:#000;padding:16px 32px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:13px;border:3px solid #000;font-style:italic">Go to Pipeline →</a>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">Break a Laffing Leg. 🦵<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
   }),
 
   welcome: ({ name, email }) => ({
@@ -501,6 +496,37 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </table>
 </body></html>`
   }),
+
+  show_removed: ({ name, showTitle, reason }) => ({
+    subject: `Your listing "${showTitle}" has been removed from HahaHub`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #FF0266;padding:32px 40px;">
+  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><span style="color:#FFDE03">HAHA</span>HUB</p>
+  <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#FF0266">Platform Notice</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <h1 style="color:#fff;font-size:24px;font-weight:900;text-transform:uppercase;margin:0 0 24px;letter-spacing:-1px">Hi ${name},</h1>
+  <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin:0 0 16px">We're writing to let you know that your listing <strong style="color:#fff">"${showTitle}"</strong> has been reviewed by the HahaHub team and has been removed from the marketplace.</p>
+  <div style="background:#050505;border-left:4px solid #FF0266;padding:20px 24px;margin:24px 0;">
+    <p style="color:#FF0266;font-size:10px;text-transform:uppercase;letter-spacing:3px;margin:0 0 8px">Reason for removal</p>
+    <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.6;margin:0">${reason || 'Your listing did not meet HahaHub platform standards. This may be due to: missing or incomplete rights documentation, content that does not qualify as comedy theatre, potential intellectual property concerns, or inaccurate production information.'}</p>
+  </div>
+  <p style="color:rgba(255,255,255,0.5);font-size:13px;line-height:1.7;margin:0 0 16px">If you believe this decision was made in error, or if you would like to resubmit your listing with updated information, please contact us directly.</p>
+  <p style="color:rgba(255,255,255,0.5);font-size:13px;line-height:1.7;margin:0 0 32px">Your account remains active and you are welcome to upload other productions that meet our platform guidelines.</p>
+  <a href="mailto:info@hahahub.art" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000">Contact Us →</a>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · The Comedy Rights Marketplace<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
+  }),
 };
 
 module.exports = async function handler(req, res) {
@@ -522,7 +548,7 @@ module.exports = async function handler(req, res) {
     const result = await resend.emails.send({
       from: FROM,
       to,
-      bcc: 'info@hahahub.art',
+      ...(type !== 'inquiry' && type !== 'inquiry_confirmation' ? { bcc: 'info@hahahub.art' } : {}),
       subject,
       html,
     });
