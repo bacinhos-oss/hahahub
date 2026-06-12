@@ -136,7 +136,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
 
   const deleteInvite = async (id: string, name: string) => {
     if (!window.confirm(`Delete invite for ${name}?`)) return;
-    await supabase.from('invitations').delete().eq('id', id);
+    const { error } = await supabase.from('invitations').delete().eq('id', id);
+    if (error) { alert('Error deleting: ' + error.message); return; }
     setInvites(prev => prev.filter(i => i.id !== id));
   };
 
