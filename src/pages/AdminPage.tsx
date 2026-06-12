@@ -179,8 +179,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   // Filtered + sorted invites
   const filteredInvites = invites
     .filter(inv =>
+      ((inv as any).type || 'access') !== 'founding' && (
       inv.recipient?.toLowerCase().includes(inviteSearch.toLowerCase()) ||
-      inv.email?.toLowerCase().includes(inviteSearch.toLowerCase())
+      inv.email?.toLowerCase().includes(inviteSearch.toLowerCase()))
     )
     .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
 
