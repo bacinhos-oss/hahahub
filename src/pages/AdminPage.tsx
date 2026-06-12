@@ -455,12 +455,22 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       </span>
                       {inv.status !== 'used' && (
                         <button onClick={async () => {
-                          await fetch('/api/send-email', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ type: 'founding_invite', to: inv.email, data: { name: inv.recipient } })
-                          });
-                          triggerMailLog(`Founding Invite Resent to ${inv.recipient}`, `Dispatched to: ${inv.email}`);
+                          try {
+                            const res = await fetch('/api/send-email', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ type: 'founding_invite', to: inv.email, data: { name: inv.recipient } })
+                            });
+                            const json = await res.json();
+                            if (json.success) {
+                              triggerMailLog(`Founding Invite Resent to ${inv.recipient}`, `Dispatched to: ${inv.email}`);
+                              alert('✅ Sent to ' + inv.email);
+                            } else {
+                              alert('❌ Error: ' + JSON.stringify(json));
+                            }
+                          } catch(e: any) {
+                            alert('❌ Failed: ' + e.message);
+                          }
                         }} className="text-[8px] font-black uppercase px-2 py-1 border border-brand-pink/40 text-brand-pink hover:bg-brand-pink hover:text-white transition-all flex items-center gap-1">
                           <span className="material-symbols-outlined text-xs">send</span>
                           Resend
