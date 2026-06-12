@@ -476,6 +476,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                           Resend
                         </button>
                       )}
+                      <button onClick={() => deleteInvite(inv.id, inv.recipient)} className="text-[8px] font-black uppercase px-2 py-1 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">delete</span>
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))}
