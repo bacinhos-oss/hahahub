@@ -294,8 +294,36 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   </div>
                   <div><label className={lbl}>Author / Playwright *</label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
-                  <div><label className={lbl}>Genre *</label><input name="genre" value={formData.genre} onChange={handleInputChange} className={inp} placeholder="Comedy, Dark Comedy..." /></div>
-                  <div><label className={lbl}>Subgenre</label><input name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={inp} placeholder="Satire, Farce, Absurdist..." /></div>
+                  <div><label className={lbl}>Genre *</label>
+                    <select name="genre" value={formData.genre} onChange={handleInputChange} className={sel}>
+                      <option value="">Select genre...</option>
+                      <option value="Comedy">Comedy</option>
+                      <option value="Drama">Drama</option>
+                      <option value="Musical">Musical</option>
+                      <option value="Physical Theatre">Physical Theatre</option>
+                      <option value="Cabaret">Cabaret</option>
+                    </select>
+                  </div>
+                  <div><label className={lbl}>Subgenre</label>
+                    <select name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={sel}>
+                      <option value="">Select subgenre...</option>
+                      <option value="Monocomedy">Monocomedy</option>
+                      <option value="Farce">Farce</option>
+                      <option value="Black Comedy">Black Comedy</option>
+                      <option value="Dark Comedy">Dark Comedy</option>
+                      <option value="Satire">Satire</option>
+                      <option value="Absurd">Absurd</option>
+                      <option value="Romantic Comedy">Romantic Comedy</option>
+                      <option value="Slapstick">Slapstick</option>
+                      <option value="Stand-up Theatre">Stand-up Theatre</option>
+                      <option value="Musical Comedy">Musical Comedy</option>
+                      <option value="Sketch Comedy">Sketch Comedy</option>
+                      <option value="Character Comedy">Character Comedy</option>
+                      <option value="Physical Comedy">Physical Comedy</option>
+                      <option value="Cabaret Comedy">Cabaret Comedy</option>
+                      <option value="Storytelling">Storytelling</option>
+                    </select>
+                  </div>
                   <div><label className={lbl}>Humor Type</label>
                     <select name="humorType" value={formData.humorType} onChange={handleInputChange} className={sel}>
                       <option value="Universal">Universal</option>
