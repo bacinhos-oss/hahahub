@@ -477,8 +477,8 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <div style="background:#FF0266;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:5px 14px;display:inline-block;margin-bottom:20px;">⭐ Founding Member — Private Invitation</div>
   <h1 style="color:#fff;font-size:30px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 8px;letter-spacing:-1px;line-height:1.1">Help us build<br/>the future of<br/><span style="color:#FFDE03">comedy theatre.</span></h1>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">Hi ${name},</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">HahaHub is a marketplace for international comedy theatre rights — and we're building it with the right people from day one.</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">We'd like you to be one of them.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">We are personally inviting you to join <strong style="color:#fff">HahaHub</strong> as one of <strong style="color:#FFDE03">20 Founding Members</strong> — selected globally to co-found the platform from day one.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">HahaHub is a marketplace for international comedy theatre rights — and we want to build it with the right people. Your experience, your shows, and your feedback will directly shape what this becomes.</p>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
     <tr><td style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:20px;">
