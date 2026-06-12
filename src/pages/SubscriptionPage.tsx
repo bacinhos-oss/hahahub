@@ -2007,16 +2007,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     if (!window.confirm('Are you sure you want to delete your account? This cannot be undone. All your shows, deals and data will be permanently deleted.')) return;
                     if (!window.confirm('Last warning — this is permanent. Delete account?')) return;
                     try {
-                      // Delete shows
-                      await supabase.from('shows').delete().eq('user_id', user?.id);
-                      // Delete profile
-                      await supabase.from('profiles').delete().eq('id', user?.id);
-                      // Send notification to admin
-                      await fetch('/api/send-email', {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      const res = await fetch('/api/delete-account', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type: 'feedback', to: 'info@hahahub.art', data: { type: 'account_deleted', message: `Account deleted: ${user?.email} — ${user?.name}` } })
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+                        body: JSON.stringify({ userId: user?.id })
                       });
+                      if (!res.ok) throw new Error('Failed to delete account');
                       onLogout();
                     } catch (e) {
                       alert('Error deleting account. Please contact info@hahahub.art');
