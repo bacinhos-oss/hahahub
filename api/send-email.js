@@ -463,7 +463,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 
   founding_invite: ({ name }) => ({
-    subject: `You've been selected — one of 20 globally. HahaHub Founding Member`,
+    subject: `HahaHub — Invitation to join as Founding Member`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">

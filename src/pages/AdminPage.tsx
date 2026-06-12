@@ -417,6 +417,11 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 if (!newName || !newEmail) return;
                 setSending(true);
                 try {
+                  // Save to invitations as founding type
+                  await supabase.from('invitations').insert([{
+                    recipient: newName, email: newEmail, duration: 'lifetime',
+                    status: 'pending', password: '', note: 'Founding Member Invite', plan: 'roar', type: 'founding'
+                  }]);
                   await fetch('/api/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -432,10 +437,28 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               </div>
             </div>
 
+            {/* FOUNDING INVITE LIST */}
+            {invites.filter((i: any) => i.type === 'founding').length > 0 && (
+              <div className="space-y-2 border-4 border-brand-pink/30 p-4">
+                <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">⭐ Founding Invites — {invites.filter((i: any) => i.type === 'founding').length} sent</p>
+                {invites.filter((i: any) => i.type === 'founding').map((inv: any) => (
+                  <div key={inv.id} className="flex items-center justify-between gap-3 border border-white/10 px-3 py-2">
+                    <div>
+                      <p className="font-black uppercase italic text-white text-xs">{inv.recipient}</p>
+                      <p className="text-white/30 text-[9px]">{inv.email}</p>
+                    </div>
+                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${inv.status === 'used' ? 'bg-green-500/20 text-green-400' : 'bg-brand-pink/20 text-brand-pink'}`}>
+                      {inv.status === 'used' ? 'Joined ✓' : 'Invited'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* INVITE LIST */}
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-4 flex-wrap">
-                <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">{filteredInvites.length} invites dispatched</p>
+                <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">{filteredInvites.filter((i: any) => i.type !== 'founding').length} access invites dispatched</p>
                 {/* Search */}
                 <input
                   type="text"
