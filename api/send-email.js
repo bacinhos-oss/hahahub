@@ -462,6 +462,73 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </html>`
   }),
 
+  founding_invite: ({ name }) => ({
+    subject: `You've been selected — one of 20 globally. HahaHub Founding Member`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #FFDE03;padding:28px 36px;">
+  <p style="margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><span style="color:#FFDE03">HAHA</span>HUB</p>
+  <p style="margin:4px 0 0;font-size:8px;text-transform:uppercase;letter-spacing:4px;color:rgba(255,255,255,0.3)">Tickle. Set Up. Punch.</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:36px;">
+  <div style="background:#FF0266;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:5px 14px;display:inline-block;margin-bottom:20px;">⭐ Founding Member — Private Invitation</div>
+  <h1 style="color:#fff;font-size:30px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 8px;letter-spacing:-1px;line-height:1.1">Help us build<br/>the future of<br/><span style="color:#FFDE03">comedy theatre.</span></h1>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">Hi ${name}, we're building HahaHub — and we're inviting you to be part of it from day one. Not just as a user. As a Founding Member who helps shape what this becomes.</p>
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:20px;margin-bottom:16px;">
+    <tr><td style="padding:20px;">
+      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">What is HahaHub?</p>
+      <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:0">The first marketplace for international comedy theatre rights. Buy and sell rights to comedy productions directly — no agents, no commission, producer to producer. Your complete comedy business in one place.</p>
+    </td></tr>
+  </table>
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#111;border:2px solid rgba(255,255,255,0.1);margin-bottom:16px;">
+    <tr><td style="padding:20px;">
+      <p style="color:#03DAC6;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 14px">Everything in one place</p>
+      <table width="100%" cellpadding="4" cellspacing="4">
+        <tr>
+          <td style="background:#050505;padding:10px 12px;width:50%"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Catalog</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Browse international shows</p></td>
+          <td style="background:#050505;padding:10px 12px;width:50%"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Pipeline</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Manage deals end-to-end</p></td>
+        </tr>
+        <tr>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Analytics</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Views, territories, royalties</p></td>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Paperwork</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Contract templates</p></td>
+        </tr>
+        <tr>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Royalty Tracker</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Log & calculate earnings</p></td>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Calculator</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Know your numbers</p></td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+    <tr><td style="background:#050505;border-left:4px solid #FFDE03;padding:16px 20px;">
+      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">As a Founding Member you get</p>
+      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">— Lifetime ROAR access (normally €189/year) — <strong style="color:#FFDE03">free. Forever.</strong></p>
+      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">— Permanent FOUNDING badge on your profile</p>
+      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">— Direct say in how the platform develops</p>
+    </td></tr>
+  </table>
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+    <tr><td style="background:#050505;border-left:4px solid #FF0266;padding:16px 20px;">
+      <p style="color:#FF0266;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 8px">What we ask from you</p>
+      <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:0">Upload your show. Browse what's there. Tell us what's missing, what's broken, what should be better. Your feedback builds this platform. We read everything.</p>
+    </td></tr>
+  </table>
+  <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 20px">Private beta · 20 spots worldwide · You've been personally selected.</p>
+  <a href="mailto:info@hahahub.art?subject=Yes, I want to be a Founding Member" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Reply to claim your spot →</a>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:20px 36px;">
+  <p style="color:rgba(255,255,255,0.5);font-size:13px;margin:0 0 4px;font-weight:700">Break a Laffing Leg. 🦵</p>
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub Team · <a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
+  }),
+
   founding_welcome: ({ name, spotNumber }) => ({
     subject: `You're Founding Member #${spotNumber} — Welcome to HahaHub 🥊`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>

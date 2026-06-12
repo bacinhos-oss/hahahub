@@ -408,10 +408,28 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 </div>
               </div>
 
+              <div className="flex gap-3 flex-wrap">
               <button onClick={sendInvite} disabled={sending || !newName || !newEmail || !password}
                 className="bg-brand-yellow text-black px-8 py-3 font-black uppercase italic border-4 border-black hover:bg-white transition-all disabled:opacity-40 text-sm">
                 {sending ? 'Dispatching...' : 'Dispatch Invite →'}
               </button>
+              <button onClick={async () => {
+                if (!newName || !newEmail) return;
+                setSending(true);
+                try {
+                  await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'founding_invite', to: newEmail, data: { name: newName } })
+                  });
+                  triggerMailLog(`Founding Invite Sent to ${newName}`, `Dispatched to: ${newEmail}`);
+                } catch (e) { console.error(e); }
+                setSending(false);
+              }} disabled={sending || !newName || !newEmail}
+                className="bg-brand-pink text-white px-8 py-3 font-black uppercase italic border-4 border-black hover:bg-white hover:text-black transition-all disabled:opacity-40 text-sm">
+                {sending ? 'Sending...' : '⭐ Send Founding Invite →'}
+              </button>
+              </div>
             </div>
 
             {/* INVITE LIST */}
