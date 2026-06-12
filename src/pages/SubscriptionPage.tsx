@@ -696,8 +696,38 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <div className="col-span-2">{F('title', 'Original Title (if different)')}</div>
                   {F('author', 'Author / Playwright *')}
                   {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
-                  {F('genre', 'Genre *')}
-                  {F('subgenre', 'Subgenre')}
+                  <div>
+                    <label className={lbl}>Genre *</label>
+                    <select name="genre" value={editForm.genre || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white/10 p-2.5 text-white font-black uppercase italic text-xs focus:border-brand-yellow outline-none">
+                      <option value="">Select genre...</option>
+                      <option value="Comedy">Comedy</option>
+                      <option value="Drama">Drama</option>
+                      <option value="Musical">Musical</option>
+                      <option value="Physical Theatre">Physical Theatre</option>
+                      <option value="Cabaret">Cabaret</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={lbl}>Subgenre</label>
+                    <select name="subgenre" value={(editForm as any).subgenre || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white/10 p-2.5 text-white font-black uppercase italic text-xs focus:border-brand-yellow outline-none">
+                      <option value="">Select subgenre...</option>
+                      <option value="Monocomedy">Monocomedy</option>
+                      <option value="Farce">Farce</option>
+                      <option value="Black Comedy">Black Comedy</option>
+                      <option value="Dark Comedy">Dark Comedy</option>
+                      <option value="Satire">Satire</option>
+                      <option value="Absurd">Absurd / Surreal</option>
+                      <option value="Romantic Comedy">Romantic Comedy</option>
+                      <option value="Slapstick">Slapstick</option>
+                      <option value="Stand-up Theatre">Stand-up Theatre</option>
+                      <option value="Musical Comedy">Musical Comedy</option>
+                      <option value="Sketch Comedy">Sketch Comedy</option>
+                      <option value="Character Comedy">Character Comedy</option>
+                      <option value="Physical Comedy">Physical Comedy</option>
+                      <option value="Cabaret Comedy">Cabaret Comedy</option>
+                      <option value="Storytelling">Storytelling</option>
+                    </select>
+                  </div>
                   {F('originalLanguage', 'Original Language *')}
                   {F('productionYear', 'Production Year', 'number')}
                   {F('awards', 'Awards')}
@@ -1969,6 +1999,32 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     </button>
                   </div>
 
+                {/* DELETE ACCOUNT */}
+                <div className="border-t-2 border-red-500/20 pt-8">
+                  <h3 className="font-black uppercase italic text-red-400 text-sm mb-2">Danger Zone</h3>
+                  <p className="text-white/30 text-xs mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
+                  <button onClick={async () => {
+                    if (!window.confirm('Are you sure you want to delete your account? This cannot be undone. All your shows, deals and data will be permanently deleted.')) return;
+                    if (!window.confirm('Last warning — this is permanent. Delete account?')) return;
+                    try {
+                      // Delete shows
+                      await supabase.from('shows').delete().eq('user_id', user?.id);
+                      // Delete profile
+                      await supabase.from('profiles').delete().eq('id', user?.id);
+                      // Send notification to admin
+                      await fetch('/api/send-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'feedback', to: 'info@hahahub.art', data: { type: 'account_deleted', message: `Account deleted: ${user?.email} — ${user?.name}` } })
+                      });
+                      onLogout();
+                    } catch (e) {
+                      alert('Error deleting account. Please contact info@hahahub.art');
+                    }
+                  }} className="border-2 border-red-500/40 text-red-400 px-6 py-3 font-black uppercase italic text-xs hover:bg-red-500 hover:text-white transition-all">
+                    Delete My Account
+                  </button>
+                </div>
                 </div>
               </section>
             )}
