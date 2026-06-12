@@ -94,6 +94,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       generatedPassword: inv.password || inv.generated_password || '—',
       plan: inv.plan || 'laff',
       created_at: inv.created_at,
+      type: inv.type || 'access',
     })));
   };
 
