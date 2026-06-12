@@ -532,7 +532,23 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   <p className="text-white/30 text-xs italic">{show.genre} · {show.location} · {show.productionYear}</p>
                   <p className="text-white/20 text-[9px] mt-1">{show.viewsCount} views · {show.inquiriesCount} inquiries</p>
                 </div>
-                <button onClick={() => onDeleteShow(show.id)}
+                <button onClick={async () => {
+                  if (!window.confirm(`Delete "${show.title}"? This cannot be undone.`)) return;
+                  // Find show owner email
+                  const { data: profile } = await supabase.from('profiles').select('name, email').eq('id', (show as any).user_id).maybeSingle();
+                  if (profile?.email) {
+                    await fetch('/api/send-email', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        type: 'show_removed',
+                        to: profile.email,
+                        data: { name: profile.name || 'Producer', showTitle: show.title, reason: '' }
+                      })
+                    });
+                  }
+                  onDeleteShow(show.id);
+                }}
                   className="flex-shrink-0 px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
                   <span className="material-symbols-outlined text-sm">delete</span>
                   Delete
