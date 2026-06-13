@@ -1427,22 +1427,24 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             {/* SEARCH + FILTERS — ONE ROW */}
             <div className="flex flex-wrap items-end gap-3">
               {/* Stefunny Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <div className="flex items-center gap-3 bg-brand-surface border-4 border-brand-cyan p-3 shadow-neo-cyan focus-within:shadow-none focus-within:translate-x-0.5 focus-within:translate-y-0.5 transition-all">
-                  <div className="flex-shrink-0 px-2 h-7 bg-brand-cyan border-2 border-black flex items-center justify-center font-black text-black text-[8px] uppercase italic whitespace-nowrap">Miss Stefunny</div>
+              <div className="relative flex-1 min-w-[200px] max-w-[480px]">
+                <div className="flex items-center gap-2 bg-brand-surface border-2 border-white/20 hover:border-brand-cyan/60 focus-within:border-brand-cyan transition-all">
+                  <div className="flex-shrink-0 px-3 py-2.5 bg-brand-cyan/10 border-r border-white/10 flex items-center justify-center">
+                    <span className="font-black text-brand-cyan text-[8px] uppercase italic whitespace-nowrap tracking-widest">Miss Stefunny</span>
+                  </div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search... genre, country, cast, keywords"
-                    className="flex-1 bg-transparent border-none text-white font-black text-xs uppercase outline-none italic placeholder:text-white/30 placeholder:normal-case placeholder:not-italic"
+                    placeholder="Search genre, country, cast, keywords..."
+                    className="flex-1 bg-transparent border-none text-white text-xs outline-none placeholder:text-white/20 py-2.5 pr-2"
                   />
                   {searchQuery ? (
-                    <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
+                    <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors pr-2">
                       <span className="material-symbols-outlined text-base">close</span>
                     </button>
                   ) : (
-                    <span className="material-symbols-outlined text-brand-cyan text-base flex-shrink-0">search</span>
+                    <span className="material-symbols-outlined text-white/30 text-base flex-shrink-0 pr-2">search</span>
                   )}
                 </div>
                 {searchQuery && (
