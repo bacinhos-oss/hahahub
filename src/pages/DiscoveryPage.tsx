@@ -1427,24 +1427,22 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             {/* SEARCH + FILTERS — ONE ROW */}
             <div className="flex flex-wrap items-end gap-3">
               {/* Stefunny Search */}
-              <div className="relative flex-1 min-w-[200px] max-w-[480px]">
-                <div className="flex items-center gap-2 bg-brand-surface border-2 border-white/20 hover:border-brand-cyan/60 focus-within:border-brand-cyan transition-all">
-                  <div className="flex-shrink-0 px-3 py-2.5 bg-brand-cyan/10 border-r border-white/10 flex items-center justify-center">
-                    <span className="font-black text-brand-cyan text-[8px] uppercase italic whitespace-nowrap tracking-widest">Miss Stefunny</span>
-                  </div>
+              <div className="relative flex-1 min-w-[200px]">
+                <div className="flex items-center gap-3 bg-brand-surface border-4 border-brand-cyan p-3 shadow-neo-cyan focus-within:shadow-none focus-within:translate-x-0.5 focus-within:translate-y-0.5 transition-all">
+                  <div className="flex-shrink-0 px-2 h-7 bg-brand-cyan border-2 border-black flex items-center justify-center font-black text-black text-[8px] uppercase italic whitespace-nowrap">Miss Stefunny</div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search genre, country, cast, keywords..."
-                    className="flex-1 bg-transparent border-none text-white text-xs outline-none placeholder:text-white/20 py-2.5 pr-2"
+                    placeholder="Search... genre, country, cast, keywords"
+                    className="flex-1 bg-transparent border-none text-white font-black text-xs uppercase outline-none italic placeholder:text-white/30 placeholder:normal-case placeholder:not-italic"
                   />
                   {searchQuery ? (
-                    <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors pr-2">
+                    <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors">
                       <span className="material-symbols-outlined text-base">close</span>
                     </button>
                   ) : (
-                    <span className="material-symbols-outlined text-white/30 text-base flex-shrink-0 pr-2">search</span>
+                    <span className="material-symbols-outlined text-brand-cyan text-base flex-shrink-0">search</span>
                   )}
                 </div>
                 {searchQuery && (
@@ -1548,8 +1546,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <div
                 key={show.id}
                 onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)}
-                className={`group relative cursor-pointer bg-brand-surface border-4 border-white/30 overflow-hidden flex flex-col transition-all duration-300
-                  ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-pink hover:shadow-[0_0_20px_rgba(255,2,102,0.3)]'}`}
+                className={`group relative cursor-pointer bg-brand-surface border-4 border-white overflow-hidden flex flex-col transition-all duration-200
+                  ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-yellow hover:shadow-neo-yellow hover:translate-x-[-3px] hover:translate-y-[-3px]'}`}
               >
                 {/* Lock overlay */}
                 {isFreeBlocked && (
@@ -1562,8 +1560,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 {/* IMAGE */}
                 <div className="relative overflow-hidden" style={{aspectRatio:'2/3'}}>
                   {show.imageUrl ? (
-                    <img src={show.imageUrl} alt={show.title}
-                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105" />
+                    <img src={show.imageUrl + '?v=' + (show as any).updated_at?.slice(0,10)} alt={show.title}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                   ) : (
                     <div className="w-full h-full bg-brand-black flex items-center justify-center">
                       <span className="text-6xl font-black uppercase italic text-white/10">{show.title[0]}</span>
@@ -1596,7 +1594,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* BOTTOM INFO */}
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="text-brand-pink text-[9px] font-black uppercase italic tracking-widest mb-1">{show.genre}</p>
-                    <h3 className="font-black uppercase italic text-white text-sm leading-tight group-hover:text-brand-yellow transition-colors">{show.title}</h3>
+                    <h3 className="font-black uppercase italic text-white text-sm leading-tight group-hover:text-brand-yellow transition-colors">{(show as any).englishTitle || show.title}</h3>
                     <p className="text-white/40 text-[9px] font-bold mt-0.5">{show.author}</p>
                   </div>
                 </div>
