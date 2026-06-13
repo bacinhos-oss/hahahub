@@ -1546,8 +1546,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <div
                 key={show.id}
                 onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)}
-                className={`group relative cursor-pointer bg-brand-surface border-4 border-white overflow-hidden flex flex-col transition-all duration-300
-                  ${isFreeBlocked ? 'opacity-40' : 'hover:border-white/60 hover:brightness-110'}`}
+                className={`group relative cursor-pointer bg-brand-surface border-4 border-white/30 overflow-hidden flex flex-col transition-all duration-300
+                  ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-pink hover:shadow-[0_0_20px_rgba(255,2,102,0.3)]'}`}
               >
                 {/* Lock overlay */}
                 {isFreeBlocked && (
@@ -1561,7 +1561,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <div className="relative overflow-hidden" style={{aspectRatio:'2/3'}}>
                   {show.imageUrl ? (
                     <img src={show.imageUrl} alt={show.title}
-                      className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105" />
+                      className="w-full h-full object-cover transition-all duration-300" />
                   ) : (
                     <div className="w-full h-full bg-brand-black flex items-center justify-center">
                       <span className="text-6xl font-black uppercase italic text-white/10">{show.title[0]}</span>
