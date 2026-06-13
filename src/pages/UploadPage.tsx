@@ -285,16 +285,16 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
-                    <label className={lbl}>English Title * <span className="text-white/20 normal-case font-normal">(main title for international buyers)</span></label>
+                    <label className={lbl}>English Title <span style={{color:"#FF0266"}}>*</span> <span className="text-white/20 normal-case font-normal">(main title for international buyers)</span></label>
                     <input name="englishTitle" value={formData.englishTitle} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl focus:border-brand-yellow outline-none" placeholder="SHOW TITLE IN ENGLISH" />
                   </div>
                   <div className="sm:col-span-2">
                     <label className={lbl}>Original Title (if different)</label>
                     <input name="title" value={formData.title} onChange={handleInputChange} className={inp} placeholder="Original language title" />
                   </div>
-                  <div><label className={lbl}>Author / Playwright *</label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
-                  <div><label className={lbl}>Genre *</label>
+                  <div><label className={lbl}>Author / Playwright <span style={{color:"#FF0266"}}>*</span></label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
+                  <div><label className={lbl}>Original Language <span style={{color:"#FF0266"}}>*</span></label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
+                  <div><label className={lbl}>Genre <span style={{color:"#FF0266"}}>*</span></label>
                     <select name="genre" value={formData.genre} onChange={handleInputChange} className={sel}>
                       <option value="">Select genre...</option>
                       <option value="Comedy">Comedy</option>
@@ -335,7 +335,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Awards</label><input name="awards" value={formData.awards} onChange={handleInputChange} className={inp} placeholder="Best Comedy, Best Director..." /></div>
                   <div><label className={lbl}>Trailer URL</label><input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className={inp} placeholder="https://youtube.com/..." /></div>
-                  <div className="sm:col-span-2"><label className={lbl}>Synopsis in English * <span className="text-white/20 normal-case font-normal">(for international buyers)</span></label><textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={4} className={inp} placeholder="Write a compelling synopsis in English..." /></div>
+                  <div className="sm:col-span-2"><label className={lbl}>Synopsis in English <span style={{color:"#FF0266"}}>*</span> <span className="text-white/20 normal-case font-normal">(for international buyers)</span></label><textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={4} className={inp} placeholder="Write a compelling synopsis in English..." /></div>
                   <div className="sm:col-span-2"><label className={lbl}>International Success Notes</label><input name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} className={inp} placeholder="Toured X countries, won festival Y..." /></div>
                 </div>
               </section>
@@ -390,26 +390,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
                   <div className="sm:col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={2} className={inp} placeholder="Vision, approach, key staging decisions..." /></div>
                   <div className="sm:col-span-2"><label className={lbl}>Original Production Solutions</label><textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={2} className={inp} placeholder="Unique staging, set design, technical innovations..." /></div>
-                </div>
-                <div className="border-t-2 border-white/10 mt-4 pt-4 space-y-3">
-                  <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">Script</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label className={lbl}>Script in English</label>
-                      <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
-                        <option value="false">No</option>
-                        <option value="partial">Synopsis only</option>
-                        <option value="true">Full script</option>
-                      </select>
-                    </div>
-                    <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
-                    <div><label className={lbl}>Translation Rights</label>
-                      <select name="translationRightsIncluded" value={formData.translationRightsIncluded} onChange={handleInputChange} className={sel}>
-                        <option value="false">Not included</option>
-                        <option value="true">Included</option>
-                      </select>
-                    </div>
-                    <div className="sm:col-span-2"><label className={lbl}>Script Excerpt / Scenario (3 pages in English)</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={3} className={inp} placeholder="Paste a short excerpt or scene description..." /></div>
-                  </div>
                 </div>
               </section>
 
@@ -555,6 +535,26 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                         </select>
                       </div>
                     </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label className={lbl}>Script in English</label>
+                        <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
+                          <option value="false">No</option>
+                          <option value="partial">Synopsis only</option>
+                          <option value="true">Full script</option>
+                        </select>
+                      </div>
+                      <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
+                      <div><label className={lbl}>Translation Rights</label>
+                        <select name="translationRightsIncluded" value={formData.translationRightsIncluded} onChange={handleInputChange} className={sel}>
+                          <option value="false">Not included</option>
+                          <option value="true">Included</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div><label className={lbl}>Script Excerpt / Scenario (3 pages in English)</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={4} className={inp} placeholder="Paste a short excerpt or scene description..." /></div>
                   </div>
                 </div>
 
