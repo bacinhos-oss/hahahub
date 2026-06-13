@@ -478,7 +478,8 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <h1 style="color:#fff;font-size:30px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 8px;letter-spacing:-1px;line-height:1.1">Help us build<br/>the future of<br/><span style="color:#FFDE03">comedy theatre.</span></h1>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">Hi ${name},</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">We are personally inviting you to join <strong style="color:#fff">HahaHub</strong> as one of <strong style="color:#FFDE03">20 Founding Members</strong> — selected globally to co-found the platform from day one.</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">HahaHub is a marketplace for international comedy theatre rights — and we want to build it with the right people. Your experience, your shows, and your feedback will directly shape what this becomes.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">HahaHub is an international comedy theatre rights marketplace — a platform where producers buy and sell rights to comedy productions across borders. Direct. No agents. No commission. Your show in Germany, Spain, Japan — on your terms.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">We are in <strong style="color:#fff">private beta</strong> and we want to build it with the right people. Your experience, your shows, and your feedback will directly shape what this becomes.</p>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
     <tr><td style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:20px;">
@@ -525,7 +526,8 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
     </td></tr>
   </table>
 
-  <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 20px">Private beta · 20 spots worldwide · You've been personally selected.</p>
+  <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 8px">Private beta · 20 spots worldwide · You've been personally selected.</p>
+  <p style="color:rgba(255,255,255,0.5);font-size:12px;line-height:1.6;margin:0 0 20px">Reply to this email and we'll send you your personal access link within 24 hours.</p>
   <a href="mailto:info@hahahub.art?subject=Yes, I want to be a Founding Member" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Reply to claim your spot →</a>
 </td></tr>
 <tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:20px 36px;">
