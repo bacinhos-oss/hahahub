@@ -180,7 +180,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                   <div
                     key={show.id}
                     onClick={() => onNavigate('login')}
-                    className={`group relative flex-shrink-0 w-48 md:w-64 aspect-[2/3] cursor-pointer overflow-hidden border-4 transition-all duration-500 snap-start ${i === sliderIdx ? 'border-brand-yellow shadow-neo-yellow scale-105' : 'border-white/30 grayscale hover:grayscale-0'}`}
+                    className={`group relative flex-shrink-0 w-48 md:w-64 aspect-[2/3] cursor-pointer overflow-hidden border-4 transition-all duration-500 snap-start ${i === sliderIdx ? 'border-brand-yellow shadow-neo-yellow scale-105' : 'border-white/30 hover:border-brand-pink'}`}
                   >
                     <img src={show.imageUrl} className="w-full h-full object-cover scale-105 group-hover:scale-110 transition-all duration-700" alt={show.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
@@ -189,7 +189,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                     </div>
                     <div className="absolute bottom-0 left-0 p-3 w-full">
                       <p className="text-brand-cyan text-[9px] font-black uppercase tracking-widest italic mb-1">{show.genre}</p>
-                      <h3 className="text-sm font-black uppercase italic leading-tight text-white line-clamp-2">{show.title}</h3>
+                      <h3 className="text-sm font-black uppercase italic leading-tight text-white line-clamp-2">{(show as any).englishTitle || show.title}</h3>
                     </div>
                   </div>
                 ))}
