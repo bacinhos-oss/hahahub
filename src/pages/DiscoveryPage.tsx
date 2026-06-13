@@ -1594,7 +1594,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* BOTTOM INFO */}
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="text-brand-pink text-[9px] font-black uppercase italic tracking-widest mb-1">{show.genre}</p>
-                    <h3 className="font-black uppercase italic text-white text-sm leading-tight group-hover:text-brand-yellow transition-colors">{show.title}</h3>
+                    <h3 className="font-black uppercase italic text-white text-sm leading-tight group-hover:text-brand-yellow transition-colors">{(show as any).englishTitle || show.title}</h3>
                     <p className="text-white/40 text-[9px] font-bold mt-0.5">{show.author}</p>
                   </div>
                 </div>
