@@ -63,12 +63,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
 
   const sliderShows = shows.slice(0, 6);
 
-  useEffect(() => {
-    if (sliderShows.length === 0) return;
-    sliderRef.current = setInterval(() => setSliderIdx(i => (i + 1) % sliderShows.length), 3000);
-    return () => { if (sliderRef.current) clearInterval(sliderRef.current); };
-  }, [sliderShows.length]);
-
   const foundingLeft = foundingTaken !== null ? Math.max(0, FOUNDING_TOTAL - foundingTaken) : null;
   const isFull = foundingLeft === 0;
 
@@ -160,7 +154,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           </div>
         </section>
 
-                {/* SLIDER — top shows autoplay */}
+                {/* SLIDER — infinite scroll ticker */}
         {sliderShows.length > 0 && (
           <section className="py-16 md:py-24 border-b-4 border-white/10 overflow-hidden">
             <div className="px-4 md:px-12 max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
@@ -174,15 +168,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 View Full Catalog →
               </button>
             </div>
-            <div className="relative">
-              <div className="flex gap-4 px-4 md:px-12 overflow-x-auto snap-x snap-mandatory pb-4" style={{ scrollbarWidth: 'none' }}>
-                {sliderShows.map((show, i) => (
+            <div className="relative overflow-hidden">
+              <style>{`
+                @keyframes ticker {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-50%); }
+                }
+                .ticker-track {
+                  display: flex;
+                  gap: 16px;
+                  animation: ticker 30s linear infinite;
+                  width: max-content;
+                }
+                .ticker-track:hover {
+                  animation-play-state: paused;
+                }
+              `}</style>
+              <div className="ticker-track">
+                {[...sliderShows, ...sliderShows].map((show, i) => (
                   <div
-                    key={show.id}
+                    key={i}
                     onClick={() => onNavigate('login')}
-                    className={`group relative flex-shrink-0 w-48 md:w-64 aspect-[2/3] cursor-pointer overflow-hidden border-2 transition-all duration-500 snap-start ${i === sliderIdx ? 'border-white' : 'border-white/20 hover:border-brand-pink'}`}
+                    className="group relative flex-shrink-0 w-48 md:w-64 aspect-[2/3] cursor-pointer overflow-hidden border-2 border-white/20 hover:border-brand-pink transition-all duration-300"
                   >
-                    <img src={show.imageUrl} className="w-full h-full object-cover scale-105 group-hover:scale-110 transition-all duration-700" alt={show.title} />
+                    <img src={show.imageUrl} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105" alt={show.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="bg-brand-pink text-white px-3 py-2 border-4 border-black font-black uppercase italic rotate-[-3deg] text-xs">Access Locked</div>
@@ -192,11 +201,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                       <h3 className="text-sm font-black uppercase italic leading-tight text-white line-clamp-2">{(show as any).englishTitle || show.title}</h3>
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-center gap-2 mt-6">
-                {sliderShows.map((_, i) => (
-                  <button key={i} onClick={() => setSliderIdx(i)} className={`h-1.5 transition-all ${i === sliderIdx ? 'w-8 bg-brand-yellow' : 'w-2 bg-white/20'}`} />
                 ))}
               </div>
             </div>
