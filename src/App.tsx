@@ -278,14 +278,7 @@ const App: React.FC = () => {
     }
   }
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-        <div style={{ fontFamily: 'Bowlby One SC, cursive', fontSize: '3rem', color: '#FFDE03', textShadow: '3px 3px 0 #FF0266' }}>HAHAHUB</div>
-        <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '10px', color: 'rgba(255,255,255,0.2)', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 900 }}>Tickling the vault...</div>
-      </div>
-    )
-  }
+  if (loading) return null
 
   const handleUpload = async (newShow: Show) => {
     const { data, error } = await supabase.from('shows').insert([{
