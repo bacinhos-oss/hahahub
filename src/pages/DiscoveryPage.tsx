@@ -311,7 +311,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                              <p className="text-[8px] font-black uppercase text-gray-500 italic">Humor Type</p>
                              <p className="text-sm font-black italic break-words">{selectedShow.humorType}</p>
                           </div>
-                        
+                        </div>
                         <div className="grid grid-cols-2 gap-2 md:gap-4">
                           <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
                              <span className="text-xs font-black uppercase italic text-brand-yellow">Male Roles</span>
