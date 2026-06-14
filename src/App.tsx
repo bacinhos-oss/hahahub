@@ -13,6 +13,7 @@ import UploadPage from './pages/UploadPage'
 import CookieBanner from './components/CookieBanner'
 import FeedbackButton from './components/FeedbackButton'
 import OnboardingWizard from './components/OnboardingWizard'
+import LoadingScreen from './components/LoadingScreen'
 import NotFoundPage from './pages/NotFoundPage'
 import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
@@ -26,6 +27,7 @@ import DealsPipelinePage from './pages/DealsPipelinePage'
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
 const App: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPageRaw] = useState<Page>('landing')
   const setCurrentPage = (page: Page) => { window.scrollTo(0, 0); setCurrentPageRaw(page); }
   const [currentUser, setCurrentUser] = useState<User | null>(null)
@@ -456,6 +458,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      {isLoading && <LoadingScreen onDone={() => setIsLoading(false)} />}
       {renderPage()}
       <CookieBanner />
       <FeedbackButton />
