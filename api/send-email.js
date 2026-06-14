@@ -463,7 +463,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 
   founding_invite: ({ name }) => ({
-    subject: `HahaHub.art — Invitation to join as Founding Member`,
+    subject: `Theatre comedy travels. Join us.`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
@@ -478,15 +478,15 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <h1 style="color:#fff;font-size:28px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 4px;letter-spacing:-1px;line-height:1.15">Your show.<br/>Their stage.<br/>Same laff.<br/><span style="color:#FFDE03">Different city.</span></h1>
   <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:4px;font-style:italic;margin:0 0 20px">Theatre comedy travels. Help us build the first punch.</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">Hi ${name},</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">We are personally inviting you to join <strong style="color:#fff">HahaHub.art</strong> as one of <strong style="color:#FFDE03">20 Founding Members</strong> — selected globally to co-found the platform from day one.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">We are personally inviting you to join <strong style="color:#fff">HahaHub</strong> as one of <strong style="color:#FFDE03">20 Founding Members</strong> — selected globally to co-found the platform from day one.</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">We are in <strong style="color:#fff">private beta</strong> and we want to build it with the right people. Your experience, your shows, and your feedback will directly shape what this becomes.</p>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
     <tr><td style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:20px;">
-      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">What is HahaHub.art?</p>
+      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">What is HahaHub?</p>
       <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:0 0 8px">The first marketplace for international comedy theatre rights. Buy and sell rights to comedy productions across borders — directly, with no agents and no commission. Producer to producer.</p>
       <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:0 0 12px">Your show in Germany. Their show on your stage. Same laugh. Different language. <strong style="color:#fff">Theatre comedy travels. This is how.</strong></p>
-      <p style="color:#fff;font-size:13px;font-weight:900;font-style:italic;margin:0 0 8px">That's HahaHub.art. The Laff Exchange.</p>
+      <p style="color:#fff;font-size:13px;font-weight:900;font-style:italic;margin:0 0 8px">That's HahaHub. The Laff Exchange.</p>
       <p style="color:#FF0266;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:3px;font-style:italic;margin:0">Tickle. Set Up. Punch.</p>
     </td></tr>
   </table>
