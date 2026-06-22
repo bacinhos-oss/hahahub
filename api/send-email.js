@@ -463,7 +463,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 
   founding_invite: ({ name, email, password }) => ({
-    subject: `${name}, You're In — Your Founding Login Is Ready 🎭`,
+    subject: `Early access. A platform for international comedy theatre producers.`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
@@ -474,16 +474,16 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <p style="margin:6px 0 0;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#FFDE03;font-style:italic">The Laff Exchange</p>
 </td></tr>
 <tr><td style="background:#0a0a0a;padding:36px;">
-  <div style="background:#FF0266;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:5px 14px;display:inline-block;margin-bottom:20px;">🎟️ Early Access Invitation</div>
+  <div style="background:#FF0266;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:5px 14px;display:inline-block;margin-bottom:20px;">Early Access · Private Beta</div>
   <h1 style="color:#fff;font-size:28px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 4px;letter-spacing:-1px;line-height:1.15">Your show.<br/>Their stage.<br/>Same laff.<br/><span style="color:#FFDE03">Different city.</span></h1>
-  <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:4px;font-style:italic;margin:0 0 20px">Theatre comedy travels. Help us build the first punch.</p>
+  <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:4px;font-style:italic;margin:0 0 20px">Theatre comedy travels.</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">Hi ${name},</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">We are personally inviting you to join <strong style="color:#fff">HahaHub.art</strong> as one of <strong style="color:#FFDE03">20 Founding Members</strong> — selected globally to co-found the platform from day one.</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">Your login is already active — no reply needed. Just log in below and you're in.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">I'm building HahaHub.art. It's a marketplace for international comedy theatre rights. Producers buy and sell rights to comedy productions directly. No agents, no commission, producer to producer.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">It's in private beta and your account is already set up. Log in and have a look:</p>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
     <tr><td style="background:#111;border:2px solid #FFDE03;padding:24px;">
-      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 16px">Your Founding Member Login</p>
+      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 16px">Your login</p>
       <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
         <tr><td style="background:#050505;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);">
           <p style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 4px">Email</p>
@@ -494,16 +494,15 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
           <p style="font-size:15px;font-weight:900;color:#03DAC6;margin:0;font-family:monospace">${password}</p>
         </td></tr>
       </table>
-      <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In Now →</a>
-      <p style="color:rgba(255,255,255,0.3);font-size:11px;margin:14px 0 0">Change your password after first login: My Hub → My Profile.</p>
+      <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In →</a>
+      <p style="color:rgba(255,255,255,0.3);font-size:11px;margin:14px 0 0">You can change your password later in My Hub → My Profile.</p>
     </td></tr>
   </table>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
     <tr><td style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:20px;">
       <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">What is HahaHub.art?</p>
-      <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:0 0 8px">The first marketplace for international comedy theatre rights. Buy and sell rights to comedy productions across borders — directly, with no agents and no commission. Producer to producer.</p>
-      <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:0 0 12px">Your show in Germany. Their show on your stage. Same laugh. Different language. <strong style="color:#fff">Theatre comedy travels. This is how.</strong></p>
+      <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:0 0 12px">HahaHub.art is not just a marketplace. It is your entire comedy production infrastructure. From first tickle to final royalty, everything happens here. No spreadsheets. No email chains. No agents with hats.</p>
       <p style="color:#fff;font-size:13px;font-weight:900;font-style:italic;margin:0 0 8px">That's HahaHub.art. The Laff Exchange.</p>
       <p style="color:#FF0266;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:3px;font-style:italic;margin:0">Tickle. Set Up. Punch.</p>
     </td></tr>
@@ -514,7 +513,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
       <td style="padding:0 8px 0 0;width:33%;vertical-align:top;">
         <table width="100%" cellpadding="0" cellspacing="0"><tr><td style="background:#111;border-top:3px solid #FFDE03;padding:14px;">
           <p style="color:#FFDE03;font-size:16px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 6px">Tickle.</p>
-          <p style="color:rgba(255,255,255,0.5);font-size:11px;line-height:1.6;margin:0">Browse the catalog. Find a show that fits your stage. Or list yours — let producers worldwide find it.</p>
+          <p style="color:rgba(255,255,255,0.5);font-size:11px;line-height:1.6;margin:0">Browse the catalog. Find a show that fits your stage. Or list yours, let producers worldwide find it.</p>
         </td></tr></table>
       </td>
       <td style="padding:0 8px;width:33%;vertical-align:top;">
@@ -537,16 +536,16 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
       <p style="color:#03DAC6;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 14px">Your comedy business. In one place.</p>
       <table width="100%" cellpadding="4" cellspacing="4">
         <tr>
-          <td style="background:#050505;padding:10px 12px;width:50%"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Catalog</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Browse international shows</p></td>
-          <td style="background:#050505;padding:10px 12px;width:50%"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Pipeline</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Manage deals end-to-end</p></td>
+          <td style="background:#050505;padding:10px 12px;width:50%"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Catalog</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Browse international shows.</p></td>
+          <td style="background:#050505;padding:10px 12px;width:50%"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Pipeline</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Manage deals end-to-end.</p></td>
         </tr>
         <tr>
-          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Analytics</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Views, territories, royalties</p></td>
-          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Paperwork</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Contract templates</p></td>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Analytics</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Views, territories, royalties.</p></td>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Paperwork</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Contract templates.</p></td>
         </tr>
         <tr>
-          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Royalty Tracker</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Log & calculate earnings</p></td>
-          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Calculator</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Know your numbers</p></td>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Royalty Tracker</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Log and calculate earnings.</p></td>
+          <td style="background:#050505;padding:10px 12px;"><p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;margin:0 0 3px">Calculator</p><p style="color:rgba(255,255,255,0.4);font-size:11px;margin:0">Know your numbers.</p></td>
         </tr>
       </table>
     </td></tr>
@@ -554,10 +553,10 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
     <tr><td style="background:#050505;border-left:4px solid #FFDE03;padding:16px 20px;">
-      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">As a Founding Member you get</p>
-      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">— Lifetime ROAR access (normally €189/year) — <strong style="color:#FFDE03">free. Forever.</strong></p>
-      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">— Permanent FOUNDING badge on your profile</p>
-      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">— Direct say in how the platform develops</p>
+      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">As an early member you get</p>
+      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">Lifetime ROAR access. Normally €189 a year. <strong style="color:#FFDE03">Free. Forever.</strong></p>
+      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">A permanent place on the platform, from day one.</p>
+      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">Real influence on how this gets built.</p>
     </td></tr>
   </table>
 
@@ -568,10 +567,10 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
     </td></tr>
   </table>
 
-  <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 24px">Private beta · 20 spots worldwide · You've been personally selected.</p>
-  <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In Now →</a>
+  <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 24px">Private beta. A small group of producers worldwide. You're one of them.</p>
+  <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In →</a>
 
-  <p style="color:rgba(255,255,255,0.5);font-size:13px;line-height:1.7;margin:32px 0 0">Questions? Just reply — I read every email myself.</p>
+  <p style="color:rgba(255,255,255,0.5);font-size:13px;line-height:1.7;margin:32px 0 0">Questions or feedback? Just reply. I read every email myself.</p>
   <p style="color:#fff;font-size:13px;font-weight:900;margin:14px 0 0">Dejan Batoćanin</p>
   <p style="color:rgba(255,255,255,0.3);font-size:11px;font-style:italic;margin:2px 0 0">Founder, HahaHub.art</p>
 </td></tr>
@@ -585,7 +584,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </body></html>`
   }),
   founding_welcome: ({ name, spotNumber }) => ({
-    subject: `You're Founding Member #${spotNumber} — Welcome to HahaHub 🥊`,
+    subject: `You're HahaHub Crew #${spotNumber} — Welcome 🥊`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
@@ -596,9 +595,9 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#FF0266">Tickle. Set Up. Punch.</p>
 </td></tr>
 <tr><td style="background:#0a0a0a;padding:40px;">
-  <div style="background:#FFDE03;color:#000;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:6px 14px;display:inline-block;margin-bottom:24px;">⭐ FOUNDING MEMBER #${spotNumber}</div>
+  <div style="background:#FFDE03;color:#000;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:6px 14px;display:inline-block;margin-bottom:24px;">⭐ HAHAHUB CREW #${spotNumber}</div>
   <h1 style="color:#fff;font-size:32px;font-weight:900;text-transform:uppercase;margin:0 0 16px;letter-spacing:-1px">${name}.<br/>You're in the history books. 🥊</h1>
-  <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin:0 0 24px">You're one of the first 20 producers to join HahaHub. That means your <strong style="color:#FFDE03">FOUNDING</strong> badge is permanent — it will be on your profile forever, long after we're running thousands of shows worldwide.</p>
+  <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin:0 0 24px">You're one of the first 20 producers to join HahaHub. That means your <strong style="color:#FFDE03">CREW</strong> badge is permanent — it will be on your profile forever, long after we're running thousands of shows worldwide.</p>
   <div style="background:#050505;border-left:4px solid #FFDE03;padding:20px 24px;margin:24px 0;">
     <p style="color:#FFDE03;font-size:10px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">What to do now</p>
     <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">1. <strong>Upload your show</strong> — SHOWLOAD → fill all sections → publish</p>
