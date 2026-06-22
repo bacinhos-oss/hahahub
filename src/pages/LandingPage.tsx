@@ -473,7 +473,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <p className="text-gray-400 text-xs font-black uppercase tracking-widest italic mb-2">Pro · Production House</p>
                 <h3 className="text-4xl font-black uppercase italic text-black mb-1">LAFF</h3>
                 <div className="text-5xl font-black text-brand-pink mb-1">€99</div>
-                <p className="text-gray-400 text-xs font-bold italic mb-8">per year · ~€8/month</p>
+                <p className="text-gray-400 text-xs font-bold italic mb-2">per year · ~€8/month</p>
+                <p className="text-brand-pink text-[10px] font-black uppercase tracking-wide italic mb-6">⭐ Founding Members get this free, forever</p>
                 <ul className="space-y-3 mb-8">
                   {['Full catalog — unlimited browsing', 'Upload up to 5 shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'Pipeline — deal tracking & messages', 'Royalty Tracker — log & calculate', 'LaffWire — post & read', 'Analytics — views & inquiries', 'PAPERWORK — contracts & templates', 'HAHAfriends — private network', 'Break-even Calculator'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-black">
@@ -491,7 +492,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <p className="text-brand-pink text-xs font-black uppercase tracking-widest italic mb-2">Studio · Full Power</p>
                 <h3 className="text-4xl font-black uppercase italic text-white mb-1">ROAR</h3>
                 <div className="text-5xl font-black text-brand-pink mb-1">€189</div>
-                <p className="text-white/30 text-xs font-bold italic mb-8">per year · ~€16/month</p>
+                <p className="text-white/30 text-xs font-bold italic mb-2">per year · ~€16/month</p>
+                <p className="text-brand-yellow text-[10px] font-black uppercase tracking-wide italic mb-6">⭐ Founding Members get this free, forever</p>
                 <ul className="space-y-3 mb-8">
                   {['Full catalog — unlimited + Priority listing', 'Upload unlimited shows', 'Direct contact with rights holders', 'The Dossier PDF download', 'FEATURED badge + VERIFIED badge', 'LaffWire — live real-time', 'Pipeline — deal tracking & messages', 'Royalty Tracker — log, calculate, report', 'Analytics — views, inquiries, territories', 'PAPERWORK — contracts & templates', 'HAHAfriends — private network', 'Break-even Calculator', 'Deal tracking + rights holder reports'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm font-bold text-white/80">
