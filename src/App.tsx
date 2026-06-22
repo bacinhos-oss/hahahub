@@ -43,6 +43,9 @@ const App: React.FC = () => {
       setLoading(false)
       return
     }
+    if (hash === '#login' || hash === '#signup') {
+      setCurrentPage('login')
+    }
 
     loadShows()
 

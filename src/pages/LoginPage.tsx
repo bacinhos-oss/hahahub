@@ -90,6 +90,10 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     const hash = window.location.hash.substring(1)
     const params = new URLSearchParams(hash)
     if (params.get('type') === 'recovery') setIsResetMode(true)
+    // Invite emails link to #signup so first-time producers land directly
+    // on the Sign Up tab instead of Log In (which would fail with no
+    // account yet).
+    if (hash === 'signup') setIsNew(true)
   }, [])
 
   const completeRegistration = async () => {

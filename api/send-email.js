@@ -479,7 +479,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:4px;font-style:italic;margin:0 0 20px">Theatre comedy travels.</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">Hi ${name},</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">I'm building HahaHub.art. It's a marketplace for international comedy theatre rights. Producers buy and sell rights to comedy productions directly. No agents, no commission, producer to producer.</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">It's in private beta and your account is already set up. Log in and have a look:</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">It's in private beta and your account is already set up. Tickle in and have a look:</p>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
     <tr><td style="background:#111;border:2px solid #FFDE03;padding:24px;">
@@ -494,7 +494,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
           <p style="font-size:15px;font-weight:900;color:#03DAC6;margin:0;font-family:monospace">${password}</p>
         </td></tr>
       </table>
-      <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In →</a>
+      <a href="https://www.hahahub.art/#signup" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Tickle In →</a>
       <p style="color:rgba(255,255,255,0.3);font-size:11px;margin:14px 0 0">You can change your password later in My Hub → My Profile.</p>
     </td></tr>
   </table>
@@ -568,7 +568,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   </table>
 
   <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 24px">Private beta. A small group of producers worldwide. You're one of them.</p>
-  <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In →</a>
+  <a href="https://www.hahahub.art/#signup" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Tickle In →</a>
 
   <p style="color:rgba(255,255,255,0.5);font-size:13px;line-height:1.7;margin:32px 0 0">Questions or feedback? Just reply. I read every email myself.</p>
   <p style="color:#fff;font-size:13px;font-weight:900;margin:14px 0 0">Dejan Batoćanin</p>
