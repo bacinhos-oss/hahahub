@@ -35,6 +35,13 @@ function generatePassword(name: string, email: string): string {
   return capitalize(firstName) + capitalize(emailPrefix) + digits;
 }
 
+// Normalize email before writing to / reading from the invitations table.
+// Prevents the "registered but still shows pending" sync bug caused by
+// case/whitespace mismatches between invitations.email and auth.users.email.
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
   const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog' | 'inquiries' | 'errors'>('analytics');
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -106,18 +113,19 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const sendInvite = async () => {
     if (!newName || !newEmail || !password) return;
     setSending(true);
+    const cleanEmail = normalizeEmail(newEmail);
 
     // Save to invitations table
     const { data } = await supabase.from('invitations').insert([{
-      recipient: newName, email: newEmail, duration: selectedDuration,
+      recipient: newName, email: cleanEmail, duration: selectedDuration,
       status: 'pending', password, note: newNote, plan: invitePlan,
     }]).select();
 
     if (data?.[0]) {
       setInvites(prev => [{
-        id: data[0].id, recipient: newName, email: newEmail,
+        id: data[0].id, recipient: newName, email: cleanEmail,
         duration: selectedDuration, status: 'pending',
-        generatedUsername: newEmail, generatedPassword: password,
+        generatedUsername: cleanEmail, generatedPassword: password,
         plan: invitePlan, created_at: data[0].created_at,
       }, ...prev]);
     }
@@ -125,9 +133,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     try {
       await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newEmail, name: newName, password, note: newNote, duration: selectedDuration, plan: invitePlan })
+        body: JSON.stringify({ email: cleanEmail, name: newName, password, note: newNote, duration: selectedDuration, plan: invitePlan })
       });
-      triggerMailLog(`Email Sent to ${newName}`, `Dispatched to: ${newEmail}\nPassword: ${password}\nPlan: ${invitePlan.toUpperCase()}\nDuration: ${selectedDuration}`);
+      triggerMailLog(`Email Sent to ${newName}`, `Dispatched to: ${cleanEmail}\nPassword: ${password}\nPlan: ${invitePlan.toUpperCase()}\nDuration: ${selectedDuration}`);
     } catch (e) { console.error(e); }
 
     setNewName(''); setNewEmail(''); setNewNote(''); setPassword('');
@@ -419,18 +427,22 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               <button onClick={async () => {
                 if (!newName || !newEmail) return;
                 setSending(true);
+                const cleanEmail = normalizeEmail(newEmail);
+                const foundingPassword = generatePassword(newName, cleanEmail);
                 try {
                   // Save to invitations as founding type
-                  await supabase.from('invitations').insert([{
-                    recipient: newName, email: newEmail, duration: 'lifetime',
-                    status: 'pending', password: '', note: 'Founding Member Invite', plan: 'roar', type: 'founding'
+                  const { error: insertError } = await supabase.from('invitations').insert([{
+                    recipient: newName, email: cleanEmail, duration: 'lifetime',
+                    status: 'pending', password: foundingPassword, note: 'Founding Member Invite', plan: 'roar', type: 'founding'
                   }]);
+                  if (insertError) console.error('Founding invite insert error:', insertError);
                   await fetch('/api/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'founding_invite', to: newEmail, data: { name: newName } })
+                    body: JSON.stringify({ type: 'founding_invite', to: cleanEmail, data: { name: newName, email: cleanEmail, password: foundingPassword } })
                   });
-                  triggerMailLog(`Founding Invite Sent to ${newName}`, `Dispatched to: ${newEmail}`);
+                  triggerMailLog(`Founding Invite Sent to ${newName}`, `Dispatched to: ${cleanEmail}\nPassword: ${foundingPassword}`);
+                  loadInvites();
                 } catch (e) { console.error(e); }
                 setSending(false);
               }} disabled={sending || !newName || !newEmail}
@@ -448,7 +460,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   <div key={inv.id} className="flex items-center justify-between gap-3 border border-white/10 px-3 py-2">
                     <div>
                       <p className="font-black uppercase italic text-white text-xs">{inv.recipient}</p>
-                      <p className="text-white/30 text-[9px]">{inv.email}</p>
+                      <p className="text-white/30 text-[9px]">{inv.email}{inv.generatedPassword && inv.generatedPassword !== '—' ? ` · ${inv.generatedPassword}` : ''}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`text-[8px] font-black uppercase px-2 py-0.5 ${inv.status === 'used' ? 'bg-green-500/20 text-green-400' : 'bg-brand-pink/20 text-brand-pink'}`}>
@@ -457,10 +469,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       {inv.status !== 'used' && (
                         <button onClick={async () => {
                           try {
+                            let pw = inv.generatedPassword;
+                            if (!pw || pw === '—') {
+                              pw = generatePassword(inv.recipient, inv.email);
+                              await supabase.from('invitations').update({ password: pw }).eq('id', inv.id);
+                              setInvites(prev => prev.map(i => i.id === inv.id ? { ...i, generatedPassword: pw } : i));
+                            }
                             const res = await fetch('/api/send-email', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ type: 'founding_invite', to: inv.email, data: { name: inv.recipient } })
+                              body: JSON.stringify({ type: 'founding_invite', to: inv.email, data: { name: inv.recipient, email: inv.email, password: pw } })
                             });
                             const json = await res.json();
                             if (json.success) {

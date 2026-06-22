@@ -136,38 +136,44 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     setLoading(true)
     try {
       if (isNew) {
-        // Check if invited
-        const { data: invite } = await supabase.from('invitations').select('*').eq('email', email).eq('status', 'pending').maybeSingle()
-        const isAdmin = email === ADMIN_EMAIL
+        const cleanEmail = email.trim().toLowerCase()
+        // Check if invited — ilike + trim guards against casing/whitespace
+        // mismatches between what the admin typed and what the user types,
+        // which previously left registered users stuck showing 'pending'.
+        const { data: invite } = await supabase.from('invitations').select('*').ilike('email', cleanEmail).eq('status', 'pending').maybeSingle()
+        const isAdmin = cleanEmail === ADMIN_EMAIL
         // BETA: invite required to register
         if (!invite && !isAdmin) {
           setError('HahaHub is currently in private beta. You need an invite to join. Contact us at info@hahahub.art')
           setLoading(false)
           return
         }
-        const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
+        const { data, error: signUpError } = await supabase.auth.signUp({ email: cleanEmail, password })
         if (signUpError) throw signUpError
         if (data.user) {
           const isPaid = isAdmin || !!invite
           const userType = isAdmin ? 'roar' : (invite?.plan || 'gigl')
-          if (invite) await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
+          if (invite) {
+            const { error: updateError } = await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
+            if (updateError) console.error('Failed to mark invitation as used:', updateError)
+          }
           await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), is_paid: isPaid, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
           if (isPaid) {
             // Send founding welcome email
             const houseAccounts = ['bacinhos@gmail.com', 'batocaninmaj@gmail.com', 'usmerjeni.prosti.cas@gmail.com'];
-            if (!houseAccounts.includes(email)) {
+            if (!houseAccounts.includes(cleanEmail)) {
               const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true).eq('onboarded', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
               const spotNumber = count || 1;
               await fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'founding_welcome', to: email, data: { name: name.toUpperCase(), spotNumber } })
+                body: JSON.stringify({ type: 'founding_welcome', to: cleanEmail, data: { name: name.toUpperCase(), spotNumber } })
               });
             }
             // Invited or admin — skip payment
             setCurrentUser({
-              id: data.user.id, email, name: name.toUpperCase(), role: isAdmin ? 'admin' : 'Producer',
-              avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+              id: data.user.id, email: cleanEmail, name: name.toUpperCase(), role: isAdmin ? 'admin' : 'Producer',
+              avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanEmail}`,
               isPaid: true, isAdmin,
               subscription: { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] },
               favorites: [], uploadedShowIds: [],
@@ -175,7 +181,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             onSuccess(true)
           } else {
             // Go to payment step
-            setPendingUser({ id: data.user.id, email })
+            setPendingUser({ id: data.user.id, email: cleanEmail })
             setShowPaymentModal(true)
           }
         }

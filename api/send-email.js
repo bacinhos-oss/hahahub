@@ -462,8 +462,8 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </html>`
   }),
 
-  founding_invite: ({ name }) => ({
-    subject: `Theatre comedy travels. Join us.`,
+  founding_invite: ({ name, email, password }) => ({
+    subject: `${name}, You're In — Your Founding Login Is Ready 🎭`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
@@ -474,12 +474,30 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <p style="margin:6px 0 0;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#FFDE03;font-style:italic">The Laff Exchange</p>
 </td></tr>
 <tr><td style="background:#0a0a0a;padding:36px;">
-  <div style="background:#FF0266;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:5px 14px;display:inline-block;margin-bottom:20px;">⭐ Founding Member — Private Invitation</div>
+  <div style="background:#FF0266;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:5px 14px;display:inline-block;margin-bottom:20px;">🎟️ Early Access Invitation</div>
   <h1 style="color:#fff;font-size:28px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 4px;letter-spacing:-1px;line-height:1.15">Your show.<br/>Their stage.<br/>Same laff.<br/><span style="color:#FFDE03">Different city.</span></h1>
   <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:4px;font-style:italic;margin:0 0 20px">Theatre comedy travels. Help us build the first punch.</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">Hi ${name},</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">We are personally inviting you to join <strong style="color:#fff">HahaHub.art</strong> as one of <strong style="color:#FFDE03">20 Founding Members</strong> — selected globally to co-found the platform from day one.</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">We are in <strong style="color:#fff">private beta</strong> and we want to build it with the right people. Your experience, your shows, and your feedback will directly shape what this becomes.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">Your login is already active — no reply needed. Just log in below and you're in.</p>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+    <tr><td style="background:#111;border:2px solid #FFDE03;padding:24px;">
+      <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 16px">Your Founding Member Login</p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
+        <tr><td style="background:#050505;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);">
+          <p style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 4px">Email</p>
+          <p style="font-size:15px;font-weight:900;color:#fff;margin:0;font-family:monospace">${email}</p>
+        </td></tr>
+        <tr><td style="background:#050505;padding:12px 16px;">
+          <p style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 4px">Password</p>
+          <p style="font-size:15px;font-weight:900;color:#03DAC6;margin:0;font-family:monospace">${password}</p>
+        </td></tr>
+      </table>
+      <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In Now →</a>
+      <p style="color:rgba(255,255,255,0.3);font-size:11px;margin:14px 0 0">Change your password after first login: My Hub → My Profile.</p>
+    </td></tr>
+  </table>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
     <tr><td style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:20px;">
@@ -550,13 +568,16 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
     </td></tr>
   </table>
 
-  <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 8px">Private beta · 20 spots worldwide · You've been personally selected.</p>
-  <p style="color:rgba(255,255,255,0.5);font-size:12px;line-height:1.6;margin:0 0 20px">Reply to this email and we'll send you your personal access link within 24 hours.</p>
-  <a href="mailto:info@hahahub.art?subject=Yes, I want to be a Founding Member" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Reply to claim your spot →</a>
+  <p style="color:rgba(255,255,255,0.3);font-size:12px;font-style:italic;margin:0 0 24px">Private beta · 20 spots worldwide · You've been personally selected.</p>
+  <a href="https://www.hahahub.art/login" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Log In Now →</a>
+
+  <p style="color:rgba(255,255,255,0.5);font-size:13px;line-height:1.7;margin:32px 0 0">Questions? Just reply — I read every email myself.</p>
+  <p style="color:#fff;font-size:13px;font-weight:900;margin:14px 0 0">Dejan Batoćanin</p>
+  <p style="color:rgba(255,255,255,0.3);font-size:11px;font-style:italic;margin:2px 0 0">Founder, HahaHub.art</p>
 </td></tr>
 <tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:20px 36px;">
   <p style="color:rgba(255,255,255,0.5);font-size:13px;margin:0 0 4px;font-weight:700">Break a Laffing Leg. 🦵</p>
-  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub Team · <a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · <a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
 </td></tr>
 </table>
 </td></tr>
