@@ -80,6 +80,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   const [loading, setLoading] = useState(false)
   const [isResetMode, setIsResetMode] = useState(false)
   const [resetSent, setResetSent] = useState(false)
+  const [fromInviteLink, setFromInviteLink] = useState(false)
 
   // Registration flow
   const [regStep, setRegStep] = useState<'form' | 'payment' | 'success'>('form')
@@ -93,7 +94,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     // Invite emails link to #signup so first-time producers land directly
     // on the Sign Up tab instead of Log In (which would fail with no
     // account yet).
-    if (hash === 'signup') setIsNew(true)
+    if (hash === 'signup') { setIsNew(true); setFromInviteLink(true) }
   }, [])
 
   const completeRegistration = async () => {
@@ -294,13 +295,23 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
 
         {isNew && (
           <div className="mb-6">
-            <div className="flex items-center gap-3 bg-brand-yellow/20 border-2 border-brand-yellow p-3">
-              <span className="text-lg">🎭</span>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Step 1 of 2</p>
-                <p className="text-xs font-black uppercase">Create Account → Secure Payment</p>
+            {fromInviteLink ? (
+              <div className="flex items-center gap-3 bg-brand-yellow/20 border-2 border-brand-yellow p-3">
+                <span className="text-lg">🎭</span>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">You're invited</p>
+                  <p className="text-xs font-black uppercase">No payment needed. Just create your login.</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center gap-3 bg-brand-yellow/20 border-2 border-brand-yellow p-3">
+                <span className="text-lg">🎭</span>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Step 1 of 2</p>
+                  <p className="text-xs font-black uppercase">Create Account → Secure Payment</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
