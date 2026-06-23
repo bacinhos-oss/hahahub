@@ -435,7 +435,12 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                     recipient: newName, email: cleanEmail, duration: 'lifetime',
                     status: 'pending', password: foundingPassword, note: 'Founding Member Invite', plan: 'roar', type: 'founding'
                   }]);
-                  if (insertError) console.error('Founding invite insert error:', insertError);
+                  if (insertError) {
+                    console.error('Founding invite insert error:', insertError);
+                    alert(`❌ Could not save invite for ${newName}: ${insertError.message}\n\nEmail was NOT sent.`);
+                    setSending(false);
+                    return;
+                  }
                   await fetch('/api/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -443,7 +448,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   });
                   triggerMailLog(`Founding Invite Sent to ${newName}`, `Dispatched to: ${cleanEmail}\nPassword: ${foundingPassword}`);
                   loadInvites();
-                } catch (e) { console.error(e); }
+                } catch (e) { console.error(e); alert(`❌ Something went wrong sending the invite to ${newName}.`); }
                 setSending(false);
               }} disabled={sending || !newName || !newEmail}
                 className="bg-brand-pink text-white px-8 py-3 font-black uppercase italic border-4 border-black hover:bg-white hover:text-black transition-all disabled:opacity-40 text-sm">
