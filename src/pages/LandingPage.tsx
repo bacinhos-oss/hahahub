@@ -49,7 +49,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
       const { count: paidCount } = await supabase.from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('is_paid', true)
-        .eq('onboarded', true)
         .not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
       setFoundingTaken(paidCount || 0);
     };

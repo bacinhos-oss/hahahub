@@ -167,7 +167,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             // Send founding welcome email
             const houseAccounts = ['bacinhos@gmail.com', 'batocaninmaj@gmail.com', 'usmerjeni.prosti.cas@gmail.com'];
             if (!houseAccounts.includes(cleanEmail)) {
-              const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true).eq('onboarded', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
+              const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
               const spotNumber = count || 1;
               await fetch('/api/send-email', {
                 method: 'POST',

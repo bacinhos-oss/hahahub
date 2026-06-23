@@ -17,10 +17,10 @@ const LiveActivity: React.FC = () => {
           { count: sCount },
           { count: vCount },
         ] = await Promise.all([
-          supabase.from('profiles').select('created_at, location').eq('onboarded', true).order('created_at', { ascending: false }).limit(4),
+          supabase.from('profiles').select('created_at, location').order('created_at', { ascending: false }).limit(4),
           supabase.from('inquiries').select('territory, created_at, package_type').order('created_at', { ascending: false }).limit(4),
-          supabase.from('profiles').select('location').eq('onboarded', true).not('location', 'is', null),
-          supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('onboarded', true),
+          supabase.from('profiles').select('location').not('location', 'is', null),
+          supabase.from('profiles').select('*', { count: 'exact', head: true }),
           supabase.from('shows').select('*', { count: 'exact', head: true }),
           supabase.from('show_views').select('*', { count: 'exact', head: true }),
         ]);
