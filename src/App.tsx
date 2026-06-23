@@ -270,11 +270,10 @@ const App: React.FC = () => {
       }
     }))
     if (type === 'view') {
-      const { data } = await supabase.from('shows').select('views_count').eq('id', showId).maybeSingle()
-      await supabase.from('shows').update({ views_count: (data?.views_count || 0) + 1 }).eq('id', showId)
-      // Log timestamped view for analytics
-      const { error: viewLogError } = await supabase.from('show_views').insert({ show_id: showId, user_id: currentUser?.id || null })
-      if (viewLogError) console.error('show_views insert failed:', viewLogError)
+      // Single atomic call — replaces the old read-then-write + separate
+      // insert, which could race or get abandoned on fast navigation.
+      const { error: viewError } = await supabase.rpc('record_show_view', { p_show_id: showId, p_user_id: currentUser?.id || null })
+      if (viewError) console.error('record_show_view failed:', viewError)
     }
     if (type === 'inquiry') {
       const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()
