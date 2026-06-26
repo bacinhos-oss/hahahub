@@ -100,7 +100,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
             <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Laff Exchange</span>
-            <p className="text-brand-yellow text-sm md:text-base font-black uppercase italic tracking-[0.3em] mb-2">Theatre comedy travels.</p>
             <h1 className="font-display text-white text-6xl sm:text-8xl md:text-[130px] leading-[0.85] tracking-tighter uppercase mb-4 md:mb-6 italic">
               TICKLE.<br/>
               <span className="text-brand-yellow">SET UP.</span><br/>
@@ -208,10 +207,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         )}
 
         {/* FOR WHO */}
-        <section className="px-4 md:px-12 py-16 md:py-24 bg-brand-surface border-b-4 border-white/10">
+        <section className="px-4 md:px-12 py-16 md:py-24 bg-brand-surface border-b-4 border-white/10" id="how">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
             <div>
-              <h2 className="text-4xl md:text-7xl font-black uppercase italic text-white mb-8">Built for <span className="text-brand-yellow">Producers.</span></h2>
+              <h2 className="text-4xl md:text-7xl font-black uppercase italic text-white mb-8">Theatre comedy <span className="text-brand-yellow">travels.</span></h2>
               <div className="space-y-5">
                 {[
                   { icon: 'verified', text: 'Verified rights holders only — every listing is authenticated' },
@@ -321,53 +320,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
                 <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest mt-1">{quotes[quoteIdx].org}</p>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* HOW TO PLAY — short version */}
-        <section className="py-16 border-t-4 border-white/10" id="how">
-          <div className="mb-10">
-            <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">How it works</span>
-            <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white leading-none mt-2">How to Play.</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink">You have a show — sell rights</p>
-              {[
-                { n: '01', t: 'SHOWLOAD', b: 'Upload your show. Your dossier is your pitch.' },
-                { n: '02', t: 'WAIT FOR THE TICKLE', b: 'A producer from abroad sends an inquiry.' },
-                { n: '03', t: 'DEAL + INCOMING ROYALTIES', b: 'Agree, sign, collect. Watch the money come in.' },
-              ].map((s, i) => (
-                <div key={i} className="flex items-start gap-4 border-l-4 border-brand-pink/30 pl-4">
-                  <span className="text-brand-pink font-black text-sm flex-shrink-0">{s.n}</span>
-                  <div>
-                    <p className="font-black uppercase italic text-white text-sm">{s.t}</p>
-                    <p className="text-white/40 text-xs italic font-bold mt-1">{s.b}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="space-y-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan">You need a show — buy rights</p>
-              {[
-                { n: '01', t: 'TICKLE', b: 'Browse catalog. Find the show. Send inquiry.' },
-                { n: '02', t: 'NEGOTIATE + DEAL', b: 'Talk direct. Agree on terms. Done.' },
-                { n: '03', t: 'LOG + PAY ROYALTIES', b: 'Log every performance. Rights holder sees it live.' },
-              ].map((s, i) => (
-                <div key={i} className="flex items-start gap-4 border-l-4 border-brand-cyan/30 pl-4">
-                  <span className="text-brand-cyan font-black text-sm flex-shrink-0">{s.n}</span>
-                  <div>
-                    <p className="font-black uppercase italic text-white text-sm">{s.t}</p>
-                    <p className="text-white/40 text-xs italic font-bold mt-1">{s.b}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mt-8 text-center">
-            <button onClick={() => onNavigate('about')} className="text-[9px] font-black uppercase italic text-white/30 border border-white/20 px-4 py-2 hover:border-white hover:text-white transition-all tracking-widest">
-              Full Guide on Mission →
-            </button>
           </div>
         </section>
 
