@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { normalizeEmail } from '../lib/normalizeEmail'
 import { User } from '../types'
 import PaymentModal from '../components/PaymentModal'
 
@@ -120,7 +121,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   const handleForgotPassword = async () => {
     if (!email) { setError('Please enter your email address first.'); return }
     setLoading(true)
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: 'https://www.hahahub.art/login' })
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), { redirectTo: 'https://www.hahahub.art/login' })
     if (resetError) setError(resetError.message)
     else setResetSent(true)
     setLoading(false)
@@ -141,7 +142,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     setLoading(true)
     try {
       if (isNew) {
-        const cleanEmail = email.trim().toLowerCase()
+        const cleanEmail = normalizeEmail(email)
         // Check if invited — ilike + trim guards against casing/whitespace
         // mismatches between what the admin typed and what the user types,
         // which previously left registered users stuck showing 'pending'.
@@ -191,16 +192,17 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           }
         }
       } else {
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+        const cleanLoginEmail = normalizeEmail(email)
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({ email: cleanLoginEmail, password })
         if (signInError) throw signInError
         if (data.user) {
           const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
-          const isAdmin = email === ADMIN_EMAIL
+          const isAdmin = cleanLoginEmail === ADMIN_EMAIL
           setCurrentUser({
-            id: data.user.id, email,
-            name: profile?.name || email.split('@')[0].toUpperCase(),
+            id: data.user.id, email: cleanLoginEmail,
+            name: profile?.name || cleanLoginEmail.split('@')[0].toUpperCase(),
             role: isAdmin ? 'admin' : 'Producer',
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanLoginEmail}`,
             isPaid: profile?.is_paid || isAdmin, isAdmin,
             subscription: (profile?.is_paid || isAdmin) ? { type: 'Annual', expiryDate: profile?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
             favorites: profile?.favorites || [],

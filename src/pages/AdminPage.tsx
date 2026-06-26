@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { normalizeEmail } from '../lib/normalizeEmail';
 import { Page, User, Show } from '../types';
 
 interface Invitation {
@@ -33,13 +34,6 @@ function generatePassword(name: string, email: string): string {
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   const digits = String(Math.floor(Math.random() * 90) + 10);
   return capitalize(firstName) + capitalize(emailPrefix) + digits;
-}
-
-// Normalize email before writing to / reading from the invitations table.
-// Prevents the "registered but still shows pending" sync bug caused by
-// case/whitespace mismatches between invitations.email and auth.users.email.
-function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase();
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
@@ -116,10 +110,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     const cleanEmail = normalizeEmail(newEmail);
 
     // Save to invitations table
-    const { data } = await supabase.from('invitations').insert([{
+    const { data, error: insertError } = await supabase.from('invitations').insert([{
       recipient: newName, email: cleanEmail, duration: selectedDuration,
       status: 'pending', password, note: newNote, plan: invitePlan,
     }]).select();
+
+    if (insertError) {
+      console.error('Invite insert error:', insertError);
+      alert(`❌ Could not save invite for ${newName}: ${insertError.message}\n\nEmail was NOT sent.`);
+      setSending(false);
+      return;
+    }
 
     if (data?.[0]) {
       setInvites(prev => [{
@@ -136,7 +137,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
         body: JSON.stringify({ email: cleanEmail, name: newName, password, note: newNote, duration: selectedDuration, plan: invitePlan })
       });
       triggerMailLog(`Email Sent to ${newName}`, `Dispatched to: ${cleanEmail}\nPassword: ${password}\nPlan: ${invitePlan.toUpperCase()}\nDuration: ${selectedDuration}`);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); alert(`❌ Something went wrong sending the invite to ${newName}.`); }
 
     setNewName(''); setNewEmail(''); setNewNote(''); setPassword('');
     setSending(false);
