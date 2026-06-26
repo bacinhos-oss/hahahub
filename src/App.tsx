@@ -24,10 +24,20 @@ import { logError } from './lib/errorLogger'
 import DealsPipelinePage from './pages/DealsPipelinePage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
+const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','upload','pricing','faq','stefunny','producer','wire','pipeline']
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPageRaw] = useState<Page>('landing')
-  const setCurrentPage = (page: Page) => { window.scrollTo(0, 0); setCurrentPageRaw(page); }
+  const setCurrentPage = (page: Page) => {
+    window.scrollTo(0, 0)
+    setCurrentPageRaw(page)
+    // Pushes a real browser history entry, so the back button moves between
+    // in-app pages instead of leaving the app, and a refresh lands back on
+    // the same page instead of resetting to Landing.
+    if (window.location.hash !== `#${page}`) {
+      window.location.hash = page
+    }
+  }
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [shows, setShows] = useState<Show[]>([])
   const [currentProducerId, setCurrentProducerId] = useState<string | undefined>(undefined)
@@ -44,8 +54,27 @@ const App: React.FC = () => {
       return
     }
     if (hash === '#login' || hash === '#signup') {
-      setCurrentPage('login')
+      setCurrentPageRaw('login')
+    } else {
+      const hashPage = hash.substring(1)
+      if (VALID_PAGES.includes(hashPage)) {
+        setCurrentPageRaw(hashPage as Page)
+      }
     }
+
+    // Back/forward browser navigation between in-app pages.
+    const handleHashChange = () => {
+      const h = window.location.hash.substring(1)
+      if (h === 'signup') return // signup is a LoginPage-only sub-state, not a real page
+      if (VALID_PAGES.includes(h)) {
+        setCurrentPageRaw(h as Page)
+        window.scrollTo(0, 0)
+      } else if (h === '') {
+        setCurrentPageRaw('landing')
+        window.scrollTo(0, 0)
+      }
+    }
+    window.addEventListener('hashchange', handleHashChange)
 
     loadShows()
 
@@ -60,7 +89,13 @@ const App: React.FC = () => {
           // #login/#signup link, or password recovery) already navigated us
           // away from the default 'landing' state.
           if (event === 'INITIAL_SESSION') {
-            setCurrentPageRaw(prev => prev === 'landing' ? 'discovery' : prev)
+            setCurrentPageRaw(prev => {
+              if (prev === 'landing') {
+                window.location.hash = 'discovery'
+                return 'discovery'
+              }
+              return prev
+            })
           }
         } else {
           setLoading(false)
@@ -79,6 +114,7 @@ const App: React.FC = () => {
       .subscribe()
 
     return () => {
+      window.removeEventListener('hashchange', handleHashChange)
       authSubscription.unsubscribe()
       supabase.removeChannel(channel)
     }
