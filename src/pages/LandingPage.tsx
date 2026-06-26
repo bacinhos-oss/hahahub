@@ -329,6 +329,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
             <div className="text-center mb-12 md:mb-16">
               <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] italic mb-6 inline-block">Pricing</span>
               <h2 className="font-display text-white text-5xl md:text-8xl uppercase italic">Pick Your <span className="text-brand-pink">Passport.</span></h2>
+              <p className="text-white/40 font-black uppercase italic text-lg mt-4 tracking-widest">Tickle In.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
               {/* GIGL */}
