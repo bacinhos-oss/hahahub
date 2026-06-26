@@ -229,7 +229,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
             <div className="border-8 border-white p-6 md:p-8 bg-brand-black shadow-neo-yellow">
               <p className="text-brand-cyan text-xs font-black uppercase tracking-[0.4em] italic mb-6">Who it's for</p>
               <div className="space-y-4">
-                {['Theater Producers', 'Venue Programmers', 'Festival Directors', 'Co-Production Houses', 'Rights Agents'].map((role, i) => (
+                {['Theater Producers', 'Independent Producers', 'Playwrights', 'Venue Programmers', 'Festival Directors', 'Co-Production Houses', 'Rights Agents'].map((role, i) => (
                   <div key={i} className="flex items-center gap-4 border-b border-white/10 pb-4">
                     <span className="w-2 h-2 bg-brand-pink flex-shrink-0"></span>
                     <span className="font-black uppercase italic text-white text-base md:text-lg">{role}</span>
@@ -328,8 +328,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 md:mb-16">
               <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] italic mb-6 inline-block">Pricing</span>
-              <h2 className="font-display text-white text-5xl md:text-8xl uppercase italic">Comedy <span className="text-brand-pink">Travels.</span></h2>
-              <p className="text-white/40 font-bold italic text-lg mt-4 max-w-xl mx-auto">Pick your passport. No per-inquiry fees. No commissions. Ever.</p>
+              <h2 className="font-display text-white text-5xl md:text-8xl uppercase italic">Pick Your <span className="text-brand-pink">Passport.</span></h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
               {/* GIGL */}
