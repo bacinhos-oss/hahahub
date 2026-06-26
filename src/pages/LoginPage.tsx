@@ -121,7 +121,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   const handleForgotPassword = async () => {
     if (!email) { setError('Please enter your email address first.'); return }
     setLoading(true)
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), { redirectTo: 'https://www.hahahub.art/login' })
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: 'https://www.hahahub.art/login' })
     if (resetError) setError(resetError.message)
     else setResetSent(true)
     setLoading(false)
@@ -142,19 +142,26 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     setLoading(true)
     try {
       if (isNew) {
-        const cleanEmail = normalizeEmail(email)
+        const signupEmail = email.trim().toLowerCase()
+        // Dot-stripped form used ONLY to find a matching pending invite —
+        // Gmail folds dots for delivery, so an invite sent to one variant
+        // should still match a signup using another. The account itself is
+        // created with signupEmail (below), so future logins (which do a
+        // plain trim/lowercase match against what Supabase actually stored)
+        // keep working normally, regardless of how this invite was typed.
+        const inviteLookupEmail = normalizeEmail(email)
         // Check if invited — ilike + trim guards against casing/whitespace
         // mismatches between what the admin typed and what the user types,
         // which previously left registered users stuck showing 'pending'.
-        const { data: invite } = await supabase.from('invitations').select('*').ilike('email', cleanEmail).eq('status', 'pending').maybeSingle()
-        const isAdmin = cleanEmail === ADMIN_EMAIL
+        const { data: invite } = await supabase.from('invitations').select('*').ilike('email', inviteLookupEmail).eq('status', 'pending').maybeSingle()
+        const isAdmin = signupEmail === ADMIN_EMAIL
         // BETA: invite required to register
         if (!invite && !isAdmin) {
           setError('HahaHub is currently in private beta. You need an invite to join. Contact us at info@hahahub.art')
           setLoading(false)
           return
         }
-        const { data, error: signUpError } = await supabase.auth.signUp({ email: cleanEmail, password })
+        const { data, error: signUpError } = await supabase.auth.signUp({ email: signupEmail, password })
         if (signUpError) throw signUpError
         if (data.user) {
           const isPaid = isAdmin || !!invite
@@ -167,19 +174,19 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           if (isPaid) {
             // Send founding welcome email
             const houseAccounts = ['bacinhos@gmail.com', 'batocaninmaj@gmail.com', 'usmerjeni.prosti.cas@gmail.com'];
-            if (!houseAccounts.includes(cleanEmail)) {
+            if (!houseAccounts.includes(signupEmail)) {
               const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
               const spotNumber = count || 1;
               await fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'founding_welcome', to: cleanEmail, data: { name: name.toUpperCase(), spotNumber } })
+                body: JSON.stringify({ type: 'founding_welcome', to: signupEmail, data: { name: name.toUpperCase(), spotNumber } })
               });
             }
             // Invited or admin — skip payment
             setCurrentUser({
-              id: data.user.id, email: cleanEmail, name: name.toUpperCase(), role: isAdmin ? 'admin' : 'Producer',
-              avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanEmail}`,
+              id: data.user.id, email: signupEmail, name: name.toUpperCase(), role: isAdmin ? 'admin' : 'Producer',
+              avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${signupEmail}`,
               isPaid: true, isAdmin,
               subscription: { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] },
               favorites: [], uploadedShowIds: [],
@@ -187,12 +194,12 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             onSuccess(true)
           } else {
             // Go to payment step
-            setPendingUser({ id: data.user.id, email: cleanEmail })
+            setPendingUser({ id: data.user.id, email: signupEmail })
             setShowPaymentModal(true)
           }
         }
       } else {
-        const cleanLoginEmail = normalizeEmail(email)
+        const cleanLoginEmail = email.trim().toLowerCase()
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email: cleanLoginEmail, password })
         if (signInError) throw signInError
         if (data.user) {
