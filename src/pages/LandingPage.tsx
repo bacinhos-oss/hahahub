@@ -100,6 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         <section className="px-4 md:px-12 py-16 md:py-32 max-w-7xl mx-auto">
           <div className="max-w-5xl">
             <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6 md:mb-8">The Laff Exchange</span>
+            <p className="text-brand-yellow text-sm md:text-base font-black uppercase italic tracking-[0.3em] mb-2">Theatre comedy travels.</p>
             <h1 className="font-display text-white text-6xl sm:text-8xl md:text-[130px] leading-[0.85] tracking-tighter uppercase mb-4 md:mb-6 italic">
               TICKLE.<br/>
               <span className="text-brand-yellow">SET UP.</span><br/>
@@ -109,7 +110,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
               International Comedy Theatre Producers Platform
             </p>
             <p className="text-base md:text-lg font-bold text-white/40 italic max-w-2xl mb-10 md:mb-12 leading-relaxed">
-              Your hit in Spain is unknown in Germany. HahaHub changes that. The first producer-to-producer TICKLE. SET UP. PUNCH.. Buy rights, sell rights. Direct. No agents. No middlemen.
+              HahaHub is the international professional network for theatre comedy producers. We call it the Laff Exchange. Showcase productions, discover new titles, connect directly with fellow producers, and create new licensing opportunities.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-8 md:px-12 py-5 md:py-6 text-lg md:text-xl font-black uppercase border-4 border-black shadow-neo-white hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all italic">
@@ -205,66 +206,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
             </div>
           </section>
         )}
-
-        {/* TICKLE. SET UP. PUNCH. */}
-        <section className="px-4 md:px-12 py-16 md:py-24 border-b-4 border-white/10" id="how">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-12 md:mb-16">
-              <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-white leading-none">
-                TICKLE.<br/><span className="text-brand-yellow">SET UP.</span><br/><span className="text-brand-pink">PUNCH.</span>
-              </h2>
-              <p className="text-white/40 font-bold italic text-lg mt-6 max-w-xl">Whether you're buying rights or selling them — same three moves.</p>
-            </div>
-
-            {/* BUY */}
-            <div className="mb-10">
-              <div className="flex items-center gap-4 mb-6">
-                <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-widest italic">I want to stage a show</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { step: 'TICKLE', icon: 'search', color: 'brand-cyan', title: 'Tickle the Vault', desc: "Something's been rotting in your season lineup. Hunt it down. International. Raw. Funny as hell. The show your audience didn't know they needed.", cta: 'Send Inquiry →' },
-                  { step: 'SET UP', icon: 'mail', color: 'brand-yellow', title: 'Cut the Middleman', desc: 'Direct line to the producer. Templates. Terms. Done. No commission. No bullshit. No mercy.', cta: 'Set It Up →' },
-                  { step: 'PUNCH', icon: 'theater_comedy', color: 'brand-pink', title: 'Curtain Up', desc: "Lights on. They're already laughing. That's your show now. You found it here.", cta: 'Punch It →' },
-                ].map((item, i) => (
-                  <div key={i} className="border-4 border-white p-6 md:p-8 hover:shadow-neo-cyan hover:border-brand-cyan transition-all group">
-                    <div className="flex items-start justify-between mb-4">
-                      <span className={`text-xs font-black uppercase tracking-widest text-${item.color} italic`}>{item.step}</span>
-                      <span className={`material-symbols-outlined text-3xl text-${item.color}`}>{item.icon}</span>
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-black uppercase italic text-white mb-3 group-hover:text-brand-cyan transition-colors">{item.title}</h3>
-                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm mb-4">{item.desc}</p>
-                    <button onClick={() => onNavigate('login')} className={`text-[10px] font-black uppercase italic text-${item.color} hover:underline`}>{item.cta}</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* SELL */}
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-widest italic">I want to sell my show internationally</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { step: 'TICKLE', icon: 'upload', color: 'brand-pink', title: 'Deploy Your Hit', desc: "Your show is killing it at home. Nobody abroad gives a damn. Yet. Drop it. Raw data. Full dossier. Go international or go home.", cta: 'SHOWLOAD →' },
-                  { step: 'SET UP', icon: 'notifications', color: 'brand-yellow', title: "You've Been Tickled 📩", desc: "Someone wants your show. Negotiate direct. Keep every cent. No agent taking their 15% cut of your sweat.", cta: 'Set It Up →' },
-                  { step: 'PUNCH', icon: 'handshake', color: 'brand-cyan', title: 'New Stage. New Country.', desc: "Your punchline. Their stage. Different language. Same laugh. That's international. That's HahaHub. Play it.", cta: 'Punch It →' },
-                ].map((item, i) => (
-                  <div key={i} className="border-4 border-white/40 p-6 md:p-8 hover:shadow-neo-magenta hover:border-brand-pink transition-all group">
-                    <div className="flex items-start justify-between mb-4">
-                      <span className={`text-xs font-black uppercase tracking-widest text-${item.color} italic`}>{item.step}</span>
-                      <span className={`material-symbols-outlined text-3xl text-${item.color}`}>{item.icon}</span>
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-black uppercase italic text-white mb-3 group-hover:text-brand-pink transition-colors">{item.title}</h3>
-                    <p className="text-gray-400 font-bold italic leading-relaxed text-sm mb-4">{item.desc}</p>
-                    <button onClick={() => onNavigate('login')} className={`text-[10px] font-black uppercase italic text-${item.color} hover:underline`}>{item.cta}</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* FOR WHO */}
         <section className="px-4 md:px-12 py-16 md:py-24 bg-brand-surface border-b-4 border-white/10">
@@ -384,7 +325,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
         </section>
 
         {/* HOW TO PLAY — short version */}
-        <section className="py-16 border-t-4 border-white/10">
+        <section className="py-16 border-t-4 border-white/10" id="how">
           <div className="mb-10">
             <span className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">How it works</span>
             <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white leading-none mt-2">How to Play.</h2>
