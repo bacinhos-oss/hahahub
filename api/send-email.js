@@ -478,7 +478,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <h1 style="color:#fff;font-size:28px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 4px;letter-spacing:-1px;line-height:1.15">Your show.<br/>Their stage.<br/>Same laff.<br/><span style="color:#FFDE03">Different city.</span></h1>
   <p style="color:rgba(255,255,255,0.3);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:4px;font-style:italic;margin:0 0 20px">Theatre comedy travels.</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">Hi ${name},</p>
-  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">I'm building HahaHub.art. It's a marketplace for international comedy theatre rights. Producers buy and sell rights to comedy productions directly. No agents, no commission, producer to producer.</p>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 8px">I'm building HahaHub.art. It's the international professional network for theatre comedy producers. The Laff Exchange experience: producers buy and sell rights to comedy productions directly. No agents, no commission, producer to producer.</p>
   <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:0 0 24px">It's in private beta and your account is already set up. Tickle in and have a look:</p>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
