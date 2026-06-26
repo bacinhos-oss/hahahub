@@ -54,6 +54,14 @@ const App: React.FC = () => {
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         if (session?.user) {
           loadProfile(session.user.id, session.user.email!)
+          // On a fresh page load with an already-active session (e.g. after
+          // a browser refresh), land logged-in users on Discovery instead of
+          // the public Landing page. Only kicks in if nothing else (like a
+          // #login/#signup link, or password recovery) already navigated us
+          // away from the default 'landing' state.
+          if (event === 'INITIAL_SESSION') {
+            setCurrentPageRaw(prev => prev === 'landing' ? 'discovery' : prev)
+          }
         } else {
           setLoading(false)
         }
