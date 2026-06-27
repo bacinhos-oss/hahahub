@@ -222,7 +222,12 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     };
 
     const { data, error } = await supabase.from('shows').insert([newShow]).select().single();
-    if (!error && data) {
+    if (error) {
+      console.error('Show upload failed:', error);
+      alert(`❌ Upload failed: ${error.message}\n\nYour show was not saved. Please try again or contact info@hahahub.art.`);
+      return;
+    }
+    if (data) {
       onUpload(data as unknown as Show);
       setIsSuccess(true);
       setTimeout(() => { setIsSuccess(false); onNavigate('subscription'); }, 3000);

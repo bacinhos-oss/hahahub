@@ -22,7 +22,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { logError } from './lib/errorLogger'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
-const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','upload','pricing','faq','producer','wire']
+const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','terms','upload','pricing','faq','producer','wire']
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPageRaw] = useState<Page>('landing')
@@ -326,94 +326,15 @@ const App: React.FC = () => {
   if (loading) return null
 
   const handleUpload = async (newShow: Show) => {
-    const { data, error } = await supabase.from('shows').insert([{
-      title: newShow.title, author: newShow.author, director: newShow.director,
-      director_notes: newShow.directorNotes, original_production_solutions: newShow.originalProductionSolutions,
-      synopsis: newShow.synopsis,
-      synopsis_en: (newShow as any).synopsis_en || '',
-      original_language: (newShow as any).original_language || '',
-      trailer_url: (newShow as any).trailerUrl || (newShow as any).trailer_url || '',
-      script_in_english: (newShow as any).script_in_english || 'false',
-      image_url: newShow.imageUrl,
-      genre: newShow.genre, subgenre: newShow.subgenre, language: newShow.language,
-      location: newShow.location, duration: newShow.duration,
-      male_roles: newShow.maleRoles, female_roles: newShow.femaleRoles,
-      can_merge_roles: newShow.canMergeRoles, has_intermission: newShow.hasIntermission,
-      is_director_mandatory: newShow.isDirectorMandatory,
-      creative_team_availability: newShow.creativeTeamAvailability,
-      production_scale: newShow.productionScale, is_touring_friendly: newShow.isTouringFriendly,
-      technical_complexity: newShow.technicalComplexity, costume_complexity: newShow.costumeComplexity,
-      set_complexity: newShow.setComplexity, adaptation_flexibility: newShow.adaptationFlexibility,
-      scalability_notes: newShow.scalabilityNotes, stage_type: newShow.stageType,
-      tech_staff_lighting: newShow.techStaffLighting, tech_staff_sound: newShow.techStaffSound,
-      tech_staff_prompter: newShow.techStaffPrompter, tech_staff_stagehands: newShow.techStaffStagehands,
-      tech_staff_other: newShow.techStaffOther,
-      premiere_date: newShow.premiereDate, premiere_location: newShow.premiereLocation,
-      production_year: newShow.productionYear, performances_count: newShow.performancesCount,
-      total_audience: newShow.totalAudience, locations_played: newShow.locationsPlayed,
-      buyout_locations: newShow.buyoutLocations, box_office_indicator: newShow.boxOfficeIndicator,
-      awards: newShow.awards, audience_profile: newShow.audienceProfile,
-      producer_name: newShow.producerName, producer_email: newShow.producerEmail,
-      rights_holder: newShow.rightsHolder, rights_status: newShow.rightsStatus,
-      territories_available: newShow.territoriesAvailable, licensed_countries: newShow.licensedCountries,
-      license_type: newShow.licenseType, licensing_model: newShow.licensingModel,
-      exclusivity_level: newShow.exclusivityLevel, royalty_range: newShow.royaltyRange,
-      advance_fee: newShow.advanceFee, rights_clearing_speed: newShow.rightsClearingSpeed,
-      decision_maker_type: newShow.decisionMakerType, risk_profile: newShow.riskProfile,
-      break_even_threshold: newShow.breakEvenThreshold, break_even_performances: newShow.breakEvenPerformances,
-      budget_range: newShow.budgetRange, humor_type: newShow.humorType,
-      translations_available: newShow.translationsAvailable,
-      translation_rights_included: newShow.translationRightsIncluded,
-      is_sponsor_friendly: newShow.isSponsorFriendly, is_group_sales_friendly: newShow.isGroupSalesFriendly,
-      exit_scenarios: newShow.exitScenarios,
-      originating_producer_track_record: newShow.originatingProducerTrackRecord,
-      territory_conflicts: newShow.territoryConflicts, media_conflicts: newShow.mediaConflicts,
-      international_success_notes: newShow.internationalSuccessNotes,
-      script_scenario: newShow.scriptScenario,
-      programming_compatibility: newShow.programmingCompatibility,
-      transparency_score: newShow.transparencyScore,
-      // Packages
-      has_script_package: newShow.hasScriptPackage,
-      script_royalty_pct: newShow.scriptRoyaltyPct || null,
-      script_advance_fee: newShow.scriptAdvanceFee || null,
-      has_full_punch_package: newShow.hasFullPunchPackage,
-      full_punch_royalty_pct: newShow.fullPunchRoyaltyPct || null,
-      full_punch_advance_fee: newShow.fullPunchAdvanceFee || null,
-      // Full Punch contents
-      fp_the_script: (newShow as any).fpTheScript !== false,
-      fp_the_playbook: (newShow as any).fpThePlaybook || false,
-      fp_the_soundtrack: (newShow as any).fpTheSoundtrack || false,
-      fp_the_visuals: (newShow as any).fpTheVisuals || false,
-      fp_the_wardrobe: (newShow as any).fpTheWardrobe || false,
-      fp_the_set_blueprint: (newShow as any).fpTheSetBlueprint || false,
-      fp_the_tech_rider: (newShow as any).fpTheTechRider || false,
-      fp_the_promo_kit: (newShow as any).fpThePromoKit || false,
-      fp_the_handover_session: (newShow as any).fpTheHandoverSession || false,
-      fp_punch_language: (newShow as any).fpPunchLanguage || 'EN',
-      fp_punch_support: (newShow as any).fpPunchSupport || false,
-      // Creative assets (V4)
-      music_author: (newShow as any).musicAuthor || (newShow as any).music_author || null,
-      has_original_music: (newShow as any).hasOriginalMusic || false,
-      video_author: (newShow as any).videoAuthor || (newShow as any).video_author || null,
-      has_video_projections: (newShow as any).hasVideoProjections || false,
-      video_description: (newShow as any).videoDescription || (newShow as any).video_description || null,
-      scenographer: (newShow as any).scenographer || null,
-      set_available: (newShow as any).setAvailable || (newShow as any).set_available || 'false',
-      lighting_designer: (newShow as any).lightingDesigner || null,
-      lighting_design_available: (newShow as any).lightingDesignAvailable || (newShow as any).lighting_design_available || 'false',
-      english_title: (newShow as any).englishTitle || (newShow as any).english_title || newShow.title,
-      likes_count: 0, views_count: 0, inquiries_count: 0,
-      production_photos: newShow.productionPhotos, is_produced: true,
-      user_id: currentUser?.id,
-    }]).select().maybeSingle()
-    if (error) {
-      console.error('UPLOAD ERROR:', error)
-      logError('handleUpload', error, { userId: currentUser?.id, userEmail: currentUser?.email, page: 'upload' })
-      alert('Upload error: ' + error.message)
-      return
-    }
-    if (data) setShows(prev => [{ ...newShow, id: data.id, user_id: currentUser?.id } as any, ...prev])
-    else setShows(prev => [{ ...newShow, id: crypto.randomUUID(), user_id: currentUser?.id } as any, ...prev])
+    // UploadPage.tsx already performed the actual insert and got back the
+    // real DB row (with id) before calling this. This used to insert AGAIN
+    // here, re-mapping camelCase field names against an already-snake_case
+    // object — which both duplicated every upload in the shows table AND
+    // wrote a mostly-empty second row (since e.g. newShow.maleRoles is
+    // undefined on a snake_case row, only newShow.male_roles exists).
+    // Simplest correct fix: just refresh from DB so the new row is mapped
+    // through the same camelCase pipeline as everything else.
+    await loadShows()
   }
 
   const sendEmail = async (type: string, to: string, data: any) => {
