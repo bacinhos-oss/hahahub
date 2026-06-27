@@ -5,6 +5,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 const PLAN_AMOUNTS = {
+  'LAFF Annual': 9900,
+  'ROAR Annual': 18900,
+  // Legacy names — kept in case anything still sends these
   'Annual Pass': 9900,
   'Quarterly Pass': 5900,
 };
