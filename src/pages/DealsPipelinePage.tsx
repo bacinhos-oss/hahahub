@@ -242,6 +242,9 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       setMsgText('');
       const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
       setMsgs((data || []) as Msg[]);
+    } else {
+      console.error('Message send error:', error);
+      showToast('❌ Message not sent. Try again.');
     }
     setSendingMsg(false);
   };
@@ -256,12 +259,17 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       if (uploadData) {
         const { data: urlData } = supabase.storage.from('inquiry-attachments').getPublicUrl(uploadData.path);
         const fileUrl = urlData?.publicUrl || '';
-        await supabase.from('deal_messages').insert({ deal_id: activeDeal.id, user_id: user.id, content: `FILE:${fileToSend.name}|${fileUrl}`, show_title: activeDeal.show_title });
-        setFileToSend(null);
-        if (fileInputRef.current) fileInputRef.current.value = '';
-        const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
-        setMsgs((data || []) as Msg[]);
-        showToast('File sent!');
+        const { error: msgError } = await supabase.from('deal_messages').insert({ deal_id: activeDeal.id, user_id: user.id, content: `FILE:${fileToSend.name}|${fileUrl}`, show_title: activeDeal.show_title });
+        if (msgError) {
+          console.error('File message save error:', msgError);
+          showToast('❌ File uploaded but message failed to send. Try again.');
+        } else {
+          setFileToSend(null);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+          const { data } = await supabase.from('deal_messages').select('*').eq('deal_id', activeDeal.id).order('created_at', { ascending: true });
+          setMsgs((data || []) as Msg[]);
+          showToast('File sent!');
+        }
       }
     } catch { showToast('Error sending file.'); }
     setSendingFile(false);
@@ -270,12 +278,17 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
   const markSigned = async () => {
     if (!activeDeal) return;
     const updates: any = { deal_status: 'signed', contract_signed_date: signForm.signed_date, contract_start_date: signForm.start_date, contract_end_date: signForm.end_date, territory: signForm.territory, royalty_pct: signForm.royalty_pct ? Number(signForm.royalty_pct) : null, advance_amount: signForm.advance_amount ? Number(signForm.advance_amount) : null, last_activity_at: new Date().toISOString() };
-    await supabase.from('inquiries').update(updates).eq('id', activeDeal.id);
+    const { error: signError } = await supabase.from('inquiries').update(updates).eq('id', activeDeal.id);
+    if (signError) {
+      console.error('Mark as signed failed:', signError);
+      showToast('❌ Could not save the signed contract. Nothing was emailed or posted. Try again.');
+      return;
+    }
     try {
       await fetch('/api/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'deal_signed_producer', to: user.email, data: { show_title: activeDeal.show_title, buyer: otherName, territory: signForm.territory, signed_date: signForm.signed_date } }) });
       await fetch('/api/send-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'deal_signed_buyer', to: activeDeal.from_email, data: { show_title: activeDeal.show_title, producer: user.name, territory: signForm.territory, signed_date: signForm.signed_date } }) });
       await supabase.from('posts').insert({ user_id: user.id, type: 'deal', content: `DEAL SIGNED — "${activeDeal.show_title}"${signForm.territory ? ' · ' + signForm.territory : ''}`, likes_count: 0, is_private: false });
-    } catch {}
+    } catch (e) { console.error('Post-sign email/post error:', e); }
     const update = (p: Deal[]) => p.map(d => d.id === activeDeal.id ? { ...d, ...updates } : d);
     if (view === 'tickled') setAllTickled(update); else setAllTickler(update);
     setShowSignForm(false);
