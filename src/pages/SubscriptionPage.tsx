@@ -1874,7 +1874,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 <div className="flex items-center justify-between">
                   <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
                   <button
-                    onClick={() => { onNavigate('producer' as any); }}
+                    onClick={() => { onNavigate('producer'); }}
                     className="bg-brand-cyan text-black px-6 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all flex items-center gap-2"
                   >
                     <span className="material-symbols-outlined text-sm">open_in_new</span>
@@ -2234,7 +2234,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <div className="flex gap-3">
               <button onClick={async () => {
                 try {
-                  await supabase.from('deals').insert({
+                  const { error: dealError } = await supabase.from('deals').insert({
                     inquiry_id: dealInquiry.id,
                     show_id: dealInquiry.show_id,
                     show_title: dealInquiry.show_title,
@@ -2248,6 +2248,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     notes: dealForm.notes,
                     signed_date: dealForm.signed_date,
                   });
+                  if (dealError) {
+                    console.error('Deal save error:', dealError);
+                    alert(`❌ Could not save this deal: ${dealError.message}\n\nNothing was recorded. Please try again.`);
+                    return;
+                  }
                   await supabase.from('inquiries').update({ status: 'deal' }).eq('id', dealInquiry.id);
                   setInquiries(prev => prev.map(i => i.id === dealInquiry.id ? {...i, status: 'deal'} : i));
 
