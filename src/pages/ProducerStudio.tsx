@@ -747,7 +747,12 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                         if (!user?.id) return;
                         const body = generateText();
                         const title = `${tmpl.title}${p.party ? ' — ' + p.party : ''}${p.show ? ' · ' + p.show : ''}`;
-                        const { data } = await supabase.from('contracts').insert({ user_id:user.id, title, show:p.show, show_id:p.show_id||null, party:p.party, type:tmpl.type, status:'draft', royalty_pct:p.royalty?Number(p.royalty):null, territory:p.territory||null, start_date:p.start_date||null, end_date:p.end_date||null, body, notes:`Template: ${tmpl.title}` }).select().single();
+                        const { data, error: contractError } = await supabase.from('contracts').insert({ user_id:user.id, title, show:p.show, show_id:p.show_id||null, party:p.party, type:tmpl.type, status:'draft', royalty_pct:p.royalty?Number(p.royalty):null, territory:p.territory||null, start_date:p.start_date||null, end_date:p.end_date||null, body, notes:`Template: ${tmpl.title}` }).select().single();
+                        if (contractError) {
+                          console.error('Contract save error:', contractError);
+                          alert(`❌ Could not save this contract: ${contractError.message}\n\nNothing was saved. Please try again.`);
+                          return;
+                        }
                         if (data) setContracts(prev => [data,...prev]);
                         setShowContractForm(false); setActiveTemplate(null);
                       }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all">
@@ -806,21 +811,34 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     className={"text-[8px] font-black uppercase italic px-2 py-1 border transition-all "+(contractTextIdx===c.id?'border-brand-yellow text-brand-yellow':'border-white/20 text-white/30 hover:border-brand-yellow hover:text-brand-yellow')}>
                     ✏️ Edit
                   </button>
-                  <select value={c.status} onChange={async e => { await supabase.from('contracts').update({status:e.target.value}).eq('id',c.id); setContracts(prev=>prev.map(x=>x.id===c.id?{...x,status:e.target.value}:x)); }}
+                  <select value={c.status} onChange={async e => {
+                    const newStatus = e.target.value;
+                    const { error: statusError } = await supabase.from('contracts').update({status:newStatus}).eq('id',c.id);
+                    if (statusError) { console.error('Contract status update error:', statusError); alert(`❌ Could not update status: ${statusError.message}`); return; }
+                    setContracts(prev=>prev.map(x=>x.id===c.id?{...x,status:newStatus}:x));
+                  }}
                     className="bg-brand-black border border-white/20 text-white/50 font-black uppercase italic text-[8px] px-2 py-1 outline-none">
                     <option value="draft">Draft</option>
                     <option value="sent">Sent</option>
                     <option value="signed">Signed</option>
                     <option value="expired">Expired</option>
                   </select>
-                  <button onClick={async () => { await supabase.from('contracts').delete().eq('id',c.id); setContracts(prev=>prev.filter(x=>x.id!==c.id)); }}
+                  <button onClick={async () => {
+                    const { error: deleteError } = await supabase.from('contracts').delete().eq('id',c.id);
+                    if (deleteError) { console.error('Contract delete error:', deleteError); alert(`❌ Could not delete: ${deleteError.message}`); return; }
+                    setContracts(prev=>prev.filter(x=>x.id!==c.id));
+                  }}
                     className="text-white/20 hover:text-brand-pink transition-colors">
                     <span className="material-symbols-outlined text-sm">delete</span>
                   </button>
                 </div>
               </div>
 
-              {contractTextIdx===c.id && <ContractEditor key={c.id} c={c} initialText={contractText || ''} onSave={async (id, text) => { await supabase.from('contracts').update({ body: text }).eq('id', id); setContracts(prev => prev.map(x => x.id === id ? { ...x, body: text } : x)); }} onClose={() => setContractTextIdx(null)} />}
+              {contractTextIdx===c.id && <ContractEditor key={c.id} c={c} initialText={contractText || ''} onSave={async (id, text) => {
+                const { error: saveError } = await supabase.from('contracts').update({ body: text }).eq('id', id);
+                if (saveError) { console.error('Contract save error:', saveError); alert(`❌ Could not save changes: ${saveError.message}\n\nYour edits were not saved.`); return; }
+                setContracts(prev => prev.map(x => x.id === id ? { ...x, body: text } : x));
+              }} onClose={() => setContractTextIdx(null)} />}
             </div>
           ))}
 

@@ -188,7 +188,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                         const { data: existing } = await supabase.from('hahafriends')
                           .select('id').eq('user_id', user.id).eq('friend_user_id', producerId).maybeSingle();
                         if (existing) { alert(`${producer.name} is already in your HAHAfriends! 🤝`); return; }
-                        await supabase.from('hahafriends').insert({
+                        const { error: friendError } = await supabase.from('hahafriends').insert({
                           user_id: user.id,
                           friend_user_id: producerId,
                           name: producer.name,
@@ -196,6 +196,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                           plan: producer.user_type || null,
                           source: 'profile',
                         });
+                        if (friendError) { console.error('HAHAfriends insert error:', friendError); alert('❌ Could not add to HAHAfriends. Try again.'); return; }
                         alert(`${producer.name} added to HAHAfriends! 🤝`);
                       }} className="px-4 py-2 border-4 border-brand-cyan/40 text-brand-cyan font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
                         🤝 Add to HAHAfriends
