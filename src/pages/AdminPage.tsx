@@ -261,6 +261,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               <p className="text-white/20 font-black uppercase italic">No producers yet.</p>
             ) : users.map((u: any) => {
               const isExpired = u.subscription_expiry &&
+                u.subscription_expiry !== '2099-12-31' &&
                 !u.is_founding &&
                 u.user_type !== 'roar' &&
                 new Date(u.subscription_expiry + 'T23:59:59') < new Date();
@@ -275,8 +276,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                         {u.is_founding ? (
                           <span className="text-[9px] text-brand-yellow font-black uppercase italic">⭐ Founding — Lifetime</span>
                         ) : u.subscription_expiry ? (
-                          <span className={`text-[9px] font-black uppercase italic px-2 py-0.5 border ${isExpired ? 'text-brand-pink border-brand-pink/30 bg-brand-pink/10' : 'text-brand-cyan border-brand-cyan/20'}`}>
-                            {isExpired ? '⚠ EXPIRED' : `Valid until ${u.subscription_expiry}`}
+                          <span className={`text-[9px] font-black uppercase italic px-2 py-0.5 border ${u.subscription_expiry === '2099-12-31' ? 'text-brand-yellow border-brand-yellow/30' : isExpired ? 'text-brand-pink border-brand-pink/30 bg-brand-pink/10' : 'text-brand-cyan border-brand-cyan/20'}`}>
+                            {u.subscription_expiry === '2099-12-31' ? '⭐ Lifetime' : isExpired ? '⚠ EXPIRED' : `Valid until ${u.subscription_expiry}`}
                           </span>
                         ) : (
                           <span className="text-[9px] text-white/20 italic">No expiry set</span>
@@ -305,6 +306,27 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       {u.is_founding ? 'Founding' : 'Found.'}
                     </button>
                     <button onClick={async () => {
+                      const newExpiry = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+                      await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);
+                      setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: newExpiry, is_paid: true } : x));
+                      if (u.email) {
+                        try {
+                          await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              email: u.email, name: u.name || u.email,
+                              note: u.name + ". Your HahaHub membership has been extended for 1 month. Valid until " + newExpiry + ".\n\nBreak a Laffing Leg. 🦵\nhahahub.art",
+                              duration: '1 Month', plan: u.user_type || 'laff',
+                            })
+                          });
+                        } catch(e) { console.error(e); }
+                      }
+                      triggerMailLog('Extended ' + (u.name || u.email), 'Account extended 1 month, until ' + newExpiry + '. Email sent.');
+                    }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">update</span>
+                      +1 Month
+                    </button>
+                    <button onClick={async () => {
                       const newExpiry = new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
                       await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);
                       setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: newExpiry, is_paid: true } : x));
@@ -324,6 +346,27 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                     }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm">update</span>
                       +1 Year
+                    </button>
+                    <button onClick={async () => {
+                      const lifetimeExpiry = '2099-12-31';
+                      await supabase.from('profiles').update({ subscription_expiry: lifetimeExpiry, is_paid: true }).eq('id', u.id);
+                      setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: lifetimeExpiry, is_paid: true } : x));
+                      if (u.email) {
+                        try {
+                          await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              email: u.email, name: u.name || u.email,
+                              note: u.name + ". Your HahaHub membership has been upgraded to lifetime access. No expiry, ever.\n\nBreak a Laffing Leg. 🦵\nhahahub.art",
+                              duration: 'Lifetime', plan: u.user_type || 'laff',
+                            })
+                          });
+                        } catch(e) { console.error(e); }
+                      }
+                      triggerMailLog('Lifetime granted: ' + (u.name || u.email), 'Account set to lifetime access. Email sent.');
+                    }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-yellow/30 text-brand-yellow hover:bg-brand-yellow hover:text-black transition-all flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">all_inclusive</span>
+                      Lifetime
                     </button>
                     <button onClick={async () => {
                       if (!u.email) return;
