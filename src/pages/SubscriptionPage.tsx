@@ -2108,7 +2108,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       const royaltyAmount = Math.round(Number(laffNewReport.tickets) * Number(laffNewReport.price) * Number(laffNewReport.royaltyPct) / 100);
                       const gross = Math.round(Number(laffNewReport.tickets) * Number(laffNewReport.price));
                       const deal = laffLicensedShows.find((s: any) => s.show_title === laffNewReport.show);
-                      await supabase.from('royalty_reports').insert({
+                      const { error: royaltyError } = await supabase.from('royalty_reports').insert({
                         show_id: deal?.show_id,
                         show_title: laffNewReport.show,
                         buyer_id: user.id,
@@ -2121,6 +2121,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         royalty_amount: royaltyAmount,
                         gross,
                       });
+                      if (royaltyError) {
+                        console.error('Royalty report save error:', royaltyError);
+                        alert(`❌ Could not save this performance report: ${royaltyError.message}\n\nNothing was recorded. Please try again.`);
+                        return;
+                      }
                       await loadLaffRoyalties();
                       setLaffNewReport({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
                       setLaffReportSaved(true); setTimeout(() => setLaffReportSaved(false), 3000);

@@ -519,7 +519,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               const royaltyAmount = Math.round(Number(newReport.tickets) * Number(newReport.price) * Number(newReport.royaltyPct) / 100);
               const gross = Math.round(Number(newReport.tickets) * Number(newReport.price));
               const show = myShows.find((s: any) => s.title === newReport.show);
-              await supabase.from('royalty_reports').insert({
+              const { error: royaltyError } = await supabase.from('royalty_reports').insert({
                 show_id: show?.id,
                 show_title: newReport.show,
                 buyer_id: user.id,
@@ -533,6 +533,11 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 gross,
                 notes: newReport.notes,
               });
+              if (royaltyError) {
+                console.error('Royalty report save error:', royaltyError);
+                alert(`❌ Could not save this performance report: ${royaltyError.message}\n\nNothing was recorded. Please try again.`);
+                return;
+              }
               await loadRoyaltyData();
               setNewReport({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
               setReportSaved(true); setTimeout(() => setReportSaved(false), 3000);
