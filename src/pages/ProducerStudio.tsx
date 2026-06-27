@@ -653,31 +653,6 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </button>
           </div>
 
-          {/* HOW IT WORKS */}
-          <div className="border-4 border-white/10 overflow-hidden">
-            <div className="bg-white/5 px-5 py-4 border-b-2 border-white/10">
-              <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">How Paperwork works</p>
-              <p className="text-white/40 text-xs italic">Generate, save, and track contracts without a lawyer. You stay in control of every step.</p>
-            </div>
-            <div className="px-5 py-4 space-y-3">
-              {[
-                { t: 'Pick a template', d: 'License, NDA, co-production.' },
-                { t: 'Fill the details', d: 'Show, party, royalty, dates.' },
-                { t: 'Auto-generated', d: 'Text filled in for you, ready to read.' },
-                { t: 'Track status', d: 'Draft → Sent → Signed.' },
-                { t: 'Download or print', d: 'As .txt, PDF, or revise anytime.' },
-              ].map((s, i) => (
-                <div key={i} className="flex gap-3 items-start">
-                  <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5 bg-brand-yellow" />
-                  <div>
-                    <p className="font-black uppercase italic text-white text-xs">{s.t}</p>
-                    <p className="text-white/30 text-xs italic">{s.d}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* NEW CONTRACT — choose template */}
           {showContractForm && (
             <div className="border-4 border-brand-yellow/40 p-5 space-y-4">
@@ -968,6 +943,33 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 ))}
               </div>
             )}
+          </div>
+
+          {/* HOW IT WORKS */}
+          <div className="border-4 border-white/10 overflow-hidden">
+            <div className="bg-white/5 px-5 py-4 border-b-2 border-white/10">
+              <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">How Paperwork works</p>
+              <p className="text-white/40 text-xs italic">Generate, save, and track contracts without a lawyer. You stay in control of every step.</p>
+            </div>
+            <div className="px-5 py-4 space-y-3">
+              {[
+                { t: 'Pick a template', d: 'License, NDA, co-production — or one you wrote yourself under Templates below.' },
+                { t: 'Fill the details', d: 'Show, counter party, royalty %, territory, dates. The contract text fills itself in.' },
+                { t: 'Save it', d: 'It lands in your list above, ready to read immediately. No lawyer needed to get a draft.' },
+                { t: 'Edit anytime', d: 'Click ✏️ Edit on any contract to open the full text and change anything, even after saving.' },
+                { t: 'Track status', d: 'Draft → Sent → Signed → Expired. Change it from the dropdown as the deal moves forward.' },
+                { t: 'Download, print, or undo', d: 'Export as .txt, print straight to PDF, or hit ↩ Restore to undo back to the last saved version.' },
+                { t: 'Delete when done', d: 'Remove a contract you no longer need with the 🗑️ icon. This cannot be undone.' },
+              ].map((s, i) => (
+                <div key={i} className="flex gap-3 items-start">
+                  <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5 bg-brand-yellow" />
+                  <div>
+                    <p className="font-black uppercase italic text-white text-xs">{s.t}</p>
+                    <p className="text-white/30 text-xs italic">{s.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>
