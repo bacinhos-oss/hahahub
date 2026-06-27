@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase';
 import ProducerStudio from './ProducerStudio';
 import { Badge, getProfileBadges } from '../components/Badge';
@@ -2191,6 +2192,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
           </div>
         </main>
       </div>
+      <Footer onNavigate={onNavigate} />
       {/* DEAL MODAL */}
       {dealInquiry && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">

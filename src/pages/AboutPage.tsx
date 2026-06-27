@@ -1,5 +1,6 @@
 import React from 'react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import { Page, User } from '../types';
 
 interface AboutPageProps {
@@ -256,12 +257,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
         </div>
       </main>
 
-      <footer className="bg-brand-black border-t-4 border-white py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="logo-text text-2xl uppercase opacity-50">HAHAHUB</div>
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">© 2025 ALL LAUGHS RESERVED</p>
-        </div>
-      </footer>
+      <Footer onNavigate={onNavigate} />
     </div>
   );
 };

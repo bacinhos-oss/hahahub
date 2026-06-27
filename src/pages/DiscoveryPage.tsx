@@ -2,6 +2,7 @@
 import { supabase } from '../lib/supabase';
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import { Page, Show, User } from '../types';
 import { Badge, getProfileBadges } from '../components/Badge';
 
@@ -241,7 +242,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
                            {(selectedShow as any).user_id && (
                              <button
-                               onClick={() => { if (onViewProducer && (selectedShow as any).user_id) { onViewProducer((selectedShow as any).user_id); } onNavigate('producer' as any); }}
+                               onClick={() => { if (onViewProducer && (selectedShow as any).user_id) { onViewProducer((selectedShow as any).user_id); } onNavigate('producer'); }}
                                className="text-[9px] font-black uppercase italic text-brand-cyan hover:text-white transition-colors mt-1 block"
                              >
                                View Producer Profile →
@@ -1025,7 +1026,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         packageType: selectedPackage,
                       }),
                     });
-                  } catch {}
+                  } catch (notifyErr) { console.error('Producer notification email failed:', notifyErr); }
                   
                   // Save sent inquiry to Supabase
                   try {
@@ -1043,10 +1044,20 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       attachment_url: attachmentUrl || null,
                       package_type: selectedPackage,
                     });
-                    if (inquiryErr) console.error('Inquiry save error:', inquiryErr);
+                    if (inquiryErr) {
+                      console.error('Inquiry save error:', inquiryErr);
+                      alert('❌ Something went wrong saving your inquiry. It may not reach the producer. Please try again, or email info@hahahub.art for help.');
+                      setInquirySending(false);
+                      return;
+                    }
                     // Posodobimo lokalni rate limit counter
                     if (user?.plan === 'gigl') setInquiryRateLimit(prev => (prev || 0) + 1);
-                  } catch(e) { console.error('Inquiry save error:', e); }
+                  } catch(e) {
+                    console.error('Inquiry save error:', e);
+                    alert('❌ Something went wrong saving your inquiry. It may not reach the producer. Please try again, or email info@hahahub.art for help.');
+                    setInquirySending(false);
+                    return;
+                  }
 
                   // Confirmation email pošiljatelju
                   try {
@@ -1632,6 +1643,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
           </section>
         </div>
       </main>
+      <Footer onNavigate={onNavigate} />
     </div>
   );
 };

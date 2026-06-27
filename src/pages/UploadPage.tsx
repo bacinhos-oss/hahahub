@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import { Page, User, Show } from '../types';
 import { supabase } from '../lib/supabase';
 
@@ -708,6 +709,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           </div>
         </div>
       </main>
+      <Footer onNavigate={onNavigate} />
     </div>
   );
 };
