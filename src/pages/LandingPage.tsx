@@ -46,11 +46,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onPurchaseSuccess
 
   useEffect(() => {
     const loadStats = async () => {
-      const { count: paidCount } = await supabase.from('profiles')
+      const { count: foundingCount } = await supabase.from('profiles')
         .select('*', { count: 'exact', head: true })
-        .eq('is_paid', true)
+        .eq('is_founding', true)
         .not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
-      setFoundingTaken(paidCount || 0);
+      setFoundingTaken(foundingCount || 0);
     };
     loadStats();
   }, []);

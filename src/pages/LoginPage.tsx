@@ -166,16 +166,18 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         if (data.user) {
           const isPaid = isAdmin || !!invite
           const userType = isAdmin ? 'roar' : (invite?.plan || 'gigl')
+          const isFounding = invite?.type === 'founding'
           if (invite) {
             const { error: updateError } = await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
             if (updateError) console.error('Failed to mark invitation as used:', updateError)
           }
-          await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), is_paid: isPaid, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
+          await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), is_paid: isPaid, is_founding: isFounding, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
           if (isPaid) {
-            // Send founding welcome email
+            // Send founding welcome email — only to actual founding members,
+            // not every invited/admin paid signup.
             const houseAccounts = ['bacinhos@gmail.com', 'batocaninmaj@gmail.com', 'usmerjeni.prosti.cas@gmail.com'];
-            if (!houseAccounts.includes(signupEmail)) {
-              const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_paid', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
+            if (isFounding && !houseAccounts.includes(signupEmail)) {
+              const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_founding', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
               const spotNumber = count || 1;
               await fetch('/api/send-email', {
                 method: 'POST',
