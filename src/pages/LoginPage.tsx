@@ -171,7 +171,13 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             const { error: updateError } = await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
             if (updateError) console.error('Failed to mark invitation as used:', updateError)
           }
-          await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), email: signupEmail, is_paid: isPaid, is_founding: isFounding, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
+          const { error: profileError } = await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), email: signupEmail, is_paid: isPaid, is_founding: isFounding, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
+          if (profileError) {
+            console.error('Profile creation failed:', profileError)
+            setError('Something went wrong creating your account. Please contact info@hahahub.art so we can fix it.')
+            setLoading(false)
+            return
+          }
           if (isPaid) {
             // Send founding welcome email — only to actual founding members,
             // not every invited/admin paid signup.
