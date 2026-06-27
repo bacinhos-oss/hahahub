@@ -171,7 +171,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             const { error: updateError } = await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
             if (updateError) console.error('Failed to mark invitation as used:', updateError)
           }
-          await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), is_paid: isPaid, is_founding: isFounding, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
+          await supabase.from('profiles').insert([{ id: data.user.id, name: name.toUpperCase(), email: signupEmail, is_paid: isPaid, is_founding: isFounding, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }])
           if (isPaid) {
             // Send founding welcome email — only to actual founding members,
             // not every invited/admin paid signup.
