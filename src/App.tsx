@@ -18,13 +18,11 @@ import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
 import LaffWirePage from './pages/LaffWirePage'
 import ProducerPage from './pages/ProducerPage'
-import StefunnyPage from './pages/StefunnyPage'
 import { Analytics } from "@vercel/analytics/react"
 import { logError } from './lib/errorLogger'
-import DealsPipelinePage from './pages/DealsPipelinePage'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
-const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','upload','pricing','faq','stefunny','producer','wire','pipeline']
+const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','upload','pricing','faq','producer','wire']
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPageRaw] = useState<Page>('landing')
@@ -484,12 +482,7 @@ const App: React.FC = () => {
       case 'pricing': return <PricingPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onPurchaseSuccess={handlePurchaseSuccess} />
       case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onViewProducer={(id) => { setCurrentProducerId(id); setCurrentPage('producer'); }} />
-      case 'stefunny': return <StefunnyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} shows={shows} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} />
       case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} onViewShow={(id) => { setCurrentShowId(id); setCurrentPage('discovery'); }} />
-      case 'pipeline':
-        return currentUser
-          ? <DealsPipelinePage user={currentUser} onNavigate={(p) => setCurrentPage(p as Page)} />
-          : <LoginPage onSuccess={() => setCurrentPage('pipeline')} onBack={() => setCurrentPage('landing')} setCurrentUser={setCurrentUser} />
       default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />
     }
   }
