@@ -1149,7 +1149,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               <div className="flex gap-3">
                 <button onClick={async () => {
                   if (!newContact.name || !user?.id) return;
-                  const { data } = await supabase.from('hahafriends').insert({
+                  const { data, error: contactError } = await supabase.from('hahafriends').insert({
                     user_id: user.id,
                     name: newContact.name,
                     email: newContact.email || null,
@@ -1157,6 +1157,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     notes: [newContact.role, newContact.org, (newContact as any).country, newContact.phone, newContact.notes].filter(Boolean).join(' · ') || null,
                     source: 'manual',
                   }).select().single();
+                  if (contactError) { console.error('Contact save error:', contactError); alert('❌ Could not save this contact. Try again.'); return; }
                   if (data) setContacts(prev => [data, ...prev]);
                   setNewContact({ name: '', role: '', email: '', phone: '', org: '', notes: '' });
                   setShowContactForm(false);
@@ -1205,7 +1206,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                       </button>
                     )}
                     <button onClick={async () => {
-                      await supabase.from('hahafriends').delete().eq('id', c.id);
+                      const { error: deleteContactError } = await supabase.from('hahafriends').delete().eq('id', c.id);
+                      if (deleteContactError) { console.error('Contact delete error:', deleteContactError); alert('❌ Could not delete this contact.'); return; }
                       setContacts(prev => prev.filter(x => x.id !== c.id));
                     }} className="text-white/20 hover:text-brand-pink transition-colors opacity-0 group-hover:opacity-100">
                       <span className="material-symbols-outlined text-sm">delete</span>

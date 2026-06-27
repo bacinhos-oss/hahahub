@@ -635,7 +635,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         fp_punch_support: !!(editForm as any).fpPunchSupport,
       }).eq('id', manageShow.id);
 
-      if (error) { console.error('Error:', error.message); }
+      if (error) { console.error('Error:', error.message); alert(`❌ Could not save changes: ${error.message}\n\nPlease try again.`); }
       else {
         onUpdateShow({ ...manageShow, ...editForm, productionPhotos: editForm.productionPhotos || manageShow.productionPhotos } as Show);
         setSaveSuccess(true);
@@ -1947,7 +1947,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <button onClick={async () => {
                     if (!user?.id) return;
                     setProfileSaving(true);
-                    await supabase.from('profiles').update({
+                    const { error: profileSaveError } = await supabase.from('profiles').update({
                       bio: profileForm.bio,
                       website: profileForm.website,
                       location_city: profileForm.location_city,
@@ -1955,6 +1955,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       avatar_url: profileForm.avatar_url,
                     }).eq('id', user.id);
                     setProfileSaving(false);
+                    if (profileSaveError) {
+                      console.error('Profile save error:', profileSaveError);
+                      alert(`❌ Could not save your profile: ${profileSaveError.message}\n\nPlease try again.`);
+                      return;
+                    }
                     setProfileSaved(true);
                     setTimeout(() => setProfileSaved(false), 3000);
                   }} disabled={profileSaving} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-white transition-all disabled:opacity-40">
