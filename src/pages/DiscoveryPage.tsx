@@ -93,7 +93,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                          (filterCast === 'Large (6+)' && totalCast >= 6);
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q || [
-        show.title, show.author, show.director, show.synopsis, (show as any).synopsis_en, (show as any).original_language, (show as any).script_in_english,
+        show.title, (show as any).originalTitle, show.author, show.director, show.synopsis, (show as any).synopsis_en, (show as any).original_language, (show as any).script_in_english,
         show.genre, show.subgenre, show.location, show.language,
         show.humorType, show.rightsStatus, show.budgetRange,
         show.producerName,
@@ -178,6 +178,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <div className="flex-1 min-w-0 pr-2">
                       <span className="bg-brand-cyan text-black px-3 py-1 text-[10px] font-black uppercase italic mb-2 inline-block">PRODUCTION DOSSIER v{selectedShow.productionYear}</span>
                       <h2 className="text-4xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter italic break-words">{selectedShow.title}</h2>
+                      {(selectedShow as any).originalTitle && (selectedShow as any).originalTitle !== selectedShow.title && (
+                        <p className="text-white/30 text-sm italic mt-1">Original title: {(selectedShow as any).originalTitle}</p>
+                      )}
                       <p className="text-base md:text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
                     </div>
                     <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-4 transition-all mt-8 ${isFavorited ? 'bg-brand-pink text-white border-black shadow-neo-white' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
@@ -1168,13 +1171,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     y += 10;
 
     // Big title
-    yellow(); doc.setFontSize(show.title.length > 12 ? 28 : 36); doc.setFont('helvetica', 'bold');
-    doc.text(show.title.toUpperCase(), margin, y);
-    y += (show.title.length > 12 ? 12 : 16);
+    const mainTitle = show.title;
+    yellow(); doc.setFontSize(mainTitle.length > 12 ? 28 : 36); doc.setFont('helvetica', 'bold');
+    doc.text(mainTitle.toUpperCase(), margin, y);
+    y += (mainTitle.length > 12 ? 12 : 16);
 
-    if ((show as any).englishTitle && (show as any).englishTitle !== show.title) {
+    if ((show as any).originalTitle && (show as any).originalTitle !== mainTitle) {
       white(); doc.setFontSize(12); doc.setFont('helvetica', 'normal');
-      doc.text((show as any).englishTitle.toUpperCase(), margin, y);
+      doc.text(`Original title: ${(show as any).originalTitle}`.toUpperCase(), margin, y);
       y += 8;
     }
 
@@ -1408,7 +1412,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       doc.text(`${i} / ${pageCount}`, W - margin - 8, H - 4);
     }
 
-    doc.save(`${show.title.replace(/\s+/g, '_')}_Dossier_HahaHub.pdf`);
+    doc.save(`${(show.title).replace(/\s+/g, '_')}_Dossier_HahaHub.pdf`);
   };
 
   return (
@@ -1571,7 +1575,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105" />
                   ) : (
                     <div className="w-full h-full bg-brand-black flex items-center justify-center">
-                      <span className="text-6xl font-black uppercase italic text-white/10">{show.title[0]}</span>
+                      <span className="text-6xl font-black uppercase italic text-white/10">{(show.title)[0]}</span>
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>

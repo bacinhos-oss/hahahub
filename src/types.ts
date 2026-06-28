@@ -1,4 +1,4 @@
-export type Page = 'landing' | 'discovery' | 'admin' | 'login' | 'subscription' | 'about' | 'privacy' | 'upload' | 'pricing' | 'faq' | 'producer' | 'wire';
+export type Page = 'landing' | 'discovery' | 'admin' | 'login' | 'subscription' | 'about' | 'privacy' | 'terms' | 'upload' | 'pricing' | 'faq' | 'producer' | 'wire';
 
 export type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
 export interface SubscriptionInfo {
@@ -18,6 +18,7 @@ export interface Show {
   // 00. BASIC INFO
   title: string;
   englishTitle?: string;
+  originalTitle?: string;
   author: string;
   director: string;
   genre: string;
