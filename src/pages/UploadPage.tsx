@@ -65,7 +65,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     internationalSuccessNotes: '', awards: '', trailerUrl: '', productionYear: new Date().getFullYear().toString(),
     // 01. PRODUCTION
     maleRoles: '1', femaleRoles: '1', duration: '90', hasIntermission: 'false',
-    techStaffOther: '',
+    techStaffOther: '', costumeDesigner: '', costumeDesignAvailable: 'false',
     productionScale: 'Medium', stageType: 'Main Stage', isTouringFriendly: 'true',
     adaptationFlexibility: 'Medium', technicalComplexity: 'Medium', costumeComplexity: 'Medium',
     techStaffLighting: '1', techStaffSound: '1', techStaffPrompter: '0', techStaffStagehands: '1',
@@ -186,6 +186,12 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       adaptation_flexibility: formData.adaptationFlexibility,
       technical_complexity: formData.technicalComplexity,
       costume_complexity: formData.costumeComplexity,
+      scenographer: (formData as any).scenographer || null,
+      set_available: (formData as any).setAvailable || 'false',
+      lighting_designer: (formData as any).lightingDesigner || null,
+      lighting_design_available: (formData as any).lightingDesignAvailable || 'false',
+      costume_designer: (formData as any).costumeDesigner || null,
+      costume_design_available: (formData as any).costumeDesignAvailable || 'false',
       tech_staff_lighting: parseInt(formData.techStaffLighting),
       tech_staff_sound: parseInt(formData.techStaffSound),
       tech_staff_prompter: parseInt(formData.techStaffPrompter),
@@ -584,6 +590,20 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                           <option value="false">No</option>
                           <option value="cue_sheet">Cue sheet only</option>
                           <option value="full">Full design + cue sheet</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-2 border-white/10 p-4 space-y-3">
+                    <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Costume Design</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label className={lbl}>Costume Designer</label><input name="costumeDesigner" value={(formData as any).costumeDesigner || ''} onChange={handleInputChange} className={inp} placeholder="Costume designer name" /></div>
+                      <div><label className={lbl}>Costume Design Available</label>
+                        <select name="costumeDesignAvailable" value={(formData as any).costumeDesignAvailable || 'false'} onChange={handleInputChange} className={sel}>
+                          <option value="false">No — buyer makes own costumes</option>
+                          <option value="rent">Yes — available for rent</option>
+                          <option value="purchase">Yes — available for purchase</option>
+                          <option value="patterns">Patterns/specs only</option>
                         </select>
                       </div>
                     </div>

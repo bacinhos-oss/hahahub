@@ -455,6 +455,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           )}
                         </div>
                       )}
+                      {((selectedShow as any).costume_designer || (selectedShow as any).costume_design_available !== 'false') && (
+                        <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
+                          <p className="text-[8px] font-black uppercase text-white/50 italic">👗 Costume Design</p>
+                          {(selectedShow as any).costume_designer && <p className="text-sm font-black italic">{(selectedShow as any).costume_designer}</p>}
+                          {(selectedShow as any).costume_design_available && (selectedShow as any).costume_design_available !== 'false' && (
+                            <p className="text-[8px] text-white/40 italic mt-1">
+                              {(selectedShow as any).costume_design_available === 'rent' ? 'Available for rent' : (selectedShow as any).costume_design_available === 'purchase' ? 'Available for purchase' : 'Patterns/specs available'}
+                            </p>
+                          )}
+                        </div>
+                      )}
                       <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
                         <p className="text-[8px] font-black uppercase text-brand-pink italic">📄 Script in English</p>
                         {(selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (

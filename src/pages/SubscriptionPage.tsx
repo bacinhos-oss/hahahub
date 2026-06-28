@@ -618,6 +618,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
         set_available: (editForm as any).setAvailable || 'false',
         lighting_designer: (editForm as any).lightingDesigner || null,
         lighting_design_available: (editForm as any).lightingDesignAvailable || 'false',
+        costume_designer: (editForm as any).costumeDesigner || null,
+        costume_design_available: (editForm as any).costumeDesignAvailable || 'false',
         video_description: (editForm as any).videoDescription || null,
         script_in_english: (editForm as any).scriptInEnglish || 'false',
         translations_available: (editForm as any).translationsAvailable || null,
@@ -870,6 +872,8 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     <div className="grid grid-cols-2 gap-3">
                       {F('lightingDesigner', 'Lighting Designer')}
                       {S('lightingDesignAvailable', 'Lighting Design Available', ['false','cue_sheet','full'])}
+                      {F('costumeDesigner', 'Costume Designer')}
+                      {S('costumeDesignAvailable', 'Costume Design Available', ['false','rent','purchase','patterns'])}
                     </div>
                   </div>
                   <div className="border-2 border-white/10 p-4 space-y-3">
