@@ -93,9 +93,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                          (filterCast === 'Large (6+)' && totalCast >= 6);
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q || [
-        show.title, (show as any).originalTitle, show.author, show.director, show.synopsis, (show as any).synopsis_en, (show as any).original_language, (show as any).script_in_english,
+        show.title, (show as any).originalTitle, show.author, show.director, (show as any).synopsis_en, (show as any).original_language, (show as any).script_in_english,
         show.genre, show.subgenre, show.location, show.language,
-        show.humorType, show.rightsStatus, show.budgetRange,
+        show.humorType, show.rightsStatus,
         show.producerName,
         String(show.duration), String(show.maleRoles + show.femaleRoles),
       ].some(field => field?.toLowerCase().includes(q));
@@ -218,12 +218,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <p className="text-gray-200 text-xl leading-relaxed italic border-l-8 border-brand-yellow pl-8 bg-white/5 py-4">{(selectedShow as any).synopsis_en}</p>
                       </div>
                     )}
-                    {selectedShow.synopsis && (
-                      <div>
-                        {(selectedShow as any).synopsis_en && <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2 italic">Original Language Synopsis</p>}
-                        <p className="text-gray-200 text-xl leading-relaxed italic border-l-8 border-brand-pink pl-8 bg-white/5 py-4">{selectedShow.synopsis}</p>
-                      </div>
-                    )}
                     {(selectedShow as any).original_language && (
                       <div className="flex gap-4 mt-4 flex-wrap">
                         <span className="text-[9px] font-black uppercase italic text-white/30">Original: <span className="text-white/60">{(selectedShow as any).original_language}</span></span>
@@ -280,14 +274,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Rights Clearing Speed</p>
                            <p className="text-sm font-black uppercase italic">{selectedShow.rightsClearingSpeed}</p>
                         </div>
-                        {selectedShow.territoryConflicts && <div className="bg-brand-surface border-2 border-white/20 p-6">
-                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Territory Conflicts</p>
-                           <p className="text-sm font-black italic break-words">{selectedShow.territoryConflicts}</p>
-                        </div>}
-                        {selectedShow.mediaConflicts && <div className="bg-brand-surface border-2 border-white/20 p-6">
-                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Media Conflicts</p>
-                           <p className="text-sm font-black italic break-words">{selectedShow.mediaConflicts}</p>
-                        </div>}
                      </div>
                   </section>
 
@@ -354,10 +340,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                             <p className="text-[10px] font-black uppercase text-brand-cyan italic mb-2">Original Staging Solutions</p>
                             <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.originalProductionSolutions || 'No exclusive technical hardware required.'}</p>
                          </div>
-                         {selectedShow.scalabilityNotes && <div>
-                            <p className="text-[10px] font-black uppercase text-brand-yellow italic mb-2">Scalability Notes</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.scalabilityNotes}</p>
-                         </div>}
                       </div>
                     </div>
                   </section>
@@ -526,8 +508,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                        {[
                          { label: 'Technical', value: selectedShow.technicalComplexity },
-                         { label: 'Costumes', value: selectedShow.costumeComplexity },
-                         { label: 'Set', value: selectedShow.setComplexity },
+                         { label: 'Costume', value: selectedShow.costumeComplexity },
                          { label: 'Adaptation', value: selectedShow.adaptationFlexibility },
                        ].map((item, i) => (
                          <div key={i} className="bg-black/30 border border-white/10 p-4 text-center overflow-hidden">
@@ -567,10 +548,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     {selectedShow.awards && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">Awards</p>
                        <p className="text-sm font-black italic break-words">{selectedShow.awards}</p>
-                    </div>}
-                    {selectedShow.audienceProfile && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                       <p className="text-[8px] font-black uppercase text-brand-cyan italic">Audience Profile</p>
-                       <p className="text-sm italic text-gray-300 break-words">{selectedShow.audienceProfile}</p>
                     </div>}
                     {selectedShow.locationsPlayed && <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
                        <p className="text-[8px] font-black uppercase text-gray-500 italic">Locations Played</p>
@@ -1214,7 +1191,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
     // Synopsis
     sectionTitle('Synopsis', '00');
-    const synText = (show as any).synopsis_en || show.synopsis || 'No synopsis provided.';
+    const synText = (show as any).synopsis_en || 'No synopsis provided.';
     white(); doc.setFontSize(9); doc.setFont('helvetica', 'normal');
     const synLines = doc.splitTextToSize(synText, col);
     synLines.forEach((line: string) => { checkY(6); doc.text(line, margin, y); y += 5; });
@@ -1253,6 +1230,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     statBox('Tech Complexity', show.technicalComplexity, margin, y, col3);
     statBox('Lighting Staff', String(show.techStaffLighting), margin + col3 + 4, y, col3);
     statBox('Sound Staff', String(show.techStaffSound), margin + (col3 + 4) * 2, y, col3);
+    y += 18;
+    statBox('Costume Complexity', (show as any).costumeComplexity || '—', margin, y, col3);
     y += 18;
     if (show.directorNotes) {
       checkY(20);

@@ -772,10 +772,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   {S('isTouringFriendly', 'Touring', ['true','false'])}
                   {S('adaptationFlexibility', 'Adaptation', ['High','Medium','Low'])}
                   {S('technicalComplexity', 'Technical', ['Low','Medium','High'])}
+                  {S('costumeComplexity', 'Costume', ['Low','Medium','High'])}
                   {F('techStaffLighting', 'Lighting Staff', 'number')}
                   {F('techStaffSound', 'Sound Staff', 'number')}
                   {F('techStaffStagehands', 'Stagehands', 'number')}
                   {F('techStaffPrompter', 'Prompter', 'number')}
+                  {F('techStaffOther', 'Other Staff')}
                   {F('director', 'Director')}
                 </div>
                 {T('directorNotes', "Director's Notes", 2)}

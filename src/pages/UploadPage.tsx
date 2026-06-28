@@ -65,8 +65,9 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     internationalSuccessNotes: '', awards: '', trailerUrl: '', productionYear: new Date().getFullYear().toString(),
     // 01. PRODUCTION
     maleRoles: '1', femaleRoles: '1', duration: '90', hasIntermission: 'false',
+    techStaffOther: '',
     productionScale: 'Medium', stageType: 'Main Stage', isTouringFriendly: 'true',
-    adaptationFlexibility: 'Medium', technicalComplexity: 'Medium',
+    adaptationFlexibility: 'Medium', technicalComplexity: 'Medium', costumeComplexity: 'Medium',
     techStaffLighting: '1', techStaffSound: '1', techStaffPrompter: '0', techStaffStagehands: '1',
     director: '', directorNotes: '', originalProductionSolutions: '',
     // 02. CREATIVE ASSETS
@@ -184,10 +185,12 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       is_touring_friendly: formData.isTouringFriendly === 'true',
       adaptation_flexibility: formData.adaptationFlexibility,
       technical_complexity: formData.technicalComplexity,
+      costume_complexity: formData.costumeComplexity,
       tech_staff_lighting: parseInt(formData.techStaffLighting),
       tech_staff_sound: parseInt(formData.techStaffSound),
       tech_staff_prompter: parseInt(formData.techStaffPrompter),
       tech_staff_stagehands: parseInt(formData.techStaffStagehands),
+      tech_staff_other: (formData as any).techStaffOther || '',
       music_author: formData.musicAuthor || null,
       has_original_music: formData.hasOriginalMusic === 'true',
       video_author: formData.videoAuthor || null,
@@ -403,8 +406,14 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Sound Staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Stagehands</label><input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className={inp} /></div>
+                  <div className="sm:col-span-2"><label className={lbl}>Other Staff</label><input name="techStaffOther" value={(formData as any).techStaffOther || ''} onChange={handleInputChange} className={inp} placeholder="Any other crew needed (translator, dresser...)" /></div>
                   <div><label className={lbl}>Technical</label>
                     <select name="technicalComplexity" value={formData.technicalComplexity} onChange={handleInputChange} className={sel}>
+                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
+                    </select>
+                  </div>
+                  <div><label className={lbl}>Costume</label>
+                    <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className={sel}>
                       <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
                     </select>
                   </div>
