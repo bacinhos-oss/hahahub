@@ -16,6 +16,15 @@ const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white
 const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
 const lbl = "block text-[9px] font-black uppercase text-white/40 mb-1.5 italic tracking-widest";
 const sec = "bg-brand-surface border-4 border-white p-6 md:p-8 space-y-5";
+const COUNTRIES = [
+  'Albania', 'Austria', 'Belgium', 'Bosnia & Herzegovina', 'Bulgaria', 'Croatia',
+  'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
+  'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg',
+  'Malta', 'Montenegro', 'Netherlands', 'North Macedonia', 'Norway', 'Poland',
+  'Portugal', 'Romania', 'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden',
+  'Switzerland', 'Ukraine', 'United Kingdom', 'Australia', 'Canada', 'Israel',
+  'Japan', 'New Zealand', 'South Africa', 'USA', 'Other'
+];
 
 const compressImage = (file: File, maxWidth: number, quality: number): Promise<File> =>
   new Promise((resolve) => {
@@ -52,7 +61,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   const [formData, setFormData] = useState({
     // 00. BASIC INFO
     englishTitle: '', title: '', author: '', genre: 'Comedy', subgenre: '',
-    originalLanguage: '', humorType: 'Universal', synopsisEn: '',
+    originalLanguage: '', humorType: 'Universal', synopsisEn: '', location: '',
     internationalSuccessNotes: '', awards: '', trailerUrl: '', productionYear: new Date().getFullYear().toString(),
     // 01. PRODUCTION
     maleRoles: '1', femaleRoles: '1', duration: '90', hasIntermission: 'false',
@@ -113,6 +122,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     if (!formData.author?.trim()) errors.push('Author / Playwright');
     if (!formData.genre?.trim()) errors.push('Genre');
     if (!formData.originalLanguage?.trim()) errors.push('Original Language');
+    if (!formData.location?.trim()) errors.push('Country of Origin');
     if (!formData.synopsisEn?.trim()) errors.push('Synopsis in English');
     if (!formData.duration) errors.push('Duration');
     if (!formData.rightsHolder?.trim()) errors.push('Copyright Holder');
@@ -160,6 +170,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
       genre: formData.genre,
       subgenre: formData.subgenre,
       language: formData.originalLanguage,
+      location: formData.location,
       humor_type: formData.humorType,
       awards: formData.awards,
       international_success_notes: formData.internationalSuccessNotes,
@@ -300,6 +311,12 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   </div>
                   <div><label className={lbl}>Author / Playwright *</label><input name="author" value={formData.author} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Original Language *</label><input name="originalLanguage" value={formData.originalLanguage} onChange={handleInputChange} className={inp} placeholder="Slovenian, French..." /></div>
+                  <div><label className={lbl}>Country of Origin *</label>
+                    <select name="location" value={formData.location} onChange={handleInputChange} className={sel}>
+                      <option value="">Select country...</option>
+                      {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
                   <div><label className={lbl}>Genre *</label>
                     <select name="genre" value={formData.genre} onChange={handleInputChange} className={sel}>
                       <option value="">Select genre...</option>

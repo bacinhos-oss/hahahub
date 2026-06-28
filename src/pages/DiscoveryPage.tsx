@@ -1179,7 +1179,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     }
 
     white(); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
-    doc.text(`${show.author} · ${(show as any).original_language || show.language || ''} · ${show.genre}${show.subgenre ? ' · ' + show.subgenre : ''}`, margin, y);
+    doc.text(`${show.author} · ${show.location || ''} · ${(show as any).original_language || show.language || ''} · ${show.genre}${show.subgenre ? ' · ' + show.subgenre : ''}`, margin, y);
     y += 6;
     gray(); doc.setFontSize(8);
     doc.text(`${show.duration} min · ${(show.maleRoles || 0) + (show.femaleRoles || 0)} actors · ${show.productionScale} production`, margin, y);
@@ -1236,13 +1236,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     // Production
     sectionTitle('Production', '02');
     const col3 = (col - 8) / 3;
-    statBox('Duration', `${show.duration} min`, margin, y, col3);
-    statBox('Male Roles', String(show.maleRoles), margin + col3 + 4, y, col3);
-    statBox('Female Roles', String(show.femaleRoles), margin + (col3 + 4) * 2, y, col3);
+    statBox('Country of Origin', show.location || '—', margin, y, col3);
+    statBox('Duration', `${show.duration} min`, margin + col3 + 4, y, col3);
+    statBox('Male Roles', String(show.maleRoles), margin + (col3 + 4) * 2, y, col3);
     y += 18;
-    statBox('Production Scale', show.productionScale, margin, y, col3);
-    statBox('Stage Type', (show as any).stageType || '—', margin + col3 + 4, y, col3);
-    statBox('Touring Friendly', show.isTouringFriendly ? 'YES' : 'NO', margin + (col3 + 4) * 2, y, col3);
+    statBox('Female Roles', String(show.femaleRoles), margin, y, col3);
+    statBox('Production Scale', show.productionScale, margin + col3 + 4, y, col3);
+    statBox('Stage Type', (show as any).stageType || '—', margin + (col3 + 4) * 2, y, col3);
+    y += 18;
+    statBox('Touring Friendly', show.isTouringFriendly ? 'YES' : 'NO', margin, y, col3);
     y += 18;
     statBox('Tech Complexity', show.technicalComplexity, margin, y, col3);
     statBox('Lighting Staff', String(show.techStaffLighting), margin + col3 + 4, y, col3);

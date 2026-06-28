@@ -259,6 +259,15 @@ const downloadContract = (title: string, content: string) => {
 const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-bold text-sm outline-none focus:border-brand-cyan";
 const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
 const lbl = "block text-[9px] font-black uppercase text-gray-500 mb-1 italic";
+const COUNTRIES = [
+  'Albania', 'Austria', 'Belgium', 'Bosnia & Herzegovina', 'Bulgaria', 'Croatia',
+  'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
+  'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg',
+  'Malta', 'Montenegro', 'Netherlands', 'North Macedonia', 'Norway', 'Poland',
+  'Portugal', 'Romania', 'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden',
+  'Switzerland', 'Ukraine', 'United Kingdom', 'Australia', 'Canada', 'Israel',
+  'Japan', 'New Zealand', 'South Africa', 'USA', 'Other'
+];
 
 const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, shows, onDeleteShow, onUpdateShow }) => {
   const [manageShow, setManageShow] = useState<Show | null>(null);
@@ -696,6 +705,13 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <div className="col-span-2">{F('title', 'Original Title (if different)')}</div>
                   {F('author', 'Author / Playwright *')}
                   {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
+                  <div>
+                    <label className={lbl}>Country of Origin *</label>
+                    <select name="location" value={editForm.location || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white/10 p-2.5 text-white font-black uppercase italic text-xs focus:border-brand-yellow outline-none">
+                      <option value="">Select country...</option>
+                      {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
                   <div>
                     <label className={lbl}>Genre *</label>
                     <select name="genre" value={editForm.genre || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white/10 p-2.5 text-white font-black uppercase italic text-xs focus:border-brand-yellow outline-none">
