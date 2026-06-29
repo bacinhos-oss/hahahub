@@ -153,7 +153,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         // Check if invited — ilike + trim guards against casing/whitespace
         // mismatches between what the admin typed and what the user types,
         // which previously left registered users stuck showing 'pending'.
-        const { data: invite } = await supabase.from('invitations').select('*').ilike('email', inviteLookupEmail).eq('status', 'pending').maybeSingle()
+        const { data: invite } = await supabase.from('invitations').select('id, plan, type').ilike('email', inviteLookupEmail).eq('status', 'pending').maybeSingle()
         const isAdmin = signupEmail === ADMIN_EMAIL
         // BETA: invite required to register
         if (!invite && !isAdmin) {
