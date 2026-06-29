@@ -1954,11 +1954,11 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">City / Country</label>
-                    <input type="text" value={profileForm.location_city} onChange={e => setProfileForm(p => ({...p, location_city: e.target.value}))} placeholder="Ljubljana, Slovenia" className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
+                    <input type="text" autoComplete="off" value={profileForm.location_city} onChange={e => setProfileForm(p => ({...p, location_city: e.target.value}))} placeholder="Ljubljana, Slovenia" className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Website</label>
-                    <input type="text" value={profileForm.website} onChange={e => setProfileForm(p => ({...p, website: e.target.value}))} placeholder="https://yourproduction.com" className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
+                    <input type="text" autoComplete="off" value={profileForm.website} onChange={e => setProfileForm(p => ({...p, website: e.target.value}))} placeholder="https://yourproduction.com" className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Festivals & Credits</label>

@@ -142,6 +142,15 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     setLoading(true)
     try {
       if (isNew) {
+        // Several real producers (and even Baco himself, testing) have
+        // accidentally typed their email into the Name field — it then
+        // gets stored and displayed as their "name" everywhere. Catch it
+        // before it happens again instead of just hoping people notice.
+        if (/\S+@\S+\.\S+/.test(name)) {
+          setError('That looks like an email address. Please enter your name or production company in the Name field.')
+          setLoading(false)
+          return
+        }
         const signupEmail = email.trim().toLowerCase()
         // Dot-stripped form used ONLY to find a matching pending invite —
         // Gmail folds dots for delivery, so an invite sent to one variant
@@ -341,12 +350,12 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           {isNew && !adminMode && (
             <div>
               <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Name / Production Company</label>
-              <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="E.G. COMEDY STAGE NYC" />
+              <input type="text" autoComplete="name" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="E.G. COMEDY STAGE NYC" />
             </div>
           )}
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Email Address</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="COMEDY@PRODUCER.COM" />
+            <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="COMEDY@PRODUCER.COM" />
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>
