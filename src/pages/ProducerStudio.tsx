@@ -1165,7 +1165,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             <div className="border-4 border-brand-cyan/30 p-4 space-y-4">
               <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New HAHAfriend</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div><label className={lbl}>Name *</label><input value={newContact.name} onChange={e => setNewContact(p => ({...p, name: e.target.value}))} className={inp} placeholder="Full name" /></div>
+                <div><label className={lbl}>Name *</label><input autoComplete="off" value={newContact.name} onChange={e => setNewContact(p => ({...p, name: e.target.value}))} className={inp} placeholder="Full name" /></div>
                 <div><label className={lbl}>Role</label><input placeholder="Director / Agent / Tech..." value={newContact.role} onChange={e => setNewContact(p => ({...p, role: e.target.value}))} className={inp} /></div>
                 <div><label className={lbl}>Organisation / Theatre</label><input value={newContact.org} onChange={e => setNewContact(p => ({...p, org: e.target.value}))} className={inp} /></div>
                 <div><label className={lbl}>Email</label><input type="email" value={newContact.email} onChange={e => setNewContact(p => ({...p, email: e.target.value}))} className={inp} /></div>

@@ -247,6 +247,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
               <p className="text-xs font-black uppercase tracking-widest text-gray-500">Billing Info (for invoice)</p>
               <input
                 type="text"
+                autoComplete="organization"
                 placeholder="Company / Producer Name"
                 value={companyName}
                 onChange={e => setCompanyName(e.target.value)}
