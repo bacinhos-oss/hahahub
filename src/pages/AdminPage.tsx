@@ -472,6 +472,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 if (!newName || !newEmail) return;
                 setSending(true);
                 const cleanEmail = normalizeEmail(newEmail);
+                const displayEmail = newEmail.trim().toLowerCase();
                 const foundingPassword = generatePassword(newName, cleanEmail);
                 try {
                   // Save to invitations as founding type
@@ -488,9 +489,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   await fetch('/api/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'founding_invite', to: cleanEmail, data: { name: newName, email: cleanEmail, password: foundingPassword } })
+                    body: JSON.stringify({ type: 'founding_invite', to: cleanEmail, data: { name: newName, email: displayEmail, password: foundingPassword } })
                   });
-                  triggerMailLog(`Founding Invite Sent to ${newName}`, `Dispatched to: ${cleanEmail}\nPassword: ${foundingPassword}`);
+                  triggerMailLog(`Founding Invite Sent to ${newName}`, `Dispatched to: ${displayEmail}\nPassword: ${foundingPassword}`);
                   loadInvites();
                 } catch (e) { console.error(e); alert(`❌ Something went wrong sending the invite to ${newName}.`); }
                 setSending(false);
