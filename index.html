@@ -93,19 +93,17 @@
     }
     </script>
 </head>
-    <!-- Google Analytics — disabled until cookie consent -->
-    <script>
-      window['ga-disable-G-SEPT0657QY'] = true;
-      if (localStorage.getItem('hahahub_cookies') === 'accepted') {
-        window['ga-disable-G-SEPT0657QY'] = false;
-      }
-    </script>
+    <!-- Google Analytics — always on, no IP collection -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SEPT0657QY"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-SEPT0657QY', { anonymize_ip: true });
+      gtag('config', 'G-SEPT0657QY', {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false
+      });
     </script>
 <body>
     <div id="root"></div>
