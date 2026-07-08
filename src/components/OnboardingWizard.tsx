@@ -25,11 +25,12 @@ const OnboardingWizard: React.FC<Props> = ({ userId, userName, onComplete }) => 
 
   const finish = async (page: string) => {
     setSaving(true);
-    await supabase.from('profiles').update({
+    const { error: onboardError } = await supabase.from('profiles').update({
       onboarded: true,
       user_intent: intent,
       location: location || null,
     }).eq('id', userId);
+    if (onboardError) console.error('Onboarding save failed (wizard will reappear next login):', onboardError);
     setSaving(false);
     onComplete(intent! + '|' + page);
   };

@@ -35,9 +35,9 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div className="space-y-4">
             <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Legal</h4>
             <div className="flex flex-col gap-3">
-              <button onClick={() => onNavigate('privacy' as any)} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Privacy Policy</button>
-              <button onClick={() => onNavigate('terms' as any)} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Terms of Service</button>
-              <button onClick={() => onNavigate('privacy' as any)} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Cookie Policy</button>
+              <button onClick={() => onNavigate('privacy')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Privacy Policy</button>
+              <button onClick={() => onNavigate('terms')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Terms of Service</button>
+              <button onClick={() => onNavigate('privacy')} className="text-left text-xs font-bold italic text-white/60 hover:text-white transition-colors">Cookie Policy</button>
             </div>
           </div>
 

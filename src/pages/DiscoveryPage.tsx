@@ -620,7 +620,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                               className="group cursor-pointer border-2 border-white/20 hover:border-brand-yellow transition-all overflow-hidden"
                             >
                               <div className="aspect-[2/3] relative overflow-hidden">
-                                <img src={s.imageUrl} alt={s.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                                <img src={s.imageUrl} alt={s.title} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                                 <div className="absolute bottom-0 left-0 p-2 w-full">
                                   <p className="text-[8px] font-black uppercase text-brand-cyan italic">{s.genre}</p>

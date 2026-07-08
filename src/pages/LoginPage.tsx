@@ -102,7 +102,16 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     if (!pendingUser) return
     const expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
       .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-    await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiry }).eq('id', pendingUser.id)
+    const { error: activateError } = await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiry }).eq('id', pendingUser.id)
+    if (activateError) {
+      console.error('Post-payment activation failed:', activateError)
+      // Don't show fake success — the payment went through but access wasn't
+      // recorded. The Stripe webhook also sets is_paid server-side as backup,
+      // but tell the user to contact us so nobody pays and stays locked out.
+      setError('Payment received, but activating your account hit a snag. Please contact info@hahahub.art and we will activate you right away.')
+      setShowPaymentModal(false)
+      return
+    }
     const user: User = {
       id: pendingUser.id, email: pendingUser.email,
       name: name.toUpperCase(),
