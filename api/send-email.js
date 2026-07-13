@@ -476,7 +476,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </td></tr>
 
 <tr><td style="padding:36px 40px">
-  <p style="color:#fff;font-size:16px;line-height:1.7;margin:0 0 20px 0">Hi \${name},</p>
+  <p style="color:#fff;font-size:16px;line-height:1.7;margin:0 0 20px 0">Hi ${name},</p>
 
   <p style="color:#ccc;font-size:15px;line-height:1.7;margin:0 0 20px 0">
     I sent you an invitation to <a href="https://www.hahahub.art" style="color:#FFDE03;text-decoration:none;font-weight:700">HahaHub.art</a>, a new marketplace for international comedy theatre rights. Inboxes get busy, so I wanted to follow up in case it slipped through.
