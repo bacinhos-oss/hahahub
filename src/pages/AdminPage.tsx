@@ -96,6 +96,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       plan: inv.plan || 'laff',
       created_at: inv.created_at,
       type: inv.type || 'access',
+      followedUp: inv.followed_up || false,
     })));
   };
 
@@ -543,6 +544,33 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                         }} className="text-[8px] font-black uppercase px-2 py-1 border border-brand-pink/40 text-brand-pink hover:bg-brand-pink hover:text-white transition-all flex items-center gap-1">
                           <span className="material-symbols-outlined text-xs">send</span>
                           Resend
+                        </button>
+                      )}
+                      {inv.status !== 'used' && (
+                        <button onClick={async () => {
+                          if (inv.followedUp && !confirm(`Follow up already sent to ${inv.recipient}. Send another one?`)) return;
+                          try {
+                            const res = await fetch('/api/send-email', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ type: 'founding_followup', to: inv.email, data: { name: inv.recipient } })
+                            });
+                            const json = await res.json();
+                            if (json.success) {
+                              const { error: markError } = await supabase.from('invitations').update({ followed_up: true }).eq('id', inv.id);
+                              if (markError) console.error('Could not mark follow-up:', markError);
+                              setInvites(prev => prev.map(i => i.id === inv.id ? { ...i, followedUp: true } : i));
+                              triggerMailLog(`Follow Up Sent to ${inv.recipient}`, `Dispatched to: ${inv.email}`);
+                              alert('✅ Follow up sent to ' + inv.email);
+                            } else {
+                              alert('❌ Error: ' + JSON.stringify(json));
+                            }
+                          } catch(e: any) {
+                            alert('❌ Failed: ' + e.message);
+                          }
+                        }} className={`text-[8px] font-black uppercase px-2 py-1 border transition-all flex items-center gap-1 ${inv.followedUp ? 'bg-brand-cyan border-brand-cyan text-black' : 'border-brand-cyan/40 text-brand-cyan hover:bg-brand-cyan hover:text-black'}`}>
+                          <span className="material-symbols-outlined text-xs">{inv.followedUp ? 'mark_email_read' : 'forward_to_inbox'}</span>
+                          {inv.followedUp ? 'Followed Up' : 'Follow Up'}
                         </button>
                       )}
                       <button onClick={() => deleteInvite(inv.id, inv.recipient)} className="text-[8px] font-black uppercase px-2 py-1 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">

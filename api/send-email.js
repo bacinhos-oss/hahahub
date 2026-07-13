@@ -462,6 +462,124 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </html>`
   }),
 
+  founding_followup: ({ name }) => ({
+    subject: `HahaHub.art. Your spot is waiting.`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#0d0d0d;border:4px solid #FFDE03">
+
+<tr><td style="padding:32px 40px 24px 40px;border-bottom:2px solid #222">
+  <a href="https://www.hahahub.art" style="color:#FFDE03;font-size:28px;font-weight:900;font-style:italic;letter-spacing:-1px;text-decoration:none">HAHAHUB.ART</a>
+  <div style="color:#666;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:4px">The Laff Exchange</div>
+</td></tr>
+
+<tr><td style="padding:36px 40px">
+  <p style="color:#fff;font-size:16px;line-height:1.7;margin:0 0 20px 0">Hi \${name},</p>
+
+  <p style="color:#ccc;font-size:15px;line-height:1.7;margin:0 0 20px 0">
+    I sent you an invitation to <a href="https://www.hahahub.art" style="color:#FFDE03;text-decoration:none;font-weight:700">HahaHub.art</a>, a new marketplace for international comedy theatre rights. Inboxes get busy, so I wanted to follow up in case it slipped through.
+  </p>
+
+  <div style="background:#FF0266;padding:16px 20px;margin:0 0 28px 0">
+    <p style="color:#fff;font-size:15px;font-weight:900;font-style:italic;margin:0">
+      Your founding spot is still reserved. Free, for life. No credit card, no catch.
+    </p>
+  </div>
+
+  <p style="color:#03DAC6;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px 0">Getting in takes a minute</p>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px 0">
+    <tr><td style="padding:10px 0;border-bottom:1px solid #1a1a1a">
+      <span style="color:#FFDE03;font-weight:900;font-size:14px">01</span>
+      <span style="color:#ccc;font-size:14px;margin-left:12px">Go to www.hahahub.art and click TICKLE IN</span>
+    </td></tr>
+    <tr><td style="padding:10px 0;border-bottom:1px solid #1a1a1a">
+      <span style="color:#FFDE03;font-weight:900;font-size:14px">02</span>
+      <span style="color:#ccc;font-size:14px;margin-left:12px">Choose JOIN, not Log In. You do not have an account yet.</span>
+    </td></tr>
+    <tr><td style="padding:10px 0;border-bottom:1px solid #1a1a1a">
+      <span style="color:#FFDE03;font-weight:900;font-size:14px">03</span>
+      <span style="color:#ccc;font-size:14px;margin-left:12px">Enter your name, and <strong style="color:#fff">the exact email address this message was sent to</strong>. That is what your invite is tied to.</span>
+    </td></tr>
+    <tr><td style="padding:10px 0;border-bottom:1px solid #1a1a1a">
+      <span style="color:#FFDE03;font-weight:900;font-size:14px">04</span>
+      <span style="color:#ccc;font-size:14px;margin-left:12px">Pick any password you like. You choose it, not us.</span>
+    </td></tr>
+    <tr><td style="padding:10px 0">
+      <span style="color:#FFDE03;font-weight:900;font-size:14px">05</span>
+      <span style="color:#ccc;font-size:14px;margin-left:12px">That is it. You are in.</span>
+    </td></tr>
+  </table>
+
+
+  <div style="text-align:center;margin:0 0 28px 0">
+    <a href="https://www.hahahub.art/#signup" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Tickle In &rarr;</a>
+  </div>
+
+  <p style="color:#03DAC6;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px 0">Once you are inside</p>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px 0">
+    <tr>
+      <td width="50%" style="padding:12px;background:#111;border:1px solid #222" valign="top">
+        <p style="color:#fff;font-size:12px;font-weight:900;font-style:italic;margin:0 0 4px 0">The Laff Exchange</p>
+        <p style="color:#888;font-size:11px;line-height:1.5;margin:0">Browse the international catalogue of comedy productions.</p>
+      </td>
+      <td width="50%" style="padding:12px;background:#111;border:1px solid #222" valign="top">
+        <p style="color:#fff;font-size:12px;font-weight:900;font-style:italic;margin:0 0 4px 0">Showload</p>
+        <p style="color:#888;font-size:11px;line-height:1.5;margin:0">List your own productions and make them findable.</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" style="padding:12px;background:#111;border:1px solid #222" valign="top">
+        <p style="color:#fff;font-size:12px;font-weight:900;font-style:italic;margin:0 0 4px 0">Rights Inquiries</p>
+        <p style="color:#888;font-size:11px;line-height:1.5;margin:0">Contact other producers directly. No agents in between.</p>
+      </td>
+      <td width="50%" style="padding:12px;background:#111;border:1px solid #222" valign="top">
+        <p style="color:#fff;font-size:12px;font-weight:900;font-style:italic;margin:0 0 4px 0">My Hub</p>
+        <p style="color:#888;font-size:11px;line-height:1.5;margin:0">Track deals, contracts and royalties in one place.</p>
+      </td>
+    </tr>
+  </table>
+
+  <div style="text-align:center;margin:0 0 24px 0;padding:18px;background:#111;border:2px solid #03DAC6">
+    <p style="color:#888;font-size:12px;margin:0 0 10px 0">Want the full walkthrough first?</p>
+    <a href="https://www.hahahub.art/beta-guide.html" style="color:#03DAC6;font-size:14px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-style:italic">Read the Beta Guide &rarr;</a>
+    <p style="color:#555;font-size:10px;margin:8px 0 0 0">Everything the platform does, in one page.</p>
+  </div>
+
+  <div style="background:#111;border-left:4px solid #03DAC6;padding:16px 20px;margin:0 0 28px 0">
+    <p style="color:#ccc;font-size:14px;line-height:1.7;margin:0">
+      If anything is unclear, or if you would rather I walk you through it, just reply to this email. I am also genuinely interested in what you think. Whether the platform is useful, what is missing, what would make it better for how you actually work.
+    </p>
+  </div>
+
+  <p style="color:#666;font-size:14px;line-height:1.7;margin:0">
+    Break a Laffing Leg. &#129482;<br/><br/>
+    <span style="color:#fff;font-weight:700">Dejan Bato&#263;anin</span><br/>
+    <span style="color:#666;font-size:12px">Founder, HahaHub.art</span><br/>
+    <a href="https://www.hahahub.art" style="color:#03DAC6;font-size:12px;text-decoration:none">www.hahahub.art</a>
+  </p>
+</td></tr>
+
+<tr><td style="padding:0">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="33.33%" style="background:#FFDE03;padding:12px;text-align:center;color:#000;font-size:9px;font-weight:900;letter-spacing:2px;font-style:italic">TICKLE</td>
+      <td width="33.33%" style="background:#FF0266;padding:12px;text-align:center;color:#fff;font-size:9px;font-weight:900;letter-spacing:2px;font-style:italic">SET UP</td>
+      <td width="33.33%" style="background:#03DAC6;padding:12px;text-align:center;color:#000;font-size:9px;font-weight:900;letter-spacing:2px;font-style:italic">PUNCH</td>
+    </tr>
+  </table>
+</td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`
+  }),
+
   founding_invite: ({ name, email, password }) => ({
     subject: `Early access. A platform for international comedy theatre producers.`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
@@ -484,16 +602,22 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
     <tr><td style="background:#111;border:2px solid #FFDE03;padding:24px;">
       <p style="color:#FFDE03;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 16px">Your login</p>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
         <tr><td style="background:#050505;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);">
-          <p style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 4px">Email</p>
+          <p style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 4px">Email (use this exact address)</p>
           <p style="font-size:15px;font-weight:900;color:#fff;margin:0;font-family:monospace">${email}</p>
         </td></tr>
         <tr><td style="background:#050505;padding:12px 16px;">
-          <p style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 4px">Password</p>
+          <p style="font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 4px">Suggested password (or pick your own)</p>
           <p style="font-size:15px;font-weight:900;color:#03DAC6;margin:0;font-family:monospace">${password}</p>
         </td></tr>
       </table>
+      <p style="color:rgba(255,255,255,0.5);font-size:11px;line-height:1.6;margin:0 0 14px">
+        Click below, choose JOIN, then enter your name, the email above, and a password. You can use the suggested one or set your own. Just make sure the email matches exactly.
+      </p>
+      <p style="margin:0 0 18px">
+        <a href="https://www.hahahub.art/beta-guide.html" style="color:#03DAC6;font-size:11px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-style:italic">Read the Beta Guide first &rarr;</a>
+      </p>
       <a href="https://www.hahahub.art/#signup" style="background:#FFDE03;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Tickle In →</a>
       <p style="color:rgba(255,255,255,0.3);font-size:11px;margin:14px 0 0">You can change your password later in My Hub → My Profile.</p>
     </td></tr>
