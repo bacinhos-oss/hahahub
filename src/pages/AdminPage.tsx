@@ -97,6 +97,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       created_at: inv.created_at,
       type: inv.type || 'access',
       followedUp: inv.followed_up || false,
+      resent: inv.resent || false,
     })));
   };
 
@@ -474,7 +475,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 setSending(true);
                 const cleanEmail = normalizeEmail(newEmail);
                 const displayEmail = newEmail.trim().toLowerCase();
-                const foundingPassword = generatePassword(newName, cleanEmail);
+                // Use the password already shown in the form field, not a fresh
+                // random one — otherwise the admin sees one number and the email
+                // gets another. Fall back to generating only if the field is empty.
+                const foundingPassword = password || generatePassword(newName, cleanEmail);
                 try {
                   // Save to invitations as founding type
                   const { error: insertError } = await supabase.from('invitations').insert([{
@@ -519,6 +523,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       </span>
                       {inv.status !== 'used' && (
                         <button onClick={async () => {
+                          if (inv.resent && !confirm(`Invite already resent to ${inv.recipient}. Send again?`)) return;
                           try {
                             let pw = inv.generatedPassword;
                             if (!pw || pw === '—') {
@@ -533,6 +538,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                             });
                             const json = await res.json();
                             if (json.success) {
+                              const { error: markError } = await supabase.from('invitations').update({ resent: true }).eq('id', inv.id);
+                              if (markError) console.error('Could not mark resent:', markError);
+                              setInvites(prev => prev.map(i => i.id === inv.id ? { ...i, resent: true } : i));
                               triggerMailLog(`Founding Invite Resent to ${inv.recipient}`, `Dispatched to: ${inv.email}`);
                               alert('✅ Sent to ' + inv.email);
                             } else {
@@ -541,9 +549,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                           } catch(e: any) {
                             alert('❌ Failed: ' + e.message);
                           }
-                        }} className="text-[8px] font-black uppercase px-2 py-1 border border-brand-pink/40 text-brand-pink hover:bg-brand-pink hover:text-white transition-all flex items-center gap-1">
-                          <span className="material-symbols-outlined text-xs">send</span>
-                          Resend
+                        }} className={`text-[8px] font-black uppercase px-2 py-1 border transition-all flex items-center gap-1 ${inv.resent ? 'bg-brand-pink border-brand-pink text-white' : 'border-brand-pink/40 text-brand-pink hover:bg-brand-pink hover:text-white'}`}>
+                          <span className="material-symbols-outlined text-xs">{inv.resent ? 'mark_email_read' : 'send'}</span>
+                          {inv.resent ? 'Resent' : 'Resend'}
                         </button>
                       )}
                       {inv.status !== 'used' && (
