@@ -9,13 +9,32 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          yellow:  '#FFDE03',
-          pink:    '#FF0266',
-          cyan:    '#03DAC6',
           black:   '#050505',
-          surface: '#121212',
-          border:  '#2E2E2E',
-        }
+          dark:    '#121212',
+          pink:    '#FF0266',
+          magenta: '#FF0266',
+          yellow:  '#FFDE03',
+          cyan:    '#03DAC6',
+          teal:    '#03DAC6',
+        },
+        spectrum: {
+          pink:   '#EF4986',
+          orange: '#FBA21B',
+          blue:   '#199BBF',
+          green:  '#16A34A',
+          red:    '#D02024',
+          teal:   '#19A596',
+          purple: '#833998',
+        },
+        spectrumLight: {
+          pink:   '#F48FAD',
+          orange: '#FFC80E',
+          blue:   '#42C7F4',
+          green:  '#6EBE45',
+          red:    '#F4644E',
+          teal:   '#6EC6A5',
+          purple: '#B84C9B',
+        },
       },
       fontFamily: {
         sans:    ['Space Grotesk', 'sans-serif'],
@@ -36,9 +55,9 @@ module.exports = {
         marquee: {
           '0%':   { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' },
-        }
-      }
-    }
+        },
+      },
+    },
   },
   plugins: [],
 }
