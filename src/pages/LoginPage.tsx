@@ -1,3 +1,4 @@
+import { Logo } from '../components/Logo';
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { normalizeEmail } from '../lib/normalizeEmail'
@@ -5,65 +6,6 @@ import { User } from '../types'
 import PaymentModal from '../components/PaymentModal'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
-
-const sendWelcomeEmail = async (email: string, name: string, plan: string) => {
-  try {
-    const planLabel = plan === 'roar' ? 'ROAR' : plan === 'laff' ? 'LAFF' : 'GIGL';
-    const planColor = plan === 'roar' ? '#FF0266' : plan === 'laff' ? '#03DAC6' : '#FFDE03';
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 're_GChrwBxH_HDaYPLhJcVaTcM4koVKQK1uv' },
-      body: JSON.stringify({
-        from: 'HahaHub <noreply@hahahub.art>',
-        to: email,
-        subject: name.toUpperCase() + '. Welcome to HahaHub. 🥊',
-        html: `<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
-  <tr><td align="center">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
-      <tr><td style="background:#050505;border-bottom:4px solid #FFDE03;padding:32px 40px;">
-        <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff">
-          <span style="color:#FFDE03">HAHA</span>HUB
-        </p>
-        <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#FF0266">Tickle. Set Up. Punch.</p>
-      </td></tr>
-      <tr><td style="background:#0a0a0a;padding:40px;">
-        <div style="margin-bottom:20px">
-          <span style="background:${planColor};color:#000;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:6px 14px;display:inline-block">${planLabel}</span>
-        </div>
-        <h1 style="color:#fff;font-size:28px;font-weight:900;text-transform:uppercase;margin:0 0 16px;letter-spacing:-1px">
-          ${name.toUpperCase()}.<br>You're in. 🥊
-        </h1>
-        <p style="color:rgba(255,255,255,0.5);font-size:14px;margin:0 0 32px;line-height:1.6">
-          Your HahaHub producer account is ready.<br>
-          Start exploring the catalog, tickle some producers, set up your show.
-        </p>
-        <div style="background:#0a0a0a;border-left:4px solid #FFDE03;padding:20px 24px;margin:0 0 32px;">
-          <p style="color:#FFDE03;font-size:10px;text-transform:uppercase;letter-spacing:3px;margin:0 0 8px">Your Account</p>
-          <p style="margin:4px 0;color:rgba(255,255,255,0.7);font-size:14px">Email: <strong style="color:#fff">${email}</strong></p>
-          <p style="margin:4px 0;color:rgba(255,255,255,0.7);font-size:14px">Plan: <strong style="color:${planColor}">${planLabel}</strong></p>
-        </div>
-        <a href="https://www.hahahub.art" style="background:#FFDE03;color:#000;padding:16px 32px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:13px">
-          Enter HahaHub →
-        </a>
-      </td></tr>
-      <tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
-        <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">
-          Break a Laffing Leg. 🦵<br>
-          <a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a>
-        </p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body>
-</html>`
-      })
-    });
-  } catch(e) { console.error('Welcome email error:', e); }
-}
 
 interface Props {
   onSuccess: (isPaid: boolean) => void
@@ -256,7 +198,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black text-black overflow-x-hidden">
       <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#03DAC6]">
         <button onClick={() => setIsResetMode(false)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-8 italic">← Back</button>
-        <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
+        <div className="mb-12 flex justify-center"><Logo height={44} /></div>
         <h2 className="text-2xl font-black uppercase mb-8 italic">Set New Password</h2>
         <form onSubmit={handleUpdatePassword} className="space-y-6">
           <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none" placeholder="••••••••" />
@@ -272,7 +214,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   if (resetSent) return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black overflow-x-hidden">
       <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-neo-cyan text-black">
-        <div className="logo-text text-4xl uppercase mb-8 text-center">HAHAHUB</div>
+        <div className="mb-8 flex justify-center"><Logo height={44} /></div>
         <h2 className="text-3xl font-black uppercase italic mb-4 text-brand-cyan">CHECK YOUR EMAIL</h2>
         <p className="font-bold italic text-gray-600 mb-8">We sent a password reset link to <strong>{email}</strong>.</p>
         <button onClick={() => { setResetSent(false); setIsResetMode(false) }} className="w-full bg-black text-brand-cyan font-black py-5 uppercase border-4 border-black shadow-neo-cyan italic">Back to Log In</button>
@@ -284,7 +226,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   if (regStep === 'success') return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black overflow-x-hidden">
       <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#03DAC6] text-center">
-        <div className="logo-text text-4xl uppercase mb-8 text-black">HAHAHUB</div>
+        <div className="mb-8"><Logo height={44} /></div>
         <div className="w-28 h-28 bg-brand-yellow border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF0266] mb-8">
           <span className="text-5xl">🥊</span>
         </div>
@@ -315,7 +257,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
       />
       <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#FF0266]">
         <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-8 italic">← Back</button>
-        <div className="logo-text text-4xl uppercase mb-12 text-center">HAHAHUB</div>
+        <div className="mb-12 flex justify-center"><Logo height={44} /></div>
 
         {adminMode ? (
           <div className="mb-8"><span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.3em] italic">Admin Access</span></div>
