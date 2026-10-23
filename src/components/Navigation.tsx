@@ -70,7 +70,6 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         >
           <Logo height={28} className="md:hidden" />
           <Logo height={40} className="hidden md:block" />
-          <span className="hidden md:block text-[8px] font-black uppercase tracking-[0.25em] text-white/30 italic leading-none mt-1.5">Tickle. Set Up. Punch.</span>
         </button>
 
         {/* DESKTOP NAV */}
