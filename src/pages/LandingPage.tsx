@@ -11,9 +11,10 @@ interface LandingPageProps {
 }
 
 const PILLARS = [
-  { icon: 'travel_explore', title: 'Discover', text: 'Search comedy productions from around the world by genre, cast size, language and humor type.' },
-  { icon: 'forum', title: 'Connect', text: 'Message the rights holder directly. No agents, no middlemen, no commission.' },
-  { icon: 'handshake', title: 'License', text: 'Agree the terms with the producer, using our contract templates. The deal is yours.' },
+  { icon: 'theater_comedy', title: 'Showcase', text: 'Present your productions to producers, venues and festivals worldwide.' },
+  { icon: 'travel_explore', title: 'Discover', text: 'Find new titles by genre, cast size, language and humor type.' },
+  { icon: 'forum', title: 'Connect', text: 'Talk directly with fellow producers. No agents, no middlemen.' },
+  { icon: 'handshake', title: 'License', text: 'Agree the terms with the rights holder. The deal is between you and the producer.' },
 ];
 
 const Poster: React.FC<{ show: Show; onClick: () => void }> = ({ show, onClick }) => (
@@ -36,36 +37,10 @@ const Poster: React.FC<{ show: Show; onClick: () => void }> = ({ show, onClick }
   </button>
 );
 
-const Row: React.FC<{ title: string; shows: Show[]; onOpen: () => void }> = ({ title, shows, onOpen }) => (
-  <section className="mb-12">
-    <div className="px-4 md:px-12 max-w-[1500px] mx-auto flex items-baseline justify-between mb-4">
-      <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
-      <button onClick={onOpen} className="text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors">See all →</button>
-    </div>
-    <div className="px-4 md:px-12 max-w-[1500px] mx-auto">
-      <div className="flex gap-3 md:gap-4 overflow-x-auto snap-x pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {shows.map(s => <Poster key={s.id} show={s} onClick={onOpen} />)}
-      </div>
-    </div>
-  </section>
-);
-
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
   const withImage = useMemo(() => shows.filter(s => s.imageUrl), [shows]);
   const hero = withImage[0];
-  const latest = withImage.slice(0, 14);
-
-  const genreRows = useMemo(() => {
-    const map = new Map<string, Show[]>();
-    withImage.forEach(s => {
-      if (!s.genre) return;
-      map.set(s.genre, [...(map.get(s.genre) || []), s]);
-    });
-    return [...map.entries()]
-      .filter(([, list]) => list.length >= 3)
-      .sort((a, b) => b[1].length - a[1].length)
-      .slice(0, 2);
-  }, [withImage]);
+  const latest = withImage.slice(0, 12);
 
   const languages = new Set(shows.map(s => s.language).filter(Boolean)).size;
   const open = () => onNavigate('discovery');
@@ -93,9 +68,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={join} className="hidden sm:block text-sm font-bold text-white/70 hover:text-white transition-colors">Sign in</button>
-            <button onClick={join} className="bg-white text-black font-bold px-5 py-2 text-sm hover:bg-brand-pink hover:text-white transition-colors">
-              Join free
+            <button onClick={join} className="bg-white/10 text-white font-bold px-5 py-2 text-sm hover:bg-white hover:text-black transition-colors">
+              Sign in
             </button>
           </div>
         </div>
@@ -103,7 +77,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
 
       <main>
         {/* HERO */}
-        <section className="relative min-h-[88vh] flex items-end md:items-center overflow-hidden">
+        <section className="relative min-h-[80vh] flex items-end md:items-center overflow-hidden">
           {hero && (
             <img src={hero.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 scale-110 blur-sm" />
           )}
@@ -111,11 +85,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
           <div className="absolute inset-0 bg-gradient-to-r from-brand-black/80 via-transparent to-transparent" />
 
           <div className="relative w-full max-w-[1500px] mx-auto px-4 md:px-12 pt-32 pb-16 md:pb-24">
-            <h1 className="font-display text-white text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-tight max-w-4xl mb-6">
-              Comedy theatre,<br />licensed <span className="text-brand-pink">directly.</span>
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.35em] text-white/60 mb-5">
+              International Comedy Theatre Producers Platform
+            </p>
+            <h1 className="font-display text-white text-5xl sm:text-7xl md:text-8xl leading-[0.9] tracking-tight mb-5">
+              The Laff<br />Exchange
             </h1>
-            <p className="text-base md:text-xl text-white/70 max-w-xl mb-10 leading-relaxed">
-              The catalog where producers, venues and festivals find and license comedy shows from around the world. No agents. No commission.
+            <p className="font-display text-xl sm:text-2xl md:text-3xl uppercase tracking-[0.12em] mb-8">
+              <span className="text-brand-yellow">Tickle.</span>{' '}
+              <span className="text-brand-pink">Set up.</span>{' '}
+              <span className="text-brand-cyan">Punch.</span>
+            </p>
+            <p className="text-base md:text-lg text-white/70 max-w-2xl mb-10 leading-relaxed">
+              HahaHub is the international professional network for theatre comedy producers. Showcase productions, discover new titles, connect directly with fellow producers, and create new licensing opportunities.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={join} className="bg-white text-black font-bold px-8 py-4 text-base hover:bg-brand-pink hover:text-white transition-colors">
@@ -133,22 +115,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
           </div>
         </section>
 
-        {/* ROWS */}
+        {/* POSTERS */}
         {latest.length > 0 && (
-          <div className="pt-10 -mt-8 relative">
-            <Row title="Latest in the catalog" shows={latest} onOpen={open} />
-            {genreRows.map(([genre, list]) => (
-              <Row key={genre} title={genre} shows={list.slice(0, 14)} onOpen={open} />
-            ))}
-          </div>
+          <section className="pt-10 pb-16 relative overflow-hidden">
+            <style>{`
+              @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+              .ticker-track { display: flex; gap: 16px; animation: ticker 40s linear infinite; width: max-content; }
+              .ticker-track:hover { animation-play-state: paused; }
+            `}</style>
+            <div className="px-4 md:px-12 max-w-[1500px] mx-auto flex items-baseline justify-between mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white">In the catalog</h2>
+              <button onClick={open} className="text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors">See all →</button>
+            </div>
+            <div className="ticker-track">
+              {[...latest, ...latest].map((s, i) => <Poster key={i} show={s} onClick={open} />)}
+            </div>
+          </section>
         )}
 
         {/* PILLARS */}
         <section className="max-w-[1500px] mx-auto px-4 md:px-12 py-16 md:py-24">
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-12 max-w-2xl leading-tight">
-            From first look to signed deal, in one place.
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-12 max-w-3xl leading-tight">
+            Find comedy shows from around the world and license them directly from the producers.
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-12">
             {PILLARS.map(p => (
               <div key={p.title}>
                 <span className="material-symbols-outlined text-3xl text-brand-pink mb-4 block">{p.icon}</span>
@@ -163,7 +153,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
         <section className="relative border-t border-white/10">
           <div className="max-w-3xl mx-auto px-4 py-20 md:py-28 text-center">
             <h2 className="font-display text-white text-4xl md:text-6xl leading-tight mb-4">Find your next show.</h2>
-            <p className="text-white/60 text-lg mb-8">Create a free account with your email. No credit card.</p>
+            <p className="text-white/60 text-lg mb-8">Join free with your email. No credit card.</p>
             <button onClick={join} className="bg-white text-black font-bold px-10 py-4 text-base hover:bg-brand-pink hover:text-white transition-colors">
               Join free
             </button>

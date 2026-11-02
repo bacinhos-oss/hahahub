@@ -75,9 +75,9 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         {/* DESKTOP NAV */}
         <nav className="hidden lg:flex items-center gap-10 italic">
           {navBtn('discovery', 'CATALOG', 'yellow')}
-          {navBtn('wire', 'LAFFWIRE', 'pink')}
+          {user && navBtn('wire', 'LAFFWIRE', 'pink')}
           {navBtn('about', 'MISSION', 'blue')}
-          {navBtn('subscription', 'MY HUB', 'green')}
+          {user && navBtn('subscription', 'MY HUB', 'green')}
           {user && navBtn('upload', 'SHOWLOAD', 'cyan')}
           {isAdmin && navBtn('admin', 'ADMIN', 'pink')}
         </nav>
@@ -96,7 +96,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             </div>
           ) : (
             <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black font-black px-6 py-2 text-sm uppercase border-4 border-black hover:bg-white transition-all shadow-neo-magenta italic">
-              Tickle In →
+              Sign in
             </button>
           )}
         </div>
@@ -125,9 +125,9 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         <div className="lg:hidden absolute top-full left-0 right-0 bg-brand-black px-6 py-8 space-y-6 animate-in slide-in-from-top-2">
           <div className="flex flex-col gap-6">
             {mobileBtn('discovery', 'CATALOG', 'yellow')}
-            {mobileBtn('wire', 'LAFFWIRE', 'pink')}
+            {user && mobileBtn('wire', 'LAFFWIRE', 'pink')}
             {mobileBtn('about', 'MISSION', 'blue')}
-            {mobileBtn('subscription', 'MY HUB', 'green')}
+            {user && mobileBtn('subscription', 'MY HUB', 'green')}
             {user && mobileBtn('upload', 'SHOWLOAD', 'cyan')}
             {isAdmin && mobileBtn('admin', 'ADMIN', 'pink')}
             <button onClick={() => { setMenuOpen(false); window.dispatchEvent(new CustomEvent('openFeedback')); }} className="text-left text-lg font-black uppercase italic tracking-widest text-white/30 hover:text-white transition-colors">FEEDBACK</button>
@@ -140,7 +140,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
               </button>
             ) : (
               <button onClick={() => go('login')} className="w-full bg-brand-yellow text-black font-black py-4 text-lg uppercase border-4 border-black italic hover:bg-white transition-all">
-                Tickle In →
+                Sign in
               </button>
             )}
           </div>

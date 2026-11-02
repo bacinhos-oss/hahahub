@@ -383,6 +383,7 @@ const App: React.FC = () => {
     const effectivePage = (() => {
       if (currentPage === 'landing' && currentUser) return 'discovery'
       if (currentPage === 'upload' && !currentUser) return 'landing'
+      if ((currentPage === 'wire' || currentPage === 'subscription') && !currentUser) return 'login'
       if (currentPage === 'upload' && currentUser && !currentUser.isAdmin && isAtLimit) return 'subscription'
       return currentPage
     })()
