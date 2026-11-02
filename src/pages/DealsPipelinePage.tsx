@@ -350,7 +350,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
 
   return (
     <div className="space-y-6">
-      {toast && <div className="fixed bottom-6 right-6 z-50 bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-xs border-4 border-black">{toast}</div>}
+      {toast && <div className="fixed bottom-6 right-6 z-50 bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-xs border-2 border-black">{toast}</div>}
 
       {/* HEADER */}
       <div className="flex items-start justify-between flex-wrap gap-3">
@@ -359,7 +359,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           <p className="text-white/30 text-xs italic mt-1 uppercase font-black tracking-widest">{deals.length} deals · {deals.filter(d => !d.is_read).length} unread · EUR {totalRoyalties.toLocaleString()} royalties</p>
         </div>
         <div className="flex gap-3 flex-wrap">
-          <div className="flex border-4 border-white/20">
+          <div className="flex border-2 border-white/20">
             <button onClick={() => { setView('tickled'); setActiveDealId(null); setMsgs([]); }}
               className={"px-4 py-2 font-black uppercase italic text-xs transition-all flex items-center gap-2 " + (view === 'tickled' ? 'bg-brand-yellow text-black' : 'text-white/40 hover:text-white')}>
               TICKLED <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickled' ? 'bg-black text-brand-yellow' : 'bg-white/10')}>{allTickled.length}</span>
@@ -369,7 +369,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
               TICKLER <span className={"text-[8px] px-1.5 py-0.5 rounded-full " + (view === 'tickler' ? 'bg-black text-brand-cyan' : 'bg-white/10')}>{allTickler.length}</span>
             </button>
           </div>
-          <div className="flex border-4 border-white/20">
+          <div className="flex border-2 border-white/20">
             <button onClick={() => setViewMode('shows')} className={"px-4 py-2 font-black uppercase italic text-xs transition-all " + (viewMode === 'shows' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white')}>By Show</button>
             <button onClick={() => setViewMode('list')} className={"px-4 py-2 font-black uppercase italic text-xs transition-all " + (viewMode === 'list' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white')}>List</button>
           </div>
@@ -385,7 +385,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           { label: 'Signed', value: deals.filter(d => ['signed','royalties'].includes(d.deal_status || 'new')).length, color: 'text-green-400' },
           { label: 'Royalties', value: `EUR ${totalRoyalties.toLocaleString()}`, color: 'text-orange-400' },
         ].map((s, i) => (
-          <div key={i} className="border-4 border-white/10 p-4 text-center">
+          <div key={i} className="border-2 border-white/10 p-4 text-center">
             <p className={"text-xl font-black " + s.color}>{s.value}</p>
             <p className="text-[8px] font-black uppercase italic text-white/30 mt-1">{s.label}</p>
           </div>
@@ -395,14 +395,14 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       {loading ? (
         <p className="text-white/20 font-black uppercase italic">Loading...</p>
       ) : deals.length === 0 ? (
-        <div className="border-4 border-white/10 p-12 text-center space-y-3">
+        <div className="border-2 border-white/10 p-12 text-center space-y-3">
           <div className="py-20 text-center space-y-4">
             {view === 'tickled' ? (
               <>
                 <div className="flex justify-center"><Smile height={88} className="opacity-70" /></div>
                 <p className="text-white/40 font-black uppercase italic text-lg">Nobody's tickled you yet.</p>
                 <p className="text-white/20 text-sm italic">Upload a show and let the world know it exists.</p>
-                <button onClick={() => onNavigate('upload')} className="mt-2 bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all">
+                <button onClick={() => onNavigate('upload')} className="mt-2 bg-white text-black px-6 py-3 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
                   Showload It →
                 </button>
               </>
@@ -411,13 +411,13 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                 <div className="flex justify-center"><Smile height={88} className="opacity-70" /></div>
                 <p className="text-white/40 font-black uppercase italic text-lg">You haven't tickled anyone yet.</p>
                 <p className="text-white/20 text-sm italic">Browse the catalog and tickle a show you like.</p>
-                <button onClick={() => onNavigate('discovery')} className="mt-2 bg-brand-pink text-white px-6 py-3 font-black uppercase italic text-xs border-4 border-black hover:bg-white hover:text-black transition-all">
+                <button onClick={() => onNavigate('discovery')} className="mt-2 bg-brand-pink text-white px-6 py-3 font-black uppercase italic text-xs border-2 border-black hover:bg-white hover:text-black transition-all">
                   Browse Catalog →
                 </button>
               </>
             )}
           </div>
-          {view === 'tickler' && <button onClick={() => onNavigate('discovery')} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Browse Catalog</button>}
+          {view === 'tickler' && <button onClick={() => onNavigate('discovery')} className="bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">Browse Catalog</button>}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
@@ -425,7 +425,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           {/* LEFT */}
           <div className="space-y-2" style={{ minHeight: '600px', height: 'auto' }}>
             {viewMode === 'list' ? (
-              <div className="border-4 border-white/20 overflow-hidden">
+              <div className="border-2 border-white/20 overflow-hidden">
                 <div className="px-4 py-2 border-b border-white/10 flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-sm text-white/20">touch_app</span>
                   <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest">Click a deal to open messages &amp; manage</p>
@@ -436,7 +436,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
               Object.entries(showGroups).map(([showTitle, showDeals]) => {
                 const showRoyalties = royaltyReports.filter(r => r.show_title === showTitle).reduce((s, r) => s + Number(r.royalty_amount), 0);
                 return (
-                  <div key={showTitle} className="border-4 border-white/20 overflow-hidden">
+                  <div key={showTitle} className="border-2 border-white/20 overflow-hidden">
                     <div className="bg-white/5 px-4 py-3 flex items-center justify-between border-b-2 border-white/10">
                       <div>
                         <p className="text-[8px] font-black uppercase italic text-white/30">Show</p>
@@ -457,7 +457,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           {/* RIGHT */}
           <div className="lg:sticky lg:top-4" style={{ minHeight: '600px' }}>
             {!activeDeal ? (
-              <div className="border-4 border-white/10 overflow-hidden">
+              <div className="border-2 border-white/10 overflow-hidden">
                 <div className="bg-white/5 px-5 py-4 border-b-2 border-white/10">
                   <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">How Pipeline works</p>
                   <p className="text-white/40 text-xs italic">Click any deal on the left to manage it. You are in control — move deals through stages manually.</p>
@@ -490,7 +490,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                 </div>
               </div>
             ) : (
-              <div className="border-4 border-brand-yellow overflow-hidden">
+              <div className="border-2 border-brand-yellow overflow-hidden">
 
                 {/* DEAL HEADER */}
                 <div className="bg-brand-yellow/10 px-5 py-4 border-b-2 border-brand-yellow/30">
@@ -566,7 +566,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                   <div className="px-4 py-4 border-b-2 border-white/10">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest">Royalty Reports</p>
-                      <button onClick={() => setShowRoyaltyForm(!showRoyaltyForm)} className="bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">{showRoyaltyForm ? 'Cancel' : '+ Add'}</button>
+                      <button onClick={() => setShowRoyaltyForm(!showRoyaltyForm)} className="bg-white text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">{showRoyaltyForm ? 'Cancel' : '+ Add'}</button>
                     </div>
                     {showRoyaltyForm && (
                       <div className="space-y-3 mb-4 border-2 border-brand-yellow/30 p-3">
@@ -582,7 +582,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                             <span className="text-white/40 text-sm">Royalty: <span className="text-brand-yellow font-black">EUR {(Number(royaltyForm.tickets) * Number(royaltyForm.ticket_price) * Number(activeDeal.royalty_pct || 0) / 100).toLocaleString()}</span></span>
                           </div>
                         )}
-                        <button onClick={addReport} className="w-full bg-brand-yellow text-black py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Save Report</button>
+                        <button onClick={addReport} className="w-full bg-white text-black py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">Save Report</button>
                       </div>
                     )}
                     {reportsForDeal.length > 0 ? (
@@ -663,7 +663,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         onChange={e => setFileToSend(e.target.files?.[0] || null)}
                         className="text-white/30 text-[9px] flex-1 file:bg-white/10 file:text-white/60 file:font-black file:text-[8px] file:uppercase file:px-2 file:py-1 file:border-0 file:mr-2 cursor-pointer" />
                       {fileToSend && (
-                        <button onClick={sendFile} disabled={sendingFile} className="bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-[9px] border-2 border-black disabled:opacity-30 hover:bg-white transition-all">
+                        <button onClick={sendFile} disabled={sendingFile} className="bg-white text-black px-3 py-1 font-black uppercase italic text-[9px] border-2 border-black disabled:opacity-30 hover:bg-brand-pink hover:text-white transition-all">
                           {sendingFile ? '...' : 'Send File'}
                         </button>
                       )}

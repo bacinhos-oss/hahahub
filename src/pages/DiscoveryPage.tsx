@@ -129,7 +129,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-xl" onClick={() => setSelectedShowId(null)}></div>
-        <div className="relative bg-brand-black border-4 border-white w-full max-w-7xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden md:shadow-neo-yellow animate-in fade-in zoom-in-95 duration-500 ease-out text-white pb-12">
+        <div className="relative bg-brand-black border-2 border-white w-full max-w-7xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden md:shadow-neo-yellow animate-in fade-in zoom-in-95 duration-500 ease-out text-white pb-12">
           <button onClick={() => setSelectedShowId(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all z-20">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
@@ -170,7 +170,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <span className="material-symbols-outlined text-8xl text-brand-pink">lock_person</span>
                   <h2 className="text-4xl font-display uppercase italic text-white">PRODUCER TIER ONLY</h2>
                   <p className="text-gray-400 italic font-bold">Registration required to view full scripts, commercial Bible, and technical rider.</p>
-                  <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase text-sm border-4 border-white shadow-neo-magenta italic">Unlock Full Dossier</button>
+                  <button onClick={() => onNavigate('login')} className="bg-white text-black hover:bg-brand-pink hover:text-white px-10 py-4 font-black uppercase text-sm border-2 border-white  italic">Unlock Full Dossier</button>
                 </div>
               ) : (
                 <div className="space-y-16">
@@ -184,7 +184,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       )}
                       <p className="text-base md:text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
                     </div>
-                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-4 transition-all mt-8 ${isFavorited ? 'bg-brand-pink text-white border-black shadow-neo-white' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
+                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-2 transition-all mt-8 ${isFavorited ? 'bg-brand-pink text-white border-black ' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
                       <span className="material-symbols-outlined text-2xl font-black">favorite</span>
                     </button>
                   </div>
@@ -193,7 +193,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {(selectedShow as any).trailer_url && (
                     <section className="space-y-4">
                       <h4 className="text-xl font-black uppercase italic text-brand-cyan">🎬 TRAILER</h4>
-                      <div className="relative w-full border-4 border-brand-cyan" style={{paddingBottom:'56.25%'}}>
+                      <div className="relative w-full border-2 border-brand-cyan" style={{paddingBottom:'56.25%'}}>
                         <iframe
                           className="absolute inset-0 w-full h-full"
                           src={(() => {
@@ -235,7 +235,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <section className="space-y-8">
                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">00. RIGHTS & IDENTITY</h4>
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="bg-brand-surface border-4 border-white p-4 shadow-neo-cyan overflow-hidden">
+                        <div className="bg-brand-surface border-2 border-white p-4  overflow-hidden">
                            <p className="text-[8px] font-black uppercase text-brand-cyan mb-2 tracking-widest">PRODUCER / COMPANY</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
                            {(selectedShow as any).user_id && (
@@ -255,11 +255,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                              )}
                            </div>
                         </div>
-                        <div className="bg-brand-surface border-4 border-white p-4 overflow-hidden">
+                        <div className="bg-brand-surface border-2 border-white p-4 overflow-hidden">
                            <p className="text-[8px] font-black uppercase text-brand-yellow mb-1 tracking-widest">COPYRIGHT HOLDER</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.rightsHolder}</p>
                         </div>
-                        <div className="bg-brand-surface border-4 border-white p-4 overflow-hidden">
+                        <div className="bg-brand-surface border-2 border-white p-4 overflow-hidden">
                            <p className="text-[8px] font-black uppercase text-brand-pink mb-1 tracking-widest">RIGHTS STATUS</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.rightsStatus}</p>
                         </div>
@@ -332,7 +332,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                            <p className="text-sm italic text-gray-300 break-words">{selectedShow.internationalSuccessNotes}</p>
                         </div>}
                       </div>
-                      <div className="bg-brand-surface border-4 border-white p-4 md:p-8 space-y-4 md:space-y-6 shadow-neo-magenta">
+                      <div className="bg-brand-surface border-2 border-white p-4 md:p-8 space-y-4 md:space-y-6 ">
                          <div className="border-b-2 border-white/10 pb-4">
                             <p className="text-[10px] font-black uppercase text-brand-pink italic mb-2">Director's Vision Notes</p>
                             <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.directorNotes || 'Standard staging permitted.'}</p>
@@ -350,7 +350,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">02. FULL PUNCH</h4>
 
                     {(selectedShow as any).has_full_punch_package ? (
-                      <div className="border-4 border-brand-pink/40 bg-brand-pink/5 p-5 space-y-4">
+                      <div className="border-2 border-brand-pink/40 bg-brand-pink/5 p-5 space-y-4">
                         <div className="flex items-center justify-between">
                           <p className="font-black uppercase italic text-brand-pink text-sm">🥊 Full Punch Available</p>
                           <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5">
@@ -492,27 +492,27 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">03. TECHNICAL STACK & PRODUCTION SCALE</h4>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-cyan">
+                       <div className="bg-brand-surface border-2 border-white p-2 md:p-6 text-center md:shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
                           <p className="text-lg md:text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-magenta">
+                       <div className="bg-brand-surface border-2 border-white p-2 md:p-6 text-center md:shadow-neo-magenta">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Sound</p>
                           <p className="text-lg md:text-2xl font-black text-brand-pink">{selectedShow.techStaffSound}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-yellow">
+                       <div className="bg-brand-surface border-2 border-white p-2 md:p-6 text-center md:shadow-neo-yellow">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Stagehands</p>
                           <p className="text-lg md:text-2xl font-black text-brand-yellow">{selectedShow.techStaffStagehands}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center">
+                       <div className="bg-brand-surface border-2 border-white p-2 md:p-6 text-center">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Prompter</p>
                           <p className="text-lg md:text-2xl font-black text-white">{selectedShow.techStaffPrompter}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-cyan">
+                       <div className="bg-brand-surface border-2 border-white p-2 md:p-6 text-center md:shadow-neo-cyan">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Scale</p>
                           <p className="text-sm md:text-xl font-black uppercase italic text-brand-cyan">{selectedShow.productionScale}</p>
                        </div>
-                       <div className="bg-brand-surface border-4 border-white p-2 md:p-6 text-center md:shadow-neo-magenta">
+                       <div className="bg-brand-surface border-2 border-white p-2 md:p-6 text-center md:shadow-neo-magenta">
                           <p className="text-[8px] font-black text-gray-500 uppercase italic">Touring</p>
                           <p className="text-sm md:text-xl font-black uppercase italic text-brand-pink">{selectedShow.isTouringFriendly ? 'YES' : 'NO'}</p>
                        </div>
@@ -571,11 +571,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <section className="space-y-4">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">05. RIGHTS & LICENSING</h4>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      <div className="bg-brand-surface border-4 border-white p-4">
+                      <div className="bg-brand-surface border-2 border-white p-4">
                         <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
                         <p className="text-sm font-black uppercase italic">{selectedShow.licenseType}</p>
                       </div>
-                      <div className="bg-brand-surface border-4 border-white p-4">
+                      <div className="bg-brand-surface border-2 border-white p-4">
                         <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Exclusivity</p>
                         <p className="text-sm font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
                       </div>
@@ -598,7 +598,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {selectedShow.scriptScenario && (
                     <section className="space-y-4">
                       <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">Script Scenario — 3 Pages in English</h4>
-                      <div className="bg-black border-4 border-brand-yellow p-4 md:p-8 overflow-hidden">
+                      <div className="bg-black border-2 border-brand-yellow p-4 md:p-8 overflow-hidden">
                         <pre className="text-white font-mono text-xs md:text-sm leading-relaxed whitespace-pre-wrap break-words overflow-x-hidden">{selectedShow.scriptScenario}</pre>
                       </div>
                     </section>
@@ -636,7 +636,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   })()}
 
                   {/* CTA SECTION — PACKAGE SELECTOR */}
-                  <div className="bg-brand-surface border-4 md:border-8 border-brand-cyan p-4 md:p-10 space-y-4 md:space-y-6 shadow-neo-magenta">
+                  <div className="bg-brand-surface border-2 md:border-2 border-brand-cyan p-4 md:p-10 space-y-4 md:space-y-6 ">
                     <div className="text-center">
                       <h4 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter">Select Package &amp; Tickle</h4>
                       <p className="text-white/30 text-xs italic mt-1">Choose your licensing package. Royalty is calculated per performance.</p>
@@ -646,7 +646,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       {/* SCRIPT */}
                       {(selectedShow as any).has_script_package !== false && (
-                        <div className={"border-4 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-brand-yellow/60')}
+                        <div className={"border-2 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-brand-yellow/60')}
                           onClick={() => setSelectedPackage('script')}>
                           <div className="flex items-center justify-between">
                             <p className="font-black uppercase italic text-white text-lg">🎭 SCRIPT</p>
@@ -674,7 +674,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                                 setInquirySuccess(false);
                                 setIsInquiryOpen(true);
                               }}
-                              className="w-full bg-brand-yellow text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white transition-all">
+                              className="w-full bg-white text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
                               Tickle It — Script →
                             </button>
                           )}
@@ -683,7 +683,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                       {/* FULL PUNCH */}
                       {(selectedShow as any).has_full_punch_package && (
-                        <div className={"border-4 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-brand-pink/60')}
+                        <div className={"border-2 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-brand-pink/60')}
                           onClick={() => setSelectedPackage('full_punch')}>
                           <div className="flex items-center justify-between">
                             <p className="font-black uppercase italic text-white text-lg">🥊 FULL PUNCH</p>
@@ -767,7 +767,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                               setInquirySuccess(false);
                               setIsInquiryOpen(true);
                             }}
-                            className="w-full bg-brand-yellow text-black py-5 font-black uppercase italic text-xl border-4 border-black hover:bg-white transition-all">
+                            className="w-full bg-white text-black py-5 font-black uppercase italic text-xl border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
                             Tickle It →
                           </button>
                         </div>
@@ -777,7 +777,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     {/* DOSSIER BUTTON */}
                     <div className="border-t border-white/10 pt-4 flex justify-center">
                       <button onClick={() => downloadDossier(selectedShow)}
-                        className="bg-transparent text-white px-8 py-3 font-black uppercase border-4 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic text-sm flex items-center gap-3">
+                        className="bg-transparent text-white px-8 py-3 font-black uppercase border-2 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic text-sm flex items-center gap-3">
                         <span className="material-symbols-outlined text-xl">download</span>
                         The Dossier
                       </button>
@@ -798,20 +798,20 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return (
       <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 md:p-6">
         <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-md" onClick={() => setIsInquiryOpen(false)}></div>
-        <div className="relative bg-brand-surface border-8 border-white w-full max-w-2xl p-5 md:p-12 max-h-[90vh] overflow-y-auto overflow-x-hidden shadow-neo-cyan animate-in fade-in zoom-in-95 duration-500 ease-out">
+        <div className="relative bg-brand-surface border-2 border-white w-full max-w-2xl p-5 md:p-12 max-h-[90vh] overflow-y-auto overflow-x-hidden  animate-in fade-in zoom-in-95 duration-500 ease-out">
           <button onClick={() => setIsInquiryOpen(false)} className="absolute top-6 right-6 text-white hover:text-brand-pink transition-all">
             <span className="material-symbols-outlined text-4xl font-black">close</span>
           </button>
 
           {inquirySuccess ? (
             <div className="text-center py-20 space-y-8 animate-in zoom-in">
-              <div className="w-24 h-24 bg-brand-cyan border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-neo-magenta">
+              <div className="w-24 h-24 bg-brand-cyan border-2 border-black mx-auto flex items-center justify-center rotate-3 ">
                 <span className="material-symbols-outlined text-black text-6xl font-black">send</span>
               </div>
               <div className="space-y-4">
                 <h2 className="text-4xl font-black uppercase italic text-white">You Tickled<br/>the Laff! 🎭</h2>
                 <p className="text-brand-cyan font-bold uppercase tracking-[0.2em] text-sm italic">The producer has been notified of your interest.</p>
-                <div className="border-4 border-white/10 p-6 text-left space-y-3 mt-4">
+                <div className="border-2 border-white/10 p-6 text-left space-y-3 mt-4">
                   <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic">What happens next?</p>
                   <div className="space-y-2">
                     <p className="text-white/60 text-sm flex items-start gap-3"><span className="text-brand-cyan font-black">01</span> The rights holder receives your inquiry by email immediately.</p>
@@ -825,7 +825,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   setIsInquiryOpen(false);
                   setInquirySuccess(false);
                 }}
-                className="bg-brand-yellow text-black px-10 py-4 font-black uppercase text-sm border-4 border-black shadow-neo-magenta italic"
+                className="bg-white text-black hover:bg-brand-pink hover:text-white px-10 py-4 font-black uppercase text-sm border-2 border-black  italic"
               >
                 Back to Catalog
               </button>
@@ -844,7 +844,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <div className="space-y-3">
                   {(inquiryShow as any)?.has_script_package !== false && (
                     <button onClick={() => setSelectedPackage('script')}
-                      className={"w-full text-left border-4 p-4 transition-all " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-white/40')}>
+                      className={"w-full text-left border-2 p-4 transition-all " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-white/40')}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <p className="font-black uppercase italic text-white text-sm">🎭 SCRIPT</p>
@@ -868,7 +868,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   )}
                   {(inquiryShow as any)?.has_full_punch_package && (
                     <button onClick={() => setSelectedPackage('full_punch')}
-                      className={"w-full text-left border-4 p-4 transition-all " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-white/40')}>
+                      className={"w-full text-left border-2 p-4 transition-all " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-white/40')}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <p className="font-black uppercase italic text-white text-sm">🥊 FULL PUNCH</p>
@@ -956,7 +956,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
               {/* GIGL rate limit opozorilo */}
               {user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 5 && (
-                <div className="bg-brand-yellow text-black p-4 border-4 border-black font-black uppercase text-sm italic mb-2">
+                <div className="bg-brand-yellow text-black p-4 border-2 border-black font-black uppercase text-sm italic mb-2">
                   ⚡ GIGL plan: 5 inquiries per month used. Upgrade to LAFF for unlimited.
                   <button onClick={() => onNavigate('pricing')} className="ml-2 underline">Upgrade →</button>
                 </div>
@@ -1075,7 +1075,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   setInquirySuccess(true);
                   onUpdateStats(inquiryShowId || '', 'inquiry');
                 }}
-                className="w-full bg-brand-pink text-white font-black uppercase py-6 border-4 border-black shadow-neo-yellow hover:bg-black transition-all italic tracking-[0.2em] text-xl disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full bg-brand-pink text-white font-black uppercase py-6 border-2 border-black  hover:bg-black transition-all italic tracking-[0.2em] text-xl disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {inquirySending ? 'SENDING...' : 'Send Inquiry 🥊'}
               </button>
@@ -1419,8 +1419,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             {/* HEADER */}
             <div className="flex flex-col gap-2">
               <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">TICKLE. SET UP. PUNCH.</span>
-              <h1 className="text-5xl sm:text-7xl md:text-9xl font-black uppercase leading-[0.85] tracking-tighter italic">
-                The <span className="text-brand-yellow">Laff</span><br/>Exchange
+              <h1 className="font-display text-white text-4xl sm:text-5xl md:text-6xl leading-[0.95] tracking-tight">
+                The Laff <span className="text-brand-pink">Exchange</span>
               </h1>
             </div>
 
@@ -1512,7 +1512,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-white/30 italic block">&nbsp;</label>
                 <button onClick={() => setShowShortlistOnly(v => !v)}
-                  className={`flex items-center gap-2 px-3 py-2 border-4 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}>
+                  className={`flex items-center gap-2 px-3 py-2 border-2 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}>
                   <span className="material-symbols-outlined text-sm" style={{fontVariationSettings:"'FILL' 1"}}>touch_app</span>
                   Tickle List {shortlist.length > 0 && <span>({shortlist.length})</span>}
                 </button>
@@ -1524,7 +1524,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             {isLoading ? (
               // LOADING SKELETONS
               [...Array(6)].map((_, i) => (
-                <div key={i} className="bg-brand-surface border-4 border-white/10 overflow-hidden animate-pulse">
+                <div key={i} className="bg-brand-surface border-2 border-white/10 overflow-hidden animate-pulse">
                   <div className="aspect-[2/3] bg-white/5"></div>
                   <div className="p-5 space-y-3">
                     <div className="h-2 bg-white/10 w-1/3 rounded"></div>
@@ -1548,7 +1548,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <div
                 key={show.id}
                 onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)}
-                className={`group relative cursor-pointer bg-brand-surface border-4 border-white/30 overflow-hidden flex flex-col transition-all duration-300
+                className={`group relative cursor-pointer bg-brand-surface border-2 border-white/30 overflow-hidden flex flex-col transition-all duration-300
                   ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-pink hover:shadow-[0_0_20px_rgba(255,2,102,0.3)]'}`}
               >
                 {/* Lock overlay */}

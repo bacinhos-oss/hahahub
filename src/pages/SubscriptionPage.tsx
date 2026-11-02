@@ -491,7 +491,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   if (!user) {
     return (
       <div className="min-h-screen bg-brand-black flex items-center justify-center">
-        <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black px-12 py-5 font-black uppercase border-4 border-white shadow-neo-magenta italic">Login to View Hub</button>
+        <button onClick={() => onNavigate('login')} className="bg-white text-black hover:bg-brand-pink hover:text-white px-12 py-5 font-black uppercase border-2 border-white  italic">Login to View Hub</button>
       </div>
     );
   }
@@ -684,7 +684,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       {manageShow && (
         <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 overflow-y-auto">
           <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={() => setManageShow(null)}></div>
-          <div className="relative bg-brand-black border-8 border-white w-full max-w-5xl my-8 p-8 shadow-neo-cyan text-white">
+          <div className="relative bg-brand-black border-2 border-white w-full max-w-5xl my-8 p-8  text-white">
             <button onClick={() => setManageShow(null)} className="absolute top-6 right-6 text-white hover:text-brand-pink z-10">
               <span className="material-symbols-outlined text-4xl">close</span>
             </button>
@@ -695,12 +695,12 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <div className="space-y-5">
 
               {/* 00. BASIC INFO */}
-              <section className="border-4 border-white/20 p-5 space-y-4">
+              <section className="border-2 border-white/20 p-5 space-y-4">
                 <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">00. Basic Info</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2">
                     <label className={lbl}>English Title * (main title)</label>
-                    <input name="englishTitle" value={(editForm as any).englishTitle || ''} onChange={handleEditChange} className="w-full bg-brand-black border-4 border-white px-4 py-3 text-white font-bold uppercase text-lg outline-none focus:border-brand-yellow" />
+                    <input name="englishTitle" value={(editForm as any).englishTitle || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white px-4 py-3 text-white font-bold uppercase text-lg outline-none focus:border-brand-yellow" />
                   </div>
                   <div className="col-span-2">{F('title', 'Original Title (if different)')}</div>
                   {F('author', 'Author / Playwright *')}
@@ -760,7 +760,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 01. PRODUCTION */}
-              <section className="border-4 border-white/20 p-5 space-y-4">
+              <section className="border-2 border-white/20 p-5 space-y-4">
                 <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">01. Production</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {F('maleRoles', 'Male Roles *', 'number')}
@@ -785,7 +785,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 02. FULL PUNCH */}
-              <section className="border-4 border-brand-pink/30 p-5 space-y-4">
+              <section className="border-2 border-brand-pink/30 p-5 space-y-4">
                 <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">02. Licensing Packages</h3>
 
                 {/* ENABLE */}
@@ -911,7 +911,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 03. MARKET PERFORMANCE */}
-              <section className="border-4 border-white/20 p-5 space-y-4">
+              <section className="border-2 border-white/20 p-5 space-y-4">
                 <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">03. Market Performance</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {F('premiereDate', 'Premiere Date', 'date')}
@@ -924,7 +924,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </section>
 
               {/* 04. RIGHTS */}
-              <section className="border-4 border-white/20 p-5 space-y-4">
+              <section className="border-2 border-white/20 p-5 space-y-4">
                 <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">04. Rights & Identity</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2">{F('rightsHolder', 'Copyright Holder *')}</div>
@@ -946,7 +946,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <img src={(editForm as any).imageUrl} alt="Current poster" className="w-24 h-32 object-cover border-2 border-white/20 flex-shrink-0" />
                 )}
                 <div className="flex-1">
-                  <label className="block border-4 border-dashed border-white/20 hover:border-brand-yellow p-6 text-center cursor-pointer transition-all">
+                  <label className="block border-2 border-dashed border-white/20 hover:border-brand-yellow p-6 text-center cursor-pointer transition-all">
                     <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
@@ -1054,10 +1054,10 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             </div>
 
             <div className="mt-10 space-y-4">
-              <button onClick={handleSave} disabled={isSaving} className="w-full bg-brand-cyan text-black py-5 font-black uppercase italic border-4 border-black shadow-neo-yellow hover:bg-brand-yellow transition-all disabled:opacity-50 text-xl">
+              <button onClick={handleSave} disabled={isSaving} className="w-full bg-brand-cyan text-black py-5 font-black uppercase italic border-2 border-black  hover:bg-brand-yellow transition-all disabled:opacity-50 text-xl">
                 {isSaving ? 'Saving...' : saveSuccess ? '✓ Saved!' : 'Save All Changes'}
               </button>
-              <button onClick={() => { if (confirm('Delete this show permanently?')) { onDeleteShow(manageShow.id); setManageShow(null); } }} className="w-full bg-red-600 text-white py-4 font-black uppercase italic border-4 border-black">
+              <button onClick={() => { if (confirm('Delete this show permanently?')) { onDeleteShow(manageShow.id); setManageShow(null); } }} className="w-full bg-red-600 text-white py-4 font-black uppercase italic border-2 border-black">
                 Delete This Asset Permanently
               </button>
             </div>
@@ -1074,7 +1074,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <section className="flex flex-col md:flex-row items-end justify-between gap-10">
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">My <span className="text-brand-pink">Hub</span></h1>
               <div className="flex items-center gap-6">
-                <div className="bg-brand-surface border-4 border-white p-6 shadow-neo-cyan">
+                <div className="bg-brand-surface border-2 border-white p-6 ">
                   <p className="text-xl font-black uppercase italic">{user.name}</p>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -1090,7 +1090,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             {/* ONBOARDING TOUR — samo za nove producente brez uploadov */}
             {userUploads.length === 0 && !user.isAdmin && (
-              <section className="border-4 border-brand-yellow bg-brand-yellow/5 p-6 md:p-8">
+              <section className="border-2 border-brand-yellow bg-brand-yellow/5 p-6 md:p-8">
                 <div className="flex items-start gap-4 mb-6">
                   <span className="text-3xl">🎭</span>
                   <div>
@@ -1121,7 +1121,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {/* TICKLED TOAST NOTIFICATION */}
             {tickledToast.show && (
               <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-bounce">
-                <div className="bg-brand-yellow text-black border-4 border-black shadow-neo-magenta px-8 py-6 text-center max-w-sm">
+                <div className="bg-brand-yellow text-black border-2 border-black  px-8 py-6 text-center max-w-sm">
                   <p className="text-2xl font-black uppercase italic leading-none mb-1">YOU'VE BEEN<br/><span className="text-brand-pink">TICKLED!</span> 🎭</p>
                   <p className="text-xs font-black uppercase tracking-widest mt-2 opacity-70">{tickledToast.showTitle}</p>
                   <button onClick={() => setTickledToast({show: false, showTitle: ''})} className="mt-4 text-[9px] font-black uppercase border-2 border-black px-4 py-1 hover:bg-black hover:text-white transition-all">Dismiss</button>
@@ -1137,7 +1137,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 { label: 'INQUIRIES', value: inquiries.length, icon: 'mail', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
                 { label: 'MY SHOWS', value: userUploads.length, icon: 'theater_comedy', color: 'text-white', border: 'border-white/20' },
               ].map((s, i) => (
-                <div key={i} className={`border-4 ${s.border} p-4 flex items-center gap-3`}>
+                <div key={i} className={`border-2 ${s.border} p-4 flex items-center gap-3`}>
                   <span className={`material-symbols-outlined text-2xl ${s.color}`}>{s.icon}</span>
                   <div>
                     <p className={`text-3xl font-black ${s.color}`}>{s.value}</p>
@@ -1148,7 +1148,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             </div>
 
             {/* TABS — by plan */}
-            <div className="flex border-4 border-white/20 w-full overflow-x-auto">
+            <div className="flex border-2 border-white/20 w-full overflow-x-auto">
               {(['studio', 'assets', 'profile'] as const).map(tab => {
                 const unread = tab === 'studio' ? inquiries.filter((i: any) => !i.is_read).length : 0;
                 return (
@@ -1168,17 +1168,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <section className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-yellow">Assets</span></h2>
-                <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-4 border-black shadow-neo-magenta italic hover:bg-brand-yellow transition-all">+ List Your Show</button>
+                <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-2 border-black  italic hover:bg-brand-yellow transition-all">+ List Your Show</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {userUploads.length === 0 ? (
-                  <div className="col-span-2 py-20 border-4 border-dashed border-white/10 text-center">
+                  <div className="col-span-2 py-20 border-2 border-dashed border-white/10 text-center">
                     <div className="flex justify-center mb-4"><Smile height={88} className="opacity-70" /></div>
                     <p className="text-white/40 font-black uppercase italic">No shows yet.</p>
                     <button onClick={() => onNavigate('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Showload your first show →</button>
                   </div>
                 ) : userUploads.map((show) => (
-                  <div key={show.id} className={"bg-brand-surface border-4 p-4 md:p-6 flex gap-4 hover:shadow-neo-yellow transition-all " + (show.inquiriesCount > 0 && inquiries.some(inq => inq.show_id === show.id && !inq.is_read) ? "border-brand-cyan shadow-neo-cyan" : show.inquiriesCount > 0 ? "border-brand-cyan" : "border-white")}>
+                  <div key={show.id} className={"bg-brand-surface border-2 p-4 md:p-6 flex gap-4  transition-all " + (show.inquiriesCount > 0 && inquiries.some(inq => inq.show_id === show.id && !inq.is_read) ? "border-brand-cyan " : show.inquiriesCount > 0 ? "border-brand-cyan" : "border-white")}>
                     <div className="w-20 md:w-24 h-28 md:h-32 border-2 border-white/10 flex-shrink-0">
                       <img src={show.imageUrl} className="w-full h-full object-cover" alt={show.title} />
                     </div>
@@ -1254,7 +1254,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
                   <button
                     onClick={() => { onNavigate('producer'); }}
-                    className="bg-brand-cyan text-black px-6 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all flex items-center gap-2"
+                    className="bg-brand-cyan text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all flex items-center gap-2"
                   >
                     <span className="material-symbols-outlined text-sm">open_in_new</span>
                     View Public Profile
@@ -1267,7 +1267,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-3">Profile Photo</label>
                     <div className="flex items-center gap-5">
-                      <div className="w-20 h-20 rounded-full border-4 border-white/20 overflow-hidden flex items-center justify-center bg-brand-surface flex-shrink-0">
+                      <div className="w-20 h-20 rounded-full border-2 border-white/20 overflow-hidden flex items-center justify-center bg-brand-surface flex-shrink-0">
                         {profileForm.avatar_url ? (
                           <img src={profileForm.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
@@ -1275,7 +1275,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         )}
                       </div>
                       <div>
-                        <label className="cursor-pointer bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-4 border-black hover:bg-brand-yellow transition-all inline-block">
+                        <label className="cursor-pointer bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-yellow transition-all inline-block">
                           Upload Photo
                           <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                             const file = e.target.files?.[0];
@@ -1309,19 +1309,19 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Bio / About</label>
-                    <textarea value={profileForm.bio} onChange={e => setProfileForm(p => ({...p, bio: e.target.value}))} placeholder="Short intro — who you are, what you produce..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-28 transition-colors" />
+                    <textarea value={profileForm.bio} onChange={e => setProfileForm(p => ({...p, bio: e.target.value}))} placeholder="Short intro — who you are, what you produce..." className="w-full bg-brand-surface border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-28 transition-colors" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">City / Country</label>
-                    <input type="text" autoComplete="off" value={profileForm.location_city} onChange={e => setProfileForm(p => ({...p, location_city: e.target.value}))} placeholder="Ljubljana, Slovenia" className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
+                    <input type="text" autoComplete="off" value={profileForm.location_city} onChange={e => setProfileForm(p => ({...p, location_city: e.target.value}))} placeholder="Ljubljana, Slovenia" className="w-full bg-brand-surface border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Website</label>
-                    <input type="text" autoComplete="off" value={profileForm.website} onChange={e => setProfileForm(p => ({...p, website: e.target.value}))} placeholder="https://yourproduction.com" className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
+                    <input type="text" autoComplete="off" value={profileForm.website} onChange={e => setProfileForm(p => ({...p, website: e.target.value}))} placeholder="https://yourproduction.com" className="w-full bg-brand-surface border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/40 italic block mb-2">Festivals & Credits</label>
-                    <textarea value={profileForm.festivals} onChange={e => setProfileForm(p => ({...p, festivals: e.target.value}))} placeholder="Edinburgh Fringe 2023, Avignon 2024..." className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-20 transition-colors" />
+                    <textarea value={profileForm.festivals} onChange={e => setProfileForm(p => ({...p, festivals: e.target.value}))} placeholder="Edinburgh Fringe 2023, Avignon 2024..." className="w-full bg-brand-surface border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 resize-none h-20 transition-colors" />
                   </div>
                   <button onClick={async () => {
                     if (!user?.id) return;
@@ -1341,7 +1341,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                     }
                     setProfileSaved(true);
                     setTimeout(() => setProfileSaved(false), 3000);
-                  }} disabled={profileSaving} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black shadow-neo-magenta hover:bg-white transition-all disabled:opacity-40">
+                  }} disabled={profileSaving} className="bg-white text-black px-10 py-4 font-black uppercase italic border-2 border-black  hover:bg-brand-pink hover:text-white transition-all disabled:opacity-40">
                     {profileSaving ? 'Saving...' : profileSaved ? 'Saved! ✓' : 'Save Profile →'}
                   </button>
 
@@ -1353,14 +1353,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       placeholder="New password (min 6 chars)"
                       value={newPassword}
                       onChange={e => { setNewPassword(e.target.value); setPasswordMsg(''); }}
-                      className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
+                      className="w-full bg-brand-surface border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
                     />
                     <input
                       type="password"
                       placeholder="Confirm new password"
                       value={confirmPassword}
                       onChange={e => { setConfirmPassword(e.target.value); setPasswordMsg(''); }}
-                      className="w-full bg-brand-surface border-4 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
+                      className="w-full bg-brand-surface border-2 border-white/20 focus:border-brand-yellow text-white font-bold italic p-4 outline-none placeholder:text-white/20 transition-colors"
                     />
                     {passwordMsg && (
                       <p className={`text-xs font-black italic ${passwordMsg.includes('✓') ? 'text-brand-cyan' : 'text-brand-pink'}`}>{passwordMsg}</p>
@@ -1376,7 +1376,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         setPasswordSaving(false);
                       }}
                       disabled={passwordSaving || !newPassword || !confirmPassword}
-                      className="border-4 border-white text-white px-8 py-3 font-black uppercase italic hover:bg-white hover:text-black transition-all disabled:opacity-30"
+                      className="border-2 border-white text-white px-8 py-3 font-black uppercase italic hover:bg-white hover:text-black transition-all disabled:opacity-30"
                     >
                       {passwordSaving ? 'Updating...' : 'Update Password →'}
                     </button>
@@ -1420,7 +1420,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
       {dealInquiry && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90" onClick={() => setDealInquiry(null)}></div>
-          <div className="relative bg-brand-black border-8 border-brand-cyan w-full max-w-2xl p-8 shadow-neo-cyan text-white z-10">
+          <div className="relative bg-brand-black border-2 border-brand-cyan w-full max-w-2xl p-8  text-white z-10">
             <button onClick={() => setDealInquiry(null)} className="absolute top-4 right-4 text-white/40 hover:text-white">
               <span className="material-symbols-outlined">close</span>
             </button>

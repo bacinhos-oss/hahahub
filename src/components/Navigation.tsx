@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Page } from '../types';
 import { Logo } from './Logo';
-import { SpectrumBar } from './SpectrumBar';
 
 interface NavigationProps {
   activePage: Page;
@@ -145,12 +144,9 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
               </button>
             )}
           </div>
-          <SpectrumBar height={4} className="absolute bottom-0 left-0 right-0" />
         </div>
       )}
 
-      {/* Spectrum bar replaces the old white bottom border */}
-      <SpectrumBar height={6} className="absolute bottom-0 left-0 right-0" />
     </header>
   );
 };

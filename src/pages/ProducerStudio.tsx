@@ -36,7 +36,7 @@ const ContractEditor: React.FC<{
         className="w-full bg-brand-black border-2 border-brand-yellow/30 focus:border-brand-yellow p-4 text-white/80 font-mono text-xs outline-none resize-y leading-relaxed" />
       <div className="flex gap-2 flex-wrap">
         <button onClick={() => onSave(c.id, localText)}
-          className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">💾 Save</button>
+          className="bg-white text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">💾 Save</button>
         <button onClick={() => { if (window.confirm('Restore last saved version?')) setLocalText(c.body || ''); }}
           className="border-2 border-white/20 text-white/30 px-4 py-2 font-black uppercase italic text-xs hover:border-brand-pink hover:text-brand-pink transition-all">↩ Restore</button>
         <button onClick={() => { const blob = new Blob([localText], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (c.title || 'contract').replace(/\s+/g, '_') + '.txt'; a.click(); }}
@@ -280,7 +280,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 { label: 'Conversion', value: conversion + '%', color: 'text-brand-cyan', sub: 'views → inquiries', icon: 'trending_up' },
                 { label: 'Royalties', value: '€' + totalRoyaltiesEarned.toLocaleString(), color: 'text-green-400', sub: 'earned to date', icon: 'payments' },
               ].map((s, i) => (
-                <div key={i} className="border-4 border-white/10 p-4 hover:border-white/20 transition-all">
+                <div key={i} className="border-2 border-white/10 p-4 hover:border-white/20 transition-all">
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-[8px] font-black uppercase italic text-white/30">{s.label}</p>
                     <span className="material-symbols-outlined text-sm text-white/15">{s.icon}</span>
@@ -292,7 +292,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
 
             {/* CONVERSION FUNNEL */}
-            <div className="border-4 border-white/10 p-5">
+            <div className="border-2 border-white/10 p-5">
               <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan italic mb-4">Conversion Funnel</p>
               <div className="flex items-end gap-0">
                 {[
@@ -316,7 +316,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
               {/* WEEKLY VIEWS CHART */}
-              <div className="border-4 border-white/10 p-5">
+              <div className="border-2 border-white/10 p-5">
                 <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic mb-4">
                   Weekly Views — Last 8 Weeks
                   {showViews.length === 0 && <span className="text-white/20 normal-case font-normal ml-2">(tracking starts now)</span>}
@@ -336,7 +336,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               </div>
 
               {/* MONTHLY INQUIRIES */}
-              <div className="border-4 border-white/10 p-5">
+              <div className="border-2 border-white/10 p-5">
                 <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Monthly Inquiries — Last 6 Months</p>
                 <div className="flex items-end gap-1.5 h-24">
                   {months.map((m, i) => (
@@ -353,7 +353,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               </div>
 
               {/* TOP TERRITORIES */}
-              <div className="border-4 border-white/10 p-5">
+              <div className="border-2 border-white/10 p-5">
                 <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan italic mb-4">Top Territories</p>
                 {topTerritories.length === 0 ? (
                   <p className="text-white/20 text-xs italic">No territory data yet.</p>
@@ -375,7 +375,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               </div>
 
               {/* PACKAGE SPLIT */}
-              <div className="border-4 border-white/10 p-5">
+              <div className="border-2 border-white/10 p-5">
                 <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Package Interest</p>
                 {totalInq === 0 ? (
                   <p className="text-white/20 text-xs italic">No inquiries yet.</p>
@@ -425,7 +425,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 const active = showInq.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
                 const territories = [...new Set(showInq.map((i: any) => i.territory).filter(Boolean))] as string[];
                 return (
-                  <div key={show.id} className="border-4 border-white/10 hover:border-white/20 transition-all mb-3">
+                  <div key={show.id} className="border-2 border-white/10 hover:border-white/20 transition-all mb-3">
                     <div className="flex items-center justify-between gap-4 px-5 py-3 border-b border-white/10">
                       <div className="flex items-center gap-3">
                         {show.imageUrl && <img src={show.imageUrl} className="w-8 h-12 object-cover" alt="" />}
@@ -479,7 +479,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           </div>
 
           {/* ADD REPORT FORM */}
-          <div className="border-4 border-brand-yellow/30 p-4 space-y-4">
+          <div className="border-2 border-brand-yellow/30 p-4 space-y-4">
             <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Log Performance</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div><label className={lbl}>Date</label><input type="date" value={newReport.date} onChange={e => setNewReport(p => ({...p, date: e.target.value}))} className={inp} /></div>
@@ -502,7 +502,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
             {/* LIVE CALC */}
             {newReport.tickets && newReport.price && newReport.royaltyPct && (
-              <div className="bg-brand-black border-4 border-brand-cyan p-4 flex items-center gap-8">
+              <div className="bg-brand-black border-2 border-brand-cyan p-4 flex items-center gap-8">
                 <div>
                   <p className="text-[9px] font-black uppercase text-white/30 italic">Gross Box Office</p>
                   <p className="text-2xl font-black text-white">€{Math.round(Number(newReport.tickets) * Number(newReport.price)).toLocaleString()}</p>
@@ -541,7 +541,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               await loadRoyaltyData();
               setNewReport({ date: '', show: '', venue: '', tickets: '', price: '', royaltyPct: '', notes: '' });
               setReportSaved(true); setTimeout(() => setReportSaved(false), 3000);
-            }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+            }} className="bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
               + Log Performance
             </button>
             {reportSaved && <p className="text-brand-cyan text-xs font-black italic">✓ Performance logged!</p>}
@@ -549,7 +549,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
           {/* SUMMARY */}
           {royaltyReports.length > 0 && (
-            <div className="border-4 border-white/10 p-4 grid grid-cols-3 gap-4">
+            <div className="border-2 border-white/10 p-4 grid grid-cols-3 gap-4">
               <div className="text-center">
                 <p className="text-[9px] font-black uppercase text-white/30 italic">Total Performances</p>
                 <p className="text-3xl font-black text-white">{royaltyReports.length}</p>
@@ -577,7 +577,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                   const totalRoyalty = showReports.reduce((s: number, r: any) => s + (r.royalty_amount || 0), 0);
                   const totalGross = showReports.reduce((s: number, r: any) => s + (r.gross || 0), 0);
                   return (
-                    <div key={show.id} className="border-4 border-white/10 p-4 hover:border-brand-pink transition-all">
+                    <div key={show.id} className="border-2 border-white/10 p-4 hover:border-brand-pink transition-all">
                       <div className="flex items-center justify-between mb-3">
                         <p className="font-black uppercase italic text-white">{show.title}</p>
                         <span className="text-brand-pink font-black text-lg">€{totalRoyalty.toLocaleString()} due</span>
@@ -648,14 +648,14 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           <div className="flex items-center justify-between">
             <p className="font-black uppercase italic text-white">PAPERWORK <span className="text-white/30 font-normal text-xs">· {contracts.length} contract{contracts.length !== 1 ? 's' : ''}</span></p>
             <button onClick={() => setShowContractForm(true)}
-              className="bg-brand-yellow text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+              className="bg-white text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
               + New Contract
             </button>
           </div>
 
           {/* NEW CONTRACT — choose template */}
           {showContractForm && (
-            <div className="border-4 border-brand-yellow/40 p-5 space-y-4">
+            <div className="border-2 border-brand-yellow/40 p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Choose a template</p>
                 <button onClick={() => { setShowContractForm(false); setActiveTemplate(null); }} className="text-white/30 hover:text-white font-black uppercase italic text-xs">✕ Close</button>
@@ -708,7 +708,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
                 return (
                   <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.85)'}}>
-                    <div className="bg-brand-black border-4 border-brand-yellow w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-brand-black border-2 border-brand-yellow w-full max-w-3xl max-h-[90vh] overflow-y-auto">
                       <div className="sticky top-0 bg-brand-black border-b-4 border-brand-yellow px-6 py-4 flex items-center justify-between z-10">
                         <div>
                           <p className="font-black uppercase italic text-brand-yellow text-lg">{tmpl.title}</p>
@@ -755,15 +755,15 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                         }
                         if (data) setContracts(prev => [data,...prev]);
                         setShowContractForm(false); setActiveTemplate(null);
-                      }} className="bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all">
+                      }} className="bg-white text-black px-6 py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
                         💾 Save Contract
                       </button>
                       <button onClick={() => { const blob = new Blob([generateText()],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`contract_${p.party||'party'}.txt`.replace(/\s+/g,'_'); a.click(); }}
-                        className="border-4 border-brand-cyan/40 text-brand-cyan px-4 py-3 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all">
+                        className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-3 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all">
                         📥 .txt
                       </button>
                       <button onClick={() => { const w=window.open('','_blank'); if(w){w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${generateText()}</pre></body></html>`); w.document.close(); w.print(); }}}
-                        className="border-4 border-white/20 text-white/40 px-4 py-3 font-black uppercase italic text-sm hover:text-white transition-all">
+                        className="border-2 border-white/20 text-white/40 px-4 py-3 font-black uppercase italic text-sm hover:text-white transition-all">
                         🖨️ Print
                       </button>
                     </div>
@@ -785,7 +785,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               <p className="text-white/10 text-xs italic">Click + New Contract above.</p>
             </div>
           ) : contracts.map((c: any) => (
-            <div key={c.id} className="border-4 border-white/10 hover:border-white/20 transition-all">
+            <div key={c.id} className="border-2 border-white/10 hover:border-white/20 transition-all">
               <div className="px-5 py-4 flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -853,7 +853,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
 
             {showNewTemplateForm && (
-              <div className="border-4 border-brand-cyan/30 p-4 space-y-3">
+              <div className="border-2 border-brand-cyan/30 p-4 space-y-3">
                 <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New Template — private, only you</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div><label className={lbl}>Title *</label><input value={newTemplate.title} onChange={e=>setNewTemplate(p=>({...p,title:e.target.value}))} className={inp} placeholder="e.g. Set Designer Contract" /></div>
@@ -946,7 +946,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           </div>
 
           {/* HOW IT WORKS */}
-          <div className="border-4 border-white/10 overflow-hidden">
+          <div className="border-2 border-white/10 overflow-hidden">
             <div className="bg-white/5 px-5 py-4 border-b-2 border-white/10">
               <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">How Paperwork works</p>
               <p className="text-white/40 text-xs italic">Generate, save, and track contracts without a lawyer. You stay in control of every step.</p>
@@ -1014,7 +1014,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* REVENUE */}
-              <div className="space-y-3 border-4 border-white/10 p-4">
+              <div className="space-y-3 border-2 border-white/10 p-4">
                 <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Revenue</p>
                 <div className="grid grid-cols-2 gap-2">
                   <div><label className={lbl}>Performances</label><input type="number" value={calc.performances} onChange={e => setCalc(p => ({...p, performances: e.target.value}))} className={inp} /></div>
@@ -1026,7 +1026,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               </div>
 
               {/* VARIABLE COSTS */}
-              <div className="space-y-3 border-4 border-white/10 p-4">
+              <div className="space-y-3 border-2 border-white/10 p-4">
                 <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Variable Costs (per perf.)</p>
                 <div className="grid grid-cols-2 gap-2">
                   <div><label className={lbl}>Actor Fee (€)</label><input type="number" value={calc.actorFee} onChange={e => setCalc(p => ({...p, actorFee: e.target.value}))} className={inp} /></div>
@@ -1039,7 +1039,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               </div>
 
               {/* FIXED COSTS */}
-              <div className="space-y-3 border-4 border-brand-cyan/20 p-4">
+              <div className="space-y-3 border-2 border-brand-cyan/20 p-4">
                 <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Fixed Costs (one-time)</p>
                 <p className="text-white/30 text-[9px] italic">Set, costumes, marketing, rights advance fee — paid once regardless of performances.</p>
                 <div>
@@ -1064,7 +1064,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
 
             {/* RESULTS */}
-            <div className="border-4 border-brand-yellow p-4 grid grid-cols-2 md:grid-cols-6 gap-3">
+            <div className="border-2 border-brand-yellow p-4 grid grid-cols-2 md:grid-cols-6 gap-3">
               {[
                 { label: 'Gross Revenue', value: '€' + Math.round(gross).toLocaleString(), color: 'text-white' },
                 { label: 'Royalty / Author', value: '€' + Math.round(royalty).toLocaleString(), color: 'text-brand-yellow' },
@@ -1081,7 +1081,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
 
             {/* SCENARIOS */}
-            <div className="border-4 border-white/10 p-4">
+            <div className="border-2 border-white/10 p-4">
               <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest mb-3">Scenarios — Total Net</p>
               <div className="grid grid-cols-3 gap-3">
                 {[
@@ -1091,7 +1091,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 ].map(s => {
                   const v = scenario(s.occ);
                   return (
-                    <div key={s.label} className={"border-4 p-4 text-center " + s.color.split(' ')[0]}>
+                    <div key={s.label} className={"border-2 p-4 text-center " + s.color.split(' ')[0]}>
                       <p className="text-[9px] font-black uppercase italic text-white/40 mb-1">{s.label}</p>
                       <p className="text-[9px] text-white/25 mb-2">{s.occ}% occupancy</p>
                       <p className={"text-2xl font-black " + s.color.split(' ')[1]}>€{Math.round(v).toLocaleString()}</p>
@@ -1102,7 +1102,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
 
             {/* BREAK-EVEN CHART */}
-            <div className="border-4 border-white/10 p-4">
+            <div className="border-2 border-white/10 p-4">
               <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest mb-4">
                 Cumulative Net by Performance
                 {breakEven && <span className="text-brand-cyan ml-2">Break-even at perf #{breakEven}</span>}
@@ -1162,7 +1162,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           </div>
 
           {showContactForm && (
-            <div className="border-4 border-brand-cyan/30 p-4 space-y-4">
+            <div className="border-2 border-brand-cyan/30 p-4 space-y-4">
               <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New HAHAfriend</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div><label className={lbl}>Name *</label><input autoComplete="off" value={newContact.name} onChange={e => setNewContact(p => ({...p, name: e.target.value}))} className={inp} placeholder="Full name" /></div>
@@ -1205,7 +1205,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           ) : (
             <div className="space-y-2">
               {contacts.map((c: any) => (
-                <div key={c.id} className="border-4 border-white/10 px-5 py-4 flex items-center justify-between gap-4 hover:border-brand-cyan/40 transition-all group">
+                <div key={c.id} className="border-2 border-white/10 px-5 py-4 flex items-center justify-between gap-4 hover:border-brand-cyan/40 transition-all group">
                   <div className="flex items-center gap-4 min-w-0">
                     <div className="w-10 h-10 bg-brand-cyan/15 border-2 border-brand-cyan/30 flex items-center justify-center flex-shrink-0">
                       <span className="font-black text-brand-cyan text-sm">{c.name[0]}</span>
@@ -1254,7 +1254,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             <p className="text-white font-black uppercase italic text-sm">Show Log</p>
             <p className="text-white/50 text-sm italic mt-1">A timeline of all activities across your shows — performances, contracts signed, royalties received. Your complete production history in one place.</p>
           </div>
-          <div className="border-4 border-white/10 p-4 space-y-4">
+          <div className="border-2 border-white/10 p-4 space-y-4">
             <p className="text-[9px] font-black uppercase italic text-white/30 tracking-widest">Log a Performance</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div><label className={lbl}>Date</label><input type="date" value={newLog.date} onChange={e => setNewLog(p => ({...p, date: e.target.value}))} className={inp} /></div>
@@ -1272,7 +1272,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               if (!newLog.date || !newLog.show) return;
               setLogs(prev => [{ ...newLog, id: Date.now().toString() }, ...prev]);
               setNewLog({ date: new Date().toISOString().split('T')[0], show: '', venue: '', attendance: '', notes: '' });
-            }} className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">
+            }} className="bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
               + Add Log Entry
             </button>
           </div>

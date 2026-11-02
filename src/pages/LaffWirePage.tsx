@@ -160,7 +160,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                       <div className="flex items-center justify-between pt-2 border-t border-white/10">
                         <p className="text-white/20 text-[10px] italic">{newPost.length}/500</p>
                         <button onClick={handlePost} disabled={submitting || !newPost.trim()}
-                          className="bg-brand-yellow text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black disabled:opacity-30 hover:bg-white transition-all">
+                          className="bg-white text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black disabled:opacity-30 hover:bg-brand-pink hover:text-white transition-all">
                           {submitting ? '...' : 'Punch It Out →'}
                         </button>
                       </div>
@@ -265,12 +265,12 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
               )}
 
               {!user && (
-                <div className="mt-8 border-4 border-brand-yellow p-8 text-center shadow-neo-yellow">
+                <div className="mt-8 border-2 border-brand-yellow p-8 text-center ">
                   <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-2">Join HahaHub</p>
                   <h2 className="text-3xl font-black uppercase italic text-white mb-1">Post on LaffWire</h2>
                   <p className="text-white/40 font-bold italic text-sm mb-6">GIGL — free · LAFF — 7 days · ROAR — live real-time</p>
                   <button onClick={() => onNavigate('login')}
-                    className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all">
+                    className="bg-white text-black px-10 py-4 font-black uppercase italic border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
                     Join Free →
                   </button>
                 </div>

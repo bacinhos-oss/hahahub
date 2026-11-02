@@ -76,7 +76,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
       <main className="pt-40 flex-1 flex flex-col items-center justify-center gap-4">
         <h1 className="text-6xl font-black uppercase italic text-white">SHUSH.</h1>
         <p className="text-white/40 font-bold italic">Producer not found.</p>
-        <button onClick={() => onNavigate('discovery')} className="mt-4 bg-brand-yellow text-black px-8 py-3 font-black uppercase italic border-4 border-black">← Back</button>
+        <button onClick={() => onNavigate('discovery')} className="mt-4 bg-white text-black hover:bg-brand-pink hover:text-white px-8 py-3 font-black uppercase italic border-2 border-black">← Back</button>
       </main>
     </div>
   );
@@ -105,7 +105,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
               {/* Avatar */}
               <div className="flex-shrink-0">
                 <div className="relative">
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-brand-black overflow-hidden bg-brand-surface flex items-center justify-center"
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-brand-black overflow-hidden bg-brand-surface flex items-center justify-center"
                     style={{ boxShadow: badges.includes('verified') ? '0 0 0 4px #03DAC6' : badges.includes('founding') ? '0 0 0 4px #FFDE03' : '0 0 0 4px white' }}>
                     {producer.avatar_url ? (
                       <img src={producer.avatar_url} alt={producer.name} className="w-full h-full object-cover" />
@@ -150,34 +150,34 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                   <div className="flex gap-3 flex-shrink-0 flex-wrap">
                     {isOwnProfile ? (
                       <button onClick={() => onNavigate('subscription')}
-                        className="px-5 py-2 border-4 border-white text-white font-black uppercase italic text-xs hover:bg-white hover:text-black transition-all">
+                        className="px-5 py-2 border-2 border-white text-white font-black uppercase italic text-xs hover:bg-white hover:text-black transition-all">
                         Edit Profile
                       </button>
                     ) : user?.isPaid ? (
                       producer.email ? (
-                        <div className="flex items-center gap-2 border-4 border-brand-yellow p-3 bg-brand-surface">
+                        <div className="flex items-center gap-2 border-2 border-brand-yellow p-3 bg-brand-surface">
                           <span className="text-white font-black italic text-xs truncate max-w-[160px]">{producer.email}</span>
                           <button
                             onClick={() => { navigator.clipboard.writeText(producer.email); }}
-                            className="flex-shrink-0 bg-brand-yellow text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all flex items-center gap-1"
+                            className="flex-shrink-0 bg-white text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all flex items-center gap-1"
                           >
                             <span className="material-symbols-outlined text-sm">content_copy</span>
                             Copy
                           </button>
                         </div>
                       ) : (
-                        <span className="px-5 py-2 border-4 border-white/20 text-white/30 font-black uppercase italic text-xs">
+                        <span className="px-5 py-2 border-2 border-white/20 text-white/30 font-black uppercase italic text-xs">
                           No contact info
                         </span>
                       )
                     ) : !user ? (
                       <button onClick={() => onNavigate('login')}
-                        className="px-5 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-xs hover:bg-white transition-all">
+                        className="px-5 py-2 bg-white text-black border-2 border-black font-black uppercase italic text-xs hover:bg-brand-pink hover:text-white transition-all">
                         Sign In →
                       </button>
                     ) : (
                       <button onClick={() => onNavigate('pricing')}
-                        className="px-5 py-2 bg-brand-yellow text-black border-4 border-black font-black uppercase italic text-xs hover:bg-white transition-all">
+                        className="px-5 py-2 bg-white text-black border-2 border-black font-black uppercase italic text-xs hover:bg-brand-pink hover:text-white transition-all">
                         LAFF+ to Contact →
                       </button>
                     )}
@@ -198,7 +198,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                         });
                         if (friendError) { console.error('HAHAfriends insert error:', friendError); alert('❌ Could not add to HAHAfriends. Try again.'); return; }
                         alert(`${producer.name} added to HAHAfriends! 🤝`);
-                      }} className="px-4 py-2 border-4 border-brand-cyan/40 text-brand-cyan font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
+                      }} className="px-4 py-2 border-2 border-brand-cyan/40 text-brand-cyan font-black uppercase italic text-xs hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
                         🤝 Add to HAHAfriends
                       </button>
                     )}
@@ -261,7 +261,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {producerShows.map(show => (
                   <div key={show.id} onClick={() => { onUpdateStats(show.id, 'view'); if (onViewShow) onViewShow(show.id); else onNavigate('discovery'); }}
-                    className="group cursor-pointer border-4 border-white/20 hover:border-brand-yellow transition-all overflow-hidden bg-brand-surface">
+                    className="group cursor-pointer border-2 border-white/20 hover:border-brand-yellow transition-all overflow-hidden bg-brand-surface">
                     <div className="h-40 md:h-52 relative overflow-hidden">
                       {show.imageUrl ? (
                         <img src={show.imageUrl} alt={show.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
@@ -294,7 +294,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
             ) : (
               <div className="space-y-4">
                 {posts.map(post => (
-                  <div key={post.id} className="border-4 border-white/20 hover:border-brand-yellow transition-all p-5">
+                  <div key={post.id} className="border-2 border-white/20 hover:border-brand-yellow transition-all p-5">
                     <div className="flex items-center gap-2 mb-3">
                       <span className={`text-[8px] font-black uppercase italic px-2 py-1 border-2 border-black rounded-full ${POST_COLORS[post.type] || 'bg-white text-black'}`}>
                         {POST_LABELS[post.type] || 'POST'}

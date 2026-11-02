@@ -85,7 +85,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate, onLogout, user })
           <section className="py-10 text-center border-t-4 border-white/10">
             <button
               onClick={() => onNavigate('landing')}
-              className="bg-brand-yellow text-black px-12 py-5 font-black uppercase text-lg border-4 border-white shadow-neo-magenta italic hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all"
+              className="bg-white text-black px-12 py-5 font-black uppercase text-lg border-2 border-white  italic hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all"
             >
               Back to Home
             </button>

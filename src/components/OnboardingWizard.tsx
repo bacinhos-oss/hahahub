@@ -37,7 +37,7 @@ const OnboardingWizard: React.FC<Props> = ({ userId, userName, onComplete }) => 
 
   return (
     <div className="fixed inset-0 z-50 bg-brand-black/95 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-brand-surface border-4 border-white w-full max-w-lg shadow-neo-yellow">
+      <div className="bg-brand-surface border-2 border-white w-full max-w-lg ">
 
         {/* Progress */}
         <div className="flex border-b-4 border-white/10">
@@ -63,7 +63,7 @@ const OnboardingWizard: React.FC<Props> = ({ userId, userName, onComplete }) => 
                 { key: 'both',   emoji: '🥊', title: 'Both',          desc: 'I buy and sell rights — full power.' },
               ].map(opt => (
                 <button key={opt.key} onClick={() => setIntent(opt.key as any)}
-                  className={"w-full text-left border-4 p-4 transition-all flex items-center gap-4 " +
+                  className={"w-full text-left border-2 p-4 transition-all flex items-center gap-4 " +
                     (intent === opt.key ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-white/40')}>
                   <span className="text-3xl">{opt.emoji}</span>
                   <div>
@@ -75,7 +75,7 @@ const OnboardingWizard: React.FC<Props> = ({ userId, userName, onComplete }) => 
               ))}
             </div>
             <button onClick={() => intent && setStep(2)} disabled={!intent}
-              className="w-full bg-brand-yellow text-black py-4 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+              className="w-full bg-white text-black py-4 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed">
               Next →
             </button>
           </div>
@@ -93,17 +93,17 @@ const OnboardingWizard: React.FC<Props> = ({ userId, userName, onComplete }) => 
             </div>
             <div>
               <select value={location} onChange={e => setLocation(e.target.value)}
-                className="w-full bg-brand-black border-4 border-white/20 focus:border-brand-cyan text-white font-black uppercase italic text-sm px-4 py-4 outline-none">
+                className="w-full bg-brand-black border-2 border-white/20 focus:border-brand-cyan text-white font-black uppercase italic text-sm px-4 py-4 outline-none">
                 <option value="">Select your country...</option>
                 {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setStep(1)} className="flex-shrink-0 border-4 border-white/20 text-white/40 px-6 py-4 font-black uppercase italic text-sm hover:border-white hover:text-white transition-all">
+              <button onClick={() => setStep(1)} className="flex-shrink-0 border-2 border-white/20 text-white/40 px-6 py-4 font-black uppercase italic text-sm hover:border-white hover:text-white transition-all">
                 ←
               </button>
               <button onClick={() => setStep(3)} disabled={!location}
-                className="flex-1 bg-brand-yellow text-black py-4 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                className="flex-1 bg-white text-black py-4 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                 Next →
               </button>
             </div>
@@ -136,7 +136,7 @@ const OnboardingWizard: React.FC<Props> = ({ userId, userName, onComplete }) => 
                 { emoji: '🔥', title: 'Check LaffWire', desc: "See what's happening.",              page: 'wire' },
               ]).map(opt => (
                 <button key={opt.page} onClick={() => finish(opt.page)} disabled={saving}
-                  className="w-full text-left border-4 border-white/20 hover:border-brand-pink p-4 transition-all flex items-center gap-4 group">
+                  className="w-full text-left border-2 border-white/20 hover:border-brand-pink p-4 transition-all flex items-center gap-4 group">
                   <span className="text-3xl">{opt.emoji}</span>
                   <div>
                     <p className="font-black uppercase italic text-white group-hover:text-brand-pink transition-colors">{opt.title}</p>

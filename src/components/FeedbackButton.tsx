@@ -54,7 +54,7 @@ const FeedbackButton: React.FC = () => {
       {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-end p-6">
-          <div className="bg-brand-surface border-4 border-white w-full max-w-sm shadow-neo-yellow">
+          <div className="bg-brand-surface border-2 border-white w-full max-w-sm ">
 
             {/* Header */}
             <div className="flex items-center justify-between border-b-4 border-white/10 px-5 py-4">
@@ -99,7 +99,7 @@ const FeedbackButton: React.FC = () => {
                   <button
                     onClick={handleSend}
                     disabled={sending || !message.trim()}
-                    className="w-full bg-brand-yellow text-black py-3 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-full bg-white text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {sending ? 'Sending...' : 'Punch It Out →'}
                   </button>

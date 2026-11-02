@@ -235,7 +235,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
 
       {/* MAIL LOG */}
       {mailLog && (
-        <div className="fixed top-20 right-4 z-[100] bg-brand-black border-4 border-brand-yellow p-6 shadow-neo-magenta w-80 animate-in slide-in-from-right-10">
+        <div className="fixed top-20 right-4 z-[100] bg-brand-black border-2 border-brand-yellow p-6  w-80 animate-in slide-in-from-right-10">
           <div className="flex items-center justify-between mb-3">
             <span className="text-brand-yellow text-xs font-black uppercase italic">{mailLog.title}</span>
             <button onClick={() => setMailLog(null)}><span className="material-symbols-outlined text-sm text-white/40">close</span></button>
@@ -268,7 +268,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 u.user_type !== 'roar' &&
                 new Date(u.subscription_expiry + 'T23:59:59') < new Date();
               return (
-                <div key={u.id} className={`border-4 p-4 transition-all ${isExpired ? 'border-red-500/30 opacity-60' : 'border-white/20 hover:border-brand-yellow'}`}>
+                <div key={u.id} className={`border-2 p-4 transition-all ${isExpired ? 'border-red-500/30 opacity-60' : 'border-white/20 hover:border-brand-yellow'}`}>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0 flex-1">
                       <p className="font-black uppercase italic text-white truncate">{u.name || '—'}</p>
@@ -396,7 +396,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
           <div className="space-y-8">
 
             {/* SEND INVITE FORM */}
-            <div className="border-4 border-brand-yellow p-6 space-y-4 shadow-neo-yellow">
+            <div className="border-2 border-brand-yellow p-6 space-y-4 ">
               <p className="text-brand-yellow text-[10px] font-black uppercase italic tracking-widest">New Invite →</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" autoComplete="off" placeholder="Producer Name" value={newName} onChange={e => setNewName(e.target.value)}
@@ -467,7 +467,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
 
               <div className="flex gap-3 flex-wrap">
               <button onClick={sendInvite} disabled={sending || !newName || !newEmail || !password}
-                className="bg-brand-yellow text-black px-8 py-3 font-black uppercase italic border-4 border-black hover:bg-white transition-all disabled:opacity-40 text-sm">
+                className="bg-white text-black px-8 py-3 font-black uppercase italic border-2 border-black hover:bg-brand-pink hover:text-white transition-all disabled:opacity-40 text-sm">
                 {sending ? 'Dispatching...' : 'Dispatch Invite →'}
               </button>
               <button onClick={async () => {
@@ -501,7 +501,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 } catch (e) { console.error(e); alert(`❌ Something went wrong sending the invite to ${newName}.`); }
                 setSending(false);
               }} disabled={sending || !newName || !newEmail}
-                className="bg-brand-pink text-white px-8 py-3 font-black uppercase italic border-4 border-black hover:bg-white hover:text-black transition-all disabled:opacity-40 text-sm">
+                className="bg-brand-pink text-white px-8 py-3 font-black uppercase italic border-2 border-black hover:bg-white hover:text-black transition-all disabled:opacity-40 text-sm">
                 {sending ? 'Sending...' : '⭐ Send Founding Invite →'}
               </button>
               </div>
@@ -509,7 +509,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
 
             {/* FOUNDING INVITE LIST */}
             {invites.filter((i: any) => ((i as any).type || 'access') === 'founding').length > 0 && (
-              <div className="space-y-2 border-4 border-brand-pink/30 p-4">
+              <div className="space-y-2 border-2 border-brand-pink/30 p-4">
                 <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">⭐ Founding Invites — {invites.filter((i: any) => ((i as any).type || 'access') === 'founding').length} sent</p>
                 {invites.filter((i: any) => ((i as any).type || 'access') === 'founding').map((inv: any) => (
                   <div key={inv.id} className="flex items-center justify-between gap-3 border border-white/10 px-3 py-2">
@@ -608,7 +608,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               {filteredInvites.length === 0 ? (
                 <p className="text-white/20 font-black uppercase italic">No invites found.</p>
               ) : filteredInvites.map(inv => (
-                <div key={inv.id} className="border-4 border-white/20 p-4 hover:border-brand-yellow transition-all">
+                <div key={inv.id} className="border-2 border-white/20 p-4 hover:border-brand-yellow transition-all">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0">
                       <p className="font-black uppercase italic text-white">{inv.recipient}</p>
@@ -669,7 +669,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 <span>Signed: {inquiries.filter(i => ['signed','royalties'].includes(i.deal_status)).length}</span>
               </div>
             </div>
-            <div className="border-4 border-white/10 overflow-hidden">
+            <div className="border-2 border-white/10 overflow-hidden">
               <div className="grid grid-cols-12 bg-white/5 px-4 py-2 text-[8px] font-black uppercase italic text-white/40 border-b border-white/10">
                 <span className="col-span-2">Show</span>
                 <span className="col-span-2">From</span>
@@ -703,7 +703,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             {shows.length === 0 ? (
               <p className="text-white/20 font-black uppercase italic">No shows in archive.</p>
             ) : shows.map(show => (
-              <div key={show.id} className="border-4 border-white/20 p-4 flex items-center justify-between gap-4 hover:border-brand-pink transition-all">
+              <div key={show.id} className="border-2 border-white/20 p-4 flex items-center justify-between gap-4 hover:border-brand-pink transition-all">
                 <div className="min-w-0">
                   <p className="font-black uppercase italic text-white truncate">{show.title}</p>
                   <p className="text-white/30 text-xs italic">{show.genre} · {show.location} · {show.productionYear}</p>

@@ -16,7 +16,7 @@ interface UploadPageProps {
 const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-bold outline-none focus:border-brand-cyan text-sm";
 const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
 const lbl = "block text-[9px] font-black uppercase text-white/40 mb-1.5 italic tracking-widest";
-const sec = "bg-brand-surface border-4 border-white p-6 md:p-8 space-y-5";
+const sec = "bg-brand-surface border-2 border-white p-6 md:p-8 space-y-5";
 const COUNTRIES = [
   'Albania', 'Austria', 'Belgium', 'Bosnia & Herzegovina', 'Bulgaria', 'Croatia',
   'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
@@ -277,7 +277,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           <p className="text-white/40 font-bold italic text-center max-w-md">
             {plan === 'gigl' ? 'Upgrade to LAFF for up to 5 shows.' : 'Upgrade to ROAR for unlimited uploads.'}
           </p>
-          <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-10 py-4 font-black uppercase italic border-4 border-black hover:bg-white transition-all">
+          <button onClick={() => onNavigate('pricing')} className="bg-white text-black px-10 py-4 font-black uppercase italic border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
             Upgrade →
           </button>
         </div>
@@ -296,7 +296,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           </header>
 
           {validationErrors.length > 0 && (
-            <div className="bg-brand-pink border-4 border-black p-5">
+            <div className="bg-brand-pink border-2 border-black p-5">
               <p className="font-black uppercase italic mb-2 text-sm">Please fill in:</p>
               <ul className="space-y-1">{validationErrors.map((e, i) => <li key={i} className="text-sm font-bold">• {e}</li>)}</ul>
             </div>
@@ -305,7 +305,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           <button
             type="button"
             onClick={() => setShowMore(v => !v)}
-            className="w-full sm:w-auto border-4 border-white/20 text-white/70 hover:text-white hover:border-brand-cyan px-6 py-3 text-xs font-black uppercase italic tracking-widest transition-all"
+            className="w-full sm:w-auto border-2 border-white/20 text-white/70 hover:text-white hover:border-brand-cyan px-6 py-3 text-xs font-black uppercase italic tracking-widest transition-all"
           >
             {showMore ? '− Show only required fields' : '+ Show more details (optional — improves your Transparency Score)'}
           </button>
@@ -314,7 +314,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
             <div className={"lg:col-span-8 space-y-6 " + (showMore ? "" : "[&_.opt]:hidden")}>
 
               {/* 00. BASIC INFO */}
-              <section className={sec + " shadow-neo-cyan"}>
+              <section className={sec + " "}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
                   <h3 className="text-xl font-black uppercase italic text-brand-cyan">00. Basic Info</h3>
                   <p className="text-white/30 text-xs italic mt-0.5">What your show is about.</p>
@@ -322,7 +322,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
                     <label className={lbl}>English Title * <span className="text-white/20 normal-case font-normal">(main title for international buyers)</span></label>
-                    <input name="englishTitle" value={formData.englishTitle} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl focus:border-brand-yellow outline-none" placeholder="SHOW TITLE IN ENGLISH" />
+                    <input name="englishTitle" value={formData.englishTitle} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-white px-5 py-4 text-white font-bold uppercase text-xl focus:border-brand-yellow outline-none" placeholder="SHOW TITLE IN ENGLISH" />
                   </div>
                   <div className="sm:col-span-2 opt">
                     <label className={lbl}>Original Title (if different)</label>
@@ -383,7 +383,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
               </section>
 
               {/* 01. PRODUCTION */}
-              <section className={sec + " shadow-neo-magenta"}>
+              <section className={sec + " "}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
                   <h3 className="text-xl font-black uppercase italic text-brand-pink">01. Production</h3>
                   <p className="text-white/30 text-xs italic mt-0.5">Cast, technical requirements and staging.</p>
@@ -462,14 +462,14 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
               </section>
 
               {/* 02. FULL PUNCH */}
-              <section className={sec + " shadow-neo-magenta border-brand-pink"}>
+              <section className={sec + "  border-brand-pink"}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
                   <h3 className="text-xl font-black uppercase italic text-brand-pink">02. Licensing Packages</h3>
                   <p className="text-white/30 text-xs italic mt-0.5">Set up your licensing packages — Script Only and Full Punch. Buyers choose which they want.</p>
                 </div>
 
                 {/* ENABLE FULL PUNCH */}
-                <div className={"border-4 p-4 space-y-4 " + ((formData as any).hasFullPunchPackage ? "border-brand-pink/50 bg-brand-pink/5" : "border-white/10")}>
+                <div className={"border-2 p-4 space-y-4 " + ((formData as any).hasFullPunchPackage ? "border-brand-pink/50 bg-brand-pink/5" : "border-white/10")}>
                   <div className="flex items-center gap-3">
                     <input type="checkbox" id="hasFullPunch" checked={!!(formData as any).hasFullPunchPackage}
                       onChange={e => setFormData(p => ({ ...p, hasFullPunchPackage: e.target.checked }))}
@@ -624,7 +624,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                 {/* SCRIPT PACKAGE */}
                 <div className="border-t-2 border-white/10 mt-4 pt-4">
                   <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-3">Script Only Package</p>
-                <div className={"border-4 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/50" : "border-white/10")}>
+                <div className={"border-2 p-4 space-y-3 " + (formData.hasScriptPackage ? "border-brand-yellow/50" : "border-white/10")}>
                   <div className="flex items-center gap-3">
                     <input type="checkbox" id="hasScript" checked={!!formData.hasScriptPackage}
                       onChange={e => setFormData(p => ({ ...p, hasScriptPackage: e.target.checked }))}
@@ -651,7 +651,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
               </section>
 
               {/* 03. MARKET PERFORMANCE */}
-              <section className={sec + " shadow-neo-cyan opt"}>
+              <section className={sec + "  opt"}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
                   <h3 className="text-xl font-black uppercase italic text-brand-cyan">03. Market Performance</h3>
                   <p className="text-white/30 text-xs italic mt-0.5">Track record and audience data.</p>
@@ -673,7 +673,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
               </section>
 
               {/* 04. RIGHTS */}
-              <section className={sec + " shadow-neo-magenta"}>
+              <section className={sec + " "}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
                   <h3 className="text-xl font-black uppercase italic text-brand-pink">04. Rights & Identity</h3>
                   <p className="text-white/30 text-xs italic mt-0.5">Ownership and availability.</p>
@@ -712,7 +712,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
             <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 lg:self-start">
 
               {/* POSTER */}
-              <div className="bg-brand-surface border-4 border-white p-5 space-y-3 shadow-neo-magenta">
+              <div className="bg-brand-surface border-2 border-white p-5 space-y-3 ">
                 <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Show Poster *</p>
                 <div className="relative aspect-[2/3] bg-brand-black border-2 border-white/20 overflow-hidden cursor-pointer hover:border-brand-yellow transition-colors"
                   onClick={() => fileInputRef.current?.click()}>
@@ -732,7 +732,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
               </div>
 
               {/* PRODUCTION PHOTOS */}
-              <div className="bg-brand-surface border-4 border-white p-5 space-y-3 shadow-neo-cyan">
+              <div className="bg-brand-surface border-2 border-white p-5 space-y-3 ">
                 <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Production Photos</p>
                 <p className="text-white/20 text-[9px] italic">Up to 3 photos from the production.</p>
                 <div className="grid grid-cols-3 gap-2">
@@ -754,7 +754,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
 
               {/* LAUNCH */}
               <button onClick={handleLaunch}
-                className="w-full bg-brand-yellow text-black py-5 font-black uppercase italic text-lg border-4 border-black hover:bg-white hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all shadow-neo-yellow">
+                className="w-full bg-white text-black py-5 font-black uppercase italic text-lg border-2 border-black hover:bg-brand-pink hover:text-white hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all ">
                 SHOWLOAD IT →
               </button>
 
