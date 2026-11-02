@@ -18,6 +18,7 @@ import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
 import LaffWirePage from './pages/LaffWirePage'
 import ProducerPage from './pages/ProducerPage'
+import Smile from './components/Smile'
 import { Analytics } from "@vercel/analytics/react"
 import { logError } from './lib/errorLogger'
 
@@ -57,6 +58,8 @@ const App: React.FC = () => {
       const hashPage = hash.substring(1)
       if (VALID_PAGES.includes(hashPage)) {
         setCurrentPageRaw(hashPage as Page)
+      } else if (hashPage && !hashPage.includes('=')) {
+        setCurrentPageRaw('notfound' as any) // unknown #page -> 404
       }
     }
 
@@ -69,6 +72,9 @@ const App: React.FC = () => {
         window.scrollTo(0, 0)
       } else if (h === '') {
         setCurrentPageRaw('landing')
+        window.scrollTo(0, 0)
+      } else if (!h.includes('=')) {
+        setCurrentPageRaw('notfound' as any)
         window.scrollTo(0, 0)
       }
     }
@@ -324,7 +330,11 @@ const App: React.FC = () => {
     }
   }
 
-  if (loading) return null
+  if (loading) return (
+    <div className="min-h-screen bg-brand-black flex items-center justify-center">
+      <Smile height={96} className="animate-pulse" />
+    </div>
+  )
 
   const handleUpload = async (newShow: Show) => {
     // UploadPage.tsx already performed the actual insert and got back the

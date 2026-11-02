@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import ProducerStudio from './ProducerStudio';
 import { Badge, getProfileBadges } from '../components/Badge';
 import DealsPipelinePage from './DealsPipelinePage';
+import Smile from '../components/Smile';
 import { Page, User, Show } from '../types';
 
 interface SubscriptionPageProps {
@@ -1172,8 +1173,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {userUploads.length === 0 ? (
                   <div className="col-span-2 py-20 border-4 border-dashed border-white/10 text-center">
-                    <p className="text-white/20 font-black uppercase italic">No active assets deployed.</p>
-                    <button onClick={() => onNavigate('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Deploy First Asset</button>
+                    <div className="flex justify-center mb-4"><Smile height={88} className="opacity-70" /></div>
+                    <p className="text-white/40 font-black uppercase italic">No shows yet.</p>
+                    <button onClick={() => onNavigate('upload')} className="mt-4 text-brand-cyan uppercase font-black text-xs hover:underline italic">Showload your first show →</button>
                   </div>
                 ) : userUploads.map((show) => (
                   <div key={show.id} className={"bg-brand-surface border-4 p-4 md:p-6 flex gap-4 hover:shadow-neo-yellow transition-all " + (show.inquiriesCount > 0 && inquiries.some(inq => inq.show_id === show.id && !inq.is_read) ? "border-brand-cyan shadow-neo-cyan" : show.inquiriesCount > 0 ? "border-brand-cyan" : "border-white")}>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { User } from '../types';
+import Smile from '../components/Smile';
 
 interface Props {
   user: User;
@@ -398,7 +399,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
           <div className="py-20 text-center space-y-4">
             {view === 'tickled' ? (
               <>
-                <p className="text-5xl">🎭</p>
+                <div className="flex justify-center"><Smile height={88} className="opacity-70" /></div>
                 <p className="text-white/40 font-black uppercase italic text-lg">Nobody's tickled you yet.</p>
                 <p className="text-white/20 text-sm italic">Upload a show and let the world know it exists.</p>
                 <button onClick={() => onNavigate('upload')} className="mt-2 bg-brand-yellow text-black px-6 py-3 font-black uppercase italic text-xs border-4 border-black hover:bg-white transition-all">
@@ -407,7 +408,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
               </>
             ) : (
               <>
-                <p className="text-5xl">👆</p>
+                <div className="flex justify-center"><Smile height={88} className="opacity-70" /></div>
                 <p className="text-white/40 font-black uppercase italic text-lg">You haven't tickled anyone yet.</p>
                 <p className="text-white/20 text-sm italic">Browse the catalog and tickle a show you like.</p>
                 <button onClick={() => onNavigate('discovery')} className="mt-2 bg-brand-pink text-white px-6 py-3 font-black uppercase italic text-xs border-4 border-black hover:bg-white hover:text-black transition-all">
