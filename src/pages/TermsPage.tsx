@@ -16,7 +16,7 @@ const TermsPage: React.FC<Props> = ({ onNavigate, onLogout, user }) => {
         <div>
           <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-2">Legal</p>
           <h1 className="text-5xl font-black uppercase italic text-white tracking-tighter">Terms of Service</h1>
-          <p className="text-white/40 text-sm mt-3">Last updated: June 2026</p>
+          <p className="text-white/40 text-sm mt-3">Last updated: November 2026</p>
         </div>
 
         {[
@@ -45,12 +45,12 @@ const TermsPage: React.FC<Props> = ({ onNavigate, onLogout, user }) => {
             content: `HahaHub is a facilitating platform only. Any licensing agreement, royalty arrangement, or rights transfer is concluded directly between the rights holder and the licensee. HahaHub is not responsible for the negotiation, execution, or enforcement of any agreement between Users. Users are solely responsible for ensuring that their agreements comply with applicable law.`
           },
           {
-            title: '7. Fees and Subscriptions',
-            content: `HahaHub offers free (GIGL) and paid subscription plans (LAFF at €99/year, ROAR at €189/year). Paid subscriptions are billed annually. Fees are non-refundable except where required by applicable law. HahaHub does not charge commission on rights deals concluded through the Platform. Subscription prices may change with 30 days notice.`
+            title: '7. Fees',
+            content: `HahaHub is currently free to join and use. HahaHub does not charge commission on rights deals concluded through the Platform. If paid features are introduced in the future, we will notify registered Users in advance, and no payment will be required without your agreement.`
           },
           {
             title: '8. Founding Members',
-            content: `Founding Members are users personally invited by HahaHub during the private beta period who receive lifetime ROAR access free of charge. Founding Member status and its associated benefits are non-transferable. HahaHub reserves the right to modify Founding Member benefits with reasonable notice, but lifetime access will not be revoked except in cases of material breach of these Terms.`
+            content: `Founding Members are users personally invited by HahaHub during the private beta period who receive free access for life, including to any paid features introduced in the future. Founding Member status and its associated benefits are non-transferable. HahaHub reserves the right to modify Founding Member benefits with reasonable notice, but lifetime access will not be revoked except in cases of material breach of these Terms.`
           },
           {
             title: '9. Prohibited Conduct',
