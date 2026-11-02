@@ -53,50 +53,37 @@ const templates = {
 
   welcome: ({ name, email }) => ({
     subject: `You're Set Up. Break a Laffing Leg. 🦵 — HahaHub`,
-    html: `
-<!DOCTYPE html>
+    html: `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFDE03; text-shadow: 2px 2px 0 #FF0266; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-h1 { font-size: 40px; font-weight: 900; text-transform: uppercase; font-style: italic; line-height: 1; margin: 0 0 16px; }
-.step { display: flex; gap: 16px; margin: 16px 0; padding: 16px; background: #111; border: 1px solid rgba(255,255,255,0.1); }
-.step-num { font-size: 32px; font-weight: 900; font-style: italic; color: rgba(255,255,255,0.2); min-width: 40px; }
-.cta { background: #FFDE03; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <h1>Welcome,<br/>${name}.</h1>
-  <p style="color:rgba(255,255,255,0.6);font-style:italic;font-size:16px;">You're set up. Time to hunt. Or deploy. Or both.</p>
-
-  <div class="step">
-    <div class="step-num">01</div>
-    <div><strong style="text-transform:uppercase;font-style:italic;">Tickle</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Browse international comedy productions. Tickle List what excites you.</span></div>
-  </div>
-  <div class="step">
-    <div class="step-num">02</div>
-    <div><strong style="text-transform:uppercase;font-style:italic;">Set Up</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Drop your show or contact rights holders directly. No agents.</span></div>
-  </div>
-  <div class="step">
-    <div class="step-num">03</div>
-    <div><strong style="text-transform:uppercase;font-style:italic;">Punch</strong><br/><span style="color:rgba(255,255,255,0.5);font-size:13px;">Curtain up. Lights on. Your punchline lands.</span></div>
-  </div>
-
-  <a href="https://hahahub.art" class="cta">🥊 Enter the Vault →</a>
-
-  <div class="footer">
-    <p>HahaHub — The Comedy Rights Marketplace | info@hahahub.art</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"></head>
+<body style="margin:0;padding:0;background:#050505;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
+  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
+  <tr><td style="font-size:40px;line-height:1.05;font-weight:900;font-style:italic;text-transform:uppercase;color:#ffffff;padding-bottom:16px;">Welcome,<br>${name}.</td></tr>
+  <tr><td style="font-size:16px;font-style:italic;color:#bbbbbb;padding-bottom:24px;line-height:1.5;">You're set up. Time to hunt. Or deploy. Or both.</td></tr>
+  <tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;"><tr>
+    <td width="56" style="padding:16px;font-size:30px;font-weight:900;font-style:italic;color:#555555;" valign="top">01</td>
+    <td style="padding:16px 16px 16px 0;"><div style="font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;color:#FFDE03;">Tickle</div><div style="font-size:13px;color:#aaaaaa;line-height:1.5;padding-top:4px;">Browse international comedy productions. Tickle List what excites you.</div></td>
+  </tr></table></td></tr>
+  <tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;"><tr>
+    <td width="56" style="padding:16px;font-size:30px;font-weight:900;font-style:italic;color:#555555;" valign="top">02</td>
+    <td style="padding:16px 16px 16px 0;"><div style="font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;color:#FF0266;">Set Up</div><div style="font-size:13px;color:#aaaaaa;line-height:1.5;padding-top:4px;">Drop your show or contact rights holders directly. No agents.</div></td>
+  </tr></table></td></tr>
+  <tr><td style="padding-bottom:28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;"><tr>
+    <td width="56" style="padding:16px;font-size:30px;font-weight:900;font-style:italic;color:#555555;" valign="top">03</td>
+    <td style="padding:16px 16px 16px 0;"><div style="font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;color:#03DAC6;">Punch</div><div style="font-size:13px;color:#aaaaaa;line-height:1.5;padding-top:4px;">Curtain up. Lights on. Your punchline lands.</div></td>
+  </tr></table></td></tr>
+  <tr><td style="padding-bottom:32px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#FFDE03" style="background:#FFDE03;border:3px solid #000000;"><a href="https://hahahub.art" style="display:inline-block;padding:16px 32px;font-size:14px;font-weight:900;font-style:italic;text-transform:uppercase;color:#000000;text-decoration:none;">Enter the Vault &rarr;</a></td></tr></table></td></tr>
+  <tr><td style="border-top:1px solid #2a2a2a;padding-top:20px;font-size:11px;color:#777777;line-height:1.6;">HahaHub &mdash; The Comedy Rights Marketplace | info@hahahub.art<br>Break a Laffing Leg. 🦵</td></tr>
+</table>
+</td></tr>
+</table>
 </body>
 </html>`
   }),
+
 
   payment_confirmation: ({ name, planName, amount, invoiceNum, expiry }) => ({
     subject: `Punchline Delivered. ✓ — HahaHub ${planName}`,
