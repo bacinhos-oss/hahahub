@@ -115,17 +115,12 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         // which previously left registered users stuck showing 'pending'.
         const { data: invite } = await supabase.from('invitations').select('id, plan, type').ilike('email', inviteLookupEmail).eq('status', 'pending').maybeSingle()
         const isAdmin = signupEmail === ADMIN_EMAIL
-        // BETA: invite required to register
-        if (!invite && !isAdmin) {
-          setError('HahaHub is currently in private beta. You need an invite to join. Contact us at info@hahahub.art')
-          setLoading(false)
-          return
-        }
+        // FREE JOIN: anyone can register, no invite or payment needed
         const { data, error: signUpError } = await supabase.auth.signUp({ email: signupEmail, password })
         if (signUpError) throw signUpError
         if (data.user) {
-          const isPaid = isAdmin || !!invite
-          const userType = isAdmin ? 'roar' : (invite?.plan || 'gigl')
+          const isPaid = true
+          const userType = 'roar'
           const isFounding = invite?.type === 'founding'
           if (invite) {
             const { error: updateError } = await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
