@@ -21,7 +21,7 @@ body {
 }
 
 ::selection {
-  background-color: #FFDE03;
+  background-color: #FFC80E;
   color: #050505;
 }
 
@@ -34,13 +34,13 @@ body {
 
 .logo-text {
   font-family: 'Bowlby One SC', cursive;
-  text-shadow: 2px 2px 0px #FF0266, 4px 4px 0px #03DAC6;
+  text-shadow: 2px 2px 0px #EF4986, 4px 4px 0px #19A596;
   color: #FFFFFF;
 }
 
 .ticker-wrap {
   overflow: hidden;
-  background: #FFDE03;
+  background: #FFC80E;
   color: #050505;
   font-weight: 900;
   text-transform: uppercase;

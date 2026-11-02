@@ -14,12 +14,12 @@ interface LaffWirePageProps {
 }
 
 const POST_TYPES: Record<string, { label: string; bg: string; text: string }> = {
-  deal:          { label: '🥊 DEAL CLOSED',   bg: '#FF0266', text: '#fff' },
-  new_show:      { label: 'NEW SHOW',         bg: '#FFDE03', text: '#000' },
-  discount:      { label: 'DISCOUNT',         bg: '#FF0266', text: '#fff' },
-  co_production: { label: 'CO-PRODUCTION',    bg: '#03DAC6', text: '#000' },
+  deal:          { label: '🥊 DEAL CLOSED',   bg: '#EF4986', text: '#fff' },
+  new_show:      { label: 'NEW SHOW',         bg: '#FFC80E', text: '#000' },
+  discount:      { label: 'DISCOUNT',         bg: '#EF4986', text: '#fff' },
+  co_production: { label: 'CO-PRODUCTION',    bg: '#19A596', text: '#000' },
   news:          { label: 'NEWS',             bg: '#fff',    text: '#000' },
-  rights:        { label: 'RIGHTS',           bg: '#FFDE03', text: '#000' },
+  rights:        { label: 'RIGHTS',           bg: '#FFC80E', text: '#000' },
 };
 
 function extractVideoUrl(text: string): string | null {

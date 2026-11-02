@@ -1105,16 +1105,16 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     // Helpers
     const black = () => doc.setTextColor(5, 5, 5);
     const white = () => doc.setTextColor(255, 255, 255);
-    const yellow = () => doc.setTextColor(255, 222, 3);
-    const pink = () => doc.setTextColor(255, 2, 102);
-    const cyan = () => doc.setTextColor(3, 218, 198);
+    const yellow = () => doc.setTextColor(255, 200, 14);
+    const pink = () => doc.setTextColor(239, 73, 134);
+    const cyan = () => doc.setTextColor(25, 165, 150);
     const gray = () => doc.setTextColor(150, 150, 150);
 
     const fillBlack = () => doc.setFillColor(5, 5, 5);
     const fillSurface = () => doc.setFillColor(18, 18, 18);
-    const fillYellow = () => doc.setFillColor(255, 222, 3);
-    const fillPink = () => doc.setFillColor(255, 2, 102);
-    const fillCyan = () => doc.setFillColor(3, 218, 198);
+    const fillYellow = () => doc.setFillColor(255, 200, 14);
+    const fillPink = () => doc.setFillColor(239, 73, 134);
+    const fillCyan = () => doc.setFillColor(25, 165, 150);
 
     const label = (text: string, x: number, yy: number, color: () => void = gray) => {
       color(); doc.setFontSize(6); doc.setFont('helvetica', 'bold');
@@ -1549,7 +1549,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 key={show.id}
                 onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)}
                 className={`group relative cursor-pointer bg-brand-surface border-2 border-white/30 overflow-hidden flex flex-col transition-all duration-300
-                  ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-pink hover:shadow-[0_0_20px_rgba(255,2,102,0.3)]'}`}
+                  ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-pink hover:shadow-[0_0_20px_rgba(239, 73, 134,0.3)]'}`}
               >
                 {/* Lock overlay */}
                 {isFreeBlocked && (

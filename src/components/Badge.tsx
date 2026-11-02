@@ -7,9 +7,9 @@ interface BadgeProps {
 }
 
 const BADGE_CONFIG = {
-  verified:      { bg: '#03DAC6', icon: 'check',        label: 'Verified',      textColor: '#000' },
-  founding:      { bg: '#FFDE03', icon: 'star',         label: 'Founding',      textColor: '#000' },
-  roar:          { bg: '#FF0266', icon: 'bolt',         label: 'ROAR',          textColor: '#fff' },
+  verified:      { bg: '#19A596', icon: 'check',        label: 'Verified',      textColor: '#000' },
+  founding:      { bg: '#FFC80E', icon: 'star',         label: 'Founding',      textColor: '#000' },
+  roar:          { bg: '#EF4986', icon: 'bolt',         label: 'ROAR',          textColor: '#fff' },
   laff:          { bg: '#ffffff', icon: 'music_note',   label: 'LAFF',          textColor: '#000' },
   active:        { bg: '#22c55e', icon: 'trending_up',  label: 'Active',        textColor: '#fff' },
   international: { bg: '#3b82f6', icon: 'language',     label: 'International', textColor: '#fff' },
@@ -61,8 +61,8 @@ interface AvatarProps {
 export const Avatar: React.FC<AvatarProps> = ({ name, url, size = 44, badges = [], onClick }) => {
   const hasBadge = badges.length > 0;
   const primaryBadge = badges[0];
-  const borderColor = badges.includes('verified') || badges.includes('roar') ? '#03DAC6' :
-                      badges.includes('founding') ? '#FFDE03' : 'rgba(255,255,255,0.2)';
+  const borderColor = badges.includes('verified') || badges.includes('roar') ? '#19A596' :
+                      badges.includes('founding') ? '#FFC80E' : 'rgba(255,255,255,0.2)';
 
   return (
     <button

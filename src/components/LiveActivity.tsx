@@ -69,9 +69,9 @@ const LiveActivity: React.FC = () => {
   };
 
   const statItems = [
-    { label: 'Producers', value: stats.producers, color: '#03DAC6', border: '#03DAC6' },
-    { label: 'Shows', value: stats.shows, color: '#FFDE03', border: '#FFDE03' },
-    { label: 'Views', value: stats.views, color: '#FF0266', border: '#FF0266' },
+    { label: 'Producers', value: stats.producers, color: '#19A596', border: '#19A596' },
+    { label: 'Shows', value: stats.shows, color: '#FFC80E', border: '#FFC80E' },
+    { label: 'Views', value: stats.views, color: '#EF4986', border: '#EF4986' },
     { label: 'Countries', value: stats.countries, color: '#fff', border: 'rgba(255,255,255,0.3)' },
   ];
 
@@ -81,8 +81,8 @@ const LiveActivity: React.FC = () => {
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FF0266', display: 'inline-block', animation: 'pulse 2s infinite' }}></span>
-          <p style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', color: '#FF0266', fontStyle: 'italic', margin: 0 }}>Live on HahaHub</p>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#EF4986', display: 'inline-block', animation: 'pulse 2s infinite' }}></span>
+          <p style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', color: '#EF4986', fontStyle: 'italic', margin: 0 }}>Live on HahaHub</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '32px', alignItems: 'start' }}>
@@ -106,12 +106,12 @@ const LiveActivity: React.FC = () => {
               ) : activity.map((a, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', gap: '12px',
-                  borderLeft: `3px solid ${a.color === 'cyan' ? '#03DAC6' : '#FF0266'}30`,
+                  borderLeft: `3px solid ${a.color === 'cyan' ? '#19A596' : '#EF4986'}30`,
                   paddingLeft: '12px', paddingTop: '6px', paddingBottom: '6px',
                 }}>
                   <p style={{
                     fontSize: '11px', fontWeight: 900, fontStyle: 'italic',
-                    color: a.color === 'cyan' ? '#03DAC6' : '#FF0266',
+                    color: a.color === 'cyan' ? '#19A596' : '#EF4986',
                     margin: 0, flex: 1,
                   }}>{a.text}</p>
                   <p style={{ fontSize: '8px', color: 'rgba(255,255,255,0.2)', flexShrink: 0, margin: 0, fontWeight: 700 }}>{timeAgo(a.time)}</p>

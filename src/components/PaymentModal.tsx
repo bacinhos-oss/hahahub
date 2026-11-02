@@ -68,7 +68,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
           fontSize: '16px',
           '::placeholder': { color: '#999' },
         },
-        invalid: { color: '#FF0266' },
+        invalid: { color: '#EF4986' },
       },
       hidePostalCode: true,
     });
@@ -151,11 +151,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
     .invoice-num { font-size: 24px; font-weight: 900; }
     .date { color: #666; font-size: 12px; margin-top: 4px; }
     table { width: 100%; border-collapse: collapse; margin: 30px 0; }
-    th { background: #000; color: #FFDE03; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
+    th { background: #000; color: #FFC80E; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
     td { padding: 12px 10px; border-bottom: 1px solid #eee; }
     .total-row td { font-weight: 900; font-size: 18px; border-top: 4px solid #000; }
     .footer { margin-top: 40px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
-    .paid { background: #000; color: #FFDE03; padding: 6px 16px; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; display: inline-block; }
+    .paid { background: #000; color: #FFC80E; padding: 6px 16px; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; display: inline-block; }
   </style>
 </head>
 <body>
@@ -338,7 +338,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ planName, price, isOpen, on
 
         {step === 'success' && (
           <div className="text-black text-center py-8 space-y-6 animate-in zoom-in duration-500">
-            <div className="w-24 h-24 bg-brand-yellow border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF0266]">
+            <div className="w-24 h-24 bg-brand-yellow border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#EF4986]">
               <span className="text-5xl">🥊</span>
             </div>
             <div>

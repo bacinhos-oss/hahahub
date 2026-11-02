@@ -106,7 +106,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
               <div className="flex-shrink-0">
                 <div className="relative">
                   <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-brand-black overflow-hidden bg-brand-surface flex items-center justify-center"
-                    style={{ boxShadow: badges.includes('verified') ? '0 0 0 4px #03DAC6' : badges.includes('founding') ? '0 0 0 4px #FFDE03' : '0 0 0 4px white' }}>
+                    style={{ boxShadow: badges.includes('verified') ? '0 0 0 4px #19A596' : badges.includes('founding') ? '0 0 0 4px #FFC80E' : '0 0 0 4px white' }}>
                     {producer.avatar_url ? (
                       <img src={producer.avatar_url} alt={producer.name} className="w-full h-full object-cover" />
                     ) : (
