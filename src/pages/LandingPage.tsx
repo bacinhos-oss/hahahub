@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import { Page, Show } from '../types';
 import { Logo } from '../components/Logo';
 import { SpectrumBar } from '../components/SpectrumBar';
+import Smile from '../components/Smile';
 
 interface LandingPageProps {
   onNavigate: (page: Page) => void;
@@ -151,6 +152,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
 
         {/* LEGAL */}
         <section className="border-t border-white/10">
+          <div className="flex flex-col items-center pt-16 pb-4">
+            <Smile height={110} />
+            <p className="mt-5 text-xs font-black uppercase tracking-[0.35em] italic text-white/40">Break a Laffing Leg.</p>
+          </div>
           <p className="max-w-3xl mx-auto px-4 py-10 text-center text-xs text-white/30 leading-relaxed">
             HahaHub is a discovery tool for professionals aged 18+ and is not a party to any licensing agreement between users. Shows remain the property of their rights holders.
           </p>
