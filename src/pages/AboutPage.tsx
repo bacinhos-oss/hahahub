@@ -9,248 +9,106 @@ interface AboutPageProps {
   user?: User;
 }
 
+const STEPS = [
+  { word: 'Tickle.', color: 'text-brand-yellow', text: 'Browse the catalog and find a comedy show that fits your stage. Or list yours and let other producers find it. Send an inquiry and talk directly to the producer.' },
+  { word: 'Set up.', color: 'text-brand-pink', text: 'Agree on the terms. Use our contract templates. No commission, no middlemen. Just two producers and a show that needs a new stage.' },
+  { word: 'Punch.', color: 'text-brand-cyan', text: 'Curtain up. Their show, your audience. Your show, their city. Same laugh, different language.' },
+];
+
+const WAYS = [
+  {
+    label: 'You have a show',
+    sub: 'You are licensing it out',
+    color: 'text-brand-pink',
+    steps: [
+      'Upload your show with synopsis, cast and royalty terms. Your dossier is your pitch.',
+      'A producer finds it and sends an inquiry. You get an email.',
+      'Reply directly from My Hub, agree the terms and mark the deal.',
+    ],
+  },
+  {
+    label: 'You need a show',
+    sub: 'You are licensing it in',
+    color: 'text-brand-cyan',
+    steps: [
+      'Browse the catalog. Filter by cast size, language and humor type.',
+      'Send an inquiry. The rights holder replies directly.',
+      'Agree on royalty, territory and number of performances. Mark the deal.',
+    ],
+  },
+];
+
 const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => {
   return (
     <div className="min-h-screen bg-brand-black flex flex-col overflow-x-hidden">
       <Navigation activePage="about" onNavigate={onNavigate} onLogout={onLogout} user={user} />
 
-      <main className="flex-1 pt-24 md:pt-40 pb-20 px-4 md:px-12">
-        <div className="max-w-5xl mx-auto space-y-20 md:space-y-32">
+      <main className="flex-1 pt-28 md:pt-36 pb-20 px-4 md:px-12">
+        <div className="max-w-5xl mx-auto space-y-20 md:space-y-28">
 
           {/* HEADLINE */}
-          <section className="space-y-6">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic">Mission</span>
-            <h1 className="text-5xl sm:text-7xl md:text-[100px] font-black uppercase italic tracking-tighter text-white leading-none">
-              THEATRE<br/>
-              COMEDY<br/>
-              <span className="text-brand-yellow">TRAVELS.</span>
+          <section className="space-y-5">
+            <p className="text-xs font-bold uppercase tracking-[0.35em] text-white/50">Mission</p>
+            <h1 className="font-display text-white text-4xl sm:text-6xl md:text-7xl leading-[0.95] tracking-tight">
+              Theatre comedy <span className="text-brand-pink">travels.</span>
             </h1>
+            <p className="text-lg md:text-xl text-white/60 font-bold italic max-w-2xl leading-relaxed">
+              The best theatre comedy in Europe is invisible, because language gets in the way. HahaHub removes that wall. Like the travelling troupes of old, from show to show and city to city.
+            </p>
           </section>
 
-          {/* CORE STATEMENT */}
-          <section className="border-t-8 border-white pt-12 space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                <p className="text-2xl md:text-3xl font-black uppercase italic text-white leading-tight tracking-tighter">
-                  A show kills in Prague.<br/>
-                  Nobody in London<br/>
-                  <span className="text-brand-pink">knows it exists.</span>
-                </p>
-                <p className="text-2xl md:text-3xl font-black uppercase italic text-white leading-tight tracking-tighter">
-                  A production runs two years<br/>in Tallinn. Madrid has<br/>
-                  <span className="text-brand-cyan">never heard of it.</span>
-                </p>
-              </div>
-              <div className="space-y-6 self-end">
-                <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic">
-                  The best theatre comedy in Europe is invisible — because language gets in the way.
-                </p>
-                <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic">
-                  HahaHub removes that wall. Like travelling theatre troupes of old — show to show, city to city, stage to stage — across Europe and beyond.
-                </p>
-                <p className="text-white/30 font-black uppercase text-xs tracking-widest italic">Theatre comedy. Producer to producer. Direct.</p>
-              </div>
-            </div>
-
-            {/* CITIES */}
-            <div className="border-t-4 border-white/10 pt-10 grid grid-cols-2 md:grid-cols-5 gap-4">
-              {[
-                { from: 'Prague', to: 'Amsterdam' },
-                { from: 'Tallinn', to: 'Madrid' },
-                { from: 'Warsaw', to: 'London' },
-                { from: 'Helsinki', to: 'Paris' },
-                { from: 'Reykjavik', to: 'Berlin' },
-              ].map((city, i) => (
-                <div key={i} className="border-l-4 border-brand-pink pl-3 py-1">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink">{city.from}</p>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mt-1">→ {city.to}</p>
-                </div>
-              ))}
-            </div>
+          {/* STORY */}
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 border-t border-white/10 pt-12">
+            <p className="text-xl md:text-2xl font-black uppercase italic text-white leading-snug tracking-tight">
+              A show kills in Prague.<br />Nobody in London <span className="text-brand-pink">knows it exists.</span>
+            </p>
+            <p className="text-xl md:text-2xl font-black uppercase italic text-white leading-snug tracking-tight">
+              A production runs two years in Tallinn. Madrid <span className="text-brand-cyan">has never heard of it.</span>
+            </p>
           </section>
 
           {/* TICKLE SET UP PUNCH */}
-          <section className="space-y-0">
-            <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none mb-16">
-              TICKLE.<br/>
-              <span className="text-brand-yellow">SET UP.</span><br/>
-              <span className="text-brand-pink">PUNCH.</span>
-            </h2>
-
-            <div className="border-t-4 border-white/10 py-12 grid grid-cols-1 md:grid-cols-12 gap-6">
-              <div className="md:col-span-2">
-                <span className="text-[80px] font-black text-white/5 leading-none">01</span>
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 border-t border-white/10 pt-12">
+            {STEPS.map(s => (
+              <div key={s.word}>
+                <h2 className={`font-display text-3xl md:text-4xl uppercase tracking-wide mb-4 ${s.color}`}>{s.word}</h2>
+                <p className="text-white/60 font-bold italic leading-relaxed">{s.text}</p>
               </div>
-              <div className="md:col-span-10 space-y-4">
-                <h3 className="text-3xl md:text-5xl font-black uppercase italic text-brand-yellow tracking-tighter">Tickle.</h3>
-                <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic max-w-2xl">
-                  Browse the catalog. Find a theatre comedy show that fits your stage. Or list yours — let other producers find it. Send an inquiry. Talk directly to the producer.
-                </p>
-              </div>
-            </div>
-
-            <div className="border-t-4 border-white/10 py-12 grid grid-cols-1 md:grid-cols-12 gap-6 bg-brand-surface">
-              <div className="md:col-span-2 px-6">
-                <span className="text-[80px] font-black text-white/5 leading-none">02</span>
-              </div>
-              <div className="md:col-span-10 space-y-4 px-6 md:px-0">
-                <h3 className="text-3xl md:text-5xl font-black uppercase italic text-brand-cyan tracking-tighter">Set Up.</h3>
-                <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic max-w-2xl">
-                  You agree on terms. License signed. No commission. No middlemen. Just two producers and a theatre comedy show that needs a new stage.
-                </p>
-              </div>
-            </div>
-
-            <div className="border-t-4 border-white/10 py-12 grid grid-cols-1 md:grid-cols-12 gap-6">
-              <div className="md:col-span-2">
-                <span className="text-[80px] font-black text-white/5 leading-none">03</span>
-              </div>
-              <div className="md:col-span-10 space-y-4">
-                <h3 className="text-3xl md:text-5xl font-black uppercase italic text-brand-pink tracking-tighter">Punch.</h3>
-                <p className="text-base md:text-lg text-gray-400 font-bold leading-relaxed italic max-w-2xl">
-                  Curtain up. Their show, your audience. Your show, their city. Same laugh. Different language. That's theatre comedy. That's the point.
-                </p>
-              </div>
-            </div>
+            ))}
           </section>
 
-          {/* HOW TO PLAY */}
-          <section className="space-y-0">
-            <div className="mb-16">
-              <span className="bg-brand-yellow text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6">How it works</span>
-              <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none">
-                HOW TO<br/><span className="text-brand-yellow">PLAY.</span>
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t-4 border-white">
-
-              {/* SELLING COLUMN */}
-              <div className="border-r-0 md:border-r-4 border-white">
-                <div className="p-8 border-b-4 border-white bg-brand-surface">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink mb-1">You have a show</p>
-                  <p className="text-white/40 text-sm italic font-bold">You're selling rights</p>
+          {/* HOW IT WORKS */}
+          <section className="border-t border-white/10 pt-12">
+            <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white mb-10">How it works</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {WAYS.map(w => (
+                <div key={w.label} className="border border-white/10 bg-brand-surface p-6 md:p-8">
+                  <p className={`text-xs font-black uppercase tracking-widest ${w.color}`}>{w.label}</p>
+                  <p className="text-white/40 text-sm italic font-bold mb-6">{w.sub}</p>
+                  <ol className="space-y-4">
+                    {w.steps.map((t, i) => (
+                      <li key={i} className="flex gap-4">
+                        <span className="text-white/30 font-black italic">{i + 1}</span>
+                        <span className="text-white/70 font-bold italic leading-relaxed text-sm md:text-base">{t}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
-                {[
-                  { n: '01', title: 'SHOWLOAD', color: 'text-brand-yellow', body: 'Upload your theatre comedy show. Synopsis, cast, royalty terms. Your dossier is your pitch deck.' },
-                  { n: '02', title: 'WAIT FOR THE TICKLE', color: 'text-white', body: 'A producer from Warsaw or Tokyo finds your show. They send an inquiry. You get an email.' },
-                  { n: '03', title: 'REPLY DIRECT', color: 'text-white', body: 'My Hub → Inquiries → Reply. No agents. Just two producers talking.' },
-                  { n: '04', title: 'DEAL', color: 'text-brand-cyan', body: 'Agree on terms. Mark it as Deal. Contract template fills in Studio.' },
-                  { n: '05', title: 'ROYALTIES COME IN', color: 'text-brand-pink', body: 'Every time they perform your show — they log it. You see it live in Incoming Royalties. That is your money.' },
-                ].map((step, i) => (
-                  <div key={i} className="p-8 border-b-4 border-white/10 hover:bg-brand-surface/50 transition-all">
-                    <span className="text-[64px] font-black text-white/5 leading-none block mb-[-12px]">{step.n}</span>
-                    <h3 className={`text-xl font-black uppercase italic tracking-tighter mb-3 ${step.color}`}>{step.title}</h3>
-                    <p className="text-gray-400 font-bold italic text-sm leading-relaxed">{step.body}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* BUYING COLUMN */}
-              <div>
-                <div className="p-8 border-b-4 border-white bg-brand-surface">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan mb-1">You need a show</p>
-                  <p className="text-white/40 text-sm italic font-bold">You're buying rights</p>
-                </div>
-                {[
-                  { n: '01', title: 'TICKLE', color: 'text-brand-yellow', body: 'Browse the catalog. Find a theatre comedy show that works for your stage. Send an inquiry.' },
-                  { n: '02', title: 'NEGOTIATE', color: 'text-white', body: 'The rights holder replies. Talk directly. Agree on royalty %, territory, number of performances.' },
-                  { n: '03', title: 'DEAL', color: 'text-brand-cyan', body: 'Mark it as Deal in My Hub. Done. Contract template fills automatically.' },
-                  { n: '04', title: 'LOG YOUR SHOWS', color: 'text-white', body: 'After every performance — Studio → Royalty Tracker → log tickets, price, royalty %. System calculates what you owe.' },
-                  { n: '05', title: 'RIGHTS HOLDER SEES IT', color: 'text-brand-pink', body: 'Instantly. In their Incoming Royalties. Transparent. No surprises.' },
-                ].map((step, i) => (
-                  <div key={i} className="p-8 border-b-4 border-white/10 hover:bg-brand-surface/50 transition-all">
-                    <span className="text-[64px] font-black text-white/5 leading-none block mb-[-12px]">{step.n}</span>
-                    <h3 className={`text-xl font-black uppercase italic tracking-tighter mb-3 ${step.color}`}>{step.title}</h3>
-                    <p className="text-gray-400 font-bold italic text-sm leading-relaxed">{step.body}</p>
-                  </div>
-                ))}
-              </div>
-
+              ))}
             </div>
-
-            <div className="border-t-4 border-white/10 p-8 text-center">
-              <p className="text-white/30 font-bold italic text-sm">Theatre comedy travels. This is how.</p>
-            </div>
-          </section>
-
-
-          {/* YOUR COMEDY BUSINESS IN ONE PLACE */}
-          <section className="space-y-12">
-            <div>
-              <span className="bg-brand-cyan text-black px-4 py-1 text-xs font-black uppercase tracking-[0.4em] inline-block italic mb-6">The Platform</span>
-              <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none">
-                Your comedy<br/>business.<br/><span className="text-brand-yellow">In one place.</span>
-              </h2>
-              <p className="text-white/40 font-bold italic text-lg mt-6 max-w-2xl">
-                HahaHub is not just a marketplace. It is your entire comedy production infrastructure. From first tickle to final royalty — everything happens here. No spreadsheets. No email chains. No agents with hats.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border-4 border-brand-cyan p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
-                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-brand-cyan">Catalog</p>
-                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Browse international<br/>comedy productions.</h3>
-                <p className="text-white/40 font-bold italic text-sm leading-relaxed">Filter by cast size, language, humor type, touring friendly. Find exactly what your stage needs. Or list yours — and let the world find you. Tickle what excites you. The inquiry takes thirty seconds.</p>
-              </div>
-              <div className="border-4 border-brand-yellow p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
-                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-brand-yellow">Pipeline</p>
-                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Every deal.<br/>Every conversation.<br/>Every stage.</h3>
-                <p className="text-white/40 font-bold italic text-sm leading-relaxed">From first tickle to signed contract — Pipeline is your personal deal room. Every inquiry. Every message. Every status update. You move the deal forward. You stay in control. No one else touches it.</p>
-              </div>
-              <div className="border-4 border-brand-pink p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
-                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-brand-pink">LaffWire</p>
-                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Your industry feed.<br/>Post. Connect.<br/>Be seen.</h3>
-                <p className="text-white/40 font-bold italic text-sm leading-relaxed">LaffWire is not social media. It is the comedy industry talking to itself. A deal gets signed — it lands on LaffWire. A new show gets listed — same. Post. React. Connect. The comedy world is smaller than you think. Use that.</p>
-              </div>
-              <div className="border-4 border-white/30 p-8 md:p-10 space-y-4 bg-brand-surface hover:bg-white/5 transition-all">
-                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic text-white">My Hub</p>
-                <h3 className="text-3xl font-black uppercase italic text-white leading-tight">Your command center.<br/>Nothing missing.<br/>Nothing extra.</h3>
-                <p className="text-white/40 font-bold italic text-sm leading-relaxed">Shows. Deals. Royalties in. Royalties out. Analytics. Contracts. Calculator. Everything your production needs — in one place, on one screen. Your Hub is where the business actually happens. And it never closes.</p>
-              </div>
-            </div>
-            <div className="border-t-4 border-white/10 pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <p className="text-white/20 font-black uppercase text-xs tracking-widest italic max-w-lg">0% commission. No per-inquiry fees. No agents. The deal you close is yours. Every euro of your licensing fee stays yours.</p>
-              <button onClick={() => onNavigate('pricing')} className="bg-brand-yellow text-black px-8 py-4 font-black uppercase italic text-sm border-4 border-black hover:bg-white transition-all flex-shrink-0">
-                See Plans →
-              </button>
-            </div>
+            <p className="mt-8 text-white/40 font-bold italic text-sm">0% commission. No per-inquiry fees. No agents. The deal you close is yours.</p>
           </section>
 
           {/* COPYRIGHT & RIGHTS */}
-          <section className="space-y-8 bg-brand-surface border-4 border-white/20 p-6 md:p-12 shadow-neo-cyan">
-            <h2 className="text-3xl md:text-4xl font-black uppercase italic text-brand-cyan border-b-2 border-brand-cyan/20 pb-4">Copyright and Licensing</h2>
-            <div className="space-y-6 text-gray-300 font-bold italic leading-relaxed">
-              <p>All transactions are directly between producers. HahaHub is the marketplace — terms, fees, and agreements are negotiated and signed between the parties involved.</p>
-              <p>All content on this platform is published only with the permission of its legitimate copyright holder.</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 pt-4">
-                {[
-                  { label: 'Rights Holder', text: 'Name of the copyright holder — listed on every show' },
-                  { label: 'License Type', text: 'Type of rights: copyright, performance license, territory' },
-                  { label: 'Duration', text: 'Date and duration of the license — agreed between producers' },
-                ].map((item, i) => (
-                  <div key={i} className="border-l-4 border-brand-pink pl-4 py-2">
-                    <p className="text-[10px] uppercase text-brand-pink font-black tracking-widest">{item.label}</p>
-                    <p className="text-sm mt-1">{item.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-4 pt-4">
-              <h3 className="text-xl md:text-2xl font-black uppercase italic text-white">Liability</h3>
-              <p className="text-gray-400 font-bold italic text-sm md:text-base">
-                If you are a copyright holder and believe your content has been published without authorization, contact us at <span className="text-brand-yellow">legal@hahahub.art</span>. Disputed content will be removed promptly.
-              </p>
-            </div>
-            <div className="space-y-4 pt-4">
-              <h3 className="text-xl md:text-2xl font-black uppercase italic text-white">Use of Content</h3>
-              <p className="text-gray-400 font-bold italic border-2 border-brand-pink/20 p-4 md:p-6 bg-brand-pink/5 text-sm md:text-base">
-                Any use, distribution, or performance of productions without written permission from the copyright holder is strictly prohibited.
-              </p>
+          <section className="border-t border-white/10 pt-12 space-y-6">
+            <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white">Copyright and licensing</h2>
+            <div className="space-y-4 text-white/60 font-bold italic leading-relaxed max-w-3xl">
+              <p>All transactions are directly between producers. HahaHub is a discovery tool: terms and agreements are negotiated and signed between the parties involved. Every show is published only with the permission of its copyright holder.</p>
+              <p>If you are a copyright holder and believe your content has been published without authorization, contact <span className="text-white">legal@hahahub.art</span>. Disputed content is removed promptly. Any use or performance of a production without written permission from the copyright holder is prohibited.</p>
             </div>
           </section>
 
-          {/* SIGN OFF */}
-          <section className="py-12 border-t-4 border-white/10 text-center">
+          <section className="pt-4 text-center">
             <p className="text-white/20 font-black uppercase text-xs tracking-widest italic">Break a Laffing Leg. 🦵</p>
           </section>
 

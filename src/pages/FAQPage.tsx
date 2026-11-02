@@ -80,14 +80,14 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate, onLogout, user }) => {
 
           {/* HEADER */}
           <section className="space-y-6">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] italic inline-block">FAQ</span>
-            <h1 className="font-display text-white text-6xl md:text-[100px] uppercase italic leading-[0.85] tracking-tighter">
-              Every<br/><span className="text-brand-yellow">Answer.</span>
+            <p className="text-xs font-bold uppercase tracking-[0.35em] text-white/50">FAQ</p>
+            <h1 className="font-display text-white text-4xl sm:text-6xl md:text-7xl leading-[0.95] tracking-tight">
+              Questions <span className="text-brand-pink">&amp; answers.</span>
             </h1>
-            <p className="text-white/40 font-bold italic text-lg">Everything you need to know about The Laff Exchange.</p>
+            <p className="text-white/50 font-bold italic text-lg">Everything you need to know about The Laff Exchange.</p>
 
             {/* SEARCH */}
-            <div className="flex items-center gap-4 bg-brand-surface border-4 border-white/20 p-4 mt-6 focus-within:border-brand-yellow transition-colors">
+            <div className="flex items-center gap-4 bg-brand-surface border border-white/10 p-4 mt-6 focus-within:border-white/40 transition-colors">
               <span className="material-symbols-outlined text-white/40 text-2xl">search</span>
               <input
                 type="text"
@@ -116,7 +116,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate, onLogout, user }) => {
                   const key = `${ci}-${ii}`;
                   const isOpen = openItem === key;
                   return (
-                    <div key={ii} className={`border-4 transition-all ${isOpen ? `border-${cat.color}` : 'border-white/20'}`}>
+                    <div key={ii} className={`border transition-all ${isOpen ? `border-${cat.color}` : 'border-white/10'}`}>
                       <button
                         onClick={() => setOpenItem(isOpen ? null : key)}
                         className="w-full flex items-center justify-between p-5 text-left gap-4"
@@ -138,11 +138,11 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate, onLogout, user }) => {
 
           {/* STILL HAVE QUESTIONS */}
           <section className="border border-white/10 p-8 md:p-12 text-center">
-            <h2 className="text-3xl md:text-5xl font-black uppercase italic text-white mb-4">Still Have<br/><span className="text-brand-yellow">Questions?</span></h2>
+            <h2 className="text-2xl md:text-4xl font-black uppercase italic text-white mb-4">Still have questions?</h2>
             <p className="text-white/40 font-bold italic mb-8">We're a small team of producers. We actually reply.</p>
             <a
               href="mailto:info@hahahub.art"
-              className="inline-block bg-brand-yellow text-black px-10 py-4 font-black uppercase text-sm border-4 border-black shadow-neo-magenta hover:bg-white transition-all italic"
+              className="inline-block bg-white text-black px-10 py-4 font-black uppercase text-sm tracking-widest hover:bg-brand-pink hover:text-white transition-colors italic"
             >
               Email Us →
             </a>
