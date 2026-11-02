@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import { Page, User } from '../types';
 import { supabase } from '../lib/supabase';
 import { Avatar, Badge, getProfileBadges } from '../components/Badge';
+import Smile from '../components/Smile';
 
 interface LaffWirePageProps {
   onNavigate: (page: Page) => void;
@@ -182,7 +183,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                 </div>
               ) : posts.length === 0 ? (
                 <div className="py-20 text-center space-y-4">
-                  <p className="text-5xl">📡</p>
+                  <div className="flex justify-center"><Smile height={96} className="opacity-70" /></div>
                   <p className="text-white/40 font-black uppercase italic text-lg">Wire's quiet.</p>
                   <p className="text-white/20 text-sm italic">No industry news yet. Be the first to punch it out.</p>
                 </div>

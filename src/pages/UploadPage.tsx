@@ -3,6 +3,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, User, Show } from '../types';
 import { supabase } from '../lib/supabase';
+import Smile from '../components/Smile';
 
 interface UploadPageProps {
   onNavigate: (page: Page) => void;
@@ -259,7 +260,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   if (isSuccess) return (
     <div className="min-h-screen bg-brand-black flex items-center justify-center">
       <div className="text-center space-y-6 px-4">
-        <div className="text-6xl font-black text-brand-cyan">✓</div>
+        <div className="flex justify-center"><Smile height={120} /></div>
         <h2 className="text-4xl md:text-5xl font-black uppercase italic text-white">Show Listed!</h2>
         <p className="text-brand-cyan font-bold uppercase tracking-widest text-sm">Redirecting to My Hub...</p>
       </div>

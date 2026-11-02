@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, Show, User } from '../types';
+import Smile from '../components/Smile';
 import { Badge, getProfileBadges } from '../components/Badge';
 
 
@@ -1534,7 +1535,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               ))
             ) : filteredShows.length === 0 ? (
               <div className="col-span-3 py-32 text-center space-y-4">
-                <p className="text-5xl">🔍</p>
+                <div className="flex justify-center"><Smile height={110} className="opacity-70" /></div>
                 <p className="text-white/40 font-black uppercase italic text-2xl">Shush.</p>
                 <p className="text-white/20 font-black uppercase italic text-sm">Nothing matches your filters.</p>
                 <p className="text-white/10 text-xs italic">Try adjusting genre, language or search term.</p>

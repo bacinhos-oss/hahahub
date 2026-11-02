@@ -2,6 +2,7 @@ import React from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, User } from '../types';
+import Smile from '../components/Smile';
 
 interface AboutPageProps {
   onNavigate: (page: Page) => void;
@@ -109,6 +110,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
           </section>
 
           <section className="pt-4 text-center">
+            <div className="flex justify-center mb-4"><Smile height={96} /></div>
             <p className="text-white/20 font-black uppercase text-xs tracking-widest italic">Break a Laffing Leg. 🦵</p>
           </section>
 
