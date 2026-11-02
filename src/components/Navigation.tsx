@@ -76,6 +76,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           {navBtn('discovery', 'CATALOG', 'yellow')}
           {user && navBtn('wire', 'LAFFWIRE', 'pink')}
           {navBtn('about', 'MISSION', 'blue')}
+          {!user && navBtn('faq', 'FAQ', 'yellow')}
           {user && navBtn('subscription', 'MY HUB', 'green')}
           {user && navBtn('upload', 'SHOWLOAD', 'cyan')}
           {isAdmin && navBtn('admin', 'ADMIN', 'pink')}
@@ -94,7 +95,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
               </button>
             </div>
           ) : (
-            <button onClick={() => onNavigate('login')} className="bg-brand-yellow text-black font-black px-6 py-2 text-sm uppercase border-4 border-black hover:bg-white transition-all shadow-neo-magenta italic">
+            <button onClick={() => onNavigate('login')} className="bg-white text-black font-black px-6 py-2 text-xs md:text-sm uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
               Sign in
             </button>
           )}
@@ -126,6 +127,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             {mobileBtn('discovery', 'CATALOG', 'yellow')}
             {user && mobileBtn('wire', 'LAFFWIRE', 'pink')}
             {mobileBtn('about', 'MISSION', 'blue')}
+            {!user && mobileBtn('faq', 'FAQ', 'yellow')}
             {user && mobileBtn('subscription', 'MY HUB', 'green')}
             {user && mobileBtn('upload', 'SHOWLOAD', 'cyan')}
             {isAdmin && mobileBtn('admin', 'ADMIN', 'pink')}
@@ -138,7 +140,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
                 LOGOUT
               </button>
             ) : (
-              <button onClick={() => go('login')} className="w-full bg-brand-yellow text-black font-black py-4 text-lg uppercase border-4 border-black italic hover:bg-white transition-all">
+              <button onClick={() => go('login')} className="w-full bg-white text-black font-black py-4 text-lg uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
                 Sign in
               </button>
             )}
