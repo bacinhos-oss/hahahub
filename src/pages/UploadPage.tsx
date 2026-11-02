@@ -47,6 +47,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
   const isAtLimit = userShowCount >= uploadLimit;
 
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -300,8 +301,16 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
             </div>
           )}
 
+          <button
+            type="button"
+            onClick={() => setShowMore(v => !v)}
+            className="w-full sm:w-auto border-4 border-white/20 text-white/70 hover:text-white hover:border-brand-cyan px-6 py-3 text-xs font-black uppercase italic tracking-widest transition-all"
+          >
+            {showMore ? '− Show only required fields' : '+ Show more details (optional — improves your Transparency Score)'}
+          </button>
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-8 space-y-6">
+            <div className={"lg:col-span-8 space-y-6 " + (showMore ? "" : "[&_.opt]:hidden")}>
 
               {/* 00. BASIC INFO */}
               <section className={sec + " shadow-neo-cyan"}>
@@ -314,7 +323,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                     <label className={lbl}>English Title * <span className="text-white/20 normal-case font-normal">(main title for international buyers)</span></label>
                     <input name="englishTitle" value={formData.englishTitle} onChange={handleInputChange} className="w-full bg-brand-black border-4 border-white px-5 py-4 text-white font-bold uppercase text-xl focus:border-brand-yellow outline-none" placeholder="SHOW TITLE IN ENGLISH" />
                   </div>
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-2 opt">
                     <label className={lbl}>Original Title (if different)</label>
                     <input name="title" value={formData.title} onChange={handleInputChange} className={inp} placeholder="Original language title" />
                   </div>
@@ -336,7 +345,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       <option value="Cabaret">Cabaret</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Subgenre</label>
+                  <div className="opt"><label className={lbl}>Subgenre</label>
                     <select name="subgenre" value={formData.subgenre} onChange={handleInputChange} className={sel}>
                       <option value="">Select subgenre...</option>
                       <option value="Monocomedy">Monocomedy</option>
@@ -356,7 +365,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       <option value="Storytelling">Storytelling</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Humor Type</label>
+                  <div className="opt"><label className={lbl}>Humor Type</label>
                     <select name="humorType" value={formData.humorType} onChange={handleInputChange} className={sel}>
                       <option value="Universal">Universal</option>
                       <option value="Language-based">Language-based</option>
@@ -364,11 +373,11 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                       <option value="Physical Comedy">Physical Comedy</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Awards</label><input name="awards" value={formData.awards} onChange={handleInputChange} className={inp} placeholder="Best Comedy, Best Director..." /></div>
-                  <div><label className={lbl}>Trailer URL</label><input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className={inp} placeholder="https://youtube.com/..." /></div>
+                  <div className="opt"><label className={lbl}>Production Year</label><input name="productionYear" type="number" value={formData.productionYear} onChange={handleInputChange} className={inp} /></div>
+                  <div className="opt"><label className={lbl}>Awards</label><input name="awards" value={formData.awards} onChange={handleInputChange} className={inp} placeholder="Best Comedy, Best Director..." /></div>
+                  <div className="opt"><label className={lbl}>Trailer URL</label><input name="trailerUrl" value={formData.trailerUrl} onChange={handleInputChange} className={inp} placeholder="https://youtube.com/..." /></div>
                   <div className="sm:col-span-2"><label className={lbl}>Synopsis in English * <span className="text-white/20 normal-case font-normal">(for international buyers)</span></label><textarea name="synopsisEn" value={formData.synopsisEn} onChange={handleInputChange} rows={4} className={inp} placeholder="Write a compelling synopsis in English..." /></div>
-                  <div className="sm:col-span-2"><label className={lbl}>International Success Notes</label><input name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} className={inp} placeholder="Toured X countries, won festival Y..." /></div>
+                  <div className="sm:col-span-2 opt"><label className={lbl}>International Success Notes</label><input name="internationalSuccessNotes" value={formData.internationalSuccessNotes} onChange={handleInputChange} className={inp} placeholder="Toured X countries, won festival Y..." /></div>
                 </div>
               </section>
 
@@ -382,71 +391,71 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div><label className={lbl}>Male Roles *</label><input name="maleRoles" type="number" value={formData.maleRoles} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Female Roles *</label><input name="femaleRoles" type="number" value={formData.femaleRoles} onChange={handleInputChange} className={inp} /></div>
                   <div><label className={lbl}>Duration (min) *</label><input name="duration" type="number" value={formData.duration} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Intermission</label>
+                  <div className="opt"><label className={lbl}>Intermission</label>
                     <select name="hasIntermission" value={formData.hasIntermission} onChange={handleInputChange} className={sel}>
                       <option value="false">No</option><option value="true">Yes</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Scale</label>
+                  <div className="opt"><label className={lbl}>Scale</label>
                     <select name="productionScale" value={formData.productionScale} onChange={handleInputChange} className={sel}>
                       <option value="Small">Small</option><option value="Medium">Medium</option><option value="Large">Large</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Stage Type</label>
+                  <div className="opt"><label className={lbl}>Stage Type</label>
                     <select name="stageType" value={formData.stageType} onChange={handleInputChange} className={sel}>
                       <option value="Main Stage">Main Stage</option><option value="Black Box">Black Box</option><option value="Arena">Arena</option><option value="Open Air">Open Air</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Touring</label>
+                  <div className="opt"><label className={lbl}>Touring</label>
                     <select name="isTouringFriendly" value={formData.isTouringFriendly} onChange={handleInputChange} className={sel}>
                       <option value="true">Touring friendly</option><option value="false">Not touring</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Adaptation</label>
+                  <div className="opt"><label className={lbl}>Adaptation</label>
                     <select name="adaptationFlexibility" value={formData.adaptationFlexibility} onChange={handleInputChange} className={sel}>
                       <option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>
                     </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Sound Staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Stagehands</label><input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className={inp} /></div>
-                  <div className="sm:col-span-2"><label className={lbl}>Other Staff</label><input name="techStaffOther" value={(formData as any).techStaffOther || ''} onChange={handleInputChange} className={inp} placeholder="Any other crew needed (translator, dresser...)" /></div>
-                  <div><label className={lbl}>Technical</label>
+                  <div className="opt"><label className={lbl}>Lighting Staff</label><input name="techStaffLighting" type="number" value={formData.techStaffLighting} onChange={handleInputChange} className={inp} /></div>
+                  <div className="opt"><label className={lbl}>Sound Staff</label><input name="techStaffSound" type="number" value={formData.techStaffSound} onChange={handleInputChange} className={inp} /></div>
+                  <div className="opt"><label className={lbl}>Stagehands</label><input name="techStaffStagehands" type="number" value={formData.techStaffStagehands} onChange={handleInputChange} className={inp} /></div>
+                  <div className="sm:col-span-2 opt"><label className={lbl}>Other Staff</label><input name="techStaffOther" value={(formData as any).techStaffOther || ''} onChange={handleInputChange} className={inp} placeholder="Any other crew needed (translator, dresser...)" /></div>
+                  <div className="opt"><label className={lbl}>Technical</label>
                     <select name="technicalComplexity" value={formData.technicalComplexity} onChange={handleInputChange} className={sel}>
                       <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Costume</label>
+                  <div className="opt"><label className={lbl}>Costume</label>
                     <select name="costumeComplexity" value={formData.costumeComplexity} onChange={handleInputChange} className={sel}>
                       <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
                     </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
-                  <div className="sm:col-span-2"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={2} className={inp} placeholder="Vision, approach, key staging decisions..." /></div>
-                  <div className="sm:col-span-2"><label className={lbl}>Original Production Solutions</label><textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={2} className={inp} placeholder="Unique staging, set design, technical innovations..." /></div>
+                  <div className="opt"><label className={lbl}>Director</label><input name="director" value={formData.director} onChange={handleInputChange} className={inp} /></div>
+                  <div className="sm:col-span-2 opt"><label className={lbl}>Director's Notes</label><textarea name="directorNotes" value={formData.directorNotes} onChange={handleInputChange} rows={2} className={inp} placeholder="Vision, approach, key staging decisions..." /></div>
+                  <div className="sm:col-span-2 opt"><label className={lbl}>Original Production Solutions</label><textarea name="originalProductionSolutions" value={formData.originalProductionSolutions} onChange={handleInputChange} rows={2} className={inp} placeholder="Unique staging, set design, technical innovations..." /></div>
                 </div>
                 <div className="border-t-2 border-white/10 mt-4 pt-4 space-y-3">
                   <p className="text-[9px] font-black uppercase italic text-white/40 tracking-widest">Script</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label className={lbl}>Script in English</label>
+                    <div className="opt"><label className={lbl}>Script in English</label>
                       <select name="scriptInEnglish" value={formData.scriptInEnglish} onChange={handleInputChange} className={sel}>
                         <option value="false">No</option>
                         <option value="partial">Synopsis only</option>
                         <option value="true">Full script</option>
                       </select>
                     </div>
-                    <div><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
-                    <div><label className={lbl}>Translation Rights</label>
+                    <div className="opt"><label className={lbl}>Translations Available</label><input name="translationsAvailable" value={formData.translationsAvailable} onChange={handleInputChange} className={inp} placeholder="EN, DE, FR..." /></div>
+                    <div className="opt"><label className={lbl}>Translation Rights</label>
                       <select name="translationRightsIncluded" value={formData.translationRightsIncluded} onChange={handleInputChange} className={sel}>
                         <option value="false">Not included</option>
                         <option value="true">Included</option>
                       </select>
                     </div>
-                    <div className="sm:col-span-2"><label className={lbl}>Script Excerpt / Scenario (3 pages in English)</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={3} className={inp} placeholder="Paste a short excerpt or scene description..." /></div>
+                    <div className="sm:col-span-2 opt"><label className={lbl}>Script Excerpt / Scenario (3 pages in English)</label><textarea name="scriptScenario" value={formData.scriptScenario} onChange={handleInputChange} rows={3} className={inp} placeholder="Paste a short excerpt or scene description..." /></div>
                   </div>
                 </div>
               </section>
@@ -478,7 +487,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                           <input type="number" name="fullPunchRoyaltyPct" value={(formData as any).fullPunchRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="15" />
                           <p className="text-white/20 text-[9px] italic mt-1">All royalties in one rate</p>
                         </div>
-                        <div>
+                        <div className="opt">
                           <label className={lbl}>Advance Fee (EUR)</label>
                           <input type="number" name="fullPunchAdvanceFee" value={(formData as any).fullPunchAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
                         </div>
@@ -516,7 +525,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
 
                       {/* Punch Language + Support */}
                       <div className="grid grid-cols-2 gap-3">
-                        <div>
+                        <div className="opt">
                           <label className={lbl}>Punch Language</label>
                           <select name="fpPunchLanguage" value={(formData as any).fpPunchLanguage || 'EN'} onChange={handleInputChange} className={sel}>
                             {['EN','SI','DE','FR','IT','ES','HR','PL','CZ','HU','RO'].map(l => <option key={l} value={l}>{l}</option>)}
@@ -538,13 +547,13 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                 </div>
 
                 {/* CREATIVE DETAILS — always visible, inform the dossier */}
-                <div className="space-y-3 pt-2">
+                <div className="space-y-3 pt-2 opt">
                   <p className="text-[9px] font-black uppercase text-white/20 tracking-widest">Production Assets Info</p>
                   <div className="border-2 border-white/10 p-4 space-y-3">
                     <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label className={lbl}>Music Author / Composer</label><input name="musicAuthor" value={formData.musicAuthor} onChange={handleInputChange} className={inp} placeholder="Composer name" /></div>
-                      <div><label className={lbl}>Original Music</label>
+                      <div className="opt"><label className={lbl}>Music Author / Composer</label><input name="musicAuthor" value={formData.musicAuthor} onChange={handleInputChange} className={inp} placeholder="Composer name" /></div>
+                      <div className="opt"><label className={lbl}>Original Music</label>
                         <select name="hasOriginalMusic" value={formData.hasOriginalMusic} onChange={handleInputChange} className={sel}>
                           <option value="false">No — licensed / existing</option>
                           <option value="true">Yes — original composition</option>
@@ -555,23 +564,23 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div className="border-2 border-white/10 p-4 space-y-3">
                     <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Video & AV</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label className={lbl}>Video / AV Author</label><input name="videoAuthor" value={formData.videoAuthor} onChange={handleInputChange} className={inp} placeholder="Video artist name" /></div>
-                      <div><label className={lbl}>Has Video Projections</label>
+                      <div className="opt"><label className={lbl}>Video / AV Author</label><input name="videoAuthor" value={formData.videoAuthor} onChange={handleInputChange} className={inp} placeholder="Video artist name" /></div>
+                      <div className="opt"><label className={lbl}>Has Video Projections</label>
                         <select name="hasVideoProjections" value={formData.hasVideoProjections} onChange={handleInputChange} className={sel}>
                           <option value="false">No</option>
                           <option value="true">Yes — original video</option>
                         </select>
                       </div>
                       {formData.hasVideoProjections === 'true' && (
-                        <div className="sm:col-span-2"><label className={lbl}>Video Description</label><input name="videoDescription" value={formData.videoDescription} onChange={handleInputChange} className={inp} placeholder="e.g. 4 back projections, 20min, abstract animations" /></div>
+                        <div className="sm:col-span-2 opt"><label className={lbl}>Video Description</label><input name="videoDescription" value={formData.videoDescription} onChange={handleInputChange} className={inp} placeholder="e.g. 4 back projections, 20min, abstract animations" /></div>
                       )}
                     </div>
                   </div>
                   <div className="border-2 border-white/10 p-4 space-y-3">
                     <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Scenography</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label className={lbl}>Scenographer</label><input name="scenographer" value={(formData as any).scenographer || ''} onChange={handleInputChange} className={inp} placeholder="Set designer name" /></div>
-                      <div><label className={lbl}>Set Available for Licensing</label>
+                      <div className="opt"><label className={lbl}>Scenographer</label><input name="scenographer" value={(formData as any).scenographer || ''} onChange={handleInputChange} className={inp} placeholder="Set designer name" /></div>
+                      <div className="opt"><label className={lbl}>Set Available for Licensing</label>
                         <select name="setAvailable" value={(formData as any).setAvailable || 'false'} onChange={handleInputChange} className={sel}>
                           <option value="false">No — buyer builds own set</option>
                           <option value="rent">Yes — available for rent</option>
@@ -584,8 +593,8 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div className="border-2 border-white/10 p-4 space-y-3">
                     <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Lighting Design</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label className={lbl}>Lighting Designer</label><input name="lightingDesigner" value={(formData as any).lightingDesigner || ''} onChange={handleInputChange} className={inp} placeholder="Lighting designer name" /></div>
-                      <div><label className={lbl}>Lighting Design Available</label>
+                      <div className="opt"><label className={lbl}>Lighting Designer</label><input name="lightingDesigner" value={(formData as any).lightingDesigner || ''} onChange={handleInputChange} className={inp} placeholder="Lighting designer name" /></div>
+                      <div className="opt"><label className={lbl}>Lighting Design Available</label>
                         <select name="lightingDesignAvailable" value={(formData as any).lightingDesignAvailable || 'false'} onChange={handleInputChange} className={sel}>
                           <option value="false">No</option>
                           <option value="cue_sheet">Cue sheet only</option>
@@ -597,8 +606,8 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                   <div className="border-2 border-white/10 p-4 space-y-3">
                     <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Costume Design</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label className={lbl}>Costume Designer</label><input name="costumeDesigner" value={(formData as any).costumeDesigner || ''} onChange={handleInputChange} className={inp} placeholder="Costume designer name" /></div>
-                      <div><label className={lbl}>Costume Design Available</label>
+                      <div className="opt"><label className={lbl}>Costume Designer</label><input name="costumeDesigner" value={(formData as any).costumeDesigner || ''} onChange={handleInputChange} className={inp} placeholder="Costume designer name" /></div>
+                      <div className="opt"><label className={lbl}>Costume Design Available</label>
                         <select name="costumeDesignAvailable" value={(formData as any).costumeDesignAvailable || 'false'} onChange={handleInputChange} className={sel}>
                           <option value="false">No — buyer makes own costumes</option>
                           <option value="rent">Yes — available for rent</option>
@@ -629,7 +638,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                         <input type="number" name="scriptRoyaltyPct" value={formData.scriptRoyaltyPct} onChange={handleInputChange} className={inp} placeholder="10" />
                         <p className="text-white/20 text-[9px] italic mt-1">% of gross box office</p>
                       </div>
-                      <div>
+                      <div className="opt">
                         <label className={lbl}>Advance Fee (EUR)</label>
                         <input type="number" name="scriptAdvanceFee" value={formData.scriptAdvanceFee} onChange={handleInputChange} className={inp} placeholder="0" />
                         <p className="text-white/20 text-[9px] italic mt-1">Optional upfront payment</p>
@@ -641,18 +650,18 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
               </section>
 
               {/* 03. MARKET PERFORMANCE */}
-              <section className={sec + " shadow-neo-cyan"}>
+              <section className={sec + " shadow-neo-cyan opt"}>
                 <div className="border-b-2 border-white/10 pb-3 mb-2">
                   <h3 className="text-xl font-black uppercase italic text-brand-cyan">03. Market Performance</h3>
                   <p className="text-white/30 text-xs italic mt-0.5">Track record and audience data.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div><label className={lbl}>Premiere Date</label><input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Premiere Location</label><input name="premiereLocation" value={formData.premiereLocation} onChange={handleInputChange} className={inp} placeholder="Theatre name, City" /></div>
-                  <div><label className={lbl}>Total Performances</label><input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Total Audience</label><input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className={inp} /></div>
-                  <div><label className={lbl}>Locations Played</label><input name="locationsPlayed" value={formData.locationsPlayed} onChange={handleInputChange} className={inp} placeholder="Ljubljana, Berlin, London..." /></div>
-                  <div><label className={lbl}>Box Office</label>
+                  <div className="opt"><label className={lbl}>Premiere Date</label><input name="premiereDate" type="date" value={formData.premiereDate} onChange={handleInputChange} className={inp} /></div>
+                  <div className="opt"><label className={lbl}>Premiere Location</label><input name="premiereLocation" value={formData.premiereLocation} onChange={handleInputChange} className={inp} placeholder="Theatre name, City" /></div>
+                  <div className="opt"><label className={lbl}>Total Performances</label><input name="performancesCount" type="number" value={formData.performancesCount} onChange={handleInputChange} className={inp} /></div>
+                  <div className="opt"><label className={lbl}>Total Audience</label><input name="totalAudience" type="number" value={formData.totalAudience} onChange={handleInputChange} className={inp} /></div>
+                  <div className="opt"><label className={lbl}>Locations Played</label><input name="locationsPlayed" value={formData.locationsPlayed} onChange={handleInputChange} className={inp} placeholder="Ljubljana, Berlin, London..." /></div>
+                  <div className="opt"><label className={lbl}>Box Office</label>
                     <select name="boxOfficeIndicator" value={formData.boxOfficeIndicator} onChange={handleInputChange} className={sel}>
                       <option value="High">High — sold out regularly</option>
                       <option value="Medium">Medium — consistent</option>
@@ -670,23 +679,23 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2"><label className={lbl}>Copyright Holder *</label><input name="rightsHolder" value={formData.rightsHolder} onChange={handleInputChange} className="w-full bg-brand-black border-2 border-brand-yellow/40 px-4 py-3 text-brand-yellow font-bold outline-none focus:border-brand-yellow text-sm" /></div>
-                  <div><label className={lbl}>Rights Status</label>
+                  <div className="opt"><label className={lbl}>Rights Status</label>
                     <select name="rightsStatus" value={formData.rightsStatus} onChange={handleInputChange} className={sel}>
                       <option value="Available">Available</option>
                       <option value="Co-production Only">Co-production Only</option>
                       <option value="Licensed">Licensed</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>License Type</label>
+                  <div className="opt"><label className={lbl}>License Type</label>
                     <select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className={sel}>
                       <option value="License">License</option>
                       <option value="Option">Option</option>
                       <option value="Co-production">Co-production</option>
                     </select>
                   </div>
-                  <div><label className={lbl}>Territories Available</label><input name="territoriesAvailable" value={formData.territoriesAvailable} onChange={handleInputChange} className={inp} placeholder="Global, Europe..." /></div>
-                  <div><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} placeholder="Already licensed in..." /></div>
-                  <div><label className={lbl}>Exclusivity</label>
+                  <div className="opt"><label className={lbl}>Territories Available</label><input name="territoriesAvailable" value={formData.territoriesAvailable} onChange={handleInputChange} className={inp} placeholder="Global, Europe..." /></div>
+                  <div className="opt"><label className={lbl}>Licensed Countries</label><input name="licensedCountries" value={formData.licensedCountries} onChange={handleInputChange} className={inp} placeholder="Already licensed in..." /></div>
+                  <div className="opt"><label className={lbl}>Exclusivity</label>
                     <select name="exclusivityLevel" value={formData.exclusivityLevel} onChange={handleInputChange} className={sel}>
                       <option value="Exclusive">Exclusive per territory</option>
                       <option value="Semi-exclusive">Semi-exclusive</option>

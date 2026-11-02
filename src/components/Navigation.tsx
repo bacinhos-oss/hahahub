@@ -23,9 +23,8 @@ const NAV_COLORS = {
 type NavColor = keyof typeof NAV_COLORS;
 
 const PLAN_STYLES: Record<string, { label: string; color: string }> = {
-  roar: { label: 'ROAR', color: 'text-spectrumLight-red' },
-  laff: { label: 'LAFF', color: 'text-spectrum-orange' },
-  gigl: { label: 'GIGL', color: 'text-spectrumLight-blue' },
+  founding: { label: 'FOUNDING', color: 'text-brand-yellow' },
+  member: { label: 'MEMBER', color: 'text-white/40' },
 };
 
 const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogout, user }) => {
@@ -33,7 +32,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
 
   const isAdmin = user?.role === 'admin' || (user as any)?.isAdmin || (user as any)?.email === 'bacinhos@gmail.com';
 
-  const planKey = (user as any)?.plan === 'roar' ? 'roar' : (user as any)?.plan === 'laff' ? 'laff' : 'gigl';
+  const planKey = (user as any)?.is_founding ? 'founding' : 'member';
   const plan = PLAN_STYLES[planKey];
 
   const go = (page: Page) => { onNavigate(page); setMenuOpen(false); };
