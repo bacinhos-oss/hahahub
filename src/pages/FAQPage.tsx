@@ -17,8 +17,8 @@ const FAQ_CATEGORIES = [
     items: [
       { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your direct route.' },
       { q: 'What is The Laff Exchange?', a: 'The Laff Exchange is our name for the HahaHub catalog — a producer-to-producer marketplace where comedy theatre rights are bought and sold directly, without agents or middlemen.' },
-      { q: 'Do I need to register to browse?', a: 'You can see the catalog in preview mode as a guest, but full dossiers, contact info, and uploads require a Pro membership.' },
-      { q: 'What is the Founding Producer offer?', a: 'The first 30 producers join free forever. No annual fee, ever. In return, upload at least one show with full data and give us feedback to help shape The Laff Exchange.' },
+      { q: 'Do I need to register to browse?', a: 'You can see the catalog in preview mode as a guest, but full dossiers, contact info and uploads need a free account.' },
+      { q: 'Is HahaHub free?', a: 'Yes. Joining is free and needs no credit card. If paid tools are introduced later, we will tell you in advance. The first founding producers keep free access for life.' },
     ]
   },
   {
@@ -29,20 +29,8 @@ const FAQ_CATEGORIES = [
       { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery tools and contract templates — the deal is between you and the producer. No commission.' },
       { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
       { q: 'What rights are available?', a: 'Each show specifies its own rights package — exclusive or non-exclusive, territory-by-territory, royalty-based or flat fee. All terms are set by the originating producer.' },
-      { q: 'Are contract templates included?', a: 'Yes. Pro members get access to a library of contract templates covering performance rights, touring rights, translation rights, and co-production agreements. These are provided for reference and do not constitute legal advice.' },
+      { q: 'Are contract templates included?', a: 'Yes. Members get access to a library of contract templates covering performance rights, touring rights, translation rights, and co-production agreements. These are provided for reference and do not constitute legal advice.' },
       { q: 'What is the Transparency Score?', a: 'Every show is rated 0–100 based on the completeness of its commercial data — cast size, rights terms, budget range, royalty range, and more. Higher score = more ready to license.' },
-    ]
-  },
-  {
-    category: 'Payments & Subscriptions',
-    icon: 'credit_card',
-    color: 'brand-cyan',
-    items: [
-      { q: 'What payment methods do you accept?', a: 'We currently accept PayPal. Stripe integration is coming soon. All prices are in EUR.' },
-      { q: 'Can I cancel or get a refund?', a: 'Subscriptions are annual and non-refundable. They do not auto-renew — you will be notified 30 days before expiry.' },
-      { q: 'What is included in the Pro plan?', a: 'Full catalog access, unlimited show uploads, direct contact with rights holders, contract templates, performance analytics, The Dossier PDF download, and priority support — all for €99/year.' },
-      { q: 'What is the Studio plan?', a: 'The Studio / Production House plan at €299/year adds verified badge, priority listing, multi-user access, and dedicated support. Currently in beta — contact us to reserve your spot.' },
-      { q: 'Are there any per-inquiry or commission fees?', a: 'Never. HahaHub charges a flat annual membership fee only. We take no cut from any licensing deal.' },
     ]
   },
   {
@@ -50,7 +38,7 @@ const FAQ_CATEGORIES = [
     icon: 'upload',
     color: 'brand-yellow',
     items: [
-      { q: 'Can I list my own show?', a: 'Yes. Every Pro member can upload unlimited shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
+      { q: 'Can I list my own show?', a: 'Yes. Every member can upload shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
       { q: 'What do I need to upload a show?', a: 'You need: show poster/image, synopsis, cast breakdown, rights terms, royalty range, and a 3-page script scenario in English. The more data you provide, the higher your Transparency Score.' },
       { q: 'What languages are supported?', a: 'The Laff Exchange is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
       { q: 'Can I upload a show that is not yet produced?', a: 'Currently HahaHub focuses on shows that have been produced and have performance history. We may expand to pre-production in the future.' },
@@ -62,9 +50,9 @@ const FAQ_CATEGORIES = [
     color: 'brand-pink',
     items: [
       { q: 'What is STEFUNNY?', a: 'STEFUNNY — Tickle Finder is our smart search. Type anything — genre, country, cast size, humor type, keywords — and STEFUNNY finds matching shows across the full catalog.' },
-      { q: 'What is The Dossier?', a: 'The Dossier is a downloadable press kit for each show — a branded HTML/PDF document with full production specs, rights terms, transparency score, and contact info. Available to Pro members.' },
+      { q: 'What is The Dossier?', a: 'The Dossier is a downloadable press kit for each show — a branded HTML/PDF document with full production specs, rights terms, transparency score, and contact info. Available to members.' },
       { q: 'Is my data safe?', a: 'Yes. HahaHub is built on Supabase with row-level security. Your uploaded show data and contact information are never shared with third parties.' },
-      { q: 'How do I contact support?', a: 'Email us at info@hahahub.art. Pro members get priority response within 1 business day.' },
+      { q: 'How do I contact support?', a: 'Email us at info@hahahub.art. We usually reply within 1 business day.' },
     ]
   },
 ];
@@ -149,7 +137,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate, onLogout, user }) => {
           ))}
 
           {/* STILL HAVE QUESTIONS */}
-          <section className="border-8 border-brand-yellow p-8 md:p-12 text-center shadow-neo-yellow">
+          <section className="border border-white/10 p-8 md:p-12 text-center">
             <h2 className="text-3xl md:text-5xl font-black uppercase italic text-white mb-4">Still Have<br/><span className="text-brand-yellow">Questions?</span></h2>
             <p className="text-white/40 font-bold italic mb-8">We're a small team of producers. We actually reply.</p>
             <a

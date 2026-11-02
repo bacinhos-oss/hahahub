@@ -11,6 +11,7 @@ module.exports = {
         brand: {
           black:   '#050505',
           dark:    '#121212',
+          surface: '#141414',
           pink:    '#FF0266',
           magenta: '#FF0266',
           yellow:  '#FFDE03',
