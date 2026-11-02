@@ -69,7 +69,7 @@ h1 { font-size: 40px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <h1>Welcome,<br/>${name}.</h1>
   <p style="color:rgba(255,255,255,0.6);font-style:italic;font-size:16px;">You're set up. Time to hunt. Or deploy. Or both.</p>
@@ -116,7 +116,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="paid">✓ Payment Confirmed</div>
   <h1>Punchline<br/>Delivered.</h1>
@@ -161,7 +161,7 @@ h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="badge">💬 Reply Received</div>
   <h1>${buyerName},<br/>You Got a Reply.</h1>
@@ -197,7 +197,7 @@ body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin:
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="badge">${feedbackType === 'bug' ? '🐛 Bug Report' : feedbackType === 'idea' ? '💡 Idea' : '💬 Feedback'}</div>
   <div class="msg">${message.replace(/\n/g, '<br>')}</div>
   <div class="meta">
@@ -230,7 +230,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="badge">🎭 Tickle Sent!</div>
   <h1>Your Tickle<br/>Is Out There.</h1>
@@ -284,7 +284,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="badge">✓ Deal Closed</div>
   <h1>${isseller ? 'Your Show<br/>Is Going On.' : 'Curtain Up.<br/>Deal Is Closed.'}</h1>
@@ -331,7 +331,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="badge">✓ Deal Signed!</div>
   <h1>Punchline<br/>Landed.</h1>
@@ -366,7 +366,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="badge">✓ Contract Confirmed!</div>
   <h1>You're In.<br/>Curtain Up.</h1>
@@ -402,7 +402,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="badge">🎭 Beta Check-In</div>
   <h1>${name},<br/>9 days in.<br/>How's it going?</h1>
@@ -447,7 +447,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 </style></head>
 <body>
 <div class="container">
-  <div class="logo">HAHAHUB</div>
+  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
   <div class="warning">⚠ ${daysLeft} Days Left</div>
   <h1>Don't Leave<br/>Them Hanging.</h1>

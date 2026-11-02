@@ -137,6 +137,15 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             // Send founding welcome email — only to actual founding members,
             // not every invited/admin paid signup.
             const houseAccounts = ['bacinhos@gmail.com', 'batocaninmaj@gmail.com', 'usmerjeni.prosti.cas@gmail.com'];
+            if (!isFounding && !isAdmin && !houseAccounts.includes(signupEmail)) {
+              try {
+                await fetch('/api/send-email', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ type: 'welcome', to: signupEmail, data: { name: name.toUpperCase(), email: signupEmail } })
+                });
+              } catch (e) { console.error('Welcome email failed:', e) }
+            }
             if (isFounding && !houseAccounts.includes(signupEmail)) {
               const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_founding', true).not('email', 'in', '("bacinhos@gmail.com","batocaninmaj@gmail.com","usmerjeni.prosti.cas@gmail.com")');
               const spotNumber = count || 1;
