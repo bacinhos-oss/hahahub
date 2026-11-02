@@ -51,7 +51,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onLogout, user }) => 
           <section className="space-y-5">
             <p className="text-xs font-bold uppercase tracking-[0.35em] text-white/50">Mission</p>
             <h1 className="font-display text-white text-4xl sm:text-6xl md:text-7xl leading-[0.95] tracking-tight">
-              Theatre comedy <span className="text-brand-pink">travels.</span>
+              Theatre comedy <span className="text-spectrumLight-blue">travels.</span>
             </h1>
             <p className="text-lg md:text-xl text-white/60 font-bold italic max-w-2xl leading-relaxed">
               The best theatre comedy in Europe is invisible, because language gets in the way. HahaHub removes that wall. Like the travelling troupes of old, from show to show and city to city.

@@ -251,7 +251,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
           <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none text-white">
             {activeTab === 'analytics' ? 'PRODUCERS' : activeTab === 'access' ? 'INVITES' : 'ARCHIVE'}
           </h1>
-          <div className="h-2 w-32 bg-brand-pink mt-2"></div>
+          <div className="h-2 w-32 bg-spectrumLight-red mt-2"></div>
         </div>
 
         {/* PRODUCERS TAB */}

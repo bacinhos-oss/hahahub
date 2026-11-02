@@ -12,15 +12,15 @@ interface PrivacyPageProps {
 const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate, onLogout, user }) => {
   return (
     <div className="min-h-screen bg-brand-black flex flex-col">
-      <Navigation activePage="about" onNavigate={onNavigate} onLogout={onLogout} user={user} />
+      <Navigation activePage="privacy" onNavigate={onNavigate} onLogout={onLogout} user={user} />
 
       <main className="flex-1 pt-40 pb-20 px-6 md:px-12 overflow-y-auto">
         <div className="max-w-4xl mx-auto space-y-16">
 
           <section className="space-y-6">
-            <span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] rotate-[-2deg] inline-block italic">Legal</span>
-            <h1 className="text-7xl md:text-[100px] font-black uppercase italic tracking-tighter text-brand-yellow leading-none">
-              PRIVACY<br /><span className="text-white">POLICY.</span>
+            <span className="bg-spectrum-purple text-white px-4 py-1 text-xs font-black uppercase tracking-[0.4em] rotate-[-2deg] inline-block italic">Legal</span>
+            <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none">
+              PRIVACY<br /><span className="text-spectrumLight-purple">POLICY.</span>
             </h1>
             <p className="text-white/40 font-bold italic">Last updated: April 2025</p>
           </section>

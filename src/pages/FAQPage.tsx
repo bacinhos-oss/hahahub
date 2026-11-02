@@ -73,7 +73,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate, onLogout, user }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-black">
-      <Navigation activePage="landing" onNavigate={onNavigate} onLogout={onLogout} user={user} />
+      <Navigation activePage="faq" onNavigate={onNavigate} onLogout={onLogout} user={user} />
 
       <main className="pt-32 pb-20 px-4 md:px-12">
         <div className="max-w-4xl mx-auto space-y-16">
@@ -82,7 +82,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ onNavigate, onLogout, user }) => {
           <section className="space-y-6">
             <p className="text-xs font-bold uppercase tracking-[0.35em] text-white/50">FAQ</p>
             <h1 className="font-display text-white text-4xl sm:text-6xl md:text-7xl leading-[0.95] tracking-tight">
-              Questions <span className="text-brand-pink">&amp; answers.</span>
+              Questions <span className="text-spectrumLight-purple">&amp; answers.</span>
             </h1>
             <p className="text-white/50 font-bold italic text-lg">Everything you need to know about The Laff Exchange.</p>
 

@@ -16,6 +16,7 @@ const NAV_COLORS = {
   pink:   { active: 'border-brand-pink text-brand-pink',     hover: 'hover:text-brand-pink',   mobile: 'text-white/70 hover:text-brand-pink' },
   cyan:   { active: 'border-brand-cyan text-brand-cyan',     hover: 'hover:text-brand-cyan',   mobile: 'text-brand-cyan/70 hover:text-brand-cyan' },
   blue:   { active: 'border-spectrumLight-blue text-spectrumLight-blue',   hover: 'hover:text-spectrumLight-blue',   mobile: 'text-white/70 hover:text-spectrumLight-blue' },
+  purple: { active: 'border-spectrumLight-purple text-spectrumLight-purple', hover: 'hover:text-spectrumLight-purple', mobile: 'text-white/70 hover:text-spectrumLight-purple' },
   green:  { active: 'border-spectrumLight-green text-spectrumLight-green', hover: 'hover:text-spectrumLight-green', mobile: 'text-white/70 hover:text-spectrumLight-green' },
 } as const;
 
@@ -75,7 +76,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           {navBtn('discovery', 'CATALOG', 'yellow')}
           {user && navBtn('wire', 'LAFFWIRE', 'pink')}
           {navBtn('about', 'MISSION', 'blue')}
-          {!user && navBtn('faq', 'FAQ', 'yellow')}
+          {!user && navBtn('faq', 'FAQ', 'purple')}
           {user && navBtn('subscription', 'MY HUB', 'green')}
           {user && navBtn('upload', 'SHOWLOAD', 'cyan')}
           {isAdmin && navBtn('admin', 'ADMIN', 'pink')}
@@ -126,7 +127,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
             {mobileBtn('discovery', 'CATALOG', 'yellow')}
             {user && mobileBtn('wire', 'LAFFWIRE', 'pink')}
             {mobileBtn('about', 'MISSION', 'blue')}
-            {!user && mobileBtn('faq', 'FAQ', 'yellow')}
+            {!user && mobileBtn('faq', 'FAQ', 'purple')}
             {user && mobileBtn('subscription', 'MY HUB', 'green')}
             {user && mobileBtn('upload', 'SHOWLOAD', 'cyan')}
             {isAdmin && mobileBtn('admin', 'ADMIN', 'pink')}

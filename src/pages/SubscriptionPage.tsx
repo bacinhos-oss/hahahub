@@ -1072,7 +1072,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             {/* HEADER */}
             <section className="flex flex-col md:flex-row items-end justify-between gap-10">
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">My <span className="text-brand-pink">Hub</span></h1>
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">My <span className="text-spectrumLight-green">Hub</span></h1>
               <div className="flex items-center gap-6">
                 <div className="bg-brand-surface border-2 border-white p-6 ">
                   <p className="text-xl font-black uppercase italic">{user.name}</p>
@@ -1167,7 +1167,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {activeTab === 'assets' && (
             <section className="space-y-8">
               <div className="flex items-center justify-between">
-                <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-yellow">Assets</span></h2>
+                <h2 className="text-4xl font-black uppercase italic">My <span className="text-spectrumLight-green">Shows</span></h2>
                 <button onClick={() => onNavigate('upload')} className="bg-brand-cyan text-black px-8 py-3 font-black uppercase text-xs border-2 border-black  italic hover:bg-brand-yellow transition-all">+ List Your Show</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1217,7 +1217,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             {activeTab === 'studio' && user && (
             <section className="space-y-6">
               <div>
-                <h2 className="text-4xl font-black uppercase italic">PRODUCER <span className="text-brand-pink">STUDIO</span></h2>
+                <h2 className="text-4xl font-black uppercase italic">PRODUCER <span className="text-spectrumLight-green">STUDIO</span></h2>
                 <p className="text-white/30 font-bold italic text-xs mt-1 uppercase tracking-widest">Your business command center</p>
               </div>
               <div className="flex gap-0 border-b-4 border-white/10 overflow-x-auto -mx-4 px-4">
@@ -1251,7 +1251,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                         {activeTab === 'profile' && (
               <section className="space-y-8">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-4xl font-black uppercase italic">My <span className="text-brand-cyan">Profile</span></h2>
+                  <h2 className="text-4xl font-black uppercase italic">My <span className="text-spectrumLight-green">Profile</span></h2>
                   <button
                     onClick={() => { onNavigate('producer'); }}
                     className="bg-brand-cyan text-black px-6 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all flex items-center gap-2"

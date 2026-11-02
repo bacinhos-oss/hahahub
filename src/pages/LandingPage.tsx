@@ -48,7 +48,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
   const join = () => onNavigate('login');
 
   const navLink = (label: string, page: Page) => (
-    <button onClick={() => onNavigate(page)} className="text-xs font-black tracking-widest uppercase italic pb-1 border-b-4 border-transparent text-white/60 hover:text-brand-yellow hover:border-white/40 transition-all">{label}</button>
+    <button onClick={() => onNavigate(page)} className="text-xs font-black tracking-widest uppercase italic pb-1 border-b-4 border-transparent text-white/60 hover:text-white hover:border-white/40 transition-all">{label}</button>
   );
 
   return (

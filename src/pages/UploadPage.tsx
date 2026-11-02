@@ -288,7 +288,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
 
           <header>
             <h1 className="text-5xl md:text-7xl font-black uppercase italic leading-none">
-              LIST YOUR <span className="text-brand-pink">SHOW</span>
+              LIST YOUR <span className="text-brand-cyan">SHOW</span>
             </h1>
             <p className="text-white/30 text-xs italic mt-2 font-black uppercase tracking-widest">
               Fields marked <span className="text-brand-pink">*</span> are required before publishing.

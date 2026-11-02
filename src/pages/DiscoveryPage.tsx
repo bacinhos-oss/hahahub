@@ -1420,7 +1420,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             <div className="flex flex-col gap-2">
               <span className="text-brand-cyan text-[10px] font-black uppercase tracking-[0.5em] italic">TICKLE. SET UP. PUNCH.</span>
               <h1 className="font-display text-white text-4xl sm:text-5xl md:text-6xl leading-[0.95] tracking-tight">
-                The Laff <span className="text-brand-pink">Exchange</span>
+                The Laff <span className="text-brand-yellow">Exchange</span>
               </h1>
             </div>
 

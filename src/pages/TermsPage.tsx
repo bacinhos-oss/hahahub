@@ -15,7 +15,7 @@ const TermsPage: React.FC<Props> = ({ onNavigate, onLogout, user }) => {
       <main className="max-w-3xl mx-auto px-6 py-24 space-y-10">
         <div>
           <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-2">Legal</p>
-          <h1 className="text-5xl font-black uppercase italic text-white tracking-tighter">Terms of Service</h1>
+          <h1 className="text-5xl font-black uppercase italic text-white tracking-tighter">Terms <span className="text-spectrumLight-purple">of Service</span></h1>
           <p className="text-white/40 text-sm mt-3">Last updated: November 2026</p>
         </div>
 
