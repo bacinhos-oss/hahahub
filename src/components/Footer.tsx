@@ -31,7 +31,6 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="flex flex-col gap-3">
                 <button onClick={() => onNavigate('discovery')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">The Laff Exchange</button>
                 <button onClick={() => onNavigate('about')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">Mission</button>
-                <button onClick={() => onNavigate('pricing')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">Pricing</button>
                 <button onClick={() => onNavigate('faq')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">FAQ</button>
                 <button onClick={() => onNavigate('subscription')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">My Hub</button>
                 <button onClick={() => onNavigate('login')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">Sign In</button>

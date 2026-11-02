@@ -68,8 +68,8 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           onClick={() => go(user ? 'discovery' : 'landing')}
           className="flex flex-col items-start hover:scale-105 transition-transform"
         >
-          <Logo height={28} className="md:hidden" />
-          <Logo height={40} className="hidden md:block" />
+          <Logo height={34} className="md:hidden" />
+          <Logo height={50} className="hidden md:block" />
         </button>
 
         {/* DESKTOP NAV */}
