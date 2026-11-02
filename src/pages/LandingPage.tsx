@@ -47,7 +47,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
   const join = () => onNavigate('login');
 
   const navLink = (label: string, page: Page) => (
-    <button onClick={() => onNavigate(page)} className="text-sm font-bold text-white/70 hover:text-white transition-colors">{label}</button>
+    <button onClick={() => onNavigate(page)} className="text-xs font-black tracking-widest uppercase italic pb-1 border-b-4 border-transparent text-white/60 hover:text-brand-yellow hover:border-white/40 transition-all">{label}</button>
   );
 
   return (
@@ -68,7 +68,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={join} className="bg-white/10 text-white font-bold px-5 py-2 text-sm hover:bg-white hover:text-black transition-colors">
+            <button onClick={join} className="bg-white text-black font-black px-6 py-2 text-xs md:text-sm uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
               Sign in
             </button>
           </div>
@@ -100,10 +100,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
               HahaHub is the international professional network for theatre comedy producers. Showcase productions, discover new titles, connect directly with fellow producers, and create new licensing opportunities.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <button onClick={join} className="bg-white text-black font-bold px-8 py-4 text-base hover:bg-brand-pink hover:text-white transition-colors">
+              <button onClick={join} className="bg-white text-black font-black px-8 py-4 text-sm md:text-base uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
                 Join free
               </button>
-              <button onClick={open} className="bg-white/10 text-white font-bold px-8 py-4 text-base backdrop-blur hover:bg-white/20 transition-colors">
+              <button onClick={open} className="bg-white/10 text-white font-black px-8 py-4 text-sm md:text-base uppercase tracking-widest italic backdrop-blur hover:bg-white/20 transition-colors">
                 Browse the catalog
               </button>
             </div>
@@ -124,8 +124,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
               .ticker-track:hover { animation-play-state: paused; }
             `}</style>
             <div className="px-4 md:px-12 max-w-[1500px] mx-auto flex items-baseline justify-between mb-4">
-              <h2 className="text-xl md:text-2xl font-bold text-white">In the catalog</h2>
-              <button onClick={open} className="text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors">See all →</button>
+              <h2 className="text-xl md:text-2xl font-black uppercase italic tracking-tight text-white">In the catalog</h2>
+              <button onClick={open} className="text-xs font-black uppercase italic tracking-widest text-white/50 hover:text-white transition-colors">See all →</button>
             </div>
             <div className="ticker-track">
               {[...latest, ...latest].map((s, i) => <Poster key={i} show={s} onClick={open} />)}
@@ -135,32 +135,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
 
         {/* PILLARS */}
         <section className="max-w-[1500px] mx-auto px-4 md:px-12 py-16 md:py-24">
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-12 max-w-3xl leading-tight">
+          <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white mb-12 max-w-3xl leading-tight">
             Find comedy shows from around the world and license them directly from the producers.
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-12">
             {PILLARS.map(p => (
               <div key={p.title}>
                 <span className="material-symbols-outlined text-3xl text-brand-pink mb-4 block">{p.icon}</span>
-                <h3 className="text-lg font-bold text-white mb-2">{p.title}</h3>
-                <p className="text-white/60 leading-relaxed">{p.text}</p>
+                <h3 className="text-lg font-black uppercase italic tracking-widest text-white mb-2">{p.title}</h3>
+                <p className="text-white/60 font-bold italic leading-relaxed">{p.text}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* CLOSING CTA */}
-        <section className="relative border-t border-white/10">
-          <div className="max-w-3xl mx-auto px-4 py-20 md:py-28 text-center">
-            <h2 className="font-display text-white text-4xl md:text-6xl leading-tight mb-4">Find your next show.</h2>
-            <p className="text-white/60 text-lg mb-8">Join free with your email. No credit card.</p>
-            <button onClick={join} className="bg-white text-black font-bold px-10 py-4 text-base hover:bg-brand-pink hover:text-white transition-colors">
-              Join free
-            </button>
-            <p className="mt-10 text-xs text-white/30 leading-relaxed max-w-xl mx-auto">
-              HahaHub is a discovery tool for professionals aged 18+ and is not a party to any licensing agreement between users. Shows remain the property of their rights holders.
-            </p>
-          </div>
+        {/* LEGAL */}
+        <section className="border-t border-white/10">
+          <p className="max-w-3xl mx-auto px-4 py-10 text-center text-xs text-white/30 leading-relaxed">
+            HahaHub is a discovery tool for professionals aged 18+ and is not a party to any licensing agreement between users. Shows remain the property of their rights holders.
+          </p>
           <SpectrumBar height={6} />
         </section>
       </main>
