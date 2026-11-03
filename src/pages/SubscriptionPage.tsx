@@ -299,6 +299,41 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const verifyKey = `hh_verify_requested_${(user as any)?.id || ''}`;
+  const [verifyRequested, setVerifyRequested] = useState<boolean>(() => {
+    try { return localStorage.getItem(verifyKey) === '1'; } catch { return false; }
+  });
+  const [verifySending, setVerifySending] = useState(false);
+  const requestVerification = async () => {
+    if (!user) return;
+    setVerifySending(true);
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'feedback',
+          to: 'info@hahahub.art',
+          data: {
+            feedbackType: 'verify',
+            message: `${user.name} (${user.email}) asks to be verified.\nShows listed: ${userUploads.length}\nProfile: https://hahahub.art/#producer`,
+            url: window.location.href,
+            ts: new Date().toISOString(),
+          },
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setVerifyRequested(true);
+        try { localStorage.setItem(verifyKey, '1'); } catch { /* ignore */ }
+      } else {
+        alert('Could not send the request. Please email info@hahahub.art.');
+      }
+    } catch {
+      alert('Could not send the request. Please email info@hahahub.art.');
+    }
+    setVerifySending(false);
+  };
   const welcomeKey = `hh_welcome_dismissed_${(user as any)?.id || ''}`;
   const [welcomeDismissed, setWelcomeDismissed] = useState<boolean>(() => {
     try { return localStorage.getItem(welcomeKey) === '1'; } catch { return false; }
@@ -1091,6 +1126,20 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       ))}
                       {user.isAdmin && <Badge type="roar" size="md" showLabel />}
                     </div>
+                    {!user.isAdmin && !(user as any).is_verified && (
+                      verifyRequested ? (
+                        <span className="text-[10px] font-black uppercase italic tracking-widest text-brand-cyan">Verification requested ✓</span>
+                      ) : (
+                        <button
+                          onClick={requestVerification}
+                          disabled={verifySending || userUploads.length === 0}
+                          title={userUploads.length === 0 ? 'List a show first' : 'Ask HahaHub to verify your profile'}
+                          className="text-[10px] font-black uppercase italic tracking-widest text-brand-cyan border border-brand-cyan/40 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          {verifySending ? 'Sending…' : 'Request verification'}
+                        </button>
+                      )
+                    )}
                   </div>
                 </div>
               </div>

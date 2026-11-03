@@ -129,7 +129,7 @@ const templates = {
   }),
 
   feedback: ({ feedbackType, message, url, ts }) => {
-    const kind = feedbackType === 'bug' ? 'Bug report' : feedbackType === 'idea' ? 'Idea' : 'Feedback';
+    const kind = feedbackType === 'bug' ? 'Bug report' : feedbackType === 'idea' ? 'Idea' : feedbackType === 'verify' ? 'Verification request' : 'Feedback';
     const color = feedbackType === 'bug' ? '#EF4986' : feedbackType === 'idea' ? '#FFC80E' : '#19A596';
     return {
       subject: `[HahaHub] ${String(feedbackType || 'feedback').toUpperCase()} — ${new Date(ts).toLocaleDateString('en-GB')}`,
