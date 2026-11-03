@@ -71,3 +71,27 @@ body {
   .hh-logo-idle i, .hh-float { animation: none !important; }
   .hh-float { display: none; }
 }
+
+/* ===== Laughing smile ===== */
+.hh-smile { position: relative; display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.hh-smile:hover img { animation: hh-giggle .55s ease-in-out; }
+.hh-smile-laughing img { animation: hh-laugh .95s ease-in-out !important; }
+@keyframes hh-giggle { 0%, 100% { transform: rotate(0) scale(1); } 20% { transform: rotate(-6deg) scale(1.05); } 40% { transform: rotate(6deg) scale(1.05); } 60% { transform: rotate(-4deg); } 80% { transform: rotate(3deg); } }
+@keyframes hh-laugh {
+  0% { transform: translateY(0) scale(1, 1) rotate(0); }
+  12% { transform: translateY(-9%) scale(1.1, .92) rotate(-5deg); }
+  25% { transform: translateY(0) scale(.94, 1.07) rotate(4deg); }
+  38% { transform: translateY(-7%) scale(1.08, .94) rotate(-4deg); }
+  52% { transform: translateY(0) scale(.96, 1.05) rotate(3deg); }
+  66% { transform: translateY(-4%) scale(1.04, .97) rotate(-2deg); }
+  100% { transform: translateY(0) scale(1, 1) rotate(0); }
+}
+.hh-ha { position: absolute; left: 50%; top: 10%; white-space: nowrap; font-weight: 900; font-style: italic; letter-spacing: .04em; pointer-events: none; opacity: 0; z-index: 60; animation: hh-ha 1.5s cubic-bezier(.2,.7,.3,1) forwards; }
+@keyframes hh-ha {
+  0% { transform: translate(-50%, 0) scale(.5) rotate(0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--x)), -150px) scale(1.15) rotate(var(--r)); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hh-smile:hover img, .hh-smile-laughing img { animation: none !important; }
+}
