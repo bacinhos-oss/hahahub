@@ -139,7 +139,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             <div className="lg:w-1/3 border-b-4 lg:border-b-0 lg:border-r-4 border-white bg-brand-black overflow-hidden z-10 relative">
                 <div className="flex flex-col h-full">
                   {/* POSTER */}
-                  <div className="relative flex-shrink-0 aspect-[2/3]">
+                  <div className="relative flex-shrink-0 aspect-[2/3] max-w-[calc(70vh*2/3)] lg:max-w-none mx-auto lg:mx-0 w-full">
                     <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center" alt={selectedShow.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                     <div className="absolute bottom-3 left-4 z-10">
@@ -147,21 +147,19 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     </div>
                   </div>
 
-                  {/* PRODUCTION PHOTOS */}
-                  <div className="border-t-4 border-white flex-1 px-3 pt-3 pb-3">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan italic mb-3">Photos from Production</p>
-                    <div className="space-y-2">
-                      {[0, 1, 2].map(i => (
-                        <div key={i} className="w-full border-2 border-dashed border-white/20 overflow-hidden bg-white/5 flex items-center justify-center" style={{aspectRatio:"16/9"}}>
-                          {selectedShow.productionPhotos && selectedShow.productionPhotos[i] ? (
-                            <img src={selectedShow.productionPhotos[i]} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
-                          ) : (
-                            <span className="material-symbols-outlined text-white/10 text-3xl">add_photo_alternate</span>
-                          )}
-                        </div>
-                      ))}
+                  {/* PRODUCTION PHOTOS — only shown when the producer uploaded some */}
+                  {selectedShow.productionPhotos && selectedShow.productionPhotos.filter(Boolean).length > 0 && (
+                    <div className="border-t-4 border-white flex-1 px-3 pt-3 pb-3">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-brand-cyan italic mb-3">Photos from Production</p>
+                      <div className="space-y-2">
+                        {selectedShow.productionPhotos.filter(Boolean).slice(0, 3).map((url: string, i: number) => (
+                          <div key={i} className="w-full border-2 border-white/20 overflow-hidden bg-white/5" style={{aspectRatio:"16/9"}}>
+                            <img src={url} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
             </div>
 
