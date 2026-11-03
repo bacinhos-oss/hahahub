@@ -306,12 +306,8 @@ const App: React.FC = () => {
         alert('Could not save your like (' + favErr.message + '). Please log out and in again, or contact info@hahahub.art.')
         return
       }
-      // Read fresh value from DB to avoid stale closure race condition
-      const { data: freshShow } = await supabase.from('shows').select('likes_count').eq('id', showId).maybeSingle()
-      const currentLikes = freshShow?.likes_count || 0
-      await supabase.from('shows').update({
-        likes_count: Math.max(0, currentLikes + (isFav ? -1 : 1))
-      }).eq('id', showId)
+      const { error: likeErr } = await supabase.rpc('adjust_show_likes', { p_show_id: showId, p_delta: isFav ? -1 : 1 })
+      if (likeErr) console.error('adjust_show_likes failed:', likeErr)
     }
   }
 
@@ -333,8 +329,8 @@ const App: React.FC = () => {
       if (viewError) console.error('record_show_view failed:', viewError)
     }
     if (type === 'inquiry') {
-      const { data } = await supabase.from('shows').select('inquiries_count').eq('id', showId).maybeSingle()
-      await supabase.from('shows').update({ inquiries_count: (data?.inquiries_count || 0) + 1 }).eq('id', showId)
+      const { error: inqErr } = await supabase.rpc('bump_show_inquiries', { p_show_id: showId })
+      if (inqErr) console.error('bump_show_inquiries failed:', inqErr)
     }
   }
 

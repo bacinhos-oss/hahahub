@@ -103,17 +103,6 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           return
         }
         const signupEmail = email.trim().toLowerCase()
-        // Dot-stripped form used ONLY to find a matching pending invite —
-        // Gmail folds dots for delivery, so an invite sent to one variant
-        // should still match a signup using another. The account itself is
-        // created with signupEmail (below), so future logins (which do a
-        // plain trim/lowercase match against what Supabase actually stored)
-        // keep working normally, regardless of how this invite was typed.
-        const inviteLookupEmail = normalizeEmail(email)
-        // Check if invited — ilike + trim guards against casing/whitespace
-        // mismatches between what the admin typed and what the user types,
-        // which previously left registered users stuck showing 'pending'.
-        const { data: invite } = await supabase.from('invitations').select('id, plan, type').ilike('email', inviteLookupEmail).eq('status', 'pending').maybeSingle()
         const isAdmin = signupEmail === ADMIN_EMAIL
         // FREE JOIN: anyone can register, no invite or payment needed
         const { data, error: signUpError } = await supabase.auth.signUp({ email: signupEmail, password })
@@ -121,18 +110,19 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         if (data.user) {
           const isPaid = true
           const userType = 'roar'
-          const isFounding = invite?.type === 'founding'
-          if (invite) {
-            const { error: updateError } = await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
-            if (updateError) console.error('Failed to mark invitation as used:', updateError)
-          }
-          const { error: profileError } = await supabase.from('profiles').upsert([{ id: data.user.id, name: name.toUpperCase(), email: signupEmail, is_paid: isPaid, is_founding: isFounding, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }], { onConflict: 'id' })
+          let isFounding = false
+          const { error: profileError } = await supabase.from('profiles').upsert([{ id: data.user.id, name: name.toUpperCase(), email: signupEmail, is_paid: isPaid, is_founding: false, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }], { onConflict: 'id' })
           if (profileError) {
             console.error('Profile creation failed:', profileError)
             setError('Something went wrong creating your account. Please contact info@hahahub.art so we can fix it.')
             setLoading(false)
             return
           }
+          // Claim a pending invitation for this email (server-side; also sets the founding badge)
+          try {
+            const { data: claimed } = await supabase.rpc('claim_invitation')
+            isFounding = claimed === 'founding'
+          } catch (e) { console.error('claim_invitation failed:', e) }
           if (isPaid) {
             // Send founding welcome email — only to actual founding members,
             // not every invited/admin paid signup.

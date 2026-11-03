@@ -92,7 +92,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
     const next = isNowLiked ? current + 1 : Math.max(0, current - 1);
     setLiked(p => ({ ...p, [postId]: isNowLiked }));
     setLikeCounts(p => ({ ...p, [postId]: next }));
-    await supabase.from('posts').update({ likes_count: next }).eq('id', postId);
+    await supabase.rpc('adjust_post_likes', { p_post_id: postId, p_delta: isNowLiked ? 1 : -1 });
   };
 
   const timeAgo = (d: string) => {
