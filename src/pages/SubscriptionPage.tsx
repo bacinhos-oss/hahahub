@@ -299,6 +299,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [realStats, setRealStats] = useState({ totalViews: 0, totalInquiries: 0, totalLikes: 0 });
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const welcomeKey = `hh_welcome_dismissed_${(user as any)?.id || ''}`;
+  const [welcomeDismissed, setWelcomeDismissed] = useState<boolean>(() => {
+    try { return localStorage.getItem(welcomeKey) === '1'; } catch { return false; }
+  });
+  const dismissWelcome = () => {
+    setWelcomeDismissed(true);
+    try { localStorage.setItem(welcomeKey, '1'); } catch { /* ignore */ }
+  };
   const [sentInquiries, setSentInquiries] = useState<any[]>([]);
   const [laffRoyaltyReports, setLaffRoyaltyReports] = useState<any[]>([]);
   const [laffIncomingReports, setLaffIncomingReports] = useState<any[]>([]);
@@ -1089,8 +1097,9 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             </section>
 
             {/* ONBOARDING TOUR — samo za nove producente brez uploadov */}
-            {userUploads.length === 0 && !user.isAdmin && (
-              <section className="border-2 border-brand-yellow bg-brand-yellow/5 p-6 md:p-8">
+            {userUploads.length === 0 && !user.isAdmin && !welcomeDismissed && (
+              <section className="relative border-2 border-brand-yellow bg-brand-yellow/5 p-6 md:p-8">
+                <button onClick={dismissWelcome} aria-label="Dismiss" title="Dismiss" className="absolute top-3 right-3 text-white/40 hover:text-white"><span className="material-symbols-outlined">close</span></button>
                 <div className="flex items-start gap-4 mb-6">
                   <span className="text-3xl">🎭</span>
                   <div>
@@ -1111,7 +1120,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                       </div>
                       <h4 className="font-black uppercase italic text-white text-sm mb-2">{item.title}</h4>
                       <p className="text-white/40 text-xs font-bold italic leading-relaxed mb-4">{item.desc}</p>
-                      <button onClick={() => onNavigate(item.page)} className={`text-[10px] font-black uppercase italic text-${item.color} hover:underline`}>{item.action}</button>
+                      <button onClick={() => { dismissWelcome(); onNavigate(item.page); }} className={`text-[10px] font-black uppercase italic text-${item.color} hover:underline`}>{item.action}</button>
                     </div>
                   ))}
                 </div>
