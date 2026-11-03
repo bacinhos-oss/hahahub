@@ -552,15 +552,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">04. MARKET PERFORMANCE</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'N/A'}</p></div>
+                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'Not specified'}</p></div>
                            <span className="material-symbols-outlined text-brand-yellow">calendar_today</span>
                         </div>
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p><p className="text-base font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p></div>
+                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p>{selectedShow.performancesCount > 0 ? <p className="text-base font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
                            <span className="material-symbols-outlined text-brand-cyan">theater_comedy</span>
                         </div>
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p><p className="text-base font-black text-brand-pink">{(selectedShow.totalAudience || 0).toLocaleString()}</p></div>
+                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p>{selectedShow.totalAudience > 0 ? <p className="text-base font-black text-brand-pink">{selectedShow.totalAudience.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
                            <span className="material-symbols-outlined text-brand-pink">groups</span>
                         </div>
                         <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
@@ -1276,8 +1276,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     statBox('Premiere Location', show.premiereLocation || '—', margin + col3 + 4, y, col3);
     statBox('Box Office', show.boxOfficeIndicator, margin + (col3 + 4) * 2, y, col3);
     y += 18;
-    statBox('Total Performances', String(show.performancesCount || 0), margin, y, col3);
-    statBox('Total Audience', String(show.totalAudience || 0), margin + col3 + 4, y, col3);
+    statBox('Total Performances', (show.performancesCount > 0 ? String(show.performancesCount) : 'Not specified'), margin, y, col3);
+    statBox('Total Audience', (show.totalAudience > 0 ? String(show.totalAudience) : 'Not specified'), margin + col3 + 4, y, col3);
     statBox('Production Year', String(show.productionYear), margin + (col3 + 4) * 2, y, col3);
     y += 18;
     if ((show as any).locationsPlayed) {
