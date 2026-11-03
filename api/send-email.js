@@ -18,7 +18,7 @@ function mail({ badge, badgeColor = '#FFC80E', badgeText = '#000000', title, int
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
-  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
+  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
   <tr><td style="padding-bottom:14px;"><span style="background:${badgeColor};color:${badgeText};font-size:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase;padding:6px 12px;">${badge}</span></td></tr>
   <tr><td style="font-size:38px;line-height:1.05;font-weight:900;font-style:italic;text-transform:uppercase;color:#ffffff;padding-bottom:14px;">${title}</td></tr>
   <tr><td style="font-size:16px;font-style:italic;color:#bbbbbb;padding-bottom:28px;line-height:1.5;">${intro}</td></tr>
@@ -46,7 +46,7 @@ const templates = {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
-  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
+  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
   <tr><td style="padding-bottom:14px;"><span style="background:#FFC80E;color:#000000;font-size:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase;padding:6px 12px;">New inquiry</span></td></tr>
   <tr><td style="font-size:38px;line-height:1.05;font-weight:900;font-style:italic;text-transform:uppercase;color:#ffffff;padding-bottom:14px;">You've been<br>tickled${producerName ? ', ' + producerName : ''}.</td></tr>
   <tr><td style="font-size:16px;font-style:italic;color:#bbbbbb;padding-bottom:28px;line-height:1.5;">A fellow producer is interested in your show. Answer while the laugh is still warm.</td></tr>
@@ -92,7 +92,7 @@ const templates = {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
-  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
+  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
   <tr><td style="font-size:40px;line-height:1.05;font-weight:900;font-style:italic;text-transform:uppercase;color:#ffffff;padding-bottom:16px;">Welcome,<br>${name}.</td></tr>
   <tr><td style="font-size:16px;font-style:italic;color:#bbbbbb;padding-bottom:24px;line-height:1.5;">You're set up. Time to hunt. Or deploy. Or both.</td></tr>
   <tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;"><tr>
@@ -316,7 +316,7 @@ const templates = {
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
 <tr><td style="background:#050505;border-bottom:4px solid #FFC80E;padding:28px 36px;">
-  <p style="margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
   <p style="margin:6px 0 0;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#FFC80E;font-style:italic">The Laff Exchange</p>
 </td></tr>
 <tr><td style="background:#0a0a0a;padding:36px;">
@@ -440,7 +440,7 @@ const templates = {
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
 <tr><td style="background:#050505;border-bottom:4px solid #FFC80E;padding:32px 40px;">
-  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
   <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#EF4986">Tickle. Set Up. Punch.</p>
 </td></tr>
 <tr><td style="background:#0a0a0a;padding:40px;">
@@ -474,7 +474,7 @@ const templates = {
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
 <tr><td style="background:#050505;border-bottom:4px solid #EF4986;padding:32px 40px;">
-  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
   <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#EF4986">Platform Notice</p>
 </td></tr>
 <tr><td style="background:#0a0a0a;padding:40px;">
