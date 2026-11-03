@@ -40,7 +40,6 @@ const Poster: React.FC<{ show: Show; onClick: () => void }> = ({ show, onClick }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
   const withImage = useMemo(() => shows.filter(s => s.imageUrl), [shows]);
-  const hero = withImage[0];
   const latest = withImage.slice(0, 12);
 
   const languages = new Set(shows.map(s => s.language).filter(Boolean)).size;
@@ -79,9 +78,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
       <main>
         {/* HERO */}
         <section className="relative min-h-[80vh] flex items-end md:items-center overflow-hidden">
-          {hero && (
-            <img src={hero.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 scale-110 blur-sm" />
-          )}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'radial-gradient(ellipse 60% 70% at 85% 20%, rgba(239,73,134,0.28), transparent 60%), radial-gradient(ellipse 55% 60% at 100% 85%, rgba(25,155,191,0.25), transparent 60%), radial-gradient(ellipse 50% 60% at 60% 100%, rgba(251,162,27,0.18), transparent 60%), radial-gradient(ellipse 45% 55% at 20% 0%, rgba(131,57,152,0.22), transparent 60%)' }}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/60 to-brand-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-brand-black/80 via-transparent to-transparent" />
           <FloatingColors />
