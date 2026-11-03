@@ -1282,7 +1282,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 {([
                   { key: 'pipeline', label: 'PIPELINE', badge: inquiries.filter((i: any) => !i.is_read).length },
                   { key: 'analytics', label: 'ANALYTICS', badge: 0 },
-                  { key: 'contracts', label: 'PAPERWORK', badge: 0 },
+                  { key: 'contracts', label: 'DOCUMENTS', badge: 0 },
                   { key: 'contacts', label: 'HAHAFRIENDS', badge: 0 },
                   { key: 'calculator', label: 'CALCULATOR', badge: 0 },
                 ] as {key: string; label: string; badge: number}[]).map(t => (

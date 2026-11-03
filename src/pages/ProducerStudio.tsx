@@ -72,6 +72,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
   const [contracts, setContracts] = useState<any[]>([]);
   const [contractsLoading, setContractsLoading] = useState(false);
   const [showContractForm, setShowContractForm] = useState(false);
+  const [docForm, setDocForm] = useState({ title:'', party:'', show:'', status:'signed', body:'' });
   const [activeTemplate, setActiveTemplate] = useState<any | null>(null);
   const [templateParams, setTemplateParams] = useState<any>({});
   const [contractTemplates, setContractTemplates] = useState<any[]>([]);
@@ -190,7 +191,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { key: 'royalty', label: 'Royalty Tracker', icon: 'receipt_long' },
     { key: 'incoming', label: 'Incoming Royalties', icon: 'savings' },
-    { key: 'contracts', label: 'PAPERWORK', icon: 'description' },
+    { key: 'contracts', label: 'Documents', icon: 'description' },
     { key: 'calculator', label: 'Calculator', icon: 'calculate' },
     { key: 'contacts', label: 'HAHAfriends', icon: 'contacts' },
     { key: 'log', label: 'Show Log', icon: 'history' },
@@ -641,137 +642,45 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
         </div>
       )}
 
-            {tab === 'contracts' && (
+      {tab === 'contracts' && (
         <div className="space-y-6">
 
-          {/* ══ MY CONTRACTS ══ */}
           <div className="flex items-center justify-between">
-            <p className="font-black uppercase italic text-white">PAPERWORK <span className="text-white/30 font-normal text-xs">· {contracts.length} contract{contracts.length !== 1 ? 's' : ''}</span></p>
+            <p className="font-black uppercase italic text-white">DOCUMENTS <span className="text-white/30 font-normal text-xs">· {contracts.length} document{contracts.length !== 1 ? 's' : ''}</span></p>
             <button onClick={() => setShowContractForm(true)}
               className="bg-white text-black px-4 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
-              + New Contract
+              + Add document
             </button>
           </div>
 
-          {/* NEW CONTRACT — choose template */}
           {showContractForm && (
-            <div className="border-2 border-brand-yellow/40 p-5 space-y-4">
+            <div className="border-2 border-brand-yellow/40 p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Choose a template</p>
-                <button onClick={() => { setShowContractForm(false); setActiveTemplate(null); }} className="text-white/30 hover:text-white font-black uppercase italic text-xs">✕ Close</button>
+                <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">New document</p>
+                <button onClick={() => setShowContractForm(false)} className="text-white/30 hover:text-white text-xs font-black">✕</button>
               </div>
-
-              {!activeTemplate ? (
-                <div className="space-y-2">
-                  {contractTemplates.map((tmpl: any) => (
-                    <button key={tmpl.id} onClick={() => {
-                      setActiveTemplate(tmpl);
-                      setTemplateParams({
-                        show: myShows[0]?.title || '', show_id: myShows[0]?.id || '',
-                        royalty: myShows[0]?.scriptRoyaltyPct || '10', share_b: '',
-                        party: '', org: '', territory: '', city: '', performances: '',
-                        start_date: '', end_date: '', advance: '0', currency: 'EUR',
-                        rights_holder: user.name, rights_holder_org: '', rights_holder_address: '',
-                        rights_holder_email: (user as any).email || '', licensee_address: '', licensee_email: '',
-                        language: '', date: new Date().toISOString().split('T')[0],
-                        package: 'Script License', governing_law: '', author: myShows[0]?.author || '',
-                        ref: Date.now().toString().slice(-6),
-                      });
-                    }} className="w-full text-left border-2 border-white/10 hover:border-brand-yellow px-4 py-3 transition-all flex items-center justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-black uppercase italic text-white text-sm">{tmpl.title}</p>
-                          {tmpl.is_default && <span className="text-[7px] font-black uppercase bg-brand-yellow/20 text-brand-yellow px-1.5 py-0.5">HahaHub</span>}
-                          {!tmpl.is_default && <span className="text-[7px] font-black uppercase bg-white/10 text-white/30 px-1.5 py-0.5">Mine</span>}
-                        </div>
-                        {tmpl.description && <p className="text-white/30 text-[9px] italic mt-0.5">{tmpl.description}</p>}
-                      </div>
-                      <span className="text-brand-yellow font-black uppercase italic text-xs flex-shrink-0">Use →</span>
-                    </button>
-                  ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div><label className={lbl}>Title *</label><input value={docForm.title} onChange={e=>setDocForm(f=>({...f,title:e.target.value}))} placeholder="e.g. Licence agreement" className={inp} /></div>
+                <div><label className={lbl}>Other party</label><input value={docForm.party} onChange={e=>setDocForm(f=>({...f,party:e.target.value}))} placeholder="Theatre / producer" className={inp} /></div>
+                <div><label className={lbl}>Show</label><input value={docForm.show} onChange={e=>setDocForm(f=>({...f,show:e.target.value}))} className={inp} /></div>
+                <div><label className={lbl}>Status</label>
+                  <select value={docForm.status} onChange={e=>setDocForm(f=>({...f,status:e.target.value}))} className={inp}>
+                    <option value="draft">Draft</option><option value="sent">Sent</option><option value="signed">Signed</option><option value="expired">Expired</option>
+                  </select>
                 </div>
-              ) : (() => {
-                const tmpl = activeTemplate;
-                const p = templateParams;
-                const placeholders = [...new Set((tmpl.body.match(/\{\{(\w+)\}\}/g) || []).map((m: string) => m.replace(/\{\{|\}\}/g, '')))].filter((ph: string) => !['ref','share_b'].includes(ph as string)) as string[];
-                const labels: any = { show:'Show', party:'Counter Party', org:'Organisation / Theatre', rights_holder:'Rights Holder', rights_holder_org:'Rights Holder Organisation', rights_holder_address:'Rights Holder Address', rights_holder_email:'Rights Holder Email', licensee_address:'Licensee Address', licensee_email:'Licensee Email', royalty:'Royalty %', share_b:'Counter Party Share %', territory:'Territory', city:'City / Venue', start_date:'Start Date', end_date:'End Date', advance:'Fee / Advance (EUR)', performances:'Number of Performances', governing_law:'Governing Law', author:'Author', language:'Original Language', package:'Package', currency:'Currency', date:'Contract Date' };
-                const inputType: any = { start_date:'date', end_date:'date', date:'date', royalty:'number', advance:'number', performances:'number' };
-                const selectOptions: any = { package:['Script License','Full Punch Package'], currency:['EUR','USD','GBP','CHF'] };
-
-                const generateText = () => {
-                  let text = tmpl.body;
-                  const vals: any = { ...p, date: p.date || new Date().toISOString().split('T')[0], ref: p.ref || Date.now().toString().slice(-6), share_b: String(100 - Number(p.royalty || 50)) };
-                  Object.entries(vals).forEach(([k, v]) => { text = text.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v || `[${k.toUpperCase()}]`)); });
-                  text = text.replace(/\{\{(\w+)\}\}/g, (_: string, k: string) => `[${k.toUpperCase()}]`);
-                  return text;
-                };
-
-                return (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background:'rgba(0,0,0,0.85)'}}>
-                    <div className="bg-brand-black border-2 border-brand-yellow w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-                      <div className="sticky top-0 bg-brand-black border-b-4 border-brand-yellow px-6 py-4 flex items-center justify-between z-10">
-                        <div>
-                          <p className="font-black uppercase italic text-brand-yellow text-lg">{tmpl.title}</p>
-                          {tmpl.description && <p className="text-white/30 text-[9px] italic">{tmpl.description}</p>}
-                        </div>
-                        <button onClick={() => setActiveTemplate(null)} className="text-white/40 hover:text-white font-black uppercase italic text-sm border-2 border-white/20 px-3 py-1 hover:border-white transition-all">✕ Close</button>
-                      </div>
-                      <div className="p-6 space-y-5">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {placeholders.map((ph: string) => (
-                        <div key={ph}>
-                          <label className={lbl}>{labels[ph] || ph.replace(/_/g,' ')}</label>
-                          {ph === 'show' ? (
-                            <select value={p[ph]||''} onChange={e => { const sel = myShows.find((s:any) => s.title===e.target.value); setTemplateParams((prev:any) => ({...prev, show:e.target.value, show_id:sel?.id||'', author:sel?.author||prev.author, royalty:sel?.scriptRoyaltyPct||prev.royalty})); }} className={inp}>
-                              <option value="">Select show...</option>
-                              {myShows.map((s:any) => <option key={s.id} value={s.title}>{s.title}</option>)}
-                            </select>
-                          ) : selectOptions[ph] ? (
-                            <select value={p[ph]||''} onChange={e => setTemplateParams((prev:any) => ({...prev,[ph]:e.target.value}))} className={inp}>
-                              {selectOptions[ph].map((o:string) => <option key={o} value={o}>{o}</option>)}
-                            </select>
-                          ) : (
-                            <input type={inputType[ph]||'text'} value={p[ph]||''} onChange={e => setTemplateParams((prev:any) => ({...prev,[ph]:e.target.value}))} className={inp} placeholder={labels[ph]||ph} />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div>
-                      <p className="text-[9px] font-black uppercase italic text-white/20 tracking-widest mb-1">Preview</p>
-                      <pre className="w-full bg-black border-2 border-white/10 p-4 text-white/50 font-mono text-[10px] leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">{generateText()}</pre>
-                    </div>
-
-                    <div className="flex gap-2 flex-wrap">
-                      <button onClick={async () => {
-                        if (!user?.id) return;
-                        const body = generateText();
-                        const title = `${tmpl.title}${p.party ? ' — ' + p.party : ''}${p.show ? ' · ' + p.show : ''}`;
-                        const { data, error: contractError } = await supabase.from('contracts').insert({ user_id:user.id, title, show:p.show, show_id:p.show_id||null, party:p.party, type:tmpl.type, status:'draft', royalty_pct:p.royalty?Number(p.royalty):null, territory:p.territory||null, start_date:p.start_date||null, end_date:p.end_date||null, body, notes:`Template: ${tmpl.title}` }).select().single();
-                        if (contractError) {
-                          console.error('Contract save error:', contractError);
-                          alert(`❌ Could not save this contract: ${contractError.message}\n\nNothing was saved. Please try again.`);
-                          return;
-                        }
-                        if (data) setContracts(prev => [data,...prev]);
-                        setShowContractForm(false); setActiveTemplate(null);
-                      }} className="bg-white text-black px-6 py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
-                        💾 Save Contract
-                      </button>
-                      <button onClick={() => { const blob = new Blob([generateText()],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`contract_${p.party||'party'}.txt`.replace(/\s+/g,'_'); a.click(); }}
-                        className="border-2 border-brand-cyan/40 text-brand-cyan px-4 py-3 font-black uppercase italic text-sm hover:bg-brand-cyan hover:text-black transition-all">
-                        📥 .txt
-                      </button>
-                      <button onClick={() => { const w=window.open('','_blank'); if(w){w.document.write(`<html><head><style>body{font-family:monospace;padding:40px;font-size:13px;line-height:1.8;}</style></head><body><pre>${generateText()}</pre></body></html>`); w.document.close(); w.print(); }}}
-                        className="border-2 border-white/20 text-white/40 px-4 py-3 font-black uppercase italic text-sm hover:text-white transition-all">
-                        🖨️ Print
-                      </button>
-                    </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
+              </div>
+              <div><label className={lbl}>Notes, link or text (e.g. link to the signed PDF in your Drive)</label>
+                <textarea value={docForm.body} onChange={e=>setDocForm(f=>({...f,body:e.target.value}))} rows={5} className={inp} /></div>
+              <button onClick={async () => {
+                if (!user?.id || !docForm.title.trim()) return;
+                const { data, error: docError } = await supabase.from('contracts').insert({ user_id:user.id, title:docForm.title.trim(), party:docForm.party||null, show:docForm.show||null, type:'custom', status:docForm.status, body:docForm.body||'' }).select().single();
+                if (docError) { alert(`❌ Could not save: ${docError.message}`); return; }
+                if (data) setContracts(prev => [data,...prev]);
+                setDocForm({ title:'', party:'', show:'', status:'signed', body:'' });
+                setShowContractForm(false);
+              }} className="bg-white text-black px-6 py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
+                💾 Save
+              </button>
             </div>
           )}
 
@@ -781,8 +690,8 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
           ) : contracts.length === 0 ? (
             <div className="py-10 text-center space-y-2">
               <p className="text-4xl">📄</p>
-              <p className="text-white/20 font-black uppercase italic text-sm">No contracts yet.</p>
-              <p className="text-white/10 text-xs italic">Click + New Contract above.</p>
+              <p className="text-white/20 font-black uppercase italic text-sm">No documents yet.</p>
+              <p className="text-white/10 text-xs italic">Click + Add document above.</p>
             </div>
           ) : contracts.map((c: any) => (
             <div key={c.id} className="border-2 border-white/10 hover:border-white/20 transition-all">
@@ -842,135 +751,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             </div>
           ))}
 
-          {/* ══ TEMPLATES ══ */}
-          <div className="border-t-4 border-white/10 pt-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Templates</p>
-              <button onClick={() => setShowNewTemplateForm(!showNewTemplateForm)}
-                className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
-                + New Template
-              </button>
-            </div>
-
-            {showNewTemplateForm && (
-              <div className="border-2 border-brand-cyan/30 p-4 space-y-3">
-                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">New Template — private, only you</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div><label className={lbl}>Title *</label><input value={newTemplate.title} onChange={e=>setNewTemplate(p=>({...p,title:e.target.value}))} className={inp} placeholder="e.g. Set Designer Contract" /></div>
-                  <div><label className={lbl}>Tip</label>
-                    <select value={newTemplate.type} onChange={e=>setNewTemplate(p=>({...p,type:e.target.value}))} className={inp}>
-                      <option value="licensing">Licensing</option>
-                      <option value="coproduction">Co-production</option>
-                      <option value="guest">Guest Performance</option>
-                      <option value="custom">Custom</option>
-                    </select>
-                  </div>
-                  <div className="col-span-2"><label className={lbl}>Description (optional)</label><input value={newTemplate.description} onChange={e=>setNewTemplate(p=>({...p,description:e.target.value}))} className={inp} placeholder="What is this template for?" /></div>
-                </div>
-                <div>
-                  <label className={lbl}>Template Body *</label>
-                  <p className="text-[8px] text-white/20 italic mb-1">Uporabi {'{{placeholders}}'} za polja ki se izpolnijo: {'{{party}}'}, {'{{show}}'}, {'{{royalty}}'}, {'{{territory}}'}, {'{{start_date}}'}, {'{{end_date}}'}, {'{{advance}}'}</p>
-                  <textarea value={newTemplate.body} onChange={e=>setNewTemplate(p=>({...p,body:e.target.value}))} rows={10}
-                    className={inp+' font-mono text-xs resize-y'}
-                    placeholder={"AUTHOR CONTRACT\n\nDate: {{date}}\n\nClient: {{rights_holder}}\nContractor: {{party}}\nProject: {{show}}\n\nFee: {{advance}} EUR\nDelivery: {{end_date}}\n\n[Pogoji...]\n\nNaročnik: _______________ Datum: _______\nIzvajalec: _______________ Datum: _______"} />
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={async () => {
-                    if (!newTemplate.title||!newTemplate.body||!user?.id) return;
-                    const { data } = await supabase.from('contract_templates').insert({ user_id:user.id, title:newTemplate.title, type:newTemplate.type, description:newTemplate.description, body:newTemplate.body, is_default:false, created_by:user.name }).select().single();
-                    if (data) setContractTemplates(prev=>[...prev,data]);
-                    setNewTemplate({title:'',type:'custom',description:'',body:''});
-                    setShowNewTemplateForm(false);
-                  }} className="bg-brand-cyan text-black px-5 py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-white transition-all">Save Template</button>
-                  <button onClick={()=>setShowNewTemplateForm(false)} className="border-2 border-white/20 text-white/40 px-4 py-2 font-black uppercase italic text-xs">Cancel</button>
-                </div>
-              </div>
-            )}
-
-            {/* HahaHub templates */}
-            <div className="space-y-2">
-              <p className="text-[8px] font-black uppercase italic text-brand-yellow/50 tracking-widest">HahaHub Templates</p>
-              {contractTemplates.filter((t:any) => t.is_default).map((tmpl:any) => (
-                <div key={tmpl.id} className="border-2 border-white/10 hover:border-brand-yellow/30 px-4 py-3 flex items-center justify-between gap-4 transition-all">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="material-symbols-outlined text-brand-yellow/40 text-sm">description</span>
-                    <div>
-                      <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
-                      {tmpl.description && <p className="text-white/25 text-[9px] italic">{tmpl.description}</p>}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', share_b:'', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, rights_holder_org:'', rights_holder_address:'', rights_holder_email:user.email||'', licensee_address:'', licensee_email:'', language:'', date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
-                      className="text-[9px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-3 py-1.5 hover:bg-brand-yellow hover:text-black transition-all">
-                      Use →
-                    </button>
-                    <button onClick={async () => {
-                      if (!user?.id) return;
-                      const { data } = await supabase.from('contract_templates').insert({ user_id:user.id, title:`${tmpl.title} (copy)`, type:tmpl.type, description:tmpl.description||'', body:tmpl.body, is_default:false, created_by:user.name }).select().single();
-                      if (data) setContractTemplates(prev=>[...prev, data]);
-                    }} className="text-[9px] font-black uppercase italic text-white/30 border border-white/15 px-2 py-1.5 hover:border-brand-cyan hover:text-brand-cyan transition-all">
-                      📋 Copy
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* My templates */}
-            {contractTemplates.filter((t:any) => !t.is_default).length > 0 && (
-              <div className="space-y-2">
-                <p className="text-[8px] font-black uppercase italic text-brand-cyan/50 tracking-widest">My Templates</p>
-                {contractTemplates.filter((t:any) => !t.is_default).map((tmpl:any) => (
-                  <div key={tmpl.id} className="border-2 border-brand-cyan/20 hover:border-brand-cyan/40 px-4 py-3 flex items-center justify-between gap-4 transition-all">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="material-symbols-outlined text-brand-cyan/40 text-sm">description</span>
-                      <div>
-                        <p className="font-black uppercase italic text-white text-xs">{tmpl.title}</p>
-                        {tmpl.description && <p className="text-white/25 text-[9px] italic">{tmpl.description}</p>}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button onClick={() => { setShowContractForm(true); setActiveTemplate(tmpl); setTemplateParams({ show:myShows[0]?.title||'', show_id:myShows[0]?.id||'', royalty:myShows[0]?.scriptRoyaltyPct||'10', share_b:'', party:'', org:'', territory:'', city:'', performances:'', start_date:'', end_date:'', advance:'0', currency:'EUR', rights_holder:user.name, rights_holder_org:'', rights_holder_address:'', rights_holder_email:user.email||'', licensee_address:'', licensee_email:'', language:'', date:new Date().toISOString().split('T')[0], package:'Script License', governing_law:'', author:myShows[0]?.author||'', ref:Date.now().toString().slice(-6) }); }}
-                        className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/40 px-3 py-1.5 hover:bg-brand-cyan hover:text-black transition-all">
-                        Use →
-                      </button>
-                      <button onClick={async () => { await supabase.from('contract_templates').delete().eq('id',tmpl.id); setContractTemplates(prev=>prev.filter(t=>t.id!==tmpl.id)); }}
-                        className="text-white/20 hover:text-brand-pink transition-colors">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* HOW IT WORKS */}
-          <div className="border-2 border-white/10 overflow-hidden">
-            <div className="bg-white/5 px-5 py-4 border-b-2 border-white/10">
-              <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest mb-1">How Paperwork works</p>
-              <p className="text-white/40 text-xs italic">Generate, save, and track contracts without a lawyer. You stay in control of every step.</p>
-            </div>
-            <div className="px-5 py-4 space-y-3">
-              {[
-                { t: 'Pick a template', d: 'License, NDA, co-production — or one you wrote yourself under Templates below.' },
-                { t: 'Fill the details', d: 'Show, counter party, royalty %, territory, dates. The contract text fills itself in.' },
-                { t: 'Save it', d: 'It lands in your list above, ready to read immediately. No lawyer needed to get a draft.' },
-                { t: 'Edit anytime', d: 'Click ✏️ Edit on any contract to open the full text and change anything, even after saving.' },
-                { t: 'Track status', d: 'Draft → Sent → Signed → Expired. Change it from the dropdown as the deal moves forward.' },
-                { t: 'Download, print, or undo', d: 'Export as .txt, print straight to PDF, or hit ↩ Restore to undo back to the last saved version.' },
-                { t: 'Delete when done', d: 'Remove a contract you no longer need with the 🗑️ icon. This cannot be undone.' },
-              ].map((s, i) => (
-                <div key={i} className="flex gap-3 items-start">
-                  <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5 bg-brand-yellow" />
-                  <div>
-                    <p className="font-black uppercase italic text-white text-xs">{s.t}</p>
-                    <p className="text-white/30 text-xs italic">{s.d}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <p className="text-white/30 text-xs italic border-t-2 border-white/10 pt-4">Keep your agreements, notes and links to signed files for each deal in one place. HahaHub does not provide legal advice or contract templates — have your contracts reviewed by your own lawyer.</p>
 
         </div>
       )}
