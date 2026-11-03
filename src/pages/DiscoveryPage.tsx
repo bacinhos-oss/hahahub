@@ -21,6 +21,7 @@ interface DiscoveryPageProps {
 
 const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, onUpdateStats, shows, onViewProducer, initialShowId }) => {
   const [selectedShowId, setSelectedShowId] = useState<string | null>(initialShowId || null);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [inquiryShowId, setInquiryShowId] = useState<string | null>(null);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [inquirySuccess, setInquirySuccess] = useState(false);
@@ -184,6 +185,20 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       )}
                       <p className="text-base md:text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
                     </div>
+                    <button
+                      title="Copy link to this show"
+                      onClick={async () => {
+                        const link = `https://hahahub.art/show/${selectedShow.id}`;
+                        try {
+                          if (navigator.share) { await navigator.share({ title: selectedShow.title + ' — HahaHub', url: link }); }
+                          else { await navigator.clipboard.writeText(link); setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000); }
+                        } catch { /* user cancelled */ }
+                      }}
+                      className="h-14 px-4 flex-shrink-0 flex items-center justify-center gap-2 border-2 border-white/40 text-white hover:border-brand-cyan hover:text-brand-cyan transition-all mt-8"
+                    >
+                      <span className="material-symbols-outlined text-xl">{linkCopied ? 'check' : 'link'}</span>
+                      <span className="text-[10px] font-black uppercase italic tracking-widest hidden md:inline">{linkCopied ? 'Copied' : 'Share'}</span>
+                    </button>
                     <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-2 transition-all mt-8 ${isFavorited ? 'bg-brand-pink text-white border-black ' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
                       <span className="material-symbols-outlined text-2xl font-black">favorite</span>
                     </button>

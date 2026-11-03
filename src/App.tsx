@@ -45,6 +45,13 @@ const App: React.FC = () => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
 
   useEffect(() => {
+    // Direct show link: hahahub.art/show/<id>  ->  open that show in the catalog
+    const showMatch = window.location.pathname.match(/^\/show\/([A-Za-z0-9-]+)/)
+    if (showMatch) {
+      setCurrentShowId(showMatch[1])
+      setCurrentPageRaw('discovery')
+      window.history.replaceState(null, '', '/#discovery')
+    }
     const hash = window.location.hash
     if (hash.includes('type=recovery')) {
       setCurrentPage('login')
