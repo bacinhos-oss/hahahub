@@ -305,9 +305,11 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           <button
             type="button"
             onClick={() => setShowMore(v => !v)}
-            className="w-full sm:w-auto border-2 border-white/20 text-white/70 hover:text-white hover:border-brand-cyan px-6 py-3 text-xs font-black uppercase italic tracking-widest transition-all"
+            className={showMore
+              ? "w-full sm:w-auto border-2 border-white/20 text-white/70 hover:text-white hover:border-brand-cyan px-6 py-3 text-xs font-black uppercase italic tracking-widest transition-all"
+              : "hh-attn w-full bg-brand-yellow text-black border-2 border-black px-6 py-4 text-sm font-black uppercase italic tracking-widest"}
           >
-            {showMore ? '− Show only required fields' : '+ Show more details (optional — improves your Transparency Score)'}
+            {showMore ? '− Show only required fields' : '▼ Show more details — optional, improves your Transparency Score'}
           </button>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

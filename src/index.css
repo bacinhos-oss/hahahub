@@ -95,3 +95,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hh-smile:hover img, .hh-smile-laughing img { animation: none !important; }
 }
+
+@keyframes hh-attn { 0%, 100% { box-shadow: 0 0 0 0 rgba(251,162,27,.75); transform: scale(1); } 50% { box-shadow: 0 0 0 12px rgba(251,162,27,0); transform: scale(1.015); } }
+.hh-attn { animation: hh-attn 1.6s ease-in-out infinite; }
+.hh-attn:hover { animation: none; background: #fff; }
+@media (prefers-reduced-motion: reduce) { .hh-attn { animation: none; } }
