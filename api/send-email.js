@@ -4,6 +4,35 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM = 'HahaHub <info@hahahub.art>';
 
+
+// Shared layout for the standard HahaHub notification emails (all inline styles, Gmail-safe)
+const FOOT = 'HahaHub &mdash; The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art<br>Break a Laffing Leg. 🦵';
+const card = (label, value, accent) => `<tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;border-left:4px solid ${accent};"><tr><td style="padding:16px 20px;"><div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#777777;padding-bottom:6px;">${label}</div><div style="font-size:18px;font-weight:900;color:#ffffff;line-height:1.4;">${value}</div></td></tr></table></td></tr>`;
+const quote = (label, text, accent) => `<tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;border-left:4px solid ${accent};"><tr><td style="padding:16px 20px;"><div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#777777;padding-bottom:8px;">${label}</div><div style="font-size:15px;font-style:italic;color:#dddddd;line-height:1.6;">${String(text).replace(/\n/g, '<br>')}</div></td></tr></table></td></tr>`;
+const rows = (list, accent) => `<tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;border-left:4px solid ${accent};">${list.filter(r => r[1]).map(r => `<tr><td style="padding:10px 20px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#777777;border-bottom:1px solid #1e1e1e;" width="40%">${r[0]}</td><td style="padding:10px 20px;font-size:15px;font-weight:700;color:#ffffff;border-bottom:1px solid #1e1e1e;">${r[1]}</td></tr>`).join('')}</table></td></tr>`;
+function mail({ badge, badgeColor = '#FFC80E', badgeText = '#000000', title, intro, body = '', cta, note }) {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"></head>
+<body style="margin:0;padding:0;background:#050505;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
+  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
+  <tr><td style="padding-bottom:14px;"><span style="background:${badgeColor};color:${badgeText};font-size:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase;padding:6px 12px;">${badge}</span></td></tr>
+  <tr><td style="font-size:38px;line-height:1.05;font-weight:900;font-style:italic;text-transform:uppercase;color:#ffffff;padding-bottom:14px;">${title}</td></tr>
+  <tr><td style="font-size:16px;font-style:italic;color:#bbbbbb;padding-bottom:28px;line-height:1.5;">${intro}</td></tr>
+  ${body}
+  ${cta ? `<tr><td style="padding:12px 0 ${note ? '12px' : '32px'};"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#FFC80E" style="background:#FFC80E;border:3px solid #000000;"><a href="${cta.href}" style="display:inline-block;padding:16px 28px;font-size:13px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:2px;color:#000000;text-decoration:none;">${cta.label} &rarr;</a></td></tr></table></td></tr>` : ''}
+  ${note ? `<tr><td style="padding-bottom:32px;font-size:12px;color:#777777;line-height:1.5;">${note}</td></tr>` : ''}
+  <tr><td style="border-top:1px solid #2a2a2a;padding-top:20px;font-size:11px;color:#777777;line-height:1.6;">${FOOT}</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
 const templates = {
   inquiry: ({ producerName, buyerName, buyerEmail, showTitle, message, packageType }) => {
     const pkg = packageType ? String(packageType).replace(/_/g, ' ') : '';
@@ -133,244 +162,80 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 
   inquiry_reply: ({ producerName, buyerName, showTitle, message }) => ({
     subject: `Reply from ${producerName} — ${showTitle}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.badge { background: #19A596; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
-.show { background: #111; border: 2px solid #FFC80E; padding: 16px 20px; margin: 24px 0; }
-.show-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: #FFC80E; }
-.reply { background: #111; border-left: 4px solid #19A596; padding: 20px 24px; margin: 16px 0; font-style: italic; color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.7; }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">💬 Reply Received</div>
-  <h1>${buyerName},<br/>You Got a Reply.</h1>
-  <p style="color:rgba(255,255,255,0.5);font-style:italic;">${producerName} has responded to your inquiry.</p>
-  <div class="show">
-    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Show</div>
-    <div class="show-title">${showTitle}</div>
-  </div>
-  <div class="reply">${message}</div>
-  <a href="https://hahahub.art" class="cta">🥊 Go to My Hub →</a>
-  <div class="footer">
-    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
-</body>
-</html>`
+    html: mail({
+      badge: 'Reply received', badgeColor: '#19A596',
+      title: `${buyerName ? buyerName + ',<br>' : ''}you got a reply.`,
+      intro: `${producerName} has responded to your inquiry.`,
+      body: card('Show', showTitle, '#FFC80E') + (message ? quote('Their reply', message, '#19A596') : ''),
+      cta: { label: 'Open My Hub', href: 'https://hahahub.art/#subscription' },
+    }),
   }),
 
-
-  feedback: ({ feedbackType, message, url, ts }) => ({
-    subject: `[HahaHub] ${feedbackType.toUpperCase()} — ${new Date(ts).toLocaleDateString('en-GB')}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 24px; font-weight: 900; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.badge { padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; background: ${feedbackType === 'bug' ? '#EF4986' : feedbackType === 'idea' ? '#FFC80E; color: #000' : '#19A596; color: #000'}; }
-.msg { background: #111; border-left: 4px solid ${feedbackType === 'bug' ? '#EF4986' : feedbackType === 'idea' ? '#FFC80E' : '#19A596'}; padding: 20px; margin: 16px 0; font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.8); }
-.meta { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 24px; }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="badge">${feedbackType === 'bug' ? '🐛 Bug Report' : feedbackType === 'idea' ? '💡 Idea' : '💬 Feedback'}</div>
-  <div class="msg">${message.replace(/\n/g, '<br>')}</div>
-  <div class="meta">
-    <p>URL: ${url}</p>
-    <p>Time: ${new Date(ts).toLocaleString('en-GB')}</p>
-  </div>
-</div>
-</body>
-</html>`
-  }),
+  feedback: ({ feedbackType, message, url, ts }) => {
+    const kind = feedbackType === 'bug' ? 'Bug report' : feedbackType === 'idea' ? 'Idea' : 'Feedback';
+    const color = feedbackType === 'bug' ? '#EF4986' : feedbackType === 'idea' ? '#FFC80E' : '#19A596';
+    return {
+      subject: `[HahaHub] ${String(feedbackType || 'feedback').toUpperCase()} — ${new Date(ts).toLocaleDateString('en-GB')}`,
+      html: mail({
+        badge: kind, badgeColor: color, badgeText: feedbackType === 'bug' ? '#ffffff' : '#000000',
+        title: kind + '.',
+        intro: 'Sent from the feedback button on hahahub.art.',
+        body: quote('Message', message || '', color) + rows([['Page', url], ['Time', new Date(ts).toLocaleString('en-GB')]], '#444444'),
+      }),
+    };
+  },
 
   inquiry_confirmation: ({ buyerName, showTitle, producerName, message, hasAttachment }) => ({
-    subject: `Your Tickle Has Been Sent — ${showTitle}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.badge { background: #EF4986; color: #fff; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; line-height: 1.1; }
-.show { background: #111; border: 2px solid #FFC80E; padding: 16px 20px; margin: 24px 0; }
-.show-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: #FFC80E; }
-.info { background: #111; border: 1px solid rgba(255,255,255,0.1); padding: 16px 20px; margin: 12px 0; }
-.message { background: #111; border-left: 4px solid #EF4986; padding: 16px 20px; margin: 16px 0; font-style: italic; color: rgba(255,255,255,0.7); }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">🎭 Tickle Sent!</div>
-  <h1>Your Tickle<br/>Is Out There.</h1>
-  <p style="color:rgba(255,255,255,0.6);font-style:italic;">The rights holder has been notified. Now wait for the Set Up.</p>
-
-  <div class="show">
-    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Show You Tickled</div>
-    <div class="show-title">${showTitle}</div>
-    <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px;">Rights holder: ${producerName}</div>
-  </div>
-
-  ${message ? `<div class="message">"${message}"</div>` : ''}
-  ${hasAttachment ? `<div class="info"><span style="color:#19A596;font-weight:700;">📎 Attachment included</span> — your file has been delivered.</div>` : ''}
-
-  <div class="info">
-    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">What Happens Next</div>
-    <p style="margin:0;color:rgba(255,255,255,0.6);font-size:13px;">Track your inquiry in <strong style="color:#FFC80E;">My Hub → Pipeline → TICKLER</strong>. You'll get notified when they respond.</p>
-  </div>
-
-  <a href="https://hahahub.art" class="cta">🥊 Go to My Pipeline →</a>
-
-  <div class="footer">
-    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
-</body>
-</html>`
+    subject: `Your tickle has been sent — ${showTitle}`,
+    html: mail({
+      badge: 'Inquiry sent',
+      title: `Tickle sent${buyerName ? ', ' + buyerName : ''}.`,
+      intro: 'The rights holder has been notified. Now wait for the set up.',
+      body: card('Show you tickled', showTitle, '#FFC80E')
+        + card('Rights holder', producerName || 'Rights Holder', '#EF4986')
+        + (message ? quote('Your message', message, '#19A596') : '')
+        + (hasAttachment ? card('Attachment', 'Your file has been delivered.', '#444444') : ''),
+      cta: { label: 'Open My Pipeline', href: 'https://hahahub.art/#subscription' },
+      note: 'You can follow this inquiry in My Hub &rarr; Pipeline. We will let you know when they respond.',
+    }),
   }),
 
   deal_closed: ({ showTitle, royalty, years, territory, performances, isseller }) => ({
-    subject: `Deal Closed — ${showTitle} · ${territory || 'All Territories'}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.badge { background: #4ade80; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; line-height: 1.1; }
-.show { background: #111; border: 2px solid #4ade80; padding: 16px 20px; margin: 24px 0; }
-.show-title { font-size: 20px; font-weight: 900; text-transform: uppercase; color: #4ade80; }
-.terms { background: #111; border: 1px solid rgba(255,255,255,0.1); padding: 20px; margin: 16px 0; display: grid; }
-.term-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.term-label { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 2px; }
-.term-value { font-weight: 700; color: #FFC80E; }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">✓ Deal Closed</div>
-  <h1>${isseller ? 'Your Show<br/>Is Going On.' : 'Curtain Up.<br/>Deal Is Closed.'}</h1>
-  <p style="color:rgba(255,255,255,0.6);font-style:italic;">${isseller ? 'A buyer has confirmed the deal for your show.' : 'Your deal has been confirmed. Time to produce.'}</p>
-
-  <div class="show">
-    <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Show</div>
-    <div class="show-title">${showTitle}</div>
-  </div>
-
-  <div class="terms">
-    ${royalty ? `<div class="term-row"><span class="term-label">Royalty</span><span class="term-value">${royalty}%</span></div>` : ''}
-    ${territory ? `<div class="term-row"><span class="term-label">Territory</span><span class="term-value">${territory}</span></div>` : ''}
-    ${years ? `<div class="term-row"><span class="term-label">License Period</span><span class="term-value">${years} year(s)</span></div>` : ''}
-    ${performances ? `<div class="term-row"><span class="term-label">Performances</span><span class="term-value">${performances}</span></div>` : ''}
-  </div>
-
-  <a href="https://hahahub.art" class="cta">🥊 Go to My Pipeline →</a>
-
-  <div class="footer">
-    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
-</body>
-</html>`
+    subject: `Deal closed — ${showTitle} · ${territory || 'All territories'}`,
+    html: mail({
+      badge: 'Deal closed', badgeColor: '#16A34A', badgeText: '#ffffff',
+      title: isseller ? 'Your show<br>is going on.' : 'Curtain up.<br>Deal closed.',
+      intro: isseller ? 'A buyer has confirmed the deal for your show.' : 'Your deal has been confirmed. Time to produce.',
+      body: card('Show', showTitle, '#FFC80E') + rows([
+        ['Royalty', royalty ? royalty + '%' : ''],
+        ['Territory', territory],
+        ['License period', years ? years + ' year(s)' : ''],
+        ['Performances', performances],
+      ], '#16A34A'),
+      cta: { label: 'Open My Pipeline', href: 'https://hahahub.art/#subscription' },
+    }),
   }),
 
   deal_signed_producer: ({ show_title, buyer, territory, signed_date }) => ({
-    subject: `✓ Deal Signed — ${show_title} · ${territory}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.badge { background: #4ade80; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
-.info { background: #111; border: 2px solid #4ade80; padding: 20px; margin: 24px 0; }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">✓ Deal Signed!</div>
-  <h1>Punchline<br/>Landed.</h1>
-  <div class="info">
-    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Show</span><br/><strong style="color:#FFC80E;font-size:18px;text-transform:uppercase;">${show_title}</strong></div>
-    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Buyer</span><br/><strong>${buyer}</strong></div>
-    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Territory</span><br/><strong>${territory}</strong></div>
-    <div><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Signed</span><br/><strong>${signed_date}</strong></div>
-  </div>
-  <a href="https://hahahub.art" class="cta">Go to Pipeline →</a>
-  <div class="footer"><p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform</p><p>Break a Laffing Leg. 🦵</p></div>
-</div>
-</body>
-</html>`
+    subject: `Deal signed — ${show_title}${territory ? ' · ' + territory : ''}`,
+    html: mail({
+      badge: 'Deal signed', badgeColor: '#16A34A', badgeText: '#ffffff',
+      title: 'Punchline<br>landed.',
+      intro: 'The contract is signed. Congratulations.',
+      body: card('Show', show_title, '#FFC80E') + rows([['Buyer', buyer], ['Territory', territory], ['Signed', signed_date]], '#16A34A'),
+      cta: { label: 'Open My Pipeline', href: 'https://hahahub.art/#subscription' },
+    }),
   }),
 
   deal_signed_buyer: ({ show_title, producer, territory, signed_date }) => ({
-    subject: `✓ Contract Confirmed — ${show_title} · ${territory}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.badge { background: #4ade80; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
-.info { background: #111; border: 2px solid #4ade80; padding: 20px; margin: 24px 0; }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">✓ Contract Confirmed!</div>
-  <h1>You're In.<br/>Curtain Up.</h1>
-  <div class="info">
-    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Show</span><br/><strong style="color:#FFC80E;font-size:18px;text-transform:uppercase;">${show_title}</strong></div>
-    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Rights Holder</span><br/><strong>${producer}</strong></div>
-    <div style="margin-bottom:12px;"><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Territory</span><br/><strong>${territory}</strong></div>
-    <div><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Signed</span><br/><strong>${signed_date}</strong></div>
-  </div>
-  <a href="https://hahahub.art" class="cta">Go to My Hub →</a>
-  <div class="footer"><p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform</p><p>Break a Laffing Leg. 🦵</p></div>
-</div>
-</body>
-</html>`
+    subject: `Contract confirmed — ${show_title}${territory ? ' · ' + territory : ''}`,
+    html: mail({
+      badge: 'Contract confirmed', badgeColor: '#16A34A', badgeText: '#ffffff',
+      title: "You're in.<br>Curtain up.",
+      intro: 'The rights holder has confirmed your contract.',
+      body: card('Show', show_title, '#FFC80E') + rows([['Rights holder', producer], ['Territory', territory], ['Signed', signed_date]], '#16A34A'),
+      cta: { label: 'Open My Hub', href: 'https://hahahub.art/#subscription' },
+    }),
   }),
 
   beta_checkin: ({ name }) => ({
