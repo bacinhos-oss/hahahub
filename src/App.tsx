@@ -134,7 +134,7 @@ const App: React.FC = () => {
         role: isAdmin ? 'admin' : 'Producer',
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
         isPaid: data?.is_paid || isAdmin, isAdmin,
-        plan: isAdmin ? 'roar' : (data?.user_type === 'roar' ? 'roar' : (data?.user_type === 'laff' || data?.is_paid ? 'laff' : 'gigl')),
+        plan: 'roar', // HahaHub is free: every member has full access
         is_verified: data?.is_verified || false,
         is_founding: data?.is_founding || false,
         subscription: data?.is_paid || isAdmin ? { type: 'Annual', expiryDate: data?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,

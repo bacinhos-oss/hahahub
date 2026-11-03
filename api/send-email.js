@@ -76,7 +76,7 @@ const templates = {
     <td style="padding:16px 16px 16px 0;"><div style="font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;color:#19A596;">Punch</div><div style="font-size:13px;color:#aaaaaa;line-height:1.5;padding-top:4px;">Curtain up. Lights on. Your punchline lands.</div></td>
   </tr></table></td></tr>
   <tr><td style="padding-bottom:32px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#FFC80E" style="background:#FFC80E;border:3px solid #000000;"><a href="https://hahahub.art" style="display:inline-block;padding:16px 32px;font-size:14px;font-weight:900;font-style:italic;text-transform:uppercase;color:#000000;text-decoration:none;">Enter the Vault &rarr;</a></td></tr></table></td></tr>
-  <tr><td style="border-top:1px solid #2a2a2a;padding-top:20px;font-size:11px;color:#777777;line-height:1.6;">HahaHub &mdash; The Comedy Rights Marketplace | info@hahahub.art<br>Break a Laffing Leg. 🦵</td></tr>
+  <tr><td style="border-top:1px solid #2a2a2a;padding-top:20px;font-size:11px;color:#777777;line-height:1.6;">HahaHub &mdash; The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art<br>Break a Laffing Leg. 🦵</td></tr>
 </table>
 </td></tr>
 </table>
@@ -160,7 +160,7 @@ h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: i
   <div class="reply">${message}</div>
   <a href="https://hahahub.art" class="cta">🥊 Go to My Hub →</a>
   <div class="footer">
-    <p>HahaHub — Theatre Comedy Rights Marketplace</p>
+    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform</p>
     <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
@@ -170,7 +170,7 @@ h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; font-style: i
 
 
   feedback: ({ feedbackType, message, url, ts }) => ({
-    subject: `[HahaHub Beta] ${feedbackType.toUpperCase()} — ${new Date(ts).toLocaleDateString('en-GB')}`,
+    subject: `[HahaHub] ${feedbackType.toUpperCase()} — ${new Date(ts).toLocaleDateString('en-GB')}`,
     html: `
 <!DOCTYPE html>
 <html>
@@ -240,7 +240,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <a href="https://hahahub.art" class="cta">🥊 Go to My Pipeline →</a>
 
   <div class="footer">
-    <p>HahaHub — Theatre Comedy Rights Marketplace | info@hahahub.art</p>
+    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art</p>
     <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
@@ -292,7 +292,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <a href="https://hahahub.art" class="cta">🥊 Go to My Pipeline →</a>
 
   <div class="footer">
-    <p>HahaHub — Theatre Comedy Rights Marketplace | info@hahahub.art</p>
+    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art</p>
     <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
@@ -329,7 +329,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
     <div><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Signed</span><br/><strong>${signed_date}</strong></div>
   </div>
   <a href="https://hahahub.art" class="cta">Go to Pipeline →</a>
-  <div class="footer"><p>HahaHub — Theatre Comedy Rights Marketplace</p><p>Break a Laffing Leg. 🦵</p></div>
+  <div class="footer"><p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform</p><p>Break a Laffing Leg. 🦵</p></div>
 </div>
 </body>
 </html>`
@@ -364,7 +364,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
     <div><span style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Signed</span><br/><strong>${signed_date}</strong></div>
   </div>
   <a href="https://hahahub.art" class="cta">Go to My Hub →</a>
-  <div class="footer"><p>HahaHub — Theatre Comedy Rights Marketplace</p><p>Break a Laffing Leg. 🦵</p></div>
+  <div class="footer"><p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform</p><p>Break a Laffing Leg. 🦵</p></div>
 </div>
 </body>
 </html>`
@@ -391,9 +391,9 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 <div class="container">
   <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
   <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">🎭 Beta Check-In</div>
+  <div class="badge">🎭 Check-In</div>
   <h1>${name},<br/>9 days in.<br/>How's it going?</h1>
-  <p style="color:rgba(255,255,255,0.5);font-style:italic;font-size:15px;">You're one of our first beta users. Your feedback shapes the platform.</p>
+  <p style="color:rgba(255,255,255,0.5);font-style:italic;font-size:15px;">You're one of our first members. Your feedback shapes the platform.</p>
 
   <p style="color:rgba(255,255,255,0.7);font-size:14px;margin-top:24px;">Just hit reply and tell us:</p>
 
@@ -409,7 +409,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <a href="https://hahahub.art" class="cta">🥊 Back to HahaHub →</a>
 
   <div class="footer">
-    <p>HahaHub — Theatre Comedy Rights Marketplace | info@hahahub.art</p>
+    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art</p>
     <p>Break a Laffing Leg. 🦵</p>
   </div>
 </div>
@@ -530,11 +530,6 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
     </tr>
   </table>
 
-  <div style="text-align:center;margin:0 0 24px 0;padding:18px;background:#111;border:2px solid #19A596">
-    <p style="color:#888;font-size:12px;margin:0 0 10px 0">Want the full walkthrough first?</p>
-    <a href="https://www.hahahub.art/beta-guide.html" style="color:#19A596;font-size:14px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-style:italic">Read the Beta Guide &rarr;</a>
-    <p style="color:#555;font-size:10px;margin:8px 0 0 0">Everything the platform does, in one page.</p>
-  </div>
 
   <div style="background:#111;border-left:4px solid #19A596;padding:16px 20px;margin:0 0 28px 0">
     <p style="color:#ccc;font-size:14px;line-height:1.7;margin:0">
@@ -602,9 +597,6 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
       <p style="color:rgba(255,255,255,0.5);font-size:11px;line-height:1.6;margin:0 0 14px">
         Click below, choose JOIN, then enter your name, the email above, and a password. You can use the suggested one or set your own. Just make sure the email matches exactly.
       </p>
-      <p style="margin:0 0 18px">
-        <a href="https://www.hahahub.art/beta-guide.html" style="color:#19A596;font-size:11px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:1px;font-style:italic">Read the Beta Guide first &rarr;</a>
-      </p>
       <a href="https://www.hahahub.art/#signup" style="background:#FFC80E;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Tickle In →</a>
       <p style="color:rgba(255,255,255,0.3);font-size:11px;margin:14px 0 0">You can change your password later in My Hub → My Profile.</p>
     </td></tr>
@@ -665,7 +657,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
     <tr><td style="background:#050505;border-left:4px solid #FFC80E;padding:16px 20px;">
       <p style="color:#FFC80E;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 10px">As an early member you get</p>
-      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">Lifetime ROAR access. Normally €189 a year. <strong style="color:#FFC80E">Free. Forever.</strong></p>
+      <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">Full access to every feature. <strong style="color:#FFC80E">Free. Forever.</strong></p>
       <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">A permanent place on the platform, from day one.</p>
       <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:4px 0">Real influence on how this gets built.</p>
     </td></tr>
@@ -718,7 +710,6 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <div style="margin:32px 0 20px">
     <a href="https://www.hahahub.art" style="background:#FFC80E;color:#000;padding:16px 32px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:13px;border:3px solid #000">Enter HahaHub →</a>
   </div>
-  <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.3);">New to HahaHub? <a href="https://hahahub.art/beta-guide.html" style="color:#19A596;text-decoration:none;font-weight:700;">Read the Beta Guide →</a></p>
 </td></tr>
 <tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
   <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">Break a Laffing Leg. 🦵<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
@@ -752,7 +743,7 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   <a href="mailto:info@hahahub.art" style="background:#FFC80E;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000">Contact Us →</a>
 </td></tr>
 <tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
-  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · The Comedy Rights Marketplace<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · The Laff Exchange · International Comedy Theatre Producers Platform<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
 </td></tr>
 </table>
 </td></tr>
@@ -761,20 +752,79 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
   }),
 };
 
+const { createClient } = require('@supabase/supabase-js');
+
+const ADMIN_EMAIL = 'bacinhos@gmail.com';
+const ADMIN_ONLY = ['payment_confirmation', 'beta_checkin', 'subscription_reminder', 'founding_followup', 'founding_invite', 'show_removed'];
+const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry', 'inquiry_confirmation', 'deal_signed_producer'];
+const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
+
+// Best-effort per-instance rate limit (per user, per hour)
+const hits = new Map();
+const LIMIT = 40;
+function limited(key) {
+  const now = Date.now();
+  const arr = (hits.get(key) || []).filter(t => now - t < 3600000);
+  if (arr.length >= LIMIT) { hits.set(key, arr); return true; }
+  arr.push(now); hits.set(key, arr);
+  return false;
+}
+
+// Neutralise HTML in any user-supplied value before it reaches a template
+function clean(v) {
+  if (typeof v === 'string') return v.replace(/</g, '&lt;').replace(/>/g, '&gt;').slice(0, 5000);
+  if (Array.isArray(v)) return v.slice(0, 50).map(clean);
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, clean(x)]));
+  return v;
+}
+
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '';
+  if (/^https:\/\/([a-z0-9-]+\.)?hahahub\.art$/.test(origin) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { type, to, data } = req.body;
+  // 1. Must be a signed-in HahaHub user
+  const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  let user;
+  try {
+    const sb = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const { data, error } = await sb.auth.getUser(token);
+    if (error || !data || !data.user) return res.status(401).json({ error: 'Unauthorized' });
+    user = data.user;
+  } catch (e) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const isAdmin = (user.email || '').toLowerCase() === ADMIN_EMAIL;
+
+  const { type, data } = req.body || {};
+  let to = (req.body || {}).to;
   if (!type || !to) return res.status(400).json({ error: 'Missing type or to' });
+  if (typeof to !== 'string' || !EMAIL_RE.test(to)) return res.status(400).json({ error: 'Invalid recipient' });
 
   const template = templates[type];
   if (!template) return res.status(400).json({ error: 'Unknown email type' });
 
-  const { subject, html } = template(data || {});
+  // 2. Who may send what, and to whom
+  if (type === 'feedback') to = 'info@hahahub.art';
+  else if (ADMIN_ONLY.includes(type) && !isAdmin) return res.status(403).json({ error: 'Forbidden' });
+  else if (SELF_ONLY.includes(type) && !isAdmin && to.toLowerCase() !== (user.email || '').toLowerCase()) return res.status(403).json({ error: 'Forbidden' });
+
+  // 3. Rate limit
+  if (!isAdmin && limited(user.id)) return res.status(429).json({ error: 'Too many emails, try again later' });
+
+  const built = template(clean(data || {}));
+  const subject = built.subject;
+  // Gmail drops <body> backgrounds: wrap content in a table with an inline bgcolor
+  const html = built.html
+    .replace(/<body([^>]*)>/i, '<body$1 bgcolor="#050505" style="margin:0;padding:0;background:#050505"><table width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505"><tr><td>')
+    .replace(/<\/body>/i, '</td></tr></table></body>');
 
   try {
     const result = await resend.emails.send({
@@ -787,6 +837,6 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ success: true, id: result.id });
   } catch (err) {
     console.error('Email error:', err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: 'Email failed' });
   }
 };

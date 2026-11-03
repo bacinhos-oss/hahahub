@@ -61,7 +61,7 @@ interface AvatarProps {
 export const Avatar: React.FC<AvatarProps> = ({ name, url, size = 44, badges = [], onClick }) => {
   const hasBadge = badges.length > 0;
   const primaryBadge = badges[0];
-  const borderColor = badges.includes('verified') || badges.includes('roar') ? '#19A596' :
+  const borderColor = badges.includes('verified') ? '#19A596' :
                       badges.includes('founding') ? '#FFC80E' : 'rgba(255,255,255,0.2)';
 
   return (
@@ -101,10 +101,8 @@ export const Avatar: React.FC<AvatarProps> = ({ name, url, size = 44, badges = [
 // Helper to get badges from profile data
 export const getProfileBadges = (profile: any, postCount = 0, countriesCount = 0): Array<'verified' | 'founding' | 'roar' | 'laff' | 'active' | 'international'> => {
   const badges: Array<'verified' | 'founding' | 'roar' | 'laff' | 'active' | 'international'> = [];
-  if (profile?.is_verified || profile?.user_type === 'roar') badges.push('verified');
+  if (profile?.is_verified) badges.push('verified');
   if (profile?.is_founding) badges.push('founding');
-  if (profile?.user_type === 'roar') badges.push('roar');
-  else if (profile?.is_paid || profile?.user_type === 'laff') badges.push('laff');
   if (postCount >= 5) badges.push('active');
   if (countriesCount >= 3) badges.push('international');
   return badges;
