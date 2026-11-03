@@ -61,7 +61,6 @@ const STATUSES: { key: DealStatus; label: string; dot: string; desc: string; bg:
   { key: 'negotiating',   label: 'Negotiating',   dot: 'bg-brand-yellow', desc: 'In discussion',         bg: 'bg-brand-yellow' },
   { key: 'contract_sent', label: 'Contract Sent', dot: 'bg-purple-400',   desc: 'Awaiting signature',    bg: 'bg-purple-400' },
   { key: 'signed',        label: 'Signed',        dot: 'bg-green-400',    desc: 'Deal confirmed',        bg: 'bg-green-400' },
-  { key: 'royalties',     label: 'Royalties',     dot: 'bg-orange-400',   desc: 'Tracking performances', bg: 'bg-orange-400' },
   { key: 'completed',     label: 'Completed',     dot: 'bg-white/30',     desc: 'Deal closed',           bg: 'bg-white/20' },
 ];
 
@@ -148,8 +147,9 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       supabase.from('royalty_reports').select('*').order('date', { ascending: false }),
     ]);
 
-    const tickled = (t1.data || []) as Deal[];
-    const tickler = (t2.data || []) as Deal[];
+    const fixStatus = (d: Deal): Deal => (d.deal_status === 'royalties' ? { ...d, deal_status: 'signed' } : d);
+    const tickled = ((t1.data || []) as Deal[]).map(fixStatus);
+    const tickler = ((t2.data || []) as Deal[]).map(fixStatus);
 
     setAllTickled(tickled);
     setAllTickler(tickler);
@@ -356,7 +356,7 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-4xl font-black uppercase italic">DEAL <span className="text-brand-yellow">PIPELINE</span></h2>
-          <p className="text-white/30 text-xs italic mt-1 uppercase font-black tracking-widest">{deals.length} deals · {deals.filter(d => !d.is_read).length} unread · EUR {totalRoyalties.toLocaleString()} royalties</p>
+          <p className="text-white/30 text-xs italic mt-1 uppercase font-black tracking-widest">{deals.length} deals · {deals.filter(d => !d.is_read).length} unread</p>
         </div>
         <div className="flex gap-3 flex-wrap">
           <div className="flex border-2 border-white/20">
@@ -378,12 +378,11 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
 
       {/* STATS */}
       <div style={{ minHeight: '900px', contain: 'layout' }}>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {[
           { label: 'New', value: deals.filter(d => (d.deal_status || 'new') === 'new').length, color: 'text-brand-pink' },
           { label: 'Active', value: deals.filter(d => ['contacted','negotiating','contract_sent'].includes(d.deal_status || 'new')).length, color: 'text-brand-yellow' },
           { label: 'Signed', value: deals.filter(d => ['signed','royalties'].includes(d.deal_status || 'new')).length, color: 'text-green-400' },
-          { label: 'Royalties', value: `EUR ${totalRoyalties.toLocaleString()}`, color: 'text-orange-400' },
         ].map((s, i) => (
           <div key={i} className="border-2 border-white/10 p-4 text-center">
             <p className={"text-xl font-black " + s.color}>{s.value}</p>
@@ -434,7 +433,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
               </div>
             ) : (
               Object.entries(showGroups).map(([showTitle, showDeals]) => {
-                const showRoyalties = royaltyReports.filter(r => r.show_title === showTitle).reduce((s, r) => s + Number(r.royalty_amount), 0);
                 return (
                   <div key={showTitle} className="border-2 border-white/20 overflow-hidden">
                     <div className="bg-white/5 px-4 py-3 flex items-center justify-between border-b-2 border-white/10">
@@ -444,7 +442,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                       </div>
                       <div className="text-right">
                         <p className="text-[8px] font-black uppercase italic text-white/30">{showDeals.length} deal{showDeals.length !== 1 ? 's' : ''}</p>
-                        {showRoyalties > 0 && <p className="text-orange-400 font-black text-sm">EUR {showRoyalties.toLocaleString()}</p>}
                       </div>
                     </div>
                     {showDeals.map(deal => <DealRow key={deal.id} deal={deal} />)}
@@ -473,7 +470,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                           {s.key === 'new' && <p className="text-white/20 text-[9px] italic mt-0.5">Reply in the message box. Move to Contacted when done.</p>}
                           {s.key === 'contract_sent' && <p className="text-white/20 text-[9px] italic mt-0.5">Mark as Signed button appears. Fill in deal terms.</p>}
                           {s.key === 'signed' && <p className="text-white/20 text-[9px] italic mt-0.5">Emails go to both parties. LaffWire announces the deal.</p>}
-                          {s.key === 'royalties' && <p className="text-white/20 text-[9px] italic mt-0.5">Log each performance. Royalty calculated automatically.</p>}
                         </div>
                       </div>
                     ))}
@@ -558,44 +554,6 @@ const DealsPipelinePage: React.FC<Props> = ({ user, onNavigate }) => {
                         <button onClick={markSigned} className="w-full bg-green-400 text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white transition-all">Confirm — Move to Royalties and Send Emails</button>
                       </div>
                     )}
-                  </div>
-                )}
-
-                {/* ROYALTIES */}
-                {(activeDeal.deal_status === 'signed' || activeDeal.deal_status === 'royalties') && (
-                  <div className="px-4 py-4 border-b-2 border-white/10">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-[8px] font-black uppercase italic text-brand-yellow tracking-widest">Royalty Reports</p>
-                      <button onClick={() => setShowRoyaltyForm(!showRoyaltyForm)} className="bg-white text-black px-3 py-1 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">{showRoyaltyForm ? 'Cancel' : '+ Add'}</button>
-                    </div>
-                    {showRoyaltyForm && (
-                      <div className="space-y-3 mb-4 border-2 border-brand-yellow/30 p-3">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div><p className="text-[8px] font-black uppercase italic text-white/30 mb-1">Date</p><input type="date" value={royaltyForm.date} onChange={e => setRoyaltyForm(p => ({ ...p, date: e.target.value }))} className={inp} /></div>
-                          <div><p className="text-[8px] font-black uppercase italic text-white/30 mb-1">Venue</p><input type="text" placeholder="Teatro Roma" value={royaltyForm.venue} onChange={e => setRoyaltyForm(p => ({ ...p, venue: e.target.value }))} className={inp} /></div>
-                          <div><p className="text-[8px] font-black uppercase italic text-white/30 mb-1">Tickets Sold</p><input type="number" placeholder="350" value={royaltyForm.tickets} onChange={e => setRoyaltyForm(p => ({ ...p, tickets: e.target.value }))} className={inp} /></div>
-                          <div><p className="text-[8px] font-black uppercase italic text-white/30 mb-1">Ticket Price EUR</p><input type="number" placeholder="25" value={royaltyForm.ticket_price} onChange={e => setRoyaltyForm(p => ({ ...p, ticket_price: e.target.value }))} className={inp} /></div>
-                        </div>
-                        {royaltyForm.tickets && royaltyForm.ticket_price && (
-                          <div className="flex gap-4 border-l-4 border-brand-yellow pl-3">
-                            <span className="text-white/40 text-sm">Gross: <span className="text-white font-black">EUR {(Number(royaltyForm.tickets) * Number(royaltyForm.ticket_price)).toLocaleString()}</span></span>
-                            <span className="text-white/40 text-sm">Royalty: <span className="text-brand-yellow font-black">EUR {(Number(royaltyForm.tickets) * Number(royaltyForm.ticket_price) * Number(activeDeal.royalty_pct || 0) / 100).toLocaleString()}</span></span>
-                          </div>
-                        )}
-                        <button onClick={addReport} className="w-full bg-white text-black py-2 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">Save Report</button>
-                      </div>
-                    )}
-                    {reportsForDeal.length > 0 ? (
-                      <div className="space-y-1">
-                        {reportsForDeal.map(r => (
-                          <div key={r.id} className="flex justify-between text-xs border-b border-white/5 pb-1">
-                            <span className="text-white/40">{fmt(r.date)} · {r.venue}</span>
-                            <span className="text-brand-yellow font-black">EUR {Number(r.royalty_amount).toLocaleString()}</span>
-                          </div>
-                        ))}
-                        <div className="flex justify-end pt-2"><span className="text-brand-yellow font-black">Total: EUR {reportsForDeal.reduce((s, r) => s + Number(r.royalty_amount), 0).toLocaleString()}</span></div>
-                      </div>
-                    ) : <p className="text-white/20 text-xs italic">No reports yet.</p>}
                   </div>
                 )}
 
