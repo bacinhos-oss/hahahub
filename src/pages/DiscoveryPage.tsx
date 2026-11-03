@@ -1622,10 +1622,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <span className="material-symbols-outlined text-sm text-brand-cyan">visibility</span>
                         {show.viewsCount || 0}
                       </span>
-                      <span className="flex items-center gap-1 text-[10px] text-white/50 font-black">
-                        <span className="material-symbols-outlined text-sm text-brand-pink" style={{fontVariationSettings:"'FILL' 1"}}>favorite</span>
+                      <button
+                        type="button"
+                        title={user ? 'Like' : 'Sign in to like'}
+                        onClick={(e) => { e.stopPropagation(); if (user) onToggleFavorite(show.id); }}
+                        className="flex items-center gap-1 text-[10px] text-white/50 font-black hover:text-white transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-sm text-brand-pink" style={{fontVariationSettings: user?.favorites?.includes(show.id) ? "'FILL' 1" : "'FILL' 0"}}>favorite</span>
                         {show.likesCount || 0}
-                      </span>
+                      </button>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-white/30 text-[9px] font-black italic">{show.location}</span>
