@@ -176,8 +176,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               ) : (
                 <div className="space-y-16">
                   {/* HEADER */}
-                  <div className="flex flex-row justify-between items-start gap-3">
-                    <div className="flex-1 min-w-0 pr-2">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-3">
+                    <div className="flex-1 min-w-0 w-full sm:pr-2">
                       <span className="bg-brand-cyan text-black px-3 py-1 text-[10px] font-black uppercase italic mb-2 inline-block">PRODUCTION DOSSIER v{selectedShow.productionYear}</span>
                       <h2 className="text-4xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter italic break-words">{selectedShow.title}</h2>
                       {(selectedShow as any).originalTitle && (selectedShow as any).originalTitle !== selectedShow.title && (
@@ -185,6 +185,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       )}
                       <p className="text-base md:text-xl font-bold text-white/40 italic mt-4">{selectedShow.location} • {selectedShow.duration} min • {selectedShow.genre}</p>
                     </div>
+                    <div className="flex gap-3 flex-shrink-0 sm:mt-8">
                     <button
                       title="Copy link to this show"
                       onClick={async () => {
@@ -194,14 +195,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           else { await navigator.clipboard.writeText(link); setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000); }
                         } catch { /* user cancelled */ }
                       }}
-                      className="h-14 px-4 flex-shrink-0 flex items-center justify-center gap-2 border-2 border-white/40 text-white hover:border-brand-cyan hover:text-brand-cyan transition-all mt-8"
+                      className="h-14 px-4 flex-shrink-0 flex items-center justify-center gap-2 border-2 border-white/40 text-white hover:border-brand-cyan hover:text-brand-cyan transition-all"
                     >
                       <span className="material-symbols-outlined text-xl">{linkCopied ? 'check' : 'link'}</span>
                       <span className="text-[10px] font-black uppercase italic tracking-widest hidden md:inline">{linkCopied ? 'Copied' : 'Share'}</span>
                     </button>
-                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-2 transition-all mt-8 ${isFavorited ? 'bg-brand-pink text-white border-black ' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
+                    <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-2 transition-all  ${isFavorited ? 'bg-brand-pink text-white border-black ' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
                       <span className="material-symbols-outlined text-2xl font-black">favorite</span>
                     </button>
+                    </div>
                   </div>
 
                   {/* TRAILER VIDEO */}
@@ -551,21 +553,21 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">04. MARKET PERFORMANCE</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'Not specified'}</p></div>
-                           <span className="material-symbols-outlined text-brand-yellow">calendar_today</span>
+                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
+                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-sm md:text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'Not specified'}</p></div>
+                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-brand-yellow">calendar_today</span>
                         </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p>{selectedShow.performancesCount > 0 ? <p className="text-base font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
-                           <span className="material-symbols-outlined text-brand-cyan">theater_comedy</span>
+                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
+                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p>{selectedShow.performancesCount > 0 ? <p className="text-sm md:text-base font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
+                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-brand-cyan">theater_comedy</span>
                         </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p>{selectedShow.totalAudience > 0 ? <p className="text-base font-black text-brand-pink">{selectedShow.totalAudience.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
-                           <span className="material-symbols-outlined text-brand-pink">groups</span>
+                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
+                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p>{selectedShow.totalAudience > 0 ? <p className="text-sm md:text-base font-black text-brand-pink">{selectedShow.totalAudience.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
+                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-brand-pink">groups</span>
                         </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-6 flex items-center justify-between">
-                           <div><p className="text-[8px] font-black text-gray-500 uppercase italic">Box Office</p><p className="text-base font-black">{selectedShow.boxOfficeIndicator}</p></div>
-                           <span className="material-symbols-outlined text-white/40">trending_up</span>
+                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
+                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Box Office</p><p className="text-sm md:text-base font-black">{selectedShow.boxOfficeIndicator}</p></div>
+                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-white/40">trending_up</span>
                         </div>
 
 
