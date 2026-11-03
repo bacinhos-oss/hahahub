@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import Footer from '../components/Footer';
 import { Page, Show } from '../types';
 import { Logo } from '../components/Logo';
+import FloatingColors from '../components/FloatingColors'
 import { SpectrumBar } from '../components/SpectrumBar';
 import Smile from '../components/Smile';
 
@@ -58,8 +59,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
         <div className="max-w-[1500px] mx-auto px-4 md:px-12 py-4 flex items-center justify-between">
           <div className="flex items-center gap-10">
             <button onClick={() => onNavigate('landing')}>
-              <Logo height={34} className="md:hidden" />
-              <Logo height={44} className="hidden md:block" />
+              <Logo idle height={34} className="md:hidden" />
+              <Logo idle height={44} className="hidden md:block" />
             </button>
             <nav className="hidden md:flex items-center gap-8">
               {navLink('Catalog', 'discovery')}
@@ -83,6 +84,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/60 to-brand-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-brand-black/80 via-transparent to-transparent" />
+          <FloatingColors />
 
           <div className="relative w-full max-w-[1500px] mx-auto px-4 md:px-12 pt-32 pb-16 md:pb-24">
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.35em] text-white/60 mb-5">

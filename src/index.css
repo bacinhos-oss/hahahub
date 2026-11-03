@@ -54,3 +54,20 @@ body {
   0%   { transform: translateX(0%); }
   100% { transform: translateX(-100%); }
 }
+
+/* ===== Interactive logo ===== */
+.hh-logo { position: relative; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.hh-logo i { display: block; background-repeat: no-repeat; transition: transform .28s cubic-bezier(.3,1.7,.5,1); will-change: transform; }
+.hh-logo i:hover { transform: translateY(-16%) rotate(-5deg) scale(1.1); }
+.hh-logo-idle i { animation: hh-wave 3.6s ease-in-out infinite; animation-delay: calc(var(--i) * .14s); }
+@keyframes hh-wave { 0%, 70%, 100% { transform: translateY(0); } 85% { transform: translateY(-9%); } }
+.hh-confetti { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; pointer-events: none; z-index: 60; animation: hh-burst .95s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes hh-burst { 0% { transform: translate(-50%, -50%) rotate(0) scale(1); opacity: 1; } 60% { opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy) + 40px)) rotate(var(--rot)) scale(.4); opacity: 0; } }
+
+/* ===== Floating colours (hero background) ===== */
+.hh-float { position: absolute; bottom: -40px; opacity: 0; pointer-events: none; animation: hh-float linear infinite; }
+@keyframes hh-float { 0% { transform: translateY(0) rotate(0); opacity: 0; } 12% { opacity: .35; } 85% { opacity: .25; } 100% { transform: translateY(-95vh) rotate(160deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .hh-logo-idle i, .hh-float { animation: none !important; }
+  .hh-float { display: none; }
+}

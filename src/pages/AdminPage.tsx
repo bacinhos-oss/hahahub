@@ -39,6 +39,9 @@ function generatePassword(name: string, email: string): string {
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
   const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog' | 'inquiries' | 'errors'>('analytics');
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const [openInquiry, setOpenInquiry] = useState<string | null>(null);
+  const isFresh = (d: string) => Date.now() - new Date(d).getTime() < 48 * 3600 * 1000;
+  const freshCount = inquiries.filter(i => i.created_at && isFresh(i.created_at)).length;
   const [errorLogs, setErrorLogs] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [invites, setInvites] = useState<Invitation[]>([]);
@@ -56,6 +59,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   useEffect(() => {
     loadUsers();
     loadInvites();
+    supabase.from('inquiries').select('*').order('created_at', { ascending: false }).limit(200)
+      .then(({ data }) => { if (data) setInquiries(data); });
   }, []);
 
   // Auto-generate password when name or email changes
@@ -114,7 +119,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     // Save to invitations table
     const { data, error: insertError } = await supabase.from('invitations').insert([{
       recipient: newName, email: cleanEmail, duration: selectedDuration,
-      status: 'pending', password, note: newNote, plan: invitePlan,
+      status: 'pending', password: null, note: newNote, plan: invitePlan,
     }]).select();
 
     if (insertError) {
@@ -228,6 +233,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 ${activeTab === tab.key ? tab.key === 'analytics' ? 'bg-brand-cyan text-black' : tab.key === 'access' ? 'bg-brand-yellow text-black' : tab.key === 'inquiries' ? 'bg-brand-cyan text-black' : 'bg-brand-pink text-white' : 'text-white/40 hover:text-white'}`}>
               <span className="material-symbols-outlined text-sm">{tab.icon}</span>
               {tab.label}
+              {tab.key === 'inquiries' && freshCount > 0 && <span className="ml-1 bg-brand-pink text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">{freshCount}</span>}
             </button>
           ))}
         </nav>
@@ -483,7 +489,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   // Save to invitations as founding type
                   const { error: insertError } = await supabase.from('invitations').insert([{
                     recipient: newName, email: cleanEmail, duration: 'lifetime',
-                    status: 'pending', password: foundingPassword, note: 'Founding Member Invite', plan: 'roar', type: 'founding'
+                    status: 'pending', password: null, note: 'Founding Member Invite', plan: 'roar', type: 'founding'
                   }]);
                   if (insertError) {
                     console.error('Founding invite insert error:', insertError);
@@ -528,7 +534,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                             let pw = inv.generatedPassword;
                             if (!pw || pw === '—') {
                               pw = generatePassword(inv.recipient, inv.email);
-                              await supabase.from('invitations').update({ password: pw }).eq('id', inv.id);
                               setInvites(prev => prev.map(i => i.id === inv.id ? { ...i, generatedPassword: pw } : i));
                             }
                             const res = await fetch('/api/send-email', {
@@ -673,27 +678,43 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
               <div className="grid grid-cols-12 bg-white/5 px-4 py-2 text-[8px] font-black uppercase italic text-white/40 border-b border-white/10">
                 <span className="col-span-2">Show</span>
                 <span className="col-span-2">From</span>
-                <span className="col-span-2">Email</span>
+                <span className="col-span-2">To (producer)</span>
                 <span className="col-span-2">Package</span>
                 <span className="col-span-2">Status</span>
                 <span className="col-span-2">Date</span>
               </div>
-              {inquiries.map(inq => (
-                <div key={inq.id} className="grid grid-cols-12 px-4 py-3 border-b border-white/5 hover:bg-white/3 text-xs">
-                  <span className="col-span-2 font-black uppercase italic truncate">{inq.show_title}</span>
-                  <span className="col-span-2 font-black italic truncate">{inq.from_name}</span>
-                  <span className="col-span-2 text-white/40 truncate">{inq.from_email}</span>
-                  <span className="col-span-2">
-                    {inq.package_type && <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.package_type === 'full_punch' ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>{inq.package_type === 'full_punch' ? 'Full Punch' : 'Script'}</span>}
-                  </span>
-                  <span className="col-span-2">
-                    <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.deal_status === 'signed' ? 'bg-green-400/20 text-green-400' : inq.deal_status === 'new' || !inq.deal_status ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>
-                      {inq.deal_status || 'new'}
+              {inquiries.map(inq => {
+                const to = users.find(u => u.id === inq.producer_id);
+                const fresh = inq.created_at && isFresh(inq.created_at);
+                const open = openInquiry === inq.id;
+                return (
+                <div key={inq.id} className="border-b border-white/5">
+                  <div onClick={() => setOpenInquiry(open ? null : inq.id)} className="grid grid-cols-12 px-4 py-3 hover:bg-white/5 text-xs cursor-pointer">
+                    <span className="col-span-2 font-black uppercase italic truncate">
+                      {fresh && <span className="inline-block bg-brand-pink text-white text-[8px] font-black px-1.5 py-0.5 mr-2 not-italic">NEW</span>}
+                      {inq.show_title}
                     </span>
-                  </span>
-                  <span className="col-span-2 text-white/40">{new Date(inq.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>
+                    <span className="col-span-2 truncate"><span className="font-black italic">{inq.from_name}</span><br /><span className="text-white/40">{inq.from_email}</span></span>
+                    <span className="col-span-2 text-white/60 truncate">{to?.name || '—'}<br /><span className="text-white/30">{to?.email || ''}</span></span>
+                    <span className="col-span-2">
+                      {inq.package_type && <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.package_type === 'full_punch' ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>{inq.package_type === 'full_punch' ? 'Full Punch' : 'Script'}</span>}
+                    </span>
+                    <span className="col-span-2">
+                      <span className={"text-[8px] font-black uppercase px-1.5 py-0.5 " + (inq.deal_status === 'signed' ? 'bg-green-400/20 text-green-400' : inq.deal_status === 'new' || !inq.deal_status ? 'bg-brand-pink/20 text-brand-pink' : 'bg-brand-yellow/20 text-brand-yellow')}>
+                        {inq.deal_status || 'new'}
+                      </span>
+                    </span>
+                    <span className="col-span-2 text-white/40">{new Date(inq.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  {open && (
+                    <div className="px-4 pb-4 text-sm text-white/70 italic whitespace-pre-wrap">
+                      {inq.message || 'No message provided.'}
+                    </div>
+                  )}
                 </div>
-              ))}
+                );
+              })}
+              {inquiries.length === 0 && <div className="px-4 py-8 text-center text-white/30 text-sm italic">No inquiries yet.</div>}
             </div>
           </div>
         )}
