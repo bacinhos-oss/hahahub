@@ -38,8 +38,10 @@ export const Logo: React.FC<LogoProps> = ({ height = 36, className, idle = false
   };
 
   return (
+    <span className={className} style={{ alignItems: 'flex-end', gap: Math.max(2, Math.round(height * 0.08)) }}>
+    <span style={{ display: 'inline-flex', alignItems: 'flex-end', gap: Math.max(2, Math.round(height * 0.08)) }}>
     <span
-      className={['hh-logo', idle ? 'hh-logo-idle' : '', className || ''].join(' ').trim()}
+      className={['hh-logo', idle ? 'hh-logo-idle' : ''].join(' ').trim()}
       style={{ height, width: Math.round(height * RATIO) }}
       role="img"
       aria-label="HahaHub"
@@ -72,6 +74,12 @@ export const Logo: React.FC<LogoProps> = ({ height = 36, className, idle = false
           }}
         />
       ))}
+    </span>
+    <span
+      aria-hidden="true"
+      style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 600, fontSize: Math.max(11, Math.round(height * 0.36)), lineHeight: 1, paddingBottom: Math.round(height * 0.1), opacity: 0.75, color: 'inherit' }}
+    >.art</span>
+    </span>
     </span>
   );
 };
