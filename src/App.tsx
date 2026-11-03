@@ -297,7 +297,15 @@ const App: React.FC = () => {
       : s
     ))
     if (currentUser.id) {
-      await supabase.from('profiles').update({ favorites: newFavs }).eq('id', currentUser.id)
+      const { error: favErr } = await supabase.from('profiles').update({ favorites: newFavs }).eq('id', currentUser.id)
+      if (favErr) {
+        console.error('Favorite save failed:', favErr)
+        // roll back the optimistic update so the heart tells the truth
+        setCurrentUser((u: any) => u ? { ...u, favorites: currentUser.favorites } : u)
+        setShows(prev => prev.map(s => s.id === showId ? { ...s, likesCount: isFav ? s.likesCount + 1 : Math.max(0, s.likesCount - 1) } : s))
+        alert('Could not save your like (' + favErr.message + '). Please log out and in again, or contact info@hahahub.art.')
+        return
+      }
       // Read fresh value from DB to avoid stale closure race condition
       const { data: freshShow } = await supabase.from('shows').select('likes_count').eq('id', showId).maybeSingle()
       const currentLikes = freshShow?.likes_count || 0

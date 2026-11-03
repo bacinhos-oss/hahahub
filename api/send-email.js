@@ -754,6 +754,9 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
 
 const { createClient } = require('@supabase/supabase-js');
 
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://jnilgukmyfukazwduuig.supabase.co';
+// Public anon key (same one the website uses) is enough to verify a user's token
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU';
 const ADMIN_EMAIL = 'bacinhos@gmail.com';
 const ADMIN_ONLY = ['payment_confirmation', 'beta_checkin', 'subscription_reminder', 'founding_followup', 'founding_invite', 'show_removed'];
 const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry', 'inquiry_confirmation', 'deal_signed_producer'];
@@ -794,11 +797,12 @@ module.exports = async function handler(req, res) {
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   let user;
   try {
-    const sb = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const sb = createClient(SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY);
     const { data, error } = await sb.auth.getUser(token);
     if (error || !data || !data.user) return res.status(401).json({ error: 'Unauthorized' });
     user = data.user;
   } catch (e) {
+    console.error('Auth check failed:', e);
     return res.status(401).json({ error: 'Unauthorized' });
   }
   const isAdmin = (user.email || '').toLowerCase() === ADMIN_EMAIL;
