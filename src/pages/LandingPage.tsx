@@ -7,7 +7,6 @@ import Smile from '../components/Smile';
 
 interface LandingPageProps {
   onNavigate: (page: Page) => void;
-  onPurchaseSuccess?: (planName: string) => void;
   shows: Show[];
 }
 

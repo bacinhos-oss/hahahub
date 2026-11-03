@@ -14,7 +14,6 @@ import CookieBanner from './components/CookieBanner'
 import FeedbackButton from './components/FeedbackButton'
 import OnboardingWizard from './components/OnboardingWizard'
 import NotFoundPage from './pages/NotFoundPage'
-import PricingPage from './pages/PricingPage'
 import FAQPage from './pages/FAQPage'
 import LaffWirePage from './pages/LaffWirePage'
 import ProducerPage from './pages/ProducerPage'
@@ -23,7 +22,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { logError } from './lib/errorLogger'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
-const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','terms','upload','pricing','faq','producer','wire']
+const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','terms','upload','faq','producer','wire']
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPageRaw] = useState<Page>('landing')
@@ -365,30 +364,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handlePurchaseSuccess = async (planName: string) => {
-    if (!currentUser) return
-    const expiry = planName.includes('Annual') 
-      ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-      : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-    await supabase.from('profiles').update({ is_paid: true, subscription_expiry: expiry }).eq('id', currentUser.id)
-    const newPlan = planName.toLowerCase().includes('roar') ? 'roar' : 'laff'
-    setCurrentUser(prev => prev ? { ...prev, isPaid: true, plan: newPlan, subscription: { type: planName.includes('Annual') ? 'Annual' : 'Quarterly', expiryDate: expiry, status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } } : null)
-    // Send welcome + payment confirmation emails
-    const invoiceNum = 'HH-' + Date.now().toString().slice(-6);
-    await sendEmail('payment_confirmation', currentUser.email, {
-      name: currentUser.name,
-      planName,
-      amount: planName.includes('Annual') ? '€99' : '€59',
-      invoiceNum,
-      expiry,
-    });
-    await sendEmail('welcome', currentUser.email, {
-      name: currentUser.name,
-      email: currentUser.email,
-    });
-    setCurrentPage('discovery')
-  }
-
   const renderPage = () => {
     const userShowCount = shows.filter(s => (s as any).user_id === currentUser?.id).length
     const uploadLimit = currentUser?.isAdmin ? 9999 : currentUser?.plan === 'roar' ? 9999 : currentUser?.plan === 'laff' ? 5 : 1
@@ -403,7 +378,7 @@ const App: React.FC = () => {
     })()
 
     switch (effectivePage) {
-      case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} onPurchaseSuccess={handlePurchaseSuccess} shows={shows} />
+      case 'landing': return <LandingPage onNavigate={(p) => setCurrentPage(p)} shows={shows} />
       case 'discovery': return <DiscoveryPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onToggleFavorite={handleToggleFavorite} onUpdateStats={handleUpdateStats} shows={shows} onViewProducer={(id) => setCurrentProducerId(id)} initialShowId={currentShowId} />
       case 'admin': return <AdminPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} shows={shows} onDeleteShow={(id) => setShows(prev => prev.filter(s => s.id !== id))} />
       case 'login': return <LoginPage 
@@ -416,7 +391,6 @@ const App: React.FC = () => {
       case 'privacy': return <PrivacyPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'terms': return <TermsPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} userShowCount={shows.filter(s => (s as any).user_id === currentUser?.id).length} />
-      case 'pricing': return <PricingPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onPurchaseSuccess={handlePurchaseSuccess} />
       case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onViewProducer={(id) => { setCurrentProducerId(id); setCurrentPage('producer'); }} />
       case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} onViewShow={(id) => { setCurrentShowId(id); setCurrentPage('discovery'); }} />

@@ -117,49 +117,6 @@ const templates = {
   }),
 
 
-  payment_confirmation: ({ name, planName, amount, invoiceNum, expiry }) => ({
-    subject: `Punchline Delivered. ✓ — HahaHub ${planName}`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.paid { background: #19A596; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
-.invoice { background: #fff; color: #000; padding: 24px; margin: 24px 0; }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="paid">✓ Payment Confirmed</div>
-  <h1>Punchline<br/>Delivered.</h1>
-  <p style="color:rgba(255,255,255,0.6);font-style:italic;">You're set up, ${name}. Go hunt. 🎭</p>
-
-  <div class="invoice">
-    <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;">Invoice ${invoiceNum}</div>
-    <table style="width:100%;border-collapse:collapse;">
-      <tr><td style="padding:8px 0;border-bottom:1px solid #eee;"><strong>${planName}</strong></td><td style="text-align:right;padding:8px 0;border-bottom:1px solid #eee;font-size:20px;font-weight:900;">${amount}</td></tr>
-      <tr><td style="padding:8px 0;color:#999;font-size:12px;">Valid until</td><td style="text-align:right;padding:8px 0;color:#999;font-size:12px;">${expiry}</td></tr>
-    </table>
-  </div>
-
-  <a href="https://hahahub.art" class="cta">🥊 Enter the Vault →</a>
-
-  <div class="footer">
-    <p>HahaHub | info@hahahub.art | Ljubljana, Slovenia</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
-</body>
-</html>`
-  }),
-
   inquiry_reply: ({ producerName, buyerName, showTitle, message }) => ({
     subject: `Reply from ${producerName} — ${showTitle}`,
     html: mail({
@@ -236,85 +193,6 @@ h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: i
       body: card('Show', show_title, '#FFC80E') + rows([['Rights holder', producer], ['Territory', territory], ['Signed', signed_date]], '#16A34A'),
       cta: { label: 'Open My Hub', href: 'https://hahahub.art/#subscription' },
     }),
-  }),
-
-  beta_checkin: ({ name }) => ({
-    subject: `9 days in — how's HahaHub treating you? 🥊`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.badge { background: #19A596; color: #000; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 16px; line-height: 1.1; }
-.question { background: #111; border-left: 4px solid #FFC80E; padding: 20px 24px; margin: 16px 0; }
-.question p { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.9); margin: 0; }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="badge">🎭 Check-In</div>
-  <h1>${name},<br/>9 days in.<br/>How's it going?</h1>
-  <p style="color:rgba(255,255,255,0.5);font-style:italic;font-size:15px;">You're one of our first members. Your feedback shapes the platform.</p>
-
-  <p style="color:rgba(255,255,255,0.7);font-size:14px;margin-top:24px;">Just hit reply and tell us:</p>
-
-  <div class="question">
-    <p>01. What's working well so far?</p>
-  </div>
-  <div class="question">
-    <p>02. What's missing or broken?</p>
-  </div>
-
-  <p style="color:rgba(255,255,255,0.4);font-style:italic;font-size:13px;margin-top:8px;">No forms, no links. Just reply to this email. We read everything.</p>
-
-  <a href="https://hahahub.art" class="cta">🥊 Back to HahaHub →</a>
-
-  <div class="footer">
-    <p>HahaHub — The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
-</body>
-</html>`
-  }),
-
-  subscription_reminder: ({ name, expiry, daysLeft }) => ({
-    subject: `Your HahaHub Pass expires in ${daysLeft} days — Renew Now`,
-    html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><style>
-body { font-family: Arial, sans-serif; background: #050505; color: #fff; margin: 0; padding: 0; }
-.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-.logo { font-size: 28px; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; color: #FFC80E; text-shadow: 2px 2px 0 #EF4986; margin-bottom: 4px; }
-.slogan { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 40px; }
-.warning { background: #EF4986; color: #fff; padding: 6px 16px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; display: inline-block; margin-bottom: 24px; }
-h1 { font-size: 36px; font-weight: 900; text-transform: uppercase; font-style: italic; margin: 0 0 8px; }
-.cta { background: #FFC80E; color: #000; padding: 16px 32px; font-weight: 900; text-transform: uppercase; font-style: italic; font-size: 14px; text-decoration: none; display: inline-block; margin: 24px 0; border: 3px solid #000; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.3); }
-</style></head>
-<body>
-<div class="container">
-  <img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;margin-bottom:8px">
-  <div class="slogan">Tickle. Set Up. Punch.</div>
-  <div class="warning">⚠ ${daysLeft} Days Left</div>
-  <h1>Don't Leave<br/>Them Hanging.</h1>
-  <p style="color:rgba(255,255,255,0.6);font-style:italic;">${name}, your Comedy Passport expires on <strong>${expiry}</strong>. Renew to keep access to the vault.</p>
-  <a href="mailto:info@hahahub.art?subject=Renew Subscription" class="cta">Renew My Pass →</a>
-  <div class="footer">
-    <p>HahaHub | info@hahahub.art</p>
-    <p>Break a Laffing Leg. 🦵</p>
-  </div>
-</div>
-</body>
-</html>`
   }),
 
   founding_followup: ({ name }) => ({
@@ -626,7 +504,7 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL |
 // Public anon key (same one the website uses) is enough to verify a user's token
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU';
 const ADMIN_EMAIL = 'bacinhos@gmail.com';
-const ADMIN_ONLY = ['payment_confirmation', 'beta_checkin', 'subscription_reminder', 'founding_followup', 'founding_invite', 'show_removed'];
+const ADMIN_ONLY = ['founding_followup', 'founding_invite', 'show_removed'];
 const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry_confirmation', 'deal_signed_producer'];
 const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
 

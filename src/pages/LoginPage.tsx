@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { normalizeEmail } from '../lib/normalizeEmail'
 import { User } from '../types'
-import PaymentModal from '../components/PaymentModal'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 
@@ -103,6 +102,17 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           return
         }
         const signupEmail = email.trim().toLowerCase()
+        // Dot-stripped form used ONLY to find a matching pending invite —
+        // Gmail folds dots for delivery, so an invite sent to one variant
+        // should still match a signup using another. The account itself is
+        // created with signupEmail (below), so future logins (which do a
+        // plain trim/lowercase match against what Supabase actually stored)
+        // keep working normally, regardless of how this invite was typed.
+        const inviteLookupEmail = normalizeEmail(email)
+        // Check if invited — ilike + trim guards against casing/whitespace
+        // mismatches between what the admin typed and what the user types,
+        // which previously left registered users stuck showing 'pending'.
+        const { data: invite } = await supabase.from('invitations').select('id, plan, type').ilike('email', inviteLookupEmail).eq('status', 'pending').maybeSingle()
         const isAdmin = signupEmail === ADMIN_EMAIL
         // FREE JOIN: anyone can register, no invite or payment needed
         const { data, error: signUpError } = await supabase.auth.signUp({ email: signupEmail, password })
@@ -110,19 +120,18 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         if (data.user) {
           const isPaid = true
           const userType = 'roar'
-          let isFounding = false
-          const { error: profileError } = await supabase.from('profiles').upsert([{ id: data.user.id, name: name.toUpperCase(), email: signupEmail, is_paid: isPaid, is_founding: false, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }], { onConflict: 'id' })
+          const isFounding = invite?.type === 'founding'
+          if (invite) {
+            const { error: updateError } = await supabase.from('invitations').update({ status: 'used' }).eq('id', invite.id)
+            if (updateError) console.error('Failed to mark invitation as used:', updateError)
+          }
+          const { error: profileError } = await supabase.from('profiles').upsert([{ id: data.user.id, name: name.toUpperCase(), email: signupEmail, is_paid: isPaid, is_founding: isFounding, user_type: userType, favorites: [], uploaded_show_ids: [], onboarded: false }], { onConflict: 'id' })
           if (profileError) {
             console.error('Profile creation failed:', profileError)
             setError('Something went wrong creating your account. Please contact info@hahahub.art so we can fix it.')
             setLoading(false)
             return
           }
-          // Claim a pending invitation for this email (server-side; also sets the founding badge)
-          try {
-            const { data: claimed } = await supabase.rpc('claim_invitation')
-            isFounding = claimed === 'founding'
-          } catch (e) { console.error('claim_invitation failed:', e) }
           if (isPaid) {
             // Send founding welcome email — only to actual founding members,
             // not every invited/admin paid signup.
@@ -173,7 +182,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             role: isAdmin ? 'admin' : 'Producer',
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanLoginEmail}`,
             isPaid: profile?.is_paid || isAdmin, isAdmin,
-            plan: 'roar', // HahaHub is free: every member has full access
+            plan: isAdmin ? 'roar' : (profile?.user_type === 'roar' ? 'roar' : (profile?.user_type === 'laff' || profile?.is_paid ? 'laff' : 'gigl')),
             subscription: (profile?.is_paid || isAdmin) ? { type: 'Annual', expiryDate: profile?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
             favorites: profile?.favorites || [],
             uploadedShowIds: profile?.uploaded_show_ids || [],
@@ -189,15 +198,15 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
 
   // PASSWORD RESET SCREENS
   if (isResetMode) return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black text-white overflow-x-hidden">
-      <div className="w-full max-w-md bg-brand-surface border border-white/10 p-6 md:p-12">
-        <button onClick={() => setIsResetMode(false)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white mb-8 italic">← Back</button>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black text-black overflow-x-hidden">
+      <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#03DAC6]">
+        <button onClick={() => setIsResetMode(false)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-8 italic">← Back</button>
         <div className="mb-12 flex justify-center"><Logo height={44} /></div>
         <h2 className="text-2xl font-black uppercase mb-8 italic">Set New Password</h2>
         <form onSubmit={handleUpdatePassword} className="space-y-6">
-          <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-black/40 border border-white/20 text-white placeholder:text-white/30 px-4 py-4 font-bold outline-none" placeholder="••••••••" />
+          <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none" placeholder="••••••••" />
           {error && <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic">{error}</div>}
-          <button type="submit" disabled={loading} className="w-full bg-white text-black hover:bg-brand-pink hover:text-white font-black py-5 uppercase text-lg border-2 border-white/20  italic">
+          <button type="submit" disabled={loading} className="w-full bg-black text-brand-cyan font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic">
             {loading ? 'SAVING...' : 'UPDATE PASSWORD'}
           </button>
         </form>
@@ -207,11 +216,11 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
 
   if (resetSent) return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black overflow-x-hidden">
-      <div className="w-full max-w-md bg-brand-surface border border-white/10 p-6 md:p-12  text-white">
+      <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-neo-cyan text-black">
         <div className="mb-8 flex justify-center"><Logo height={44} /></div>
         <h2 className="text-3xl font-black uppercase italic mb-4 text-brand-cyan">CHECK YOUR EMAIL</h2>
         <p className="font-bold italic text-gray-600 mb-8">We sent a password reset link to <strong>{email}</strong>.</p>
-        <button onClick={() => { setResetSent(false); setIsResetMode(false) }} className="w-full bg-white text-black hover:bg-brand-pink hover:text-white font-black py-5 uppercase border-2 border-white/20  italic">Back to Log In</button>
+        <button onClick={() => { setResetSent(false); setIsResetMode(false) }} className="w-full bg-black text-brand-cyan font-black py-5 uppercase border-4 border-black shadow-neo-cyan italic">Back to Log In</button>
       </div>
     </div>
   )
@@ -219,14 +228,14 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
   // SUCCESS SCREEN
   if (regStep === 'success') return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black overflow-x-hidden">
-      <div className="w-full max-w-md bg-brand-surface border border-white/10 p-6 md:p-12 text-center">
+      <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#03DAC6] text-center">
         <div className="mb-8"><Logo height={44} /></div>
-        <div className="w-28 h-28 bg-brand-yellow border-2 border-white/20 mx-auto flex items-center justify-center rotate-3 mb-8">
+        <div className="w-28 h-28 bg-brand-yellow border-4 border-black mx-auto flex items-center justify-center rotate-3 shadow-[8px_8px_0px_#FF0266] mb-8">
           <span className="text-5xl">🥊</span>
         </div>
-        <h2 className="text-4xl font-black uppercase italic mb-3 text-white leading-tight">All Set Up.<br/>Time to Punch.</h2>
+        <h2 className="text-4xl font-black uppercase italic mb-3 text-black leading-tight">All Set Up.<br/>Time to Punch.</h2>
         <p className="font-black text-brand-pink uppercase tracking-[0.2em] text-sm mb-4">You're set up. Go hunt. 🎭</p>
-        <p className="text-gray-600 font-bold text-sm mb-2">Welcome, <strong className="text-white">{name.toUpperCase()}</strong>!</p>
+        <p className="text-gray-600 font-bold text-sm mb-2">Welcome, <strong className="text-black">{name.toUpperCase()}</strong>!</p>
         <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Break a Laffing Leg. 🦵</p>
         <div className="flex justify-center gap-1 mt-6">
           {[...Array(5)].map((_, i) => (
@@ -239,26 +248,17 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
 
   // MAIN LOGIN/REGISTER FORM
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black text-white overflow-x-hidden">
-      <PaymentModal
-        isOpen={showPaymentModal}
-        planName="Annual Pass"
-        price="€99"
-        userEmail={email}
-        userName={name}
-        onClose={() => setShowPaymentModal(false)}
-        onSuccess={completeRegistration}
-      />
-      <div className="w-full max-w-md bg-brand-surface border border-white/10 p-6 md:p-12">
-        <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white mb-8 italic">← Back</button>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-brand-black text-black overflow-x-hidden">
+      <div className="w-full max-w-md bg-white border-8 border-black p-6 md:p-12 shadow-[12px_12px_0px_#FF0266]">
+        <button onClick={onBack} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-8 italic">← Back</button>
         <div className="mb-12 flex justify-center"><Logo height={44} /></div>
 
         {adminMode ? (
           <div className="mb-8"><span className="bg-brand-pink text-white px-4 py-1 text-xs font-black uppercase tracking-[0.3em] italic">Admin Access</span></div>
         ) : (
-          <div className="flex border-2 border-white/20 mb-8 p-1">
+          <div className="flex border-4 border-black mb-8 p-1">
             {[false, true].map((val, i) => (
-              <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-white text-black' : 'bg-transparent text-white'}`}>
+              <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
                 {i === 0 ? 'LOG IN' : 'JOIN'}
               </button>
             ))}
@@ -287,7 +287,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           </div>
         )}
 
-        <h2 className="text-white text-2xl font-black uppercase mb-8 italic">
+        <h2 className="text-black text-2xl font-black uppercase mb-8 italic">
           {adminMode ? 'Control Center Access' : isNew ? 'Join HahaHub.' : 'Welcome back. 🥊'}
         </h2>
 
@@ -295,21 +295,21 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           {isNew && !adminMode && (
             <div>
               <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Name / Production Company</label>
-              <input type="text" autoComplete="name" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-black/40 border border-white/20 text-white placeholder:text-white/30 px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="E.G. COMEDY STAGE NYC" />
+              <input type="text" autoComplete="name" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="E.G. COMEDY STAGE NYC" />
             </div>
           )}
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Email Address</label>
-            <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-black/40 border border-white/20 text-white placeholder:text-white/30 px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="COMEDY@PRODUCER.COM" />
+            <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="COMEDY@PRODUCER.COM" />
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>
-            <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-black/40 border border-white/20 text-white placeholder:text-white/30 px-4 py-4 font-bold outline-none focus:border-brand-pink transition-all" placeholder="••••••••" />
+            <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-pink transition-all" placeholder="••••••••" />
           </div>
 
           {error && <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>}
 
-          <button type="submit" disabled={loading} className="w-full bg-white text-black hover:bg-brand-pink hover:text-white font-black py-5 uppercase text-lg border-2 border-white/20  italic hover:bg-brand-pink transition-all">
+          <button type="submit" disabled={loading} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic hover:bg-brand-pink transition-all">
             {loading ? 'Tickling...' : adminMode ? 'ENTER HQ' : isNew ? 'JOIN →' : 'LOG IN →'}
           </button>
         </form>
