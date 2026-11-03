@@ -1000,22 +1000,20 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   }
 
                   try {
-                    await fetch('https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-inquiry', {
+                    await fetch('/api/send-email', {
                       method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU',
-                      },
+                      headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
+                        type: 'inquiry',
                         to: inquiryShow?.producerEmail || 'info@hahahub.art',
-                        replyTo: inquiryEmail,
-                        showTitle: inquiryShow?.title,
-                        showId: inquiryShow?.id,
-                        producerId: inquiryShow?.userId || inquiryShow?.user_id,
-                        fromName: inquiryName,
-                        fromEmail: inquiryEmail,
-                        message: inquiryMessage,
-                        packageType: selectedPackage,
+                        data: {
+                          producerName: inquiryShow?.producerName || '',
+                          buyerName: inquiryName,
+                          buyerEmail: inquiryEmail,
+                          showTitle: inquiryShow?.title,
+                          message: inquiryMessage,
+                          packageType: selectedPackage,
+                        },
                       }),
                     });
                   } catch (notifyErr) { console.error('Producer notification email failed:', notifyErr); }

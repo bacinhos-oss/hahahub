@@ -5,51 +5,54 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = 'HahaHub <info@hahahub.art>';
 
 const templates = {
-  inquiry: ({ producerName, buyerName, buyerEmail, showTitle, message }) => ({
-    subject: `You've Been Tickled! — ${showTitle}`,
-    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
-<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
-<tr><td style="background:#050505;border-bottom:4px solid #FFC80E;padding:32px 40px;">
-  <p style="margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:#fff"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
-  <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:rgba(255,255,255,0.3)">Tickle. Set Up. Punch.</p>
-</td></tr>
-<tr><td style="background:#0a0a0a;padding:40px;">
-  <div style="background:#FFC80E;color:#000;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:6px 14px;display:inline-block;margin-bottom:24px;">🎭 You've Been Tickled!</div>
-  <h1 style="color:#fff;font-size:36px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 8px;letter-spacing:-1px">New Inquiry<br/>Incoming.</h1>
-  <p style="color:rgba(255,255,255,0.5);font-style:italic;font-size:14px;margin:0 0 32px">Someone wants your show. Don't leave them hanging.</p>
-  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px">
-    <tr><td style="background:#111;border:2px solid #FFC80E;padding:16px 20px;">
-      <p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 6px">Show</p>
-      <p style="font-size:20px;font-weight:900;text-transform:uppercase;color:#FFC80E;margin:0">${showTitle}</p>
-    </td></tr>
-  </table>
-  <table width="100%" cellpadding="0" cellspacing="8" style="margin-bottom:16px">
-    <tr>
-      <td width="50%" style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:16px 20px;">
-        <p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 6px">Name</p>
-        <p style="font-size:16px;font-weight:900;color:#fff;margin:0">${buyerName}</p>
-      </td>
-      <td width="8"></td>
-      <td width="50%" style="background:#111;border:2px solid rgba(255,255,255,0.1);padding:16px 20px;">
-        <p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 6px">Email</p>
-        <p style="font-size:13px;font-weight:700;color:#19A596;margin:0">${buyerEmail}</p>
-      </td>
-    </tr>
-  </table>
-  ${message ? `<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px"><tr><td style="background:#111;border-left:4px solid #19A596;padding:16px 20px;"><p style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:0 0 8px">Message</p><p style="color:rgba(255,255,255,0.7);font-style:italic;font-size:14px;line-height:1.6;margin:0">"${message}"</p></td></tr></table>` : ''}
-  <a href="https://hahahub.art" style="background:#FFC80E;color:#000;padding:16px 32px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:13px;border:3px solid #000;font-style:italic">Go to Pipeline →</a>
-</td></tr>
-<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
-  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">Break a Laffing Leg. 🦵<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
-</td></tr>
+  inquiry: ({ producerName, buyerName, buyerEmail, showTitle, message, packageType }) => {
+    const pkg = packageType ? String(packageType).replace(/_/g, ' ') : '';
+    const mailto = `mailto:${buyerEmail || ''}?subject=${encodeURIComponent('Re: ' + (showTitle || 'your inquiry') + ' — HahaHub')}`;
+    return {
+    subject: `You've been tickled — a producer wants "${showTitle}"`,
+    html: `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"></head>
+<body style="margin:0;padding:0;background:#050505;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
+  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="240" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
+  <tr><td style="padding-bottom:14px;"><span style="background:#FFC80E;color:#000000;font-size:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase;padding:6px 12px;">New inquiry</span></td></tr>
+  <tr><td style="font-size:38px;line-height:1.05;font-weight:900;font-style:italic;text-transform:uppercase;color:#ffffff;padding-bottom:14px;">You've been<br>tickled${producerName ? ', ' + producerName : ''}.</td></tr>
+  <tr><td style="font-size:16px;font-style:italic;color:#bbbbbb;padding-bottom:28px;line-height:1.5;">A fellow producer is interested in your show. Answer while the laugh is still warm.</td></tr>
+
+  <tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;border-left:4px solid #FFC80E;"><tr><td style="padding:16px 20px;">
+    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#777777;padding-bottom:6px;">Show</div>
+    <div style="font-size:22px;font-weight:900;font-style:italic;text-transform:uppercase;color:#FFC80E;">${showTitle}</div>
+    ${pkg ? `<div style="font-size:12px;color:#aaaaaa;padding-top:6px;">Interested in: <strong style="color:#ffffff;text-transform:capitalize;">${pkg}</strong></div>` : ''}
+  </td></tr></table></td></tr>
+
+  <tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;border-left:4px solid #EF4986;"><tr><td style="padding:16px 20px;">
+    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#777777;padding-bottom:6px;">From</div>
+    <div style="font-size:18px;font-weight:900;color:#ffffff;">${buyerName || 'A producer'}</div>
+    <div style="font-size:13px;color:#19A596;padding-top:4px;">${buyerEmail || ''}</div>
+  </td></tr></table></td></tr>
+
+  ${message ? `<tr><td style="padding-bottom:28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;border-left:4px solid #19A596;"><tr><td style="padding:16px 20px;">
+    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#777777;padding-bottom:8px;">Their message</div>
+    <div style="font-size:15px;font-style:italic;color:#dddddd;line-height:1.6;">${String(message).replace(/\n/g, '<br>')}</div>
+  </td></tr></table></td></tr>` : '<tr><td style="padding-bottom:16px;"></td></tr>'}
+
+  <tr><td style="padding-bottom:12px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+    <td bgcolor="#FFC80E" style="background:#FFC80E;border:3px solid #000000;"><a href="${mailto}" style="display:inline-block;padding:16px 28px;font-size:13px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:2px;color:#000000;text-decoration:none;">Reply to ${buyerName ? String(buyerName).split(' ')[0] : 'them'} &rarr;</a></td>
+    <td width="12"></td>
+    <td style="border:3px solid #444444;"><a href="https://hahahub.art/#subscription" style="display:inline-block;padding:16px 28px;font-size:13px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:2px;color:#ffffff;text-decoration:none;">Open My Hub</a></td>
+  </tr></table></td></tr>
+  <tr><td style="padding-bottom:32px;font-size:12px;color:#777777;">You can also simply hit reply &mdash; your answer goes straight to them.</td></tr>
+
+  <tr><td style="border-top:1px solid #2a2a2a;padding-top:20px;font-size:11px;color:#777777;line-height:1.6;">HahaHub &mdash; The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art<br>Break a Laffing Leg. 🦵</td></tr>
 </table>
 </td></tr>
 </table>
-</body></html>`
-  }),
+</body>
+</html>`
+  };},
 
   welcome: ({ name, email }) => ({
     subject: `You're Set Up. Break a Laffing Leg. 🦵 — HahaHub`,
@@ -759,7 +762,7 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL |
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU';
 const ADMIN_EMAIL = 'bacinhos@gmail.com';
 const ADMIN_ONLY = ['payment_confirmation', 'beta_checkin', 'subscription_reminder', 'founding_followup', 'founding_invite', 'show_removed'];
-const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry', 'inquiry_confirmation', 'deal_signed_producer'];
+const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry_confirmation', 'deal_signed_producer'];
 const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
 
 // Best-effort per-instance rate limit (per user, per hour)
@@ -834,6 +837,7 @@ module.exports = async function handler(req, res) {
     const result = await resend.emails.send({
       from: FROM,
       to,
+      ...(type === 'inquiry' && EMAIL_RE.test(String((data || {}).buyerEmail || '')) ? { reply_to: data.buyerEmail } : {}),
       ...(type !== 'inquiry' && type !== 'inquiry_confirmation' ? { bcc: 'info@hahahub.art' } : {}),
       subject,
       html,
