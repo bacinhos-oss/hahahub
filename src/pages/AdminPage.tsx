@@ -1,3 +1,4 @@
+import AdminOutreach from './AdminOutreach';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { normalizeEmail } from '../lib/normalizeEmail';
@@ -37,7 +38,7 @@ function generatePassword(name: string, email: string): string {
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDeleteShow }) => {
-  const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'catalog' | 'inquiries' | 'errors'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'access' | 'outreach' | 'catalog' | 'inquiries' | 'errors'>('analytics');
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [openInquiry, setOpenInquiry] = useState<string | null>(null);
   const isFresh = (d: string) => Date.now() - new Date(d).getTime() < 48 * 3600 * 1000;
@@ -223,6 +224,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
         <nav className="flex border-t-2 border-white/10 overflow-x-auto">
           {([
             { key: 'analytics', label: 'Producers', icon: 'group' },
+            { key: 'outreach', label: 'Outreach', icon: 'campaign' },
             { key: 'access', label: 'Invites', icon: 'mail' },
             { key: 'catalog', label: 'Archive', icon: 'gavel' },
             { key: 'inquiries', label: 'Inquiries', icon: 'inbox' },
@@ -255,7 +257,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
         {/* HEADER */}
         <div className="mb-8">
           <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none text-white">
-            {activeTab === 'analytics' ? 'PRODUCERS' : activeTab === 'access' ? 'INVITES' : 'ARCHIVE'}
+            {activeTab === 'analytics' ? 'PRODUCERS' : activeTab === 'access' ? 'INVITES' : activeTab === 'outreach' ? 'OUTREACH' : 'ARCHIVE'}
           </h1>
           <div className="h-2 w-32 bg-spectrumLight-red mt-2"></div>
         </div>
@@ -396,6 +398,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             })}
           </div>
         )}
+
+        {activeTab === 'outreach' && <AdminOutreach />}
 
         {/* INVITES TAB */}
         {activeTab === 'access' && (
