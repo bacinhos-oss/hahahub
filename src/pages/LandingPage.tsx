@@ -151,6 +151,33 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
           </div>
         </section>
 
+        {/* HOW IT WORKS */}
+        <section className="border-t border-white/10 bg-white/[0.02]">
+          <div className="max-w-[1500px] mx-auto px-4 md:px-12 py-16 md:py-20">
+            <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white mb-10">How it works</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+              {[
+                { n: '1', c: 'text-brand-yellow', t: 'Join free', d: 'Create your profile in two minutes. No fees, no cards.' },
+                { n: '2', c: 'text-brand-pink', t: 'List or find a show', d: 'Upload your production, or browse titles by language, genre and cast size.' },
+                { n: '3', c: 'text-brand-cyan', t: 'Send an inquiry', d: 'Tickle the show you like. The producer gets your message and replies directly.' },
+              ].map(st => (
+                <div key={st.n} className="flex gap-4">
+                  <span className={`text-5xl font-black italic leading-none ${st.c}`}>{st.n}</span>
+                  <div>
+                    <h3 className="text-lg font-black uppercase italic tracking-widest text-white mb-1">{st.t}</h3>
+                    <p className="text-white/60 font-bold italic leading-relaxed">{st.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-12">
+              <button onClick={join} className="bg-white text-black font-black px-8 py-4 text-sm md:text-base uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
+                Join free
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* LEGAL */}
         <section className="border-t border-white/10">
           <div className="flex flex-col items-center pt-16 pb-4">

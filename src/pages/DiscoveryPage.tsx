@@ -1652,6 +1652,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       {getProfileBadges(show).slice(0,1).map(b => <Badge key={b} type={b} size="xs" />)}
                     </div>
                   </div>
+                  <div className="mt-1 text-center bg-brand-yellow/10 text-brand-yellow group-hover:bg-brand-yellow group-hover:text-black border border-brand-yellow/40 py-1.5 text-[10px] font-black uppercase italic tracking-widest transition-all">
+                    Tickle it — send inquiry →
+                  </div>
                 </div>
               </div>
             )})}
