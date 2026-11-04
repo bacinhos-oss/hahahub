@@ -1,4 +1,5 @@
 
+import { downloadShowStory } from '../lib/storyImage';
 import { supabase } from '../lib/supabase';
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
@@ -202,6 +203,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     >
                       <span className="material-symbols-outlined text-xl">{linkCopied ? 'check' : 'link'}</span>
                       <span className="text-[10px] font-black uppercase italic tracking-widest hidden md:inline">{linkCopied ? 'Copied' : 'Share'}</span>
+                    </button>
+                    <button
+                      title="Download an Instagram Story image of this show"
+                      onClick={async () => {
+                        try { await downloadShowStory(selectedShow as any); }
+                        catch (e) { console.error(e); alert('Could not create the image. Try again in a moment.'); }
+                      }}
+                      className="h-14 px-4 flex-shrink-0 flex items-center justify-center gap-2 border-2 border-white/40 text-white hover:border-brand-yellow hover:text-brand-yellow transition-all"
+                    >
+                      <span className="material-symbols-outlined text-xl">photo_camera</span>
+                      <span className="text-[10px] font-black uppercase italic tracking-widest hidden md:inline">Story</span>
                     </button>
                     <button onClick={() => onToggleFavorite(selectedShow.id)} className={`h-14 w-14 flex-shrink-0 flex items-center justify-center border-2 transition-all  ${isFavorited ? 'bg-brand-pink text-white border-black ' : 'bg-transparent text-white border-white hover:border-brand-pink'}`}>
                       <span className="material-symbols-outlined text-2xl font-black">favorite</span>

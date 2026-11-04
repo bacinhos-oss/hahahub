@@ -58,6 +58,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="flex flex-col gap-3">
                 <a href="mailto:info@hahahub.art" className="text-xs font-bold italic text-brand-cyan hover:text-white transition-colors">info@hahahub.art</a>
                 <a href="mailto:legal@hahahub.art" className="text-xs font-bold italic text-white/60 hover:text-spectrumLight-teal transition-colors">legal@hahahub.art</a>
+                <a href="https://www.instagram.com/hahahub.art/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">Instagram @hahahub.art</a>
                 <p className="text-[10px] font-bold italic text-white/30">Ljubljana, Slovenia</p>
               </div>
             </div>
