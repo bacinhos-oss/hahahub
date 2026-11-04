@@ -172,8 +172,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               {isGuest ? (
                 <div className="flex flex-col items-center justify-center text-center py-24 space-y-8">
                   <span className="material-symbols-outlined text-8xl text-brand-pink">lock_person</span>
-                  <h2 className="text-4xl font-display uppercase italic text-white">PRODUCER TIER ONLY</h2>
-                  <p className="text-gray-400 italic font-bold">Registration required to view full scripts, commercial Bible, and technical rider.</p>
+                  <h2 className="text-4xl font-display uppercase italic text-white">MEMBERS ONLY</h2>
+                  <p className="text-gray-400 italic font-bold">Join free to view full scripts, commercial Bible, and technical rider.</p>
                   <button onClick={() => onNavigate('login')} className="bg-white text-black hover:bg-brand-pink hover:text-white px-10 py-4 font-black uppercase text-sm border-2 border-white  italic">Unlock Full Dossier</button>
                 </div>
               ) : (
