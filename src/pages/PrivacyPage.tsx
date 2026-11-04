@@ -49,7 +49,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({ onNavigate, onLogout, user })
               <ul className="list-none space-y-2 pl-4 border-l-4 border-brand-cyan">
                 <li>— Provide and improve our platform</li>
                 <li>— Send you access credentials and important notifications</li>
-                <li>— Process your subscription payments</li>
+                <li>— Pass your inquiries to the rights holders you contact</li>
                 <li>— Display your productions in our catalog</li>
               </ul>
             </section>
