@@ -65,6 +65,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [filterGenre, setFilterGenre] = useState('All');
   const [filterCountry, setFilterCountry] = useState('All');
   const [filterCast, setFilterCast] = useState('All');
+  const [filterLanguage, setFilterLanguage] = useState('All');
   const [sortBy, setSortBy] = useState('Newest');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -80,6 +81,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     return ['All', ...Array.from(genres)].sort();
   }, [shows]);
 
+  const allLanguages = useMemo(() => ['All', ...new Set(shows.map(s => (s.language || '').trim()).filter(Boolean))].sort(), [shows]);
+  const filtersActive = filterGenre !== 'All' || filterCountry !== 'All' || filterCast !== 'All' || filterLanguage !== 'All' || !!searchQuery;
+  const clearFilters = () => { setFilterGenre('All'); setFilterCountry('All'); setFilterCast('All'); setFilterLanguage('All'); setSearchQuery(''); };
   const allCountries = useMemo(() => ['All', ...new Set(shows.map(s => s.location))].sort(), [shows]);
 
   const filteredShows = useMemo(() => {
@@ -101,7 +105,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
         show.producerName,
         String(show.duration), String(show.maleRoles + show.femaleRoles),
       ].some(field => field?.toLowerCase().includes(q));
-      return matchesGenre && matchesCountry && matchesCast && matchesSearch;
+      const matchesLanguage = filterLanguage === 'All' || (show.language || '').trim() === filterLanguage;
+      return matchesGenre && matchesCountry && matchesCast && matchesLanguage && matchesSearch;
     });
 
     return result.sort((a, b) => {
@@ -115,7 +120,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       if (sortBy === 'Trending') return (b.viewsCount || 0) - (a.viewsCount || 0);
       return 0;
     });
-  }, [shows, filterGenre, filterCountry, filterCast, sortBy, searchQuery, shortlist, showShortlistOnly]);
+  }, [shows, filterGenre, filterCountry, filterCast, filterLanguage, sortBy, searchQuery, shortlist, showShortlistOnly]);
 
   const handleShowSelect = (show: Show) => {
     setSelectedShowId(show.id);
@@ -1497,6 +1502,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </select>
               </div>
 
+              {/* Language */}
+              <div className="space-y-1">
+                <label className="text-[8px] font-black uppercase text-white/30 italic block">Language</label>
+                <select value={filterLanguage} onChange={(e) => setFilterLanguage(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-yellow italic">
+                  {allLanguages.map(l => <option key={l} value={l}>{l === 'All' ? 'All Languages' : l}</option>)}
+                </select>
+              </div>
+
               {/* Cast Size */}
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-white/30 italic block">Cast Size</label>
@@ -1507,6 +1520,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <option value="Large (6+)">Large (6+)</option>
                 </select>
               </div>
+
+              {filtersActive && (
+                <button onClick={clearFilters} className="self-end text-[10px] font-black uppercase italic text-brand-pink border-2 border-brand-pink/40 px-3 py-2 hover:bg-brand-pink hover:text-white transition-all">✕ Clear filters</button>
+              )}
 
               {/* Sort */}
               <div className="space-y-1">
@@ -1551,7 +1568,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <div className="flex justify-center"><Smile height={110} className="opacity-70" /></div>
                 <p className="text-white/40 font-black uppercase italic text-2xl">Shush.</p>
                 <p className="text-white/20 font-black uppercase italic text-sm">Nothing matches your filters.</p>
-                <p className="text-white/10 text-xs italic">Try adjusting genre, language or search term.</p>
+                <p className="text-white/30 text-xs italic">Try adjusting genre, language or search term.</p>
+                {filtersActive && <button onClick={clearFilters} className="mt-2 bg-white text-black px-6 py-3 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">Clear all filters</button>}
               </div>
             ) : filteredShows.map((show, index) => {
               const plan = (user as any)?.plan || 'gigl';
