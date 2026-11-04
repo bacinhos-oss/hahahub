@@ -1114,7 +1114,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
           <div className="max-w-7xl mx-auto space-y-12">
 
             {/* HEADER */}
-            <section className="flex flex-col md:flex-row items-end justify-between gap-10">
+            <section className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-10">
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">My <span className="text-spectrumLight-green">Hub</span></h1>
               <div className="flex items-center gap-6">
                 <div className="bg-brand-surface border-2 border-white p-6 ">
