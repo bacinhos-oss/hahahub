@@ -176,7 +176,7 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                         Sign In →
                       </button>
                     ) : (
-                      <button onClick={() => onNavigate('pricing')}
+                      <button onClick={() => onNavigate('login')}
                         className="px-5 py-2 bg-white text-black border-2 border-black font-black uppercase italic text-xs hover:bg-brand-pink hover:text-white transition-all">
                         LAFF+ to Contact →
                       </button>

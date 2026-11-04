@@ -978,7 +978,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               {user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 5 && (
                 <div className="bg-brand-yellow text-black p-4 border-2 border-black font-black uppercase text-sm italic mb-2">
                   ⚡ GIGL plan: 5 inquiries per month used. Upgrade to LAFF for unlimited.
-                  <button onClick={() => onNavigate('pricing')} className="ml-2 underline">Upgrade →</button>
+                  <button onClick={() => onNavigate('login')} className="ml-2 underline">Upgrade →</button>
                 </div>
               )}
 
@@ -1578,7 +1578,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               return (
               <div
                 key={show.id}
-                onClick={() => isFreeBlocked ? onNavigate('pricing') : handleShowSelect(show)}
+                onClick={() => isFreeBlocked ? onNavigate('login') : handleShowSelect(show)}
                 className={`group relative cursor-pointer bg-brand-surface border-2 border-white/30 overflow-hidden flex flex-col transition-all duration-300
                   ${isFreeBlocked ? 'opacity-40' : 'hover:border-brand-pink hover:shadow-[0_0_20px_rgba(239, 73, 134,0.3)]'}`}
               >
@@ -1586,7 +1586,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 {isFreeBlocked && (
                   <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70">
                     <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
-                    <p className="text-brand-yellow font-black uppercase italic text-xs">Upgrade to LAFF</p>
+                    <p className="text-brand-yellow font-black uppercase italic text-xs">Join free to unlock</p>
                   </div>
                 )}
 

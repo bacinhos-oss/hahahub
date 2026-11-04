@@ -277,7 +277,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
           <p className="text-white/40 font-bold italic text-center max-w-md">
             {plan === 'gigl' ? 'Upgrade to LAFF for up to 5 shows.' : 'Upgrade to ROAR for unlimited uploads.'}
           </p>
-          <button onClick={() => onNavigate('pricing')} className="bg-white text-black px-10 py-4 font-black uppercase italic border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
+          <button onClick={() => onNavigate('login')} className="bg-white text-black px-10 py-4 font-black uppercase italic border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
             Upgrade →
           </button>
         </div>
