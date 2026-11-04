@@ -32,7 +32,7 @@ const Poster: React.FC<{ show: Show; onClick: () => void }> = ({ show, onClick }
     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-90" />
     <div className="absolute bottom-0 left-0 right-0 p-3">
       <p className="text-[9px] font-bold uppercase tracking-widest text-white/60 mb-0.5">{show.genre}</p>
-      <h3 className="text-sm font-bold leading-tight text-white line-clamp-2">{(show as any).englishTitle || show.title}</h3>
+      <h3 className="text-sm font-bold uppercase leading-tight text-white line-clamp-2">{(show as any).englishTitle || show.title}</h3>
     </div>
     <div className="absolute inset-0 ring-0 group-hover:ring-2 ring-inset ring-white/70 transition-all" />
   </button>
