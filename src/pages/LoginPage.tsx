@@ -158,7 +158,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             setCurrentUser({
               id: data.user.id, email: signupEmail, name: name.toUpperCase(), role: isAdmin ? 'admin' : 'Producer',
               avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${signupEmail}`,
-              isPaid: true, isAdmin, plan: userType as 'gigl' | 'laff' | 'roar',
+              isPaid: true, isAdmin, plan: 'roar',
               subscription: { type: 'Annual', expiryDate: 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] },
               favorites: [], uploadedShowIds: [],
             })
@@ -182,7 +182,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
             role: isAdmin ? 'admin' : 'Producer',
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanLoginEmail}`,
             isPaid: profile?.is_paid || isAdmin, isAdmin,
-            plan: isAdmin ? 'roar' : (profile?.user_type === 'roar' ? 'roar' : (profile?.user_type === 'laff' || profile?.is_paid ? 'laff' : 'gigl')),
+            plan: 'roar',
             subscription: (profile?.is_paid || isAdmin) ? { type: 'Annual', expiryDate: profile?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
             favorites: profile?.favorites || [],
             uploadedShowIds: profile?.uploaded_show_ids || [],
@@ -279,8 +279,8 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
               <div className="flex items-center gap-3 bg-brand-yellow/20 border-2 border-brand-yellow p-3">
                 <span className="text-lg">🎭</span>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Step 1 of 2</p>
-                  <p className="text-xs font-black uppercase">Create Account → Secure Payment</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Free to join</p>
+                  <p className="text-xs font-black uppercase">Create your account. No payment needed.</p>
                 </div>
               </div>
             )}

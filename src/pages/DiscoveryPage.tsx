@@ -1572,9 +1572,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 {filtersActive && <button onClick={clearFilters} className="mt-2 bg-white text-black px-6 py-3 font-black uppercase italic text-xs border-2 border-black hover:bg-brand-pink hover:text-white transition-all">Clear all filters</button>}
               </div>
             ) : filteredShows.map((show, index) => {
-              const plan = (user as any)?.plan || 'gigl';
-              const freeLimit = !user ? 5 : plan === 'gigl' ? 15 : 9999;
-              const isFreeBlocked = plan === 'gigl' && !user?.isAdmin && index >= freeLimit;
+              const isFreeBlocked = !user && index >= 5;
               return (
               <div
                 key={show.id}

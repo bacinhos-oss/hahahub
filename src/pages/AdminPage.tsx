@@ -299,9 +299,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   <div className="flex items-center gap-2 flex-wrap">
                     <select value={u.user_type || (u.is_paid ? 'laff' : 'gigl')} onChange={e => setPlan(u.id, e.target.value)}
                       className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-white/20 bg-brand-black text-white hover:border-brand-yellow cursor-pointer">
-                      <option value="gigl">GIGL — Free</option>
-                      <option value="laff">LAFF — €99</option>
-                      <option value="roar">ROAR — €189</option>
+                      <option value="gigl">GIGL</option>
+                      <option value="laff">LAFF</option>
+                      <option value="roar">ROAR</option>
                     </select>
                     <button onClick={() => toggleVerified(u.id, u.is_verified)}
                       className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all flex items-center gap-1 ${u.is_verified ? 'bg-brand-cyan border-brand-cyan text-black' : 'border-white/20 text-white/30 hover:border-brand-cyan'}`}>
@@ -465,7 +465,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                         plan === 'roar' ? 'bg-brand-pink text-white border-brand-pink' :
                         plan === 'laff' ? 'bg-brand-cyan text-black border-brand-cyan' :
                         'bg-white text-black border-white' : 'border-white/20 text-white/40 hover:border-white'}`}>
-                      {plan === 'gigl' ? 'GIGL — Free' : plan === 'laff' ? 'LAFF — €99' : 'ROAR — €189'}
+                      {plan === 'gigl' ? 'GIGL' : plan === 'laff' ? 'LAFF' : 'ROAR'}
                     </button>
                   ))}
                 </div>
