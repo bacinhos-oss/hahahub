@@ -496,6 +496,61 @@ const templates = {
 </table>
 </body></html>`
   }),
+  membership_on_hold: ({ name }) => ({
+    subject: `Your HahaHub.art membership is on hold`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #EF4986;padding:32px 40px;">
+  <p style="margin:0"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#EF4986">Membership Notice</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <h1 style="color:#fff;font-size:24px;font-weight:900;text-transform:uppercase;margin:0 0 24px;letter-spacing:-1px">Hi ${name || 'there'},</h1>
+  <p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.7;margin:0 0 16px">Thank you for signing up to HahaHub.art.</p>
+  <p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.7;margin:0 0 16px">HahaHub is a professional network for theatre comedy producers, and we review every new membership. We could not yet confirm your profile as a theatre producer, so your membership is on hold for now and your account is paused.</p>
+  <p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.7;margin:0 0 16px">Nothing has been deleted. Just reply to this email with a few words about your theatre or production company, and we will gladly reactivate your account.</p>
+  <a href="mailto:info@hahahub.art" style="background:#FFC80E;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000">Reply to us →</a>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:32px 0 2px">Dejan Batoćanin</p>
+  <p style="color:#FFC80E;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin:0">Founder, HahaHub.art</p>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · The Laff Exchange · International Comedy Theatre Producers Platform<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
+  }),
+  membership_reactivated: ({ name }) => ({
+    subject: `Your HahaHub.art membership is active`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #03DAC6;padding:32px 40px;">
+  <p style="margin:0"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#03DAC6">Membership Active</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <h1 style="color:#fff;font-size:24px;font-weight:900;text-transform:uppercase;margin:0 0 24px;letter-spacing:-1px">Hi ${name || 'there'},</h1>
+  <p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.7;margin:0 0 16px">Good news. Your HahaHub.art membership is active again.</p>
+  <p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.7;margin:0 0 16px">Log in with your usual email and password. Your profile and your shows are back on the platform.</p>
+  <a href="https://www.hahahub.art/#login" style="background:#FFC80E;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000">Log In →</a>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:32px 0 2px">Dejan Batoćanin</p>
+  <p style="color:#FFC80E;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin:0">Founder, HahaHub.art</p>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · The Laff Exchange · International Comedy Theatre Producers Platform<br/><a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
+  }),
 };
 
 const { createClient } = require('@supabase/supabase-js');
@@ -504,7 +559,7 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL |
 // Public anon key (same one the website uses) is enough to verify a user's token
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU';
 const ADMIN_EMAIL = 'bacinhos@gmail.com';
-const ADMIN_ONLY = ['founding_followup', 'founding_invite', 'show_removed'];
+const ADMIN_ONLY = ['founding_followup', 'founding_invite', 'show_removed', 'membership_on_hold', 'membership_reactivated'];
 const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry_confirmation', 'deal_signed_producer'];
 const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
 

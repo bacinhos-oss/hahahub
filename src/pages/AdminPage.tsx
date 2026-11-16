@@ -84,7 +84,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
 
   const loadUsers = async () => {
     setLoadingUsers(true);
-    const { data } = await supabase.from('profiles').select('id, name, email, is_paid, is_verified, is_founding, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
+    const { data } = await supabase.from('profiles').select('id, name, email, is_paid, is_verified, is_founding, suspended, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
     setUsers(data || []);
     setLoadingUsers(false);
   };
@@ -190,6 +190,29 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     setUsers(prev => prev.map(u => u.id === id ? { ...u, is_verified: !current } : u));
   };
 
+  const toggleSuspended = async (u: any) => {
+    const next = !u.suspended;
+    const who = u.name || u.email;
+    const msg = next
+      ? `Suspend ${who}?\n\nTheir account is paused, their shows are hidden and they get the "membership on hold" email. Nothing is deleted.`
+      : `Reactivate ${who}?\n\nTheir account and shows come back and they get the "membership active" email.`;
+    if (!window.confirm(msg)) return;
+    const { error } = await supabase.from('profiles').update({ suspended: next }).eq('id', u.id);
+    if (error) { alert('Could not save: ' + error.message); return; }
+    setUsers(prev => prev.map(x => x.id === u.id ? { ...x, suspended: next } : x));
+    if (!u.email) return;
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: next ? 'membership_on_hold' : 'membership_reactivated', to: u.email, data: { name: u.name || '' } })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      triggerMailLog((next ? 'Suspended ' : 'Reactivated ') + who, (next ? 'Membership on hold' : 'Membership active') + ' email sent to ' + u.email);
+    } catch (e) {
+      alert((next ? 'Suspended' : 'Reactivated') + ', but the email did not send. Please write to ' + u.email + ' yourself.');
+    }
+  };
+
   const toggleFounding = async (id: string, current: boolean) => {
     await supabase.from('profiles').update({ is_founding: !current }).eq('id', id);
     setUsers(prev => prev.map(u => u.id === id ? { ...u, is_founding: !current } : u));
@@ -279,7 +302,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 <div key={u.id} className={`border-2 p-4 transition-all ${isExpired ? 'border-red-500/30 opacity-60' : 'border-white/20 hover:border-brand-yellow'}`}>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0 flex-1">
-                      <p className="font-black uppercase italic text-white truncate">{u.name || '—'}</p>
+                      <p className="font-black uppercase italic text-white truncate">{u.name || '—'}{u.suspended && <span className="ml-2 align-middle text-[9px] not-italic px-2 py-0.5 bg-brand-pink text-white">Suspended</span>}</p>
                       <p className="text-white/30 text-xs italic truncate">{u.email}</p>
                       <div className="flex gap-3 mt-1 flex-wrap">
                         <span className="text-white/20 text-[9px]">{u.uploaded_show_ids?.length || 0} shows</span>
@@ -387,8 +410,13 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <span className="material-symbols-outlined text-sm">lock_reset</span>
                       Reset PW
                     </button>
+                    <button onClick={() => toggleSuspended(u)}
+                      className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all flex items-center gap-1 ml-auto ${u.suspended ? 'bg-brand-pink border-brand-pink text-white' : 'border-brand-pink/40 text-brand-pink hover:bg-brand-pink hover:text-white'}`}>
+                      <span className="material-symbols-outlined text-sm">{u.suspended ? 'play_arrow' : 'pause'}</span>
+                      {u.suspended ? 'Reactivate' : 'Suspend'}
+                    </button>
                     <button onClick={() => deleteUser(u.id, u.name || u.email)}
-                      className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1 ml-auto">
+                      className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm">delete</span>
                       Delete
                     </button>

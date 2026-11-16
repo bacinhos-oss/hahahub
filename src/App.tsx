@@ -43,6 +43,7 @@ const App: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
+  const [suspendedNotice, setSuspendedNotice] = useState(false)
 
   useEffect(() => {
     // Direct show link: hahahub.art/show/<id>  ->  open that show in the catalog
@@ -92,7 +93,7 @@ const App: React.FC = () => {
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         if (session?.user) {
-          loadProfile(session.user.id, session.user.email!)
+          loadProfile(session.user.id, session.user.email!, event === 'INITIAL_SESSION')
           // On a fresh page load with an already-active session (e.g. after
           // a browser refresh), land logged-in users on Discovery instead of
           // the public Landing page. Only kicks in if nothing else (like a
@@ -130,10 +131,17 @@ const App: React.FC = () => {
     }
   }, [])
 
-  const loadProfile = async (userId: string, email: string) => {
+  const loadProfile = async (userId: string, email: string, showNotice = false) => {
     try {
       const { data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
       const isAdmin = email === ADMIN_EMAIL
+      if (data?.suspended && !isAdmin) {
+        await supabase.auth.signOut()
+        setCurrentUser(null)
+        if (showNotice) setSuspendedNotice(true)
+        setLoading(false)
+        return
+      }
       const user: User = {
         id: userId, email,
         name: data?.name || email.split('@')[0].toUpperCase(),
@@ -157,8 +165,12 @@ const App: React.FC = () => {
   }
 
   const loadShows = async () => {
-    const { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
+    let { data } = await supabase.from('shows').select('*').order('created_at', { ascending: false })
     if (!data) return
+    // Hide shows of suspended members (if the function is missing, show everything)
+    const { data: suspendedIds } = await supabase.rpc('suspended_member_ids')
+    const hidden = new Set<string>((suspendedIds || []).map((r: any) => typeof r === 'string' ? r : r?.suspended_member_ids).filter(Boolean))
+    if (hidden.size) data = data.filter((s: any) => !hidden.has(s.user_id))
     const userIds = [...new Set(data.map((s: any) => s.user_id).filter(Boolean))]
     let profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}
     if (userIds.length > 0) {
@@ -405,6 +417,16 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen">
       {renderPage()}
+      {suspendedNotice && (
+        <div className="fixed inset-0 z-[100] bg-brand-black/95 flex items-center justify-center px-4">
+          <div className="max-w-md w-full border-2 border-brand-pink bg-brand-black p-8 text-center">
+            <Smile height={72} className="mx-auto mb-6" />
+            <h2 className="text-2xl font-black uppercase italic text-white mb-3">Membership on hold</h2>
+            <p className="text-white/60 font-bold italic leading-relaxed mb-8">Your HahaHub.art membership is paused while we review it. Check your email, or write to info@hahahub.art.</p>
+            <button onClick={() => { setSuspendedNotice(false); setCurrentPage('landing') }} className="bg-white text-black px-8 py-3 font-black uppercase italic text-sm hover:bg-brand-pink hover:text-white transition-colors">OK</button>
+          </div>
+        </div>
+      )}
       <CookieBanner />
       <FeedbackButton />
       <Analytics />

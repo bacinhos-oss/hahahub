@@ -176,6 +176,12 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         if (data.user) {
           const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle()
           const isAdmin = cleanLoginEmail === ADMIN_EMAIL
+          if (profile?.suspended && !isAdmin) {
+            await supabase.auth.signOut()
+            setError('Your membership is on hold while we review it. Check your email or write to info@hahahub.art.')
+            setLoading(false)
+            return
+          }
           setCurrentUser({
             id: data.user.id, email: cleanLoginEmail,
             name: profile?.name || cleanLoginEmail.split('@')[0].toUpperCase(),
