@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { normalizeEmail } from '../lib/normalizeEmail';
 import { Page, User, Show } from '../types';
+import { Mascot, TierPill, TIERS, TIER_ORDER, getTier, Tier } from '../components/Mascot';
 
 interface Invitation {
   id: string;
@@ -84,7 +85,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
 
   const loadUsers = async () => {
     setLoadingUsers(true);
-    const { data } = await supabase.from('profiles').select('id, name, email, is_paid, is_verified, is_founding, suspended, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
+    const { data } = await supabase.from('profiles').select('id, name, email, is_paid, is_verified, is_founding, suspended, member_tier, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
     setUsers(data || []);
     setLoadingUsers(false);
   };
@@ -188,6 +189,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const toggleVerified = async (id: string, current: boolean) => {
     await supabase.from('profiles').update({ is_verified: !current }).eq('id', id);
     setUsers(prev => prev.map(u => u.id === id ? { ...u, is_verified: !current } : u));
+  };
+
+  const setTier = async (u: any, tier: Tier) => {
+    const patch = { member_tier: tier, is_verified: tier !== 'member', is_founding: tier === 'founding' };
+    const { error } = await supabase.from('profiles').update(patch).eq('id', u.id);
+    if (error) { alert('Could not save the title: ' + error.message); return; }
+    setUsers(prev => prev.map(x => x.id === u.id ? { ...x, ...patch } : x));
+    triggerMailLog('Title set: ' + (u.name || u.email), (u.name || u.email) + ' is now ' + TIERS[tier].label + '.');
   };
 
   const toggleSuspended = async (u: any) => {
@@ -317,27 +326,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                         )}
                       </div>
                     </div>
-                    <span className={`flex-shrink-0 px-2 py-1 text-[9px] font-black uppercase border ${u.user_type === 'roar' ? 'text-brand-pink border-brand-pink/40' : u.user_type === 'laff' || u.is_paid ? 'text-green-400 border-green-500/30' : 'text-white/30 border-white/10'}`}>
-                      {u.user_type === 'roar' ? 'ROAR' : u.user_type === 'laff' || u.is_paid ? 'LAFF' : 'GIGL'}
-                    </span>
+                    <span className="flex-shrink-0"><TierPill tier={getTier(u)} size="md" /></span>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <select value={u.user_type || (u.is_paid ? 'laff' : 'gigl')} onChange={e => setPlan(u.id, e.target.value)}
-                      className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-white/20 bg-brand-black text-white hover:border-brand-yellow cursor-pointer">
-                      <option value="gigl">GIGL</option>
-                      <option value="laff">LAFF</option>
-                      <option value="roar">ROAR</option>
-                    </select>
-                    <button onClick={() => toggleVerified(u.id, u.is_verified)}
-                      className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all flex items-center gap-1 ${u.is_verified ? 'bg-brand-cyan border-brand-cyan text-black' : 'border-white/20 text-white/30 hover:border-brand-cyan'}`}>
-                      <span className="material-symbols-outlined text-sm">check</span>
-                      {u.is_verified ? 'Verified' : 'Verify'}
-                    </button>
-                    <button onClick={() => toggleFounding(u.id, u.is_founding)}
-                      className={`px-3 py-2 text-[10px] font-black uppercase italic border-2 transition-all flex items-center gap-1 ${u.is_founding ? 'bg-brand-yellow border-brand-yellow text-black' : 'border-white/20 text-white/30 hover:border-brand-yellow'}`}>
-                      <span className="material-symbols-outlined text-sm">star</span>
-                      {u.is_founding ? 'Founding' : 'Found.'}
-                    </button>
+                    <label className="flex items-center gap-2 px-3 py-1.5 border-2 cursor-pointer" style={{ borderColor: TIERS[getTier(u)].text }}>
+                      <Mascot tier={getTier(u)} height={22} />
+                      <select value={getTier(u)} onChange={e => setTier(u, e.target.value as Tier)}
+                        className="bg-brand-black text-[10px] font-black uppercase italic outline-none cursor-pointer" style={{ color: TIERS[getTier(u)].text }}>
+                        {TIER_ORDER.map(t => <option key={t} value={t}>{TIERS[t].label}</option>)}
+                      </select>
+                    </label>
                     <button onClick={async () => {
                       const newExpiry = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
                       await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);

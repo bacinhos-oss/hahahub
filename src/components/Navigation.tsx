@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Page } from '../types';
 import { Logo } from './Logo';
+import { Mascot, TIERS, getTier } from './Mascot';
 
 interface NavigationProps {
   activePage: Page;
@@ -22,18 +23,13 @@ const NAV_COLORS = {
 
 type NavColor = keyof typeof NAV_COLORS;
 
-const PLAN_STYLES: Record<string, { label: string; color: string }> = {
-  founding: { label: 'FOUNDING', color: 'text-brand-yellow' },
-  member: { label: 'MEMBER', color: 'text-white/40' },
-};
 
 const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogout, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isAdmin = user?.role === 'admin' || (user as any)?.isAdmin || (user as any)?.email === 'bacinhos@gmail.com';
 
-  const planKey = (user as any)?.is_founding ? 'founding' : 'member';
-  const plan = PLAN_STYLES[planKey];
+  const tier = getTier(user);
 
   const go = (page: Page) => { onNavigate(page); setMenuOpen(false); };
 
@@ -86,9 +82,12 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         <div className="hidden lg:flex items-center gap-6">
           {user ? (
             <div className="flex items-center gap-4 pl-4 border-l-2 border-white/10">
-              <button onClick={() => onNavigate('subscription')} className="text-right hover:opacity-80 transition-opacity">
-                <p className="text-[11px] font-black tracking-[0.2em] text-white italic">{user.name}</p>
-                <p className={`text-[9px] font-black tracking-widest uppercase ${plan.color}`}>{plan.label}</p>
+              <button onClick={() => onNavigate('subscription')} className="flex items-center gap-3 hover:opacity-80 transition-opacity" title={TIERS[tier].label}>
+                <span className="text-right">
+                  <span className="block text-[11px] font-black tracking-[0.2em] text-white italic">{user.name}</span>
+                  <span className="block text-[9px] font-black tracking-widest uppercase" style={{ color: TIERS[tier].text }}>{TIERS[tier].label}</span>
+                </span>
+                <Mascot tier={tier} height={34} />
               </button>
               <button onClick={onLogout} className="w-10 h-10 flex items-center justify-center border-2 border-white hover:bg-brand-pink transition-all">
                 <span className="material-symbols-outlined text-sm">logout</span>
@@ -104,9 +103,12 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         {/* MOBILE: user indicator + hamburger */}
         <div className="flex lg:hidden items-center gap-3">
           {user && (
-            <div className="text-right">
-              <p className="text-[10px] font-black text-white italic">{user.name}</p>
-              <p className={`text-[8px] font-black uppercase ${plan.color}`}>{plan.label}</p>
+            <div className="flex items-center gap-2">
+              <div className="text-right">
+                <p className="text-[10px] font-black text-white italic">{user.name}</p>
+                <p className="text-[8px] font-black uppercase" style={{ color: TIERS[tier].text }}>{TIERS[tier].label}</p>
+              </div>
+              <Mascot tier={tier} height={26} />
             </div>
           )}
           <button

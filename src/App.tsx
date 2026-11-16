@@ -151,6 +151,7 @@ const App: React.FC = () => {
         plan: 'roar', // HahaHub is free: every member has full access
         is_verified: data?.is_verified || false,
         is_founding: data?.is_founding || false,
+        member_tier: data?.member_tier || null,
         subscription: data?.is_paid || isAdmin ? { type: 'Annual', expiryDate: data?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
         favorites: data?.favorites || [],
       }
