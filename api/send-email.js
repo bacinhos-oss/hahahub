@@ -496,6 +496,44 @@ const templates = {
 </table>
 </body></html>`
   }),
+  title_upgrade: ({ name, tier }) => {
+    const T = {
+      verified: { label: 'Verified', color: '#6EC6A0', subject: "You're a Verified Producer on HahaHub.art",
+        lines: ['Your HahaHub.art profile now carries the Verified title.', 'Producers browsing the catalog see the Verified smile next to your name and your shows, so they know they are dealing with a real theatre producer.'] },
+      special: { label: 'Special Member', color: '#FF8FB8', subject: "You're a Special Member of HahaHub.art",
+        lines: ['You now carry the Special Member title on HahaHub.art.', 'It goes to producers who are very important to our community, and that is you. Thank you for helping theatre comedy travel.'] },
+      founding: { label: 'Founding', color: '#FFC80E', subject: "You're a Founding Member of HahaHub.art",
+        lines: ['You now carry the Founding title on HahaHub.art.', 'Founding Members are the producers who built HahaHub with us from day one. The gold smile stays with you for good.'] },
+    };
+    const t = T[tier] || T.verified;
+    return {
+      subject: t.subject,
+      html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid ${t.color};padding:32px 40px;">
+  <p style="margin:0"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:4px 0 0;font-size:9px;text-transform:uppercase;letter-spacing:4px;color:${t.color}">New Title</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <h1 style="color:#fff;font-size:24px;font-weight:900;text-transform:uppercase;margin:0 0 20px;letter-spacing:-1px">Hi ${name || 'there'},</h1>
+  <p style="display:inline-block;border:2px solid ${t.color};color:${t.color};font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:2px;font-style:italic;padding:6px 12px;margin:0 0 24px">${t.label}</p>
+  ${t.lines.map(l => `<p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.7;margin:0 0 16px">${l}</p>`).join('')}
+  <a href="https://www.hahahub.art/#subscription" style="background:#FFC80E;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;margin-top:8px">Open HahaHub →</a>
+  <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin:32px 0 2px">Dejan Batoćanin</p>
+  <p style="color:#FFC80E;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin:0">Founder, HahaHub.art</p>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">Break a Laffing Leg. 🦵<br/>HahaHub · The Laff Exchange · <a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
+    };
+  },
   membership_on_hold: ({ name }) => ({
     subject: `Your HahaHub.art membership is on hold`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
@@ -559,7 +597,7 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL |
 // Public anon key (same one the website uses) is enough to verify a user's token
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU';
 const ADMIN_EMAIL = 'bacinhos@gmail.com';
-const ADMIN_ONLY = ['founding_followup', 'founding_invite', 'show_removed', 'membership_on_hold', 'membership_reactivated'];
+const ADMIN_ONLY = ['founding_followup', 'founding_invite', 'show_removed', 'membership_on_hold', 'membership_reactivated', 'title_upgrade'];
 const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry_confirmation', 'deal_signed_producer'];
 const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
 

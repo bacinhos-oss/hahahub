@@ -173,23 +173,24 @@ const App: React.FC = () => {
     const hidden = new Set<string>((suspendedIds || []).map((r: any) => typeof r === 'string' ? r : r?.suspended_member_ids).filter(Boolean))
     if (hidden.size) data = data.filter((s: any) => !hidden.has(s.user_id))
     const userIds = [...new Set(data.map((s: any) => s.user_id).filter(Boolean))]
-    let profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}
+    let profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string; member_tier: string | null }> = {}
     if (userIds.length > 0) {
       const { data: profiles } = await supabase.rpc('show_producer_flags', { p_ids: userIds })
       if (profiles) {
         profiles.forEach((p: any) => {
-          profileMap[p.id] = { is_verified: p.is_verified || false, is_founding: p.is_founding || false, user_type: p.user_type || 'gigl' }
+          profileMap[p.id] = { is_verified: p.is_verified || false, is_founding: p.is_founding || false, user_type: p.user_type || 'gigl', member_tier: p.member_tier || null }
         })
       }
     }
     mapAndSetShows(data, profileMap)
   }
 
-  const mapAndSetShows = (data: any[], profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string }> = {}) => {
+  const mapAndSetShows = (data: any[], profileMap: Record<string, { is_verified: boolean; is_founding: boolean; user_type: string; member_tier: string | null }> = {}) => {
     const mapped = data.map((s: any) => ({
       ...s,
       is_verified: profileMap[s.user_id]?.is_verified || false,
       is_founding: profileMap[s.user_id]?.is_founding || false,
+      member_tier: profileMap[s.user_id]?.member_tier || null,
       producer_plan: profileMap[s.user_id]?.user_type || 'gigl',
       id: s.id,
       title: s.english_title || s.title || '',

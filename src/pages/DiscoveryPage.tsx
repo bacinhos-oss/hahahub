@@ -6,7 +6,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, Show, User } from '../types';
 import Smile from '../components/Smile';
-import { Badge, getProfileBadges } from '../components/Badge';
+import { Mascot, TierPill, getTier, isShownTier, isSampleShow } from '../components/Mascot';
 
 
 interface DiscoveryPageProps {
@@ -278,14 +278,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                                View Producer Profile →
                              </button>
                            )}
-                           <div className="flex flex-wrap gap-1 mt-2">
-                             {(selectedShow as any).is_verified && (
-                               <span className="bg-brand-cyan text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">VERIFIED</span>
-                             )}
-                             {(selectedShow as any).is_founding && (
-                               <span className="bg-brand-yellow text-black text-[8px] font-black uppercase px-2 py-0.5 italic border border-black">FOUNDING</span>
-                             )}
-                           </div>
+                           {!isSampleShow(selectedShow) && isShownTier(getTier(selectedShow)) && (
+                             <div className="mt-3"><TierPill tier={getTier(selectedShow)} size="md" /></div>
+                           )}
                         </div>
                         <div className="bg-brand-surface border-2 border-white p-4 overflow-hidden">
                            <p className="text-[8px] font-black uppercase text-brand-yellow mb-1 tracking-widest">COPYRIGHT HOLDER</p>
@@ -1677,7 +1672,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       <span className="text-white/30 text-[9px] font-black italic">{show.location}</span>
                       <span className="text-white/20 text-[9px]">·</span>
                       <span className="text-white/30 text-[9px] font-black italic">{show.productionYear}</span>
-                      {getProfileBadges(show).slice(0,1).map(b => <Badge key={b} type={b} size="xs" />)}
+                      {!isSampleShow(show) && isShownTier(getTier(show)) && <Mascot tier={getTier(show)} height={16} className="ml-1" />}
                     </div>
                   </div>
                   <div className="mt-1 text-center bg-brand-yellow/10 text-brand-yellow group-hover:bg-brand-yellow group-hover:text-black border border-brand-yellow/40 py-1.5 text-[10px] font-black uppercase italic tracking-widest transition-all">

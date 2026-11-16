@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import { Avatar, Badge, getProfileBadges } from '../components/Badge';
 import { Page, User, Show } from '../types';
 import { supabase } from '../lib/supabase';
+import { Mascot, TierPill, TIERS, getTier, isShownTier } from '../components/Mascot';
 
 interface ProducerPageProps {
   onNavigate: (page: Page) => void;
@@ -43,7 +44,8 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
     return acc;
   }, new Set()).size;
 
-  const badges = producer ? getProfileBadges(producer, posts.length, countriesCount) : [];
+  const badges = (producer ? getProfileBadges(producer, posts.length, countriesCount) : []).filter(b => b !== 'verified' && b !== 'founding');
+  const tier = getTier(producer);
 
   const POST_COLORS: Record<string, string> = {
     new_show: 'bg-brand-yellow text-black', discount: 'bg-brand-pink text-white',
@@ -106,19 +108,17 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
               <div className="flex-shrink-0">
                 <div className="relative">
                   <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-brand-black overflow-hidden bg-brand-surface flex items-center justify-center"
-                    style={{ boxShadow: badges.includes('verified') ? '0 0 0 4px #19A596' : badges.includes('founding') ? '0 0 0 4px #FFC80E' : '0 0 0 4px white' }}>
+                    style={{ boxShadow: `0 0 0 4px ${isShownTier(tier) ? TIERS[tier].text : 'white'}` }}>
                     {producer.avatar_url ? (
                       <img src={producer.avatar_url} alt={producer.name} className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-4xl md:text-5xl font-black uppercase text-white/30 italic">{producer.name?.[0]}</span>
                     )}
                   </div>
-                  {/* Primary badge */}
-                  {badges.length > 0 && (
-                    <div className="absolute bottom-0 right-0 translate-x-1 translate-y-1">
-                      <Badge type={badges[0]} size="md" />
-                    </div>
-                  )}
+                  {/* Title mascot */}
+                  <div className="absolute bottom-0 right-0 translate-x-2 translate-y-1">
+                    <Mascot tier={tier} height={40} />
+                  </div>
                 </div>
               </div>
 
@@ -135,7 +135,8 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
                         {badges.map(b => <Badge key={b} type={b} size="sm" />)}
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 mt-1 flex-wrap">
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
+                      <TierPill tier={tier} size="md" />
                       {badges.map(b => <Badge key={b} type={b} size="xs" showLabel />)}
                     </div>
                     {producer.location_city && (

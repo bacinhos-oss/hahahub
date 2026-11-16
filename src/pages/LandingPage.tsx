@@ -5,6 +5,7 @@ import { Logo } from '../components/Logo';
 import FloatingColors from '../components/FloatingColors'
 import { SpectrumBar } from '../components/SpectrumBar';
 import Smile from '../components/Smile';
+import { Mascot, TIERS, TIER_ORDER } from '../components/Mascot';
 
 interface LandingPageProps {
   onNavigate: (page: Page) => void;
@@ -182,7 +183,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
         <section className="border-t border-white/10">
           <div className="max-w-[1500px] mx-auto px-4 md:px-12 py-16 md:py-20">
             <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white mb-3">Membership</h2>
-            <p className="text-white/60 font-bold italic leading-relaxed mb-10 max-w-2xl">Every member gets the catalog. List your first show and you become a Verified Producer.</p>
+            <p className="text-white/60 font-bold italic leading-relaxed mb-10 max-w-2xl">Every member gets the catalog. As you grow on HahaHub, your smile changes colour.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="border border-white/15 p-6 md:p-8">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-cyan mb-2">Member</p>
@@ -196,7 +197,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
               </div>
               <div className="border border-brand-yellow/60 p-6 md:p-8">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-yellow mb-2">Verified Producer</p>
-                <h3 className="text-xl font-black uppercase italic text-white mb-5">After your first show</h3>
+                <h3 className="text-xl font-black uppercase italic text-white mb-5">Reviewed by HahaHub</h3>
                 <ul className="space-y-3 text-white/70 font-bold italic">
                   <li>Scripts: read script excerpts across the catalog</li>
                   <li>Creators: see who is behind each show</li>
@@ -204,6 +205,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
                   <li>Your full Studio in My Hub: Pipeline, Analytics, Documents, Calculator, HahaFriends and Organization</li>
                 </ul>
               </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10">
+              {TIER_ORDER.map(t => (
+                <div key={t} className="flex items-center gap-4">
+                  <Mascot tier={t} height={56} />
+                  <div>
+                    <p className="text-xs font-black uppercase italic tracking-widest" style={{ color: TIERS[t].text }}>{TIERS[t].label}</p>
+                    <p className="text-white/50 text-sm font-bold italic leading-snug">{TIERS[t].desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>

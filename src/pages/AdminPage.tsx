@@ -196,7 +196,19 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     const { error } = await supabase.from('profiles').update(patch).eq('id', u.id);
     if (error) { alert('Could not save the title: ' + error.message); return; }
     setUsers(prev => prev.map(x => x.id === u.id ? { ...x, ...patch } : x));
-    triggerMailLog('Title set: ' + (u.name || u.email), (u.name || u.email) + ' is now ' + TIERS[tier].label + '.');
+    const who = u.name || u.email;
+    const promoted = TIER_ORDER.indexOf(tier) > TIER_ORDER.indexOf(getTier(u));
+    if (!promoted || !u.email) { triggerMailLog('Title set: ' + who, who + ' is now ' + TIERS[tier].label + '. No email sent.'); return; }
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'title_upgrade', to: u.email, data: { name: u.name || '', tier } })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      triggerMailLog('Title set: ' + who, who + ' is now ' + TIERS[tier].label + '. Email sent to ' + u.email + '.');
+    } catch (e) {
+      alert('Title saved, but the email did not send. You can tell ' + who + ' yourself.');
+    }
   };
 
   const toggleSuspended = async (u: any) => {
