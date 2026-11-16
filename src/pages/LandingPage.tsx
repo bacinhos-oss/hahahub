@@ -103,7 +103,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={join} className="bg-white text-black font-black px-8 py-4 text-sm md:text-base uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
-                Join free
+                Become a member
               </button>
               <button onClick={open} className="bg-white/10 text-white font-black px-8 py-4 text-sm md:text-base uppercase tracking-widest italic backdrop-blur hover:bg-white/20 transition-colors">
                 Browse the catalog
@@ -111,7 +111,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
             </div>
             {shows.length > 0 && (
               <p className="mt-8 text-xs font-bold uppercase tracking-widest text-white/40">
-                {shows.length} shows{languages > 1 ? ` · ${languages} languages` : ''} · Free to join
+                {shows.length} shows{languages > 1 ? ` · ${languages} languages` : ''} · Membership is free
               </p>
             )}
           </div>
@@ -157,7 +157,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
             <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white mb-10">How it works</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
               {[
-                { n: '1', c: 'text-brand-yellow', t: 'Join free', d: 'Create your profile in two minutes. No fees, no cards.' },
+                { n: '1', c: 'text-brand-yellow', t: 'Become a member', d: 'Create your profile in two minutes. Membership is free.' },
                 { n: '2', c: 'text-brand-pink', t: 'List or find a show', d: 'Upload your production, or browse titles by language, genre and cast size.' },
                 { n: '3', c: 'text-brand-cyan', t: 'Send an inquiry', d: 'Tickle the show you like. The producer gets your message and replies directly.' },
               ].map(st => (
@@ -172,8 +172,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
             </div>
             <div className="mt-12">
               <button onClick={join} className="bg-white text-black font-black px-8 py-4 text-sm md:text-base uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
-                Join free
+                Become a member
               </button>
+            </div>
+          </div>
+        </section>
+
+        {/* MEMBERSHIP */}
+        <section className="border-t border-white/10">
+          <div className="max-w-[1500px] mx-auto px-4 md:px-12 py-16 md:py-20">
+            <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white mb-3">Membership</h2>
+            <p className="text-white/60 font-bold italic leading-relaxed mb-10 max-w-2xl">Every member gets the catalog. List your first show and you become a Verified Producer.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border border-white/15 p-6 md:p-8">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-cyan mb-2">Member</p>
+                <h3 className="text-xl font-black uppercase italic text-white mb-5">Become a member</h3>
+                <ul className="space-y-3 text-white/70 font-bold italic">
+                  <li>Browse the catalog</li>
+                  <li>Follow LaffWire</li>
+                  <li>Tickle shows from producers abroad</li>
+                  <li>List your own show</li>
+                </ul>
+              </div>
+              <div className="border border-brand-yellow/60 p-6 md:p-8">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-yellow mb-2">Verified Producer</p>
+                <h3 className="text-xl font-black uppercase italic text-white mb-5">After your first show</h3>
+                <ul className="space-y-3 text-white/70 font-bold italic">
+                  <li>Scripts: read script excerpts across the catalog</li>
+                  <li>Creators: see who is behind each show</li>
+                  <li>Performance history: see where each show has played</li>
+                  <li>Your full Studio in My Hub: Pipeline, Analytics, Documents, Calculator, HahaFriends and Organization</li>
+                </ul>
+              </div>
             </div>
           </div>
         </section>

@@ -259,7 +259,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           <div className="flex border-4 border-black mb-8 p-1">
             {[false, true].map((val, i) => (
               <button key={i} onClick={() => setIsNew(val)} className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all ${isNew === val ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
-                {i === 0 ? 'LOG IN' : 'JOIN'}
+                {i === 0 ? 'LOG IN' : 'BECOME A MEMBER'}
               </button>
             ))}
           </div>
@@ -279,8 +279,8 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
               <div className="flex items-center gap-3 bg-brand-yellow/20 border-2 border-brand-yellow p-3">
                 <span className="text-lg">🎭</span>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Free to join</p>
-                  <p className="text-xs font-black uppercase">Create your account. No payment needed.</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">Membership is free</p>
+                  <p className="text-xs font-black uppercase">Create your profile in two minutes.</p>
                 </div>
               </div>
             )}
@@ -288,7 +288,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
         )}
 
         <h2 className="text-black text-2xl font-black uppercase mb-8 italic">
-          {adminMode ? 'Control Center Access' : isNew ? 'Join HahaHub.' : 'Welcome back. 🥊'}
+          {adminMode ? 'Control Center Access' : isNew ? 'Become a member.' : 'Welcome back. 🥊'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -310,7 +310,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           {error && <div className="bg-brand-pink text-white p-4 font-black uppercase text-xs italic tracking-wider">{error}</div>}
 
           <button type="submit" disabled={loading} className="w-full bg-black text-brand-yellow font-black py-5 uppercase text-lg border-4 border-black shadow-neo-cyan italic hover:bg-brand-pink transition-all">
-            {loading ? 'Tickling...' : adminMode ? 'ENTER HQ' : isNew ? 'JOIN →' : 'LOG IN →'}
+            {loading ? 'Tickling...' : adminMode ? 'ENTER HQ' : isNew ? 'BECOME A MEMBER →' : 'LOG IN →'}
           </button>
         </form>
 

@@ -174,7 +174,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <div className="flex flex-col items-center justify-center text-center py-24 space-y-8">
                   <span className="material-symbols-outlined text-8xl text-brand-pink">lock_person</span>
                   <h2 className="text-4xl font-display uppercase italic text-white">MEMBERS ONLY</h2>
-                  <p className="text-gray-400 italic font-bold">Join free to view full scripts, commercial Bible, and technical rider.</p>
+                  <p className="text-gray-400 italic font-bold">Become a member to view full scripts, commercial Bible, and technical rider.</p>
                   <button onClick={() => onNavigate('login')} className="bg-white text-black hover:bg-brand-pink hover:text-white px-10 py-4 font-black uppercase text-sm border-2 border-white  italic">Unlock Full Dossier</button>
                 </div>
               ) : (
@@ -1596,7 +1596,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 {isFreeBlocked && (
                   <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70">
                     <span className="material-symbols-outlined text-brand-yellow text-4xl mb-2">lock</span>
-                    <p className="text-brand-yellow font-black uppercase italic text-xs">Join free to unlock</p>
+                    <p className="text-brand-yellow font-black uppercase italic text-xs">Become a member to unlock</p>
                   </div>
                 )}
 

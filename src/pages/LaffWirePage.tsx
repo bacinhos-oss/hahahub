@@ -266,12 +266,12 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
 
               {!user && (
                 <div className="mt-8 border-2 border-brand-yellow p-8 text-center ">
-                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-2">Join HahaHub</p>
+                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-2">Members only</p>
                   <h2 className="text-3xl font-black uppercase italic text-white mb-1">Post on LaffWire</h2>
-                  <p className="text-white/40 font-bold italic text-sm mb-6">GIGL — free · LAFF — 7 days · ROAR — live real-time</p>
+                  <p className="text-white/40 font-bold italic text-sm mb-6">LaffWire is open to every member. Membership is free.</p>
                   <button onClick={() => onNavigate('login')}
                     className="bg-white text-black px-10 py-4 font-black uppercase italic border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
-                    Join Free →
+                    Become a member →
                   </button>
                 </div>
               )}
