@@ -105,6 +105,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       type: inv.type || 'access',
       followedUp: inv.followed_up || false,
       resent: inv.resent || false,
+      liveSent: inv.live_sent || false,
     })));
   };
 
@@ -209,6 +210,43 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
     } catch (e) {
       alert('Title saved, but the email did not send. You can tell ' + who + ' yourself.');
     }
+  };
+
+  // "HahaHub is live" email: everyone invited earlier who has not joined yet, once per email.
+  const [liveSending, setLiveSending] = useState('');
+  const registeredEmails = new Set(users.map((u: any) => (u.email || '').trim().toLowerCase()));
+  const liveRecipients = (() => {
+    const seen = new Set<string>();
+    return invites.filter((inv: any) => {
+      const e = (inv.email || '').trim().toLowerCase();
+      if (!e.includes('@') || seen.has(e)) return false;
+      seen.add(e);
+      return inv.status !== 'used' && !inv.liveSent && !registeredEmails.has(e)
+        && !e.includes('bacinhos') && !['batocaninmaj@gmail.com', 'usmerjeni.prosti.cas@gmail.com'].includes(e);
+    });
+  })();
+
+  const sendLiveNotice = async () => {
+    if (!liveRecipients.length) return;
+    const names = liveRecipients.map((i: any) => `${i.recipient} (${i.email})`).join('\n');
+    if (!window.confirm(`Send "HahaHub.art is live" to ${liveRecipients.length} people?\n\n${names}`)) return;
+    let ok = 0; const failed: string[] = [];
+    for (const inv of liveRecipients) {
+      setLiveSending(`Sending ${ok + failed.length + 1} of ${liveRecipients.length}...`);
+      try {
+        const res = await fetch('/api/send-email', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'site_live', to: inv.email, data: { name: inv.recipient || '' } })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        ok++;
+        await supabase.from('invitations').update({ live_sent: true }).eq('email', inv.email);
+      } catch { failed.push(inv.email); }
+      await new Promise(r => setTimeout(r, 700));
+    }
+    setLiveSending('');
+    await loadInvites();
+    triggerMailLog('HahaHub is live', `${ok} emails sent.` + (failed.length ? ` Not sent: ${failed.join(', ')}` : ''));
   };
 
   const toggleSuspended = async (u: any) => {
@@ -553,6 +591,22 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                 {sending ? 'Sending...' : '⭐ Send Founding Invite →'}
               </button>
               </div>
+            </div>
+
+            {/* HAHAHUB IS LIVE */}
+            <div className="border-2 border-brand-cyan/40 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">📣 HahaHub is live</p>
+                <p className="text-white/50 text-xs italic mt-1">
+                  {liveRecipients.length
+                    ? `${liveRecipients.length} invited people have not joined yet. Each gets the email once.`
+                    : 'Everyone invited has joined or already got this email.'}
+                </p>
+              </div>
+              <button onClick={sendLiveNotice} disabled={!liveRecipients.length || !!liveSending}
+                className="px-5 py-3 text-[11px] font-black uppercase italic border-2 border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all disabled:opacity-30 disabled:pointer-events-none whitespace-nowrap">
+                {liveSending || `Send to ${liveRecipients.length} →`}
+              </button>
             </div>
 
             {/* FOUNDING INVITE LIST */}
