@@ -6,7 +6,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, Show, User } from '../types';
 import Smile from '../components/Smile';
-import { Mascot, TierPill, getTier, isShownTier, isSampleShow } from '../components/Mascot';
+import { Mascot, TierPill, getTier, isShownTier, isSampleShow, SampleRibbon } from '../components/Mascot';
 
 
 interface DiscoveryPageProps {
@@ -147,6 +147,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* POSTER */}
                   <div className="relative flex-shrink-0 aspect-[2/3] max-w-[calc(70vh*2/3)] lg:max-w-none mx-auto lg:mx-0 w-full">
                     <img src={selectedShow.imageUrl} className="w-full h-full object-cover object-center" alt={selectedShow.title} />
+                    {isSampleShow(selectedShow) && <SampleRibbon big />}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                     <div className="absolute bottom-3 left-4 z-10">
                       <p className="text-[8px] font-black uppercase tracking-widest text-white/50 italic">Poster</p>
@@ -179,6 +180,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </div>
               ) : (
                 <div className="space-y-16">
+                  {isSampleShow(selectedShow) && (
+                    <div className="bg-brand-yellow text-black border-2 border-black px-5 py-4 flex items-center gap-3">
+                      <span className="material-symbols-outlined text-2xl">info</span>
+                      <p className="font-black uppercase italic text-sm leading-snug">Sample listing. This show only demonstrates how HahaHub works. It is not a real offer and cannot be tickled.</p>
+                    </div>
+                  )}
                   {/* HEADER */}
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-3">
                     <div className="flex-1 min-w-0 w-full sm:pr-2">
@@ -821,6 +828,17 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
   const renderInquiryModal = () => {
     if (!isInquiryOpen) return null;
+    if (selectedShow && isSampleShow(selectedShow)) return (
+      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-brand-black/95 backdrop-blur-md" onClick={() => setIsInquiryOpen(false)}></div>
+        <div className="relative bg-brand-surface border-2 border-brand-yellow w-full max-w-md p-8 text-center">
+          <Smile height={72} className="mx-auto mb-6" />
+          <h3 className="text-2xl font-black uppercase italic text-white mb-3">Just a sample</h3>
+          <p className="text-white/60 font-bold italic leading-relaxed mb-8">This show only demonstrates how HahaHub works, so it cannot be tickled. Browse the real shows in the catalog, or list your own.</p>
+          <button onClick={() => setIsInquiryOpen(false)} className="bg-white text-black px-8 py-3 font-black uppercase italic text-sm hover:bg-brand-pink hover:text-white transition-colors">Got it</button>
+        </div>
+      </div>
+    );
 
     return (
       <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 md:p-6">
@@ -1597,6 +1615,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                 {/* IMAGE */}
                 <div className="relative overflow-hidden" style={{aspectRatio:'2/3'}}>
+                  {isSampleShow(show) && <SampleRibbon />}
                   {show.imageUrl ? (
                     <img src={show.imageUrl} alt={show.title}
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105" />
@@ -1611,9 +1630,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                     {(show as any).producer_plan === 'roar' && (
                       <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-2 py-0.5 italic border border-black">FEATURED</span>
-                    )}
-                    {(show as any).rights_holder === 'Demo Productions' && (
-                      <span className="text-[7px] font-black uppercase bg-white/20 text-white px-2 py-0.5 italic border border-white/40">SAMPLE</span>
                     )}
                     {(() => {
                       const days = (show as any).created_at ? Math.floor((Date.now() - new Date((show as any).created_at).getTime()) / 86400000) : 999;
@@ -1675,9 +1691,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       {!isSampleShow(show) && isShownTier(getTier(show)) && <Mascot tier={getTier(show)} height={16} className="ml-1" />}
                     </div>
                   </div>
+                  {isSampleShow(show) ? (
+                    <div className="mt-1 text-center bg-white/5 text-white/50 border border-white/15 py-1.5 text-[10px] font-black uppercase italic tracking-widest">
+                      Sample listing · not a real offer
+                    </div>
+                  ) : (
                   <div className="mt-1 text-center bg-brand-yellow/10 text-brand-yellow group-hover:bg-brand-yellow group-hover:text-black border border-brand-yellow/40 py-1.5 text-[10px] font-black uppercase italic tracking-widest transition-all">
                     Tickle it — send inquiry →
                   </div>
+                  )}
                 </div>
               </div>
             )})}

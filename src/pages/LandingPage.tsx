@@ -5,7 +5,7 @@ import { Logo } from '../components/Logo';
 import FloatingColors from '../components/FloatingColors'
 import { SpectrumBar } from '../components/SpectrumBar';
 import Smile from '../components/Smile';
-import { Mascot, TIERS, TIER_ORDER } from '../components/Mascot';
+import { Mascot, TIERS, TIER_ORDER, isSampleShow, SampleRibbon } from '../components/Mascot';
 
 interface LandingPageProps {
   onNavigate: (page: Page) => void;
@@ -24,6 +24,7 @@ const Poster: React.FC<{ show: Show; onClick: () => void }> = ({ show, onClick }
     onClick={onClick}
     className="group relative flex-shrink-0 w-36 sm:w-44 md:w-52 aspect-[2/3] overflow-hidden bg-brand-surface snap-start text-left"
   >
+    {isSampleShow(show) && <SampleRibbon />}
     <img
       src={show.imageUrl}
       alt={(show as any).englishTitle || show.title}

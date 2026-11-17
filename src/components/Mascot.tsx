@@ -41,7 +41,21 @@ export const Mascot: React.FC<{ tier: Tier; height?: number; className?: string 
 
 // Titles worth showing to other producers (Member is the default, so it stays quiet).
 export const isShownTier = (t: Tier) => t !== 'member';
-export const isSampleShow = (s: any) => s?.rights_holder === 'Demo Productions';
+export const isSampleShow = (s: any) =>
+  [s?.rights_holder, s?.rightsHolder, s?.producer_name, s?.producerName]
+    .some(v => typeof v === 'string' && v.trim().toLowerCase() === 'demo productions');
+
+// Big diagonal "SAMPLE" ribbon for the top-left corner of a poster (parent must be relative + overflow-hidden).
+export const SampleRibbon: React.FC<{ big?: boolean }> = ({ big }) => (
+  <div className="absolute top-0 left-0 z-20 pointer-events-none overflow-hidden" style={{ width: big ? 190 : 120, height: big ? 190 : 120 }}>
+    <div
+      className="absolute bg-brand-yellow text-black font-black uppercase italic text-center border-y-2 border-black shadow-lg"
+      style={{ width: big ? 270 : 170, top: big ? 42 : 26, left: big ? -66 : -42, transform: 'rotate(-45deg)', fontSize: big ? 18 : 12, letterSpacing: big ? 6 : 4, padding: big ? '6px 0' : '4px 0' }}
+    >
+      Sample
+    </div>
+  </div>
+);
 
 // Small pill: mascot + title.
 export const TierPill: React.FC<{ tier: Tier; size?: 'sm' | 'md' }> = ({ tier, size = 'sm' }) => (
