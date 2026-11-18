@@ -5,6 +5,7 @@ import { Page, User } from '../types';
 import { supabase } from '../lib/supabase';
 import { Avatar, Badge, getProfileBadges } from '../components/Badge';
 import Smile from '../components/Smile';
+import { Mascot, getTier, isShownTier } from '../components/Mascot';
 
 interface LaffWirePageProps {
   onNavigate: (page: Page) => void;
@@ -57,7 +58,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   const loadPosts = async () => {
     setLoading(true);
     let q = supabase.from('posts')
-      .select('*, profiles(id, name, is_verified, is_founding)')
+      .select('*, profiles(id, name, is_verified, is_founding, member_tier)')
       .eq('is_private', false)
       .order('created_at', { ascending: false });
     if (!isLaff) q = q.limit(10); // GIGL sees 10 posts
@@ -193,8 +194,6 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                     const type = POST_TYPES[post.type] || POST_TYPES.news;
                     const isBlurred = !isLaff && i >= 10;
                     const pid = post.profiles?.id;
-                    const isVerified = post.profiles?.is_verified;
-                    const isFounding = post.profiles?.is_founding;
                     const lc = likeCounts[post.id] ?? 0;
                     const isLiked = liked[post.id] || false;
 
@@ -210,16 +209,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                                 className="font-black uppercase italic text-sm text-white hover:text-brand-yellow transition-colors disabled:cursor-default">
                                 {post.profiles?.name || 'Producer'}
                               </button>
-                              {isVerified && (
-                                <span className="w-3.5 h-3.5 rounded-full bg-brand-cyan border border-black flex items-center justify-center">
-                                  <span className="material-symbols-outlined text-black" style={{ fontSize: '7px', fontVariationSettings: "'wght' 700" }}>check</span>
-                                </span>
-                              )}
-                              {isFounding && (
-                                <span className="w-3.5 h-3.5 rounded-full bg-brand-yellow border border-black flex items-center justify-center">
-                                  <span className="material-symbols-outlined text-black" style={{ fontSize: '7px' }}>star</span>
-                                </span>
-                              )}
+                              {isShownTier(getTier(post.profiles || {})) && <Mascot tier={getTier(post.profiles || {})} height={16} />}
                               <span className="text-white/20 text-[9px] italic ml-auto">{timeAgo(post.created_at)}</span>
                             </div>
                             <span className="inline-block text-[7px] font-black uppercase italic px-2 py-0.5 rounded-full mb-2 border border-black"

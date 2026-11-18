@@ -18,7 +18,6 @@ interface Invitation {
 }
 
 type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
-const durations: InvitationDuration[] = ['7 Days', '1 Month', '1 Year', 'Lifetime'];
 
 interface AdminPageProps {
   onNavigate: (page: Page) => void;
@@ -52,8 +51,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const [newEmail, setNewEmail] = useState('');
   const [newNote, setNewNote] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedDuration, setSelectedDuration] = useState<InvitationDuration>('1 Month');
-  const [invitePlan, setInvitePlan] = useState<'gigl' | 'laff' | 'roar'>('laff');
+  const selectedDuration: InvitationDuration = 'Lifetime';
+  const invitePlan: 'gigl' | 'laff' | 'roar' = 'roar';
   const [mailLog, setMailLog] = useState<{ title: string; msg: string } | null>(null);
   const [sending, setSending] = useState(false);
   const [inviteSearch, setInviteSearch] = useState('');
@@ -352,28 +351,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
             ) : users.length === 0 ? (
               <p className="text-white/20 font-black uppercase italic">No producers yet.</p>
             ) : users.map((u: any) => {
-              const isExpired = u.subscription_expiry &&
-                u.subscription_expiry !== '2099-12-31' &&
-                !u.is_founding &&
-                u.user_type !== 'roar' &&
-                new Date(u.subscription_expiry + 'T23:59:59') < new Date();
               return (
-                <div key={u.id} className={`border-2 p-4 transition-all ${isExpired ? 'border-red-500/30 opacity-60' : 'border-white/20 hover:border-brand-yellow'}`}>
+                <div key={u.id} className="border-2 p-4 transition-all border-white/20 hover:border-brand-yellow">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0 flex-1">
                       <p className="font-black uppercase italic text-white truncate">{u.name || '—'}{u.suspended && <span className="ml-2 align-middle text-[9px] not-italic px-2 py-0.5 bg-brand-pink text-white">Suspended</span>}</p>
                       <p className="text-white/30 text-xs italic truncate">{u.email}</p>
                       <div className="flex gap-3 mt-1 flex-wrap">
                         <span className="text-white/20 text-[9px]">{u.uploaded_show_ids?.length || 0} shows</span>
-                        {u.is_founding ? (
-                          <span className="text-[9px] text-brand-yellow font-black uppercase italic">⭐ Founding — Lifetime</span>
-                        ) : u.subscription_expiry ? (
-                          <span className={`text-[9px] font-black uppercase italic px-2 py-0.5 border ${u.subscription_expiry === '2099-12-31' ? 'text-brand-yellow border-brand-yellow/30' : isExpired ? 'text-brand-pink border-brand-pink/30 bg-brand-pink/10' : 'text-brand-cyan border-brand-cyan/20'}`}>
-                            {u.subscription_expiry === '2099-12-31' ? '⭐ Lifetime' : isExpired ? '⚠ EXPIRED' : `Valid until ${u.subscription_expiry}`}
-                          </span>
-                        ) : (
-                          <span className="text-[9px] text-white/20 italic">No expiry set</span>
-                        )}
                       </div>
                     </div>
                     <span className="flex-shrink-0"><TierPill tier={getTier(u)} size="md" /></span>
@@ -386,69 +371,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                         {TIER_ORDER.map(t => <option key={t} value={t}>{TIERS[t].label}</option>)}
                       </select>
                     </label>
-                    <button onClick={async () => {
-                      const newExpiry = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
-                      await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);
-                      setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: newExpiry, is_paid: true } : x));
-                      if (u.email) {
-                        try {
-                          await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              email: u.email, name: u.name || u.email,
-                              note: u.name + ". Your HahaHub membership has been extended for 1 month. Valid until " + newExpiry + ".\n\nBreak a Laffing Leg. 🦵\nhahahub.art",
-                              duration: '1 Month', plan: u.user_type || 'laff',
-                            })
-                          });
-                        } catch(e) { console.error(e); }
-                      }
-                      triggerMailLog('Extended ' + (u.name || u.email), 'Account extended 1 month, until ' + newExpiry + '. Email sent.');
-                    }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">update</span>
-                      +1 Month
-                    </button>
-                    <button onClick={async () => {
-                      const newExpiry = new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
-                      await supabase.from('profiles').update({ subscription_expiry: newExpiry, is_paid: true }).eq('id', u.id);
-                      setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: newExpiry, is_paid: true } : x));
-                      if (u.email) {
-                        try {
-                          await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              email: u.email, name: u.name || u.email,
-                              note: u.name + ". Your HahaHub membership has been extended for 1 year. Valid until " + newExpiry + ".\n\nBreak a Laffing Leg. 🦵\nhahahub.art",
-                              duration: '1 Year', plan: u.user_type || 'laff',
-                            })
-                          });
-                        } catch(e) { console.error(e); }
-                      }
-                      triggerMailLog('Extended ' + (u.name || u.email), 'Account extended until ' + newExpiry + '. Email sent.');
-                    }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan hover:text-black transition-all flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">update</span>
-                      +1 Year
-                    </button>
-                    <button onClick={async () => {
-                      const lifetimeExpiry = '2099-12-31';
-                      await supabase.from('profiles').update({ subscription_expiry: lifetimeExpiry, is_paid: true }).eq('id', u.id);
-                      setUsers(prev => prev.map(x => x.id === u.id ? { ...x, subscription_expiry: lifetimeExpiry, is_paid: true } : x));
-                      if (u.email) {
-                        try {
-                          await fetch("https://jnilgukmyfukazwduuig.supabase.co/functions/v1/send-invite", {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              email: u.email, name: u.name || u.email,
-                              note: u.name + ". Your HahaHub membership has been upgraded to lifetime access. No expiry, ever.\n\nBreak a Laffing Leg. 🦵\nhahahub.art",
-                              duration: 'Lifetime', plan: u.user_type || 'laff',
-                            })
-                          });
-                        } catch(e) { console.error(e); }
-                      }
-                      triggerMailLog('Lifetime granted: ' + (u.name || u.email), 'Account set to lifetime access. Email sent.');
-                    }} className="px-3 py-2 text-[10px] font-black uppercase italic border-2 border-brand-yellow/30 text-brand-yellow hover:bg-brand-yellow hover:text-black transition-all flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">all_inclusive</span>
-                      Lifetime
-                    </button>
                     <button onClick={async () => {
                       if (!u.email) return;
                       const { error } = await supabase.auth.resetPasswordForEmail(u.email, { redirectTo: 'https://www.hahahub.art/login' });
@@ -520,35 +442,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                   className="absolute bottom-2 right-2 text-[8px] font-black uppercase italic text-brand-yellow border border-brand-yellow/40 px-2 py-1 hover:bg-brand-yellow hover:text-black transition-all">
                   Fill Template
                 </button>
-              </div>
-
-              {/* Duration */}
-              <div>
-                <p className="text-[9px] font-black uppercase italic text-white/40 mb-2">Duration</p>
-                <div className="flex gap-2 flex-wrap">
-                  {durations.map(d => (
-                    <button key={d} onClick={() => setSelectedDuration(d)}
-                      className={`px-4 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${selectedDuration === d ? 'bg-brand-pink text-white border-brand-pink' : 'border-white/20 text-white/40 hover:border-white'}`}>
-                      {d}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Plan */}
-              <div>
-                <p className="text-[9px] font-black uppercase italic text-white/40 mb-2">Plan</p>
-                <div className="flex gap-2 flex-wrap">
-                  {(['gigl', 'laff', 'roar'] as const).map(plan => (
-                    <button key={plan} onClick={() => setInvitePlan(plan)}
-                      className={`px-4 py-2 text-[10px] font-black uppercase italic border-2 transition-all ${invitePlan === plan ?
-                        plan === 'roar' ? 'bg-brand-pink text-white border-brand-pink' :
-                        plan === 'laff' ? 'bg-brand-cyan text-black border-brand-cyan' :
-                        'bg-white text-black border-white' : 'border-white/20 text-white/40 hover:border-white'}`}>
-                      {plan === 'gigl' ? 'GIGL' : plan === 'laff' ? 'LAFF' : 'ROAR'}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className="flex gap-3 flex-wrap">
