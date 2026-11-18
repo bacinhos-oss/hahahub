@@ -48,17 +48,54 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const [myAvatar, setMyAvatar] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const [editType, setEditType] = useState('news');
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [rowError, setRowError] = useState<{ id: string; msg: string } | null>(null);
 
   const plan = (user as any)?.plan || 'gigl';
   const isRoar = plan === 'roar' || user?.isAdmin;
   const isLaff = plan === 'laff' || isRoar;
 
   useEffect(() => { loadPosts(); }, []);
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle()
+      .then(({ data }) => setMyAvatar(data?.avatar_url || ''));
+  }, [user?.id]);
+
+  const startEdit = (post: any) => {
+    setEditingId(post.id); setEditText(post.content || ''); setEditType(post.type || 'news');
+    setConfirmDeleteId(null); setRowError(null);
+  };
+
+  const saveEdit = async (post: any) => {
+    const text = editText.trim();
+    if (!text) return;
+    setBusyId(post.id); setRowError(null);
+    const { error } = await supabase.rpc('edit_post', { p_post_id: String(post.id), p_content: text, p_type: editType });
+    setBusyId(null);
+    if (error) { setRowError({ id: post.id, msg: 'Could not save the change. Please try again.' }); return; }
+    setPosts(prev => prev.map(p => p.id === post.id ? { ...p, content: text, type: editType, edited_at: new Date().toISOString() } : p));
+    setEditingId(null);
+  };
+
+  const deletePost = async (post: any) => {
+    setBusyId(post.id); setRowError(null);
+    const { error } = await supabase.rpc('delete_post', { p_post_id: String(post.id) });
+    setBusyId(null);
+    if (error) { setRowError({ id: post.id, msg: 'Could not delete the post. Please try again.' }); return; }
+    setPosts(prev => prev.filter(p => p.id !== post.id));
+    setConfirmDeleteId(null);
+  };
 
   const loadPosts = async () => {
     setLoading(true);
     let q = supabase.from('posts')
-      .select('*, profiles(id, name, is_verified, is_founding, member_tier)')
+      .select('*, profiles(id, name, is_verified, is_founding, member_tier, avatar_url)')
       .eq('is_private', false)
       .order('created_at', { ascending: false });
     if (!isLaff) q = q.limit(10); // GIGL sees 10 posts
@@ -137,7 +174,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
               {user && (
                 <div className="border-b-4 border-white/10 pb-6 mb-2">
                   <div className="flex gap-3">
-                    <Avatar name={user?.name || '?'} size={44} badges={getProfileBadges(user)} />
+                    <Avatar name={user?.name || '?'} url={myAvatar || undefined} size={44} badges={getProfileBadges(user)} />
                     <div className="flex-1 space-y-3">
                       <textarea
                         ref={textRef}
@@ -146,6 +183,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                         placeholder="What's happening in your theatre world?"
                         className="w-full bg-transparent border-none text-white font-bold italic text-base outline-none placeholder:text-white/20 resize-none min-h-[60px]"
                         rows={2}
+                        maxLength={500}
                       />
                       <div className="flex gap-2 flex-wrap">
                         {Object.entries(POST_TYPES).map(([key, val]) => (
@@ -196,12 +234,15 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                     const pid = post.profiles?.id;
                     const lc = likeCounts[post.id] ?? 0;
                     const isLiked = liked[post.id] || false;
+                    const isMine = !!user?.id && post.user_id === user.id;
+                    const canDelete = isMine || !!user?.isAdmin;
+                    const isEditing = editingId === post.id;
 
                     return (
                       <div key={post.id} className={`py-5 border-b border-white/10 ${isBlurred ? 'opacity-20 pointer-events-none select-none' : ''}`}>
                         <div className="flex gap-3">
-                          <button onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))} disabled={!pid} className="flex-shrink-0 disabled:cursor-default">
-                            <Avatar name={post.profiles?.name || '?'} size={44} badges={getProfileBadges(post.profiles)} onClick={() => {}} />
+                          <button onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))} disabled={!pid} className="flex-shrink-0 self-start disabled:cursor-default">
+                            <Avatar name={post.profiles?.name || '?'} url={post.profiles?.avatar_url || undefined} size={44} badges={getProfileBadges(post.profiles)} onClick={() => {}} />
                           </button>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -210,14 +251,42 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                                 {post.profiles?.name || 'Producer'}
                               </button>
                               {isShownTier(getTier(post.profiles || {})) && <Mascot tier={getTier(post.profiles || {})} height={16} />}
-                              <span className="text-white/20 text-[9px] italic ml-auto">{timeAgo(post.created_at)}</span>
+                              <span className="text-white/20 text-[9px] italic ml-auto">{timeAgo(post.created_at)}{post.edited_at ? ' · edited' : ''}</span>
                             </div>
-                            <span className="inline-block text-[7px] font-black uppercase italic px-2 py-0.5 rounded-full mb-2 border border-black"
-                              style={{ background: type.bg, color: type.text }}>
-                              {type.label}
-                            </span>
-                            <p className="text-white/80 font-bold italic leading-relaxed text-sm">{post.content}</p>
-                            {(() => {
+                            {isEditing ? (
+                              <div className="space-y-3 border-2 border-white/20 p-3 mb-1">
+                                <textarea value={editText} onChange={e => setEditText(e.target.value)} maxLength={500} rows={3} autoFocus
+                                  className="w-full bg-transparent text-white font-bold italic text-sm outline-none resize-y" />
+                                <div className="flex gap-2 flex-wrap">
+                                  {Object.entries(POST_TYPES).map(([key, val]) => (
+                                    <button key={key} onClick={() => setEditType(key)}
+                                      className={`px-3 py-1 text-[8px] font-black uppercase italic border-2 transition-all rounded-full ${editType === key ? 'border-black' : 'border-white/20 text-white/30 hover:border-white/50'}`}
+                                      style={editType === key ? { background: val.bg, color: val.text, borderColor: '#000' } : {}}>
+                                      {val.label}
+                                    </button>
+                                  ))}
+                                </div>
+                                <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+                                  <p className="text-white/20 text-[10px] italic">{editText.length}/500</p>
+                                  <div className="flex gap-2">
+                                    <button onClick={() => setEditingId(null)} className="px-4 py-1.5 text-[10px] font-black uppercase italic text-white/50 hover:text-white">Cancel</button>
+                                    <button onClick={() => saveEdit(post)} disabled={busyId === post.id || !editText.trim()}
+                                      className="bg-white text-black px-4 py-1.5 font-black uppercase italic text-[10px] border-2 border-black disabled:opacity-30 hover:bg-brand-cyan transition-all">
+                                      {busyId === post.id ? '...' : 'Save'}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <span className="inline-block text-[7px] font-black uppercase italic px-2 py-0.5 rounded-full mb-2 border border-black"
+                                  style={{ background: type.bg, color: type.text }}>
+                                  {type.label}
+                                </span>
+                                <p className="text-white/80 font-bold italic leading-relaxed text-sm whitespace-pre-line break-words">{post.content}</p>
+                              </>
+                            )}
+                            {!isEditing && (() => {
                               const videoUrl = extractVideoUrl(post.content);
                               if (!videoUrl) return null;
                               return (
@@ -233,7 +302,8 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                                 <p className="text-brand-pink text-[10px] font-black uppercase italic tracking-widest">Deal Announced — Rights Licensed</p>
                               </div>
                             )}
-                            <div className="flex items-center gap-5 mt-3">
+                            {rowError?.id === post.id && <p className="text-brand-pink text-xs font-black italic mt-2">⚠ {rowError.msg}</p>}
+                            <div className="flex items-center gap-5 mt-3 flex-wrap">
                               <button onClick={() => handleLike(post.id)}
                                 className={`flex items-center gap-1 text-[11px] font-black transition-all ${isLiked ? 'text-brand-pink' : 'text-white/30 hover:text-brand-pink'}`}>
                                 <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isLiked ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
@@ -244,6 +314,30 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                                   className="text-[10px] font-black uppercase italic text-white/20 hover:text-brand-cyan transition-colors">
                                   Profile →
                                 </button>
+                              )}
+                              {!isEditing && (isMine || canDelete) && (
+                                <div className="ml-auto flex items-center gap-4">
+                                  {confirmDeleteId === post.id ? (
+                                    <>
+                                      <span className="text-[10px] font-black uppercase italic text-brand-pink">Delete this post?</span>
+                                      <button onClick={() => deletePost(post)} disabled={busyId === post.id}
+                                        className="text-[10px] font-black uppercase italic text-white bg-brand-pink px-3 py-1 disabled:opacity-40">
+                                        {busyId === post.id ? '...' : 'Yes, delete'}
+                                      </button>
+                                      <button onClick={() => setConfirmDeleteId(null)} className="text-[10px] font-black uppercase italic text-white/40 hover:text-white">No</button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      {isMine && (
+                                        <button onClick={() => startEdit(post)} className="text-[10px] font-black uppercase italic text-white/25 hover:text-brand-yellow transition-colors">Edit</button>
+                                      )}
+                                      {canDelete && (
+                                        <button onClick={() => { setConfirmDeleteId(post.id); setEditingId(null); setRowError(null); }}
+                                          className="text-[10px] font-black uppercase italic text-white/25 hover:text-brand-pink transition-colors">Delete</button>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
                               )}
                             </div>
                           </div>
