@@ -21,7 +21,7 @@ import ProducerPage from './pages/ProducerPage'
 import Smile from './components/Smile'
 import { Analytics } from "@vercel/analytics/react"
 import { logError } from './lib/errorLogger'
-import { getTier } from './components/Mascot'
+import { getTier, isSampleShow } from './components/Mascot'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','terms','upload','faq','producer','wire']
@@ -46,6 +46,13 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
   const [suspendedNotice, setSuspendedNotice] = useState(false)
+
+  // My Hub tells us when the member changes their profile photo, so the navigation updates at once.
+  useEffect(() => {
+    const onAvatar = (e: Event) => setCurrentUser(u => (u ? ({ ...u, avatar_url: (e as CustomEvent).detail || '' } as any) : u))
+    window.addEventListener('hh-avatar', onAvatar)
+    return () => window.removeEventListener('hh-avatar', onAvatar)
+  }, [])
 
   useEffect(() => {
     // Direct show link: hahahub.art/show/<id>  ->  open that show in the catalog
@@ -154,6 +161,7 @@ const App: React.FC = () => {
         is_verified: data?.is_verified || false,
         is_founding: data?.is_founding || false,
         member_tier: data?.member_tier || null,
+        avatar_url: data?.avatar_url || '',
         subscription: data?.is_paid || isAdmin ? { type: 'Annual', expiryDate: data?.subscription_expiry || 'Dec 24, 2025', status: 'Active', discounts: ['-20% on script printing', 'VIP Networking', 'Unlimited PDF downloads'] } : undefined,
         favorites: data?.favorites || [],
       }
@@ -268,6 +276,16 @@ const App: React.FC = () => {
     // Simplest correct fix: just refresh from DB so the new row is mapped
     // through the same camelCase pipeline as everything else.
     await loadShows()
+    // Announce the new show on LaffWire (not for sample shows).
+    const ns: any = newShow
+    if (currentUser?.id && ns?.id && !isSampleShow(ns)) {
+      const title = ns.english_title || ns.title || 'A new show'
+      const kind = (ns.subgenre || ns.genre || 'comedy').toString().toLowerCase()
+      const from = ns.location ? ` from ${ns.location}` : ''
+      const post = { user_id: currentUser.id, type: 'new_show', content: `New in the catalog: "${title}", a ${kind}${from}.`, likes_count: 0, is_private: false }
+      const { error: postErr } = await supabase.from('posts').insert({ ...post, show_id: String(ns.id) })
+      if (postErr) await supabase.from('posts').insert(post)
+    }
     // First show listed: the member becomes a Verified Producer.
     if (currentUser && !currentUser.isAdmin && getTier(currentUser) === 'member') {
       const { data: promoted } = await supabase.rpc('claim_verified')
@@ -316,7 +334,7 @@ const App: React.FC = () => {
       case 'terms': return <TermsPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
       case 'upload': return <UploadPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onUpload={handleUpload} userShowCount={shows.filter(s => (s as any).user_id === currentUser?.id).length} />
       case 'faq': return <FAQPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} />
-      case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onViewProducer={(id) => { setCurrentProducerId(id); setCurrentPage('producer'); }} />
+      case 'wire': return <LaffWirePage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} onViewProducer={(id) => { setCurrentProducerId(id); setCurrentPage('producer'); }} shows={shows} onViewShow={(id) => { setCurrentShowId(id); setCurrentPage('discovery'); }} />
       case 'producer': return <ProducerPage onNavigate={(p) => setCurrentPage(p)} onLogout={handleLogout} user={currentUser || undefined} producerId={currentProducerId} shows={shows} onUpdateStats={handleUpdateStats} onViewShow={(id) => { setCurrentShowId(id); setCurrentPage('discovery'); }} />
       default: return <NotFoundPage onNavigate={(p) => setCurrentPage(p)} />
     }

@@ -89,3 +89,19 @@ export const TierPill: React.FC<{ tier: Tier; size?: 'sm' | 'md' }> = ({ tier, s
 );
 
 export default Mascot;
+
+// Round profile photo with a ring in the member's title colour (grey, green, pink, gold).
+// Falls back to the first letter of the name when there is no photo.
+export const ProfilePhoto: React.FC<{ name?: string; url?: string | null; tier: Tier; size?: number; className?: string }> = ({ name, url, tier, size = 40, className = '' }) => (
+  <span
+    className={'relative inline-flex flex-shrink-0 items-center justify-center rounded-full overflow-hidden bg-brand-surface ' + className}
+    style={{ width: size, height: size, boxShadow: `0 0 0 ${size >= 40 ? 3 : 2}px ${TIERS[tier].text}` }}
+    title={TIERS[tier].label}
+  >
+    {url ? (
+      <img src={url} alt={name || ''} className="w-full h-full object-cover" />
+    ) : (
+      <span className="font-black uppercase italic text-white/50" style={{ fontSize: size * 0.4 }}>{(name || '?').trim()[0] || '?'}</span>
+    )}
+  </span>
+);

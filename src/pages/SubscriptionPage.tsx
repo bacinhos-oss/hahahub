@@ -985,6 +985,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                               if (user?.id) {
                                 const { error } = await supabase.from('profiles').update({ avatar_url: base64 }).eq('id', user.id);
                                 if (error) console.error('Avatar save error:', error);
+                                else window.dispatchEvent(new CustomEvent('hh-avatar', { detail: base64 }));
                               }
                             };
                             img.src = objectUrl;

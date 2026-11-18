@@ -141,5 +141,5 @@ export interface User {
   id?: string; email?: string; name: string; role: string; avatar: string; isPaid: boolean; isAdmin?: boolean; plan?: 'gigl' | 'laff' | 'roar';
   subscription?: SubscriptionInfo; favorites: string[]; uploadedShowIds?: string[];
   totalViews?: number; totalInquiries?: number;
-  is_verified?: boolean; is_founding?: boolean; member_tier?: string | null;
+  is_verified?: boolean; is_founding?: boolean; member_tier?: string | null; avatar_url?: string;
 }

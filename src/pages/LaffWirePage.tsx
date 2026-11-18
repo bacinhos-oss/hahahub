@@ -3,15 +3,16 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, User } from '../types';
 import { supabase } from '../lib/supabase';
-import { Avatar, Badge, getProfileBadges } from '../components/Badge';
 import Smile from '../components/Smile';
-import { Mascot, getTier, isShownTier } from '../components/Mascot';
+import { Mascot, ProfilePhoto, getTier, isShownTier } from '../components/Mascot';
 
 interface LaffWirePageProps {
   onNavigate: (page: Page) => void;
   onLogout?: () => void;
   user?: User;
   onViewProducer?: (producerId: string) => void;
+  shows?: any[];
+  onViewShow?: (id: string) => void;
 }
 
 const POST_TYPES: Record<string, { label: string; bg: string; text: string }> = {
@@ -37,7 +38,7 @@ function getEmbedUrl(url: string): string {
 
 
 
-const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer }) => {
+const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user, onViewProducer, shows = [], onViewShow }) => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
@@ -56,9 +57,6 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<{ id: string; msg: string } | null>(null);
 
-  const plan = (user as any)?.plan || 'gigl';
-  const isRoar = plan === 'roar' || user?.isAdmin;
-  const isLaff = plan === 'laff' || isRoar;
 
   useEffect(() => { loadPosts(); }, []);
   useEffect(() => {
@@ -98,8 +96,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
       .select('*, profiles(id, name, is_verified, is_founding, member_tier, avatar_url)')
       .eq('is_private', false)
       .order('created_at', { ascending: false });
-    if (!isLaff) q = q.limit(10); // GIGL sees 10 posts
-    else if (!isRoar) q = q.gte('created_at', new Date(Date.now() - 7*86400000).toISOString());
+    q = q.limit(200);
     const { data } = await q;
     setPosts(data || []);
     const lc: Record<string, number> = {};
@@ -156,11 +153,9 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
               </h1>
             </div>
             <div className="flex items-center gap-3 pb-2">
-              {isRoar && (
-                <div className="flex items-center gap-1.5 text-brand-pink text-[9px] font-black uppercase italic">
-                  <span className="w-2 h-2 rounded-full bg-brand-pink animate-pulse"></span>LIVE
-                </div>
-              )}
+              <div className="flex items-center gap-1.5 text-brand-pink text-[9px] font-black uppercase italic">
+                <span className="w-2 h-2 rounded-full bg-brand-pink animate-pulse"></span>LIVE
+              </div>
             </div>
           </div>
         </div>
@@ -174,7 +169,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
               {user && (
                 <div className="border-b-4 border-white/10 pb-6 mb-2">
                   <div className="flex gap-3">
-                    <Avatar name={user?.name || '?'} url={myAvatar || undefined} size={44} badges={getProfileBadges(user)} />
+                    <ProfilePhoto name={user?.name} url={myAvatar || user?.avatar_url} tier={getTier(user || {})} size={44} className="mt-1" />
                     <div className="flex-1 space-y-3">
                       <textarea
                         ref={textRef}
@@ -230,7 +225,6 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                 <div className="space-y-0">
                   {posts.map((post, i) => {
                     const type = POST_TYPES[post.type] || POST_TYPES.news;
-                    const isBlurred = !isLaff && i >= 10;
                     const pid = post.profiles?.id;
                     const lc = likeCounts[post.id] ?? 0;
                     const isLiked = liked[post.id] || false;
@@ -239,10 +233,10 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                     const isEditing = editingId === post.id;
 
                     return (
-                      <div key={post.id} className={`py-5 border-b border-white/10 ${isBlurred ? 'opacity-20 pointer-events-none select-none' : ''}`}>
+                      <div key={post.id} className="py-5 border-b border-white/10">
                         <div className="flex gap-3">
                           <button onClick={() => pid && onViewProducer && (onViewProducer(pid), onNavigate('producer'))} disabled={!pid} className="flex-shrink-0 self-start disabled:cursor-default">
-                            <Avatar name={post.profiles?.name || '?'} url={post.profiles?.avatar_url || undefined} size={44} badges={getProfileBadges(post.profiles)} onClick={() => {}} />
+                            <ProfilePhoto name={post.profiles?.name} url={post.profiles?.avatar_url} tier={getTier(post.profiles || {})} size={44} className="mt-1" />
                           </button>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -294,6 +288,25 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                                   <iframe className="absolute inset-0 w-full h-full" src={getEmbedUrl(videoUrl)}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
                                 </div>
+                              );
+                            })()}
+                            {!isEditing && post.show_id && (() => {
+                              const sh: any = shows.find((x: any) => String(x.id) === String(post.show_id));
+                              if (!sh) return null;
+                              return (
+                                <button onClick={() => onViewShow?.(String(sh.id))}
+                                  className="mt-3 w-full flex gap-4 items-center text-left border-2 border-white/15 hover:border-brand-yellow bg-brand-surface p-3 transition-colors group">
+                                  <span className="w-14 aspect-[2/3] flex-shrink-0 bg-black overflow-hidden flex items-center justify-center">
+                                    {sh.imageUrl || sh.image_url
+                                      ? <img src={sh.imageUrl || sh.image_url} alt={sh.title} className="w-full h-full object-cover" />
+                                      : <span className="font-black italic text-white/20 text-2xl">{(sh.title || '?')[0]}</span>}
+                                  </span>
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block text-[9px] font-black uppercase italic tracking-widest text-brand-pink">{sh.subgenre || sh.genre}{sh.location ? ' · ' + sh.location : ''}</span>
+                                    <span className="block font-black uppercase italic text-white text-base leading-tight truncate">{sh.title}</span>
+                                    <span className="block text-[10px] font-black uppercase italic text-white/40 group-hover:text-brand-yellow mt-1">View in catalog →</span>
+                                  </span>
+                                </button>
                               );
                             })()}
                             {post.type === 'deal' && (

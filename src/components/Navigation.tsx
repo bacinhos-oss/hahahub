@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Page } from '../types';
 import { Logo } from './Logo';
-import { Mascot, TIERS, getTier } from './Mascot';
+import { Mascot, ProfilePhoto, TIERS, getTier } from './Mascot';
 
 interface NavigationProps {
   activePage: Page;
@@ -83,7 +83,8 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           {user ? (
             <div className="flex items-center gap-4 pl-4 border-l-2 border-white/10">
               <button onClick={() => onNavigate('subscription')} className="flex items-center gap-3 hover:opacity-80 transition-opacity" title={TIERS[tier].label}>
-                <span className="text-right">
+                <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={tier} size={38} />
+                <span className="text-left">
                   <span className="block text-[11px] font-black tracking-[0.2em] text-white italic">{user.name}</span>
                   <span className="block text-[9px] font-black tracking-widest uppercase" style={{ color: TIERS[tier].text }}>{TIERS[tier].label}</span>
                 </span>
@@ -104,7 +105,8 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         <div className="flex lg:hidden items-center gap-3">
           {user && (
             <div className="flex items-center gap-2">
-              <div className="text-right">
+              <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={tier} size={30} />
+              <div className="text-left hidden min-[380px]:block">
                 <p className="text-[10px] font-black text-white italic">{user.name}</p>
                 <p className="text-[8px] font-black uppercase" style={{ color: TIERS[tier].text }}>{TIERS[tier].label}</p>
               </div>
