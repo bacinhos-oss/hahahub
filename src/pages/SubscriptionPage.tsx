@@ -1,3 +1,6 @@
+import { ShowFormFields } from '../components/ShowFields';
+import { formFromShow, formToDb, missingRequired, ShowForm } from '../lib/showFields';
+import { mapShow } from '../lib/mapShow';
 import React, { useState, useMemo, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -258,18 +261,6 @@ const downloadContract = (title: string, content: string) => {
   document.body.removeChild(element)
 }
 
-const inp = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-bold text-sm outline-none focus:border-brand-cyan";
-const sel = "w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan";
-const lbl = "block text-[9px] font-black uppercase text-gray-500 mb-1 italic";
-const COUNTRIES = [
-  'Albania', 'Austria', 'Belgium', 'Bosnia & Herzegovina', 'Bulgaria', 'Croatia',
-  'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
-  'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg',
-  'Malta', 'Montenegro', 'Netherlands', 'North Macedonia', 'Norway', 'Poland',
-  'Portugal', 'Romania', 'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden',
-  'Switzerland', 'Ukraine', 'United Kingdom', 'Australia', 'Canada', 'Israel',
-  'Japan', 'New Zealand', 'South Africa', 'USA', 'Other'
-];
 
 const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogout, user, onToggleFavorite, shows, onDeleteShow, onUpdateShow }) => {
   const [manageShow, setManageShow] = useState<Show | null>(null);
@@ -552,57 +543,17 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
   const openManage = (show: Show) => {
     setManageShow(show);
     setEditForm({
-      ...show,
-      // Map snake_case DB fields to camelCase form
-      imageUrl: show.imageUrl || '',
-      englishTitle: (show as any).english_title || (show as any).englishTitle || show.title || '',
-      synopsisEn: (show as any).synopsis_en || (show as any).synopsisEn || '',
-      originalLanguage: (show as any).original_language || (show as any).originalLanguage || show.language || '',
-      trailerUrl: (show as any).trailer_url || (show as any).trailerUrl || '',
-      internationalSuccessNotes: (show as any).international_success_notes || (show as any).internationalSuccessNotes || '',
-      musicAuthor: (show as any).music_author || (show as any).musicAuthor || '',
-      hasOriginalMusic: (show as any).has_original_music ? 'true' : 'false',
-      videoAuthor: (show as any).video_author || (show as any).videoAuthor || '',
-      hasVideoProjections: (show as any).has_video_projections ? 'true' : 'false',
-      scenographer: (show as any).scenographer || '',
-      setAvailable: (show as any).set_available || 'false',
-      lightingDesigner: (show as any).lighting_designer || '',
-      lightingDesignAvailable: (show as any).lighting_design_available || 'false',
-      videoDescription: (show as any).video_description || (show as any).videoDescription || '',
-      scriptInEnglish: (show as any).script_in_english || (show as any).scriptInEnglish || 'false',
-      translationsAvailable: (show as any).translations_available || show.translationsAvailable || '',
-      translationRightsIncluded: show.translationRightsIncluded ? 'true' : 'false',
-      scriptScenario: show.scriptScenario || (show as any).script_scenario || '',
-      premiereLocation: show.premiereLocation || (show as any).premiere_location || '',
-      locationsPlayed: show.locationsPlayed || (show as any).locations_played || '',
-      hasScriptPackage: (show as any).has_script_package !== false,
-      scriptRoyaltyPct: (show as any).script_royalty_pct || (show as any).scriptRoyaltyPct || '',
-      scriptAdvanceFee: (show as any).script_advance_fee || (show as any).scriptAdvanceFee || '',
-      hasFullPunchPackage: (show as any).has_full_punch_package || (show as any).hasFullPunchPackage || false,
-      fullPunchRoyaltyPct: (show as any).full_punch_royalty_pct || (show as any).fullPunchRoyaltyPct || '',
-      fullPunchAdvanceFee: (show as any).full_punch_advance_fee || (show as any).fullPunchAdvanceFee || '',
-      fpTheScript: true,
-      fpThePlaybook: (show as any).fp_the_playbook || (show as any).fpThePlaybook || false,
-      fpTheSoundtrack: (show as any).fp_the_soundtrack || (show as any).fpTheSoundtrack || false,
-      fpTheVisuals: (show as any).fp_the_visuals || (show as any).fpTheVisuals || false,
-      fpTheWardrobe: (show as any).fp_the_wardrobe || (show as any).fpTheWardrobe || false,
-      fpTheSetBlueprint: (show as any).fp_the_set_blueprint || (show as any).fpTheSetBlueprint || false,
-      fpTheTechRider: (show as any).fp_the_tech_rider || (show as any).fpTheTechRider || false,
-      fpThePromoKit: (show as any).fp_the_promo_kit || (show as any).fpThePromoKit || false,
-      fpTheHandoverSession: (show as any).fp_the_handover_session || (show as any).fpTheHandoverSession || false,
-      fpPunchLanguage: (show as any).fp_punch_language || (show as any).fpPunchLanguage || 'EN',
-      fpPunchSupport: (show as any).fp_punch_support || (show as any).fpPunchSupport || false,
+      ...formFromShow(show),
+      imageUrl: show.imageUrl || (show as any).image_url || '',
+      productionPhotos: show.productionPhotos || [],
     } as any);
     setEditPhotoPreviews([show.productionPhotos?.[0] || null, show.productionPhotos?.[1] || null, show.productionPhotos?.[2] || null]);
   };
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setEditForm(prev => ({ ...prev, [name]: value }));
-  };
-
   const handleSave = async () => {
     if (!manageShow) return;
+    const missing = missingRequired(editForm as ShowForm);
+    if (missing.length) { alert('Please fill in: ' + missing.join(', ')); return; }
     setIsSaving(true);
     try {
       // Upload poster if new file selected
@@ -617,77 +568,18 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
           finalImageUrl = urlData.publicUrl;
         }
       }
-      const { error } = await supabase.from('shows').update({
-        title: editForm.title, author: editForm.author, director: editForm.director,
-        director_notes: editForm.directorNotes, original_production_solutions: editForm.originalProductionSolutions,
-        synopsis: editForm.synopsis, genre: editForm.genre, subgenre: editForm.subgenre,
-        language: editForm.language, location: editForm.location,
-        duration: Number(editForm.duration), male_roles: Number(editForm.maleRoles),
-        female_roles: Number(editForm.femaleRoles),
-        has_intermission: editForm.hasIntermission,
-        production_scale: editForm.productionScale, is_touring_friendly: editForm.isTouringFriendly,
-        technical_complexity: editForm.technicalComplexity, costume_complexity: editForm.costumeComplexity,
-        set_complexity: editForm.setComplexity, adaptation_flexibility: editForm.adaptationFlexibility,
-        stage_type: editForm.stageType,
-        tech_staff_lighting: Number(editForm.techStaffLighting), tech_staff_sound: Number(editForm.techStaffSound),
-        tech_staff_prompter: Number(editForm.techStaffPrompter), tech_staff_stagehands: Number(editForm.techStaffStagehands),
-        tech_staff_other: editForm.techStaffOther,
-        premiere_date: editForm.premiereDate, premiere_location: editForm.premiereLocation,
-        production_year: Number(editForm.productionYear), performances_count: Number(editForm.performancesCount),
-        total_audience: Number(editForm.totalAudience), locations_played: editForm.locationsPlayed,
-        box_office_indicator: editForm.boxOfficeIndicator,
-        awards: editForm.awards,
-        producer_name: editForm.producerName, producer_email: editForm.producerEmail,
-        rights_holder: editForm.rightsHolder, rights_status: editForm.rightsStatus,
-        territories_available: editForm.territoriesAvailable, licensed_countries: editForm.licensedCountries,
-        license_type: editForm.licenseType,
-        exclusivity_level: editForm.exclusivityLevel,
-        humor_type: editForm.humorType,
+      const { data: saved, error } = await supabase.from('shows').update({
+        ...formToDb(editForm as ShowForm),
         is_produced: true,
-        production_photos: editForm.productionPhotos || [],
+        production_photos: ((editForm as any).productionPhotos || []).filter(Boolean),
         image_url: finalImageUrl,
-        english_title: (editForm as any).englishTitle || '',
-        synopsis_en: (editForm as any).synopsis_en || (editForm as any).synopsisEn || '',
-        original_language: (editForm as any).originalLanguage || '',
-        trailer_url: (editForm as any).trailer_url || (editForm as any).trailerUrl || '',
-        international_success_notes: (editForm as any).internationalSuccessNotes || '',
-        music_author: (editForm as any).musicAuthor || null,
-        has_original_music: (editForm as any).hasOriginalMusic === 'true',
-        video_author: (editForm as any).videoAuthor || null,
-        has_video_projections: (editForm as any).hasVideoProjections === 'true',
-        scenographer: (editForm as any).scenographer || null,
-        set_available: (editForm as any).setAvailable || 'false',
-        lighting_designer: (editForm as any).lightingDesigner || null,
-        lighting_design_available: (editForm as any).lightingDesignAvailable || 'false',
-        costume_designer: (editForm as any).costumeDesigner || null,
-        costume_design_available: (editForm as any).costumeDesignAvailable || 'false',
-        video_description: (editForm as any).videoDescription || null,
-        script_in_english: (editForm as any).scriptInEnglish || 'false',
-        translations_available: (editForm as any).translationsAvailable || null,
-        translation_rights_included: (editForm as any).translationRightsIncluded === 'true',
-        script_scenario: (editForm as any).scriptScenario || null,
-        has_script_package: (editForm as any).hasScriptPackage === true || (editForm as any).hasScriptPackage === 'true',
-        script_royalty_pct: (editForm as any).scriptRoyaltyPct ? Number((editForm as any).scriptRoyaltyPct) : null,
-        script_advance_fee: (editForm as any).scriptAdvanceFee ? Number((editForm as any).scriptAdvanceFee) : null,
-        has_full_punch_package: (editForm as any).hasFullPunchPackage === true || (editForm as any).hasFullPunchPackage === 'true',
-        full_punch_royalty_pct: (editForm as any).fullPunchRoyaltyPct ? Number((editForm as any).fullPunchRoyaltyPct) : null,
-        full_punch_advance_fee: (editForm as any).fullPunchAdvanceFee ? Number((editForm as any).fullPunchAdvanceFee) : null,
-        fp_the_script: true,
-        fp_the_playbook: !!(editForm as any).fpThePlaybook,
-        fp_the_soundtrack: !!(editForm as any).fpTheSoundtrack,
-        fp_the_visuals: !!(editForm as any).fpTheVisuals,
-        fp_the_wardrobe: !!(editForm as any).fpTheWardrobe,
-        fp_the_set_blueprint: !!(editForm as any).fpTheSetBlueprint,
-        fp_the_tech_rider: !!(editForm as any).fpTheTechRider,
-        fp_the_promo_kit: !!(editForm as any).fpThePromoKit,
-        fp_the_handover_session: !!(editForm as any).fpTheHandoverSession,
-        fp_punch_language: (editForm as any).fpPunchLanguage || 'EN',
-        fp_punch_support: !!(editForm as any).fpPunchSupport,
-      }).eq('id', manageShow.id);
+      }).eq('id', manageShow.id).select().single();
 
       if (error) { console.error('Error:', error.message); alert(`❌ Could not save changes: ${error.message}\n\nPlease try again.`); }
       else {
-        onUpdateShow({ ...manageShow, ...editForm, productionPhotos: editForm.productionPhotos || manageShow.productionPhotos } as Show);
+        const m = manageShow as any;
+        onUpdateShow(saved ? mapShow(saved, { is_verified: m.is_verified, is_founding: m.is_founding, member_tier: m.member_tier, user_type: m.producer_plan }) as Show
+          : ({ ...manageShow, ...editForm } as Show));
         setSaveSuccess(true);
         setTimeout(() => { setSaveSuccess(false); setManageShow(null); }, 1500);
       }
@@ -695,29 +587,6 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
     setPendingPosterFile(null);
     setIsSaving(false);
   };
-
-  const F = (name: string, label: string, type = 'text', placeholder = '') => (
-    <div>
-      <label className={lbl}>{label}</label>
-      <input name={name} type={type} value={(editForm as any)[name] || ''} onChange={handleEditChange} className={inp} placeholder={placeholder} />
-    </div>
-  );
-
-  const S = (name: string, label: string, options: string[]) => (
-    <div>
-      <label className={lbl}>{label}</label>
-      <select name={name} value={(editForm as any)[name] || ''} onChange={handleEditChange} className={sel}>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-    </div>
-  );
-
-  const T = (name: string, label: string, rows = 3) => (
-    <div className="col-span-2">
-      <label className={lbl}>{label}</label>
-      <textarea name={name} value={(editForm as any)[name] || ''} onChange={handleEditChange} rows={rows} className="w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-cyan" />
-    </div>
-  );
 
   return (
     <React.Fragment>
@@ -734,248 +603,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
 
             <div className="space-y-5">
 
-              {/* 00. BASIC INFO */}
-              <section className="border-2 border-white/20 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">00. Basic Info</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2">
-                    <label className={lbl}>English Title * (main title)</label>
-                    <input name="englishTitle" value={(editForm as any).englishTitle || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white px-4 py-3 text-white font-bold uppercase text-lg outline-none focus:border-brand-yellow" />
-                  </div>
-                  <div className="col-span-2">{F('title', 'Original Title (if different)')}</div>
-                  {F('author', 'Author / Playwright *')}
-                  {S('humorType', 'Humor Type', ['Universal','Language-based','Local Politics','Physical Comedy'])}
-                  <div>
-                    <label className={lbl}>Country of Origin *</label>
-                    <select name="location" value={editForm.location || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white/10 p-2.5 text-white font-black uppercase italic text-xs focus:border-brand-yellow outline-none">
-                      <option value="">Select country...</option>
-                      {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className={lbl}>Genre *</label>
-                    <select name="genre" value={editForm.genre || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white/10 p-2.5 text-white font-black uppercase italic text-xs focus:border-brand-yellow outline-none">
-                      <option value="">Select genre...</option>
-                      <option value="Comedy">Comedy</option>
-                      <option value="Drama">Drama</option>
-                      <option value="Musical">Musical</option>
-                      <option value="Physical Theatre">Physical Theatre</option>
-                      <option value="Cabaret">Cabaret</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className={lbl}>Subgenre</label>
-                    <select name="subgenre" value={(editForm as any).subgenre || ''} onChange={handleEditChange} className="w-full bg-brand-black border-2 border-white/10 p-2.5 text-white font-black uppercase italic text-xs focus:border-brand-yellow outline-none">
-                      <option value="">Select subgenre...</option>
-                      <option value="Monocomedy">Monocomedy</option>
-                      <option value="Farce">Farce</option>
-                      <option value="Black Comedy">Black Comedy</option>
-                      <option value="Dark Comedy">Dark Comedy</option>
-                      <option value="Satire">Satire</option>
-                      <option value="Absurd">Absurd / Surreal</option>
-                      <option value="Romantic Comedy">Romantic Comedy</option>
-                      <option value="Slapstick">Slapstick</option>
-                      <option value="Stand-up Theatre">Stand-up Theatre</option>
-                      <option value="Musical Comedy">Musical Comedy</option>
-                      <option value="Sketch Comedy">Sketch Comedy</option>
-                      <option value="Character Comedy">Character Comedy</option>
-                      <option value="Physical Comedy">Physical Comedy</option>
-                      <option value="Cabaret Comedy">Cabaret Comedy</option>
-                      <option value="Storytelling">Storytelling</option>
-                    </select>
-                  </div>
-                  {F('originalLanguage', 'Original Language *')}
-                  {F('productionYear', 'Production Year', 'number')}
-                  {F('awards', 'Awards')}
-                  <div className="col-span-2">
-                    <label className={lbl}>Synopsis in English *</label>
-                    <textarea name="synopsis_en" value={(editForm as any).synopsis_en || (editForm as any).synopsisEn || ''} onChange={handleEditChange} rows={4} className="w-full bg-brand-black border-2 border-white/20 px-4 py-3 text-white text-sm italic outline-none focus:border-brand-yellow" placeholder="English synopsis for international buyers" />
-                  </div>
-                  <div className="col-span-2">{T('internationalSuccessNotes', 'International Success Notes', 2)}</div>
-                  <div className="col-span-2">
-                    <label className={lbl}>Trailer URL</label>
-                    <input name="trailer_url" value={(editForm as any).trailer_url || (editForm as any).trailerUrl || ''} onChange={handleEditChange} className={inp} placeholder="https://youtube.com/..." />
-                  </div>
-                </div>
-              </section>
-
-              {/* 01. PRODUCTION */}
-              <section className="border-2 border-white/20 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">01. Production</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {F('maleRoles', 'Male Roles *', 'number')}
-                  {F('femaleRoles', 'Female Roles *', 'number')}
-                  {F('duration', 'Duration (min) *', 'number')}
-                  {S('hasIntermission', 'Intermission', ['false','true'])}
-                  {S('productionScale', 'Scale', ['Small','Medium','Large'])}
-                  {S('stageType', 'Stage Type', ['Main Stage','Black Box','Arena','Open Air'])}
-                  {S('isTouringFriendly', 'Touring', ['true','false'])}
-                  {S('adaptationFlexibility', 'Adaptation', ['High','Medium','Low'])}
-                  {S('technicalComplexity', 'Technical', ['Low','Medium','High'])}
-                  {S('costumeComplexity', 'Costume', ['Low','Medium','High'])}
-                  {F('techStaffLighting', 'Lighting Staff', 'number')}
-                  {F('techStaffSound', 'Sound Staff', 'number')}
-                  {F('techStaffStagehands', 'Stagehands', 'number')}
-                  {F('techStaffPrompter', 'Prompter', 'number')}
-                  {F('techStaffOther', 'Other Staff')}
-                  {F('director', 'Director')}
-                </div>
-                {T('directorNotes', "Director's Notes", 2)}
-                {T('originalProductionSolutions', 'Original Staging Solutions', 2)}
-              </section>
-
-              {/* 02. FULL PUNCH */}
-              <section className="border-2 border-brand-pink/30 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">02. Licensing Packages</h3>
-
-                {/* ENABLE */}
-                <div className={"border-2 p-4 space-y-4 " + ((editForm as any).hasFullPunchPackage ? "border-brand-pink/40 bg-brand-pink/5" : "border-white/10")}>
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" checked={!!(editForm as any).hasFullPunchPackage} onChange={e => setEditForm((p: any) => ({...p, hasFullPunchPackage: e.target.checked}))} className="w-4 h-4 accent-brand-pink" />
-                    <span className="font-black uppercase italic text-white text-sm">🥊 Offer Full Punch Package</span>
-                  </div>
-                  {(editForm as any).hasFullPunchPackage && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        {F('fullPunchRoyaltyPct', 'Royalty % *', 'number')}
-                        {F('fullPunchAdvanceFee', 'Advance Fee (EUR)', 'number')}
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase text-brand-pink/60 tracking-widest mb-2">What's In The Package</p>
-                        <div className="space-y-1.5">
-                          {[
-                            { key: 'fpTheScript',          label: '📄 The Script',             locked: true },
-                            { key: 'fpThePlaybook',        label: '📋 The Playbook' },
-                            { key: 'fpTheSoundtrack',      label: '🎵 The Soundtrack' },
-                            { key: 'fpTheVisuals',         label: '🎬 The Visuals' },
-                            { key: 'fpTheWardrobe',        label: '👗 The Wardrobe' },
-                            { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
-                            { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
-                            { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
-                            { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
-                          ].map(({ key, label, locked }) => (
-                            <div key={key} className="flex items-center gap-2">
-                              <input type="checkbox" checked={locked ? true : !!(editForm as any)[key]} disabled={locked}
-                                onChange={e => setEditForm((p: any) => ({...p, [key]: e.target.checked}))}
-                                className="w-3.5 h-3.5 accent-brand-pink" />
-                              <span className={"text-xs font-black uppercase italic " + (locked ? 'text-white/40' : 'text-white')}>{label}</span>
-                              {locked && <span className="text-[8px] text-brand-yellow/50 uppercase">always included</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[9px] font-black uppercase text-white/40 mb-1.5 italic tracking-widest">Punch Language</label>
-                          <select value={(editForm as any).fpPunchLanguage || 'EN'} onChange={e => setEditForm((p: any) => ({...p, fpPunchLanguage: e.target.value}))}
-                            className="w-full bg-brand-black border-2 border-white/20 px-3 py-2 text-white font-black text-xs uppercase italic outline-none focus:border-brand-cyan">
-                            {['EN','SI','DE','FR','IT','ES','HR','PL','CZ','HU','RO'].map(l => <option key={l} value={l}>{l}</option>)}
-                          </select>
-                        </div>
-                        <div className="flex items-center gap-2 pt-5">
-                          <input type="checkbox" checked={!!(editForm as any).fpPunchSupport}
-                            onChange={e => setEditForm((p: any) => ({...p, fpPunchSupport: e.target.checked}))}
-                            className="w-3.5 h-3.5 accent-brand-pink" />
-                          <span className="text-xs font-black uppercase italic text-white">🤝 Punch Support</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* CREATIVE DETAILS */}
-                <div className="space-y-3 pt-1">
-                  <p className="text-[9px] font-black uppercase text-white/20 tracking-widest">Production Assets Info</p>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest">Music</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {F('musicAuthor', 'Music Author')}
-                      {S('hasOriginalMusic', 'Original Music', ['false','true'])}
-                    </div>
-                  </div>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-cyan tracking-widest">Video & AV</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {F('videoAuthor', 'Video Author')}
-                      {S('hasVideoProjections', 'Has Video', ['false','true'])}
-                      <div className="col-span-2">{F('videoDescription', 'Video Description')}</div>
-                    </div>
-                  </div>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Scenography</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {F('scenographer', 'Scenographer')}
-                      {S('setAvailable', 'Set Available', ['false','rent','purchase','plans'])}
-                    </div>
-                  </div>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-white/50 tracking-widest">Lighting Design</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {F('lightingDesigner', 'Lighting Designer')}
-                      {S('lightingDesignAvailable', 'Lighting Design Available', ['false','cue_sheet','full'])}
-                      {F('costumeDesigner', 'Costume Designer')}
-                      {S('costumeDesignAvailable', 'Costume Design Available', ['false','rent','purchase','patterns'])}
-                    </div>
-                  </div>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <p className="text-[9px] font-black uppercase italic text-brand-pink tracking-widest">Script</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {S('scriptInEnglish', 'Script in English', ['false','partial','true'])}
-                      {F('translationsAvailable', 'Translations')}
-                      {S('translationRightsIncluded', 'Translation Rights', ['false','true'])}
-                    </div>
-                    <div>
-                      <label className={lbl}>Script Scenario / Excerpt</label>
-                      <textarea name="scriptScenario" value={(editForm as any).scriptScenario || ''} onChange={handleEditChange} rows={5} className="w-full bg-brand-black border-2 border-white/10 p-3 text-white font-mono text-sm leading-relaxed outline-none focus:border-brand-yellow" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* SCRIPT PACKAGE — moved from 05 */}
-                <div className="border-t-2 border-white/10 pt-4">
-                  <p className="text-[9px] font-black uppercase italic text-brand-yellow tracking-widest mb-3">Script Only Package</p>
-                  <div className="border-2 border-white/10 p-4 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" checked={!!(editForm as any).hasScriptPackage} onChange={e => setEditForm((p: any) => ({...p, hasScriptPackage: e.target.checked}))} className="w-4 h-4 accent-brand-yellow" />
-                      <span className="font-black uppercase italic text-white text-sm">📄 The Script — Script Only License</span>
-                    </div>
-                    <p className="text-white/30 text-[9px] italic pl-7">Buyer gets the script and produces independently.</p>
-                    {(editForm as any).hasScriptPackage && (
-                      <div className="grid grid-cols-2 gap-3 pl-7">
-                        {F('scriptRoyaltyPct', 'Royalty % *', 'number')}
-                        {F('scriptAdvanceFee', 'Advance Fee (EUR)', 'number')}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
-
-              {/* 03. MARKET PERFORMANCE */}
-              <section className="border-2 border-white/20 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-cyan border-b border-white/10 pb-2">03. Market Performance</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {F('premiereDate', 'Premiere Date', 'date')}
-                  {F('premiereLocation', 'Premiere Location')}
-                  {F('performancesCount', 'Total Performances', 'number')}
-                  {F('totalAudience', 'Total Audience', 'number')}
-                  {F('locationsPlayed', 'Locations Played')}
-                  {S('boxOfficeIndicator', 'Box Office', ['High','Medium','Emerging'])}
-                </div>
-              </section>
-
-              {/* 04. RIGHTS */}
-              <section className="border-2 border-white/20 p-5 space-y-4">
-                <h3 className="text-sm font-black uppercase italic text-brand-pink border-b border-white/10 pb-2">04. Rights & Identity</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2">{F('rightsHolder', 'Copyright Holder *')}</div>
-                  {S('rightsStatus', 'Rights Status', ['Available','Co-production Only','Licensed'])}
-                  {S('licenseType', 'License Type', ['License','Option','Co-production'])}
-                  {S('exclusivityLevel', 'Exclusivity', ['Exclusive','Semi-exclusive','Non-exclusive'])}
-                  {F('territoriesAvailable', 'Territories Available')}
-                  {F('licensedCountries', 'Licensed Countries')}
-                </div>
-              </section>
-
+              <ShowFormFields form={editForm as ShowForm} set={(k, v) => setEditForm(prev => ({ ...prev, [k]: v }))} compact />
             </div>
 
             {/* POSTER IMAGE */}

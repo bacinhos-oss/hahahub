@@ -30,7 +30,6 @@ const FAQ_CATEGORIES = [
       { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
       { q: 'What rights are available?', a: 'Each show specifies its own rights package — exclusive or non-exclusive, territory-by-territory, royalty-based or flat fee. All terms are set by the originating producer.' },
       { q: 'Are contract templates included?', a: 'Yes. Members get access to a library of contract templates covering performance rights, touring rights, translation rights, and co-production agreements. These are provided for reference and do not constitute legal advice.' },
-      { q: 'What is the Transparency Score?', a: 'Every show is rated 0–100 based on the completeness of its commercial data — cast size, rights terms, budget range, royalty range, and more. Higher score = more ready to license.' },
     ]
   },
   {
@@ -39,7 +38,7 @@ const FAQ_CATEGORIES = [
     color: 'brand-yellow',
     items: [
       { q: 'Can I list my own show?', a: 'Yes. Every member can upload shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
-      { q: 'What do I need to upload a show?', a: 'You need: show poster/image, synopsis, cast breakdown, rights terms, royalty range, and a 3-page script scenario in English. The more data you provide, the higher your Transparency Score.' },
+      { q: 'What do I need to upload a show?', a: 'To publish you need only the essentials: English title, playwright, original language, country, genre, synopsis in English, cast size, running time, copyright holder, a licensing package and a poster. About 5 minutes. Everything else (creative team, script excerpt, staging, track record) is optional and can be added later in My Hub, but it helps producers abroad decide faster.' },
       { q: 'What languages are supported?', a: 'The Laff Exchange is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
       { q: 'Can I upload a show that is not yet produced?', a: 'Currently HahaHub focuses on shows that have been produced and have performance history. We may expand to pre-production in the future.' },
     ]

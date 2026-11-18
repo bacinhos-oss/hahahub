@@ -180,6 +180,29 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, shows }) => {
           </div>
         </section>
 
+        {/* A DEAL, STEP BY STEP */}
+        <section className="border-t border-white/10">
+          <div className="max-w-[1500px] mx-auto px-4 md:px-12 py-16 md:py-20">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-yellow mb-3">Example</p>
+            <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white mb-3">A deal, step by step</h2>
+            <p className="text-white/60 font-bold italic leading-relaxed mb-10 max-w-2xl">A comedy that runs in Ljubljana. A theatre in Vienna wants a local version. This is how it goes on HahaHub.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                { t: 'Tickle', c: 'text-brand-yellow', d: 'The Vienna producer finds the show in the catalog and sends a tickle: who they are, their venue, when they would like to stage it.' },
+                { t: 'Talk', c: 'text-brand-pink', d: 'The Ljubljana producer gets the message and replies directly. No agent in between. They exchange the script, video and numbers.' },
+                { t: 'Agree', c: 'text-brand-cyan', d: 'They settle the terms the producer set when listing: royalty percentage, advance, what is in the package, territory and dates.' },
+                { t: 'Sign and play', c: 'text-white', d: 'They sign the licence with each other. The deal stays in Pipeline and Documents, and the show opens in Vienna.' },
+              ].map((st, i) => (
+                <div key={st.t} className="border-t-2 border-white/15 pt-5">
+                  <p className={`text-xs font-black uppercase italic tracking-widest mb-2 ${st.c}`}>{String(i + 1).padStart(2, '0')} {st.t}</p>
+                  <p className="text-white/60 font-bold italic leading-relaxed">{st.d}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-white/40 text-sm font-bold italic mt-10 max-w-2xl">HahaHub connects the two producers. The licence is between them, and the show always stays with its rights holder.</p>
+          </div>
+        </section>
+
         {/* MEMBERSHIP */}
         <section className="border-t border-white/10">
           <div className="max-w-[1500px] mx-auto px-4 md:px-12 py-16 md:py-20">

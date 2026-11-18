@@ -6,6 +6,8 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, Show, User } from '../types';
 import Smile from '../components/Smile';
+import { ShowDossierSections } from '../components/ShowFields';
+import { SHOW_SECTIONS, PACKAGES_SECTION, PACKAGE_INFO, FP_ITEMS, rawValue, displayValue } from '../lib/showFields';
 import { Mascot, TierPill, getTier, isShownTier, isSampleShow, SampleRibbon, canSeeVerified, VerifiedLock } from '../components/Mascot';
 
 
@@ -133,7 +135,8 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     const isFavorited = user?.favorites.includes(selectedShow.id);
     const isGuest = !user || user.name === "Guest User";
     // Scripts, creators and performance history: Verified Producers, the show's own producer, and all samples.
-    const fullAccess = canSeeVerified(user) || (!!user && (selectedShow as any)?.user_id === user.id) || isSampleShow(selectedShow);
+    const isOwnShow = !!user && (selectedShow as any)?.user_id === user.id;
+    const fullAccess = canSeeVerified(user) || isOwnShow || isSampleShow(selectedShow);
     const listShow = () => { setSelectedShowId(null); onNavigate('upload'); };
 
     return (
@@ -261,24 +264,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <p className="text-gray-200 text-xl leading-relaxed italic border-l-8 border-brand-yellow pl-8 bg-white/5 py-4">{(selectedShow as any).synopsis_en}</p>
                       </div>
                     )}
-                    {(selectedShow as any).original_language && (
-                      <div className="flex gap-4 mt-4 flex-wrap">
-                        <span className="text-[9px] font-black uppercase italic text-white/30">Original: <span className="text-white/60">{(selectedShow as any).original_language}</span></span>
-                        {(selectedShow as any).script_in_english && (selectedShow as any).script_in_english !== 'false' && (
-                          <span className="text-[9px] font-black uppercase italic text-brand-cyan border border-brand-cyan/30 px-2 py-0.5">
-                            Script in EN: {(selectedShow as any).script_in_english === 'true' ? '✓ Full' : 'Partial'}
-                          </span>
-                        )}
-                      </div>
-                    )}
                   </section>
 
-                  {/* 00. RIGHTS & IDENTITY */}
-                  <section className="space-y-8">
-                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-cyan italic">00. RIGHTS & IDENTITY</h4>
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* PRODUCER */}
+                  <section className="max-w-md">
                         <div className="bg-brand-surface border-2 border-white p-4  overflow-hidden">
-                           <p className="text-[8px] font-black uppercase text-brand-cyan mb-2 tracking-widest">PRODUCER / COMPANY</p>
+                           <p className="text-[8px] font-black uppercase text-brand-cyan mb-2 tracking-widest">PRODUCER</p>
                            <p className="text-lg font-black uppercase italic">{selectedShow.producerName}</p>
                            {(selectedShow as any).user_id && (
                              <button
@@ -292,362 +283,20 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                              <div className="mt-3"><TierPill tier={getTier(selectedShow)} size="md" /></div>
                            )}
                         </div>
-                        <div className="bg-brand-surface border-2 border-white p-4 overflow-hidden">
-                           <p className="text-[8px] font-black uppercase text-brand-yellow mb-1 tracking-widest">COPYRIGHT HOLDER</p>
-                           <p className="text-lg font-black uppercase italic">{selectedShow.rightsHolder}</p>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white p-4 overflow-hidden">
-                           <p className="text-[8px] font-black uppercase text-brand-pink mb-1 tracking-widest">RIGHTS STATUS</p>
-                           <p className="text-lg font-black uppercase italic">{selectedShow.rightsStatus}</p>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/20 p-6">
-                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Territories Available</p>
-                           <p className="text-sm font-black uppercase italic">{selectedShow.territoriesAvailable || 'Global'}</p>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/20 p-6">
-                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Licensed Countries</p>
-                           <p className="text-sm font-black uppercase italic">{selectedShow.licensedCountries || '—'}</p>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/20 p-6">
-                           <p className="text-[9px] font-black uppercase text-gray-500 mb-1 tracking-widest italic">Rights Clearing Speed</p>
-                           <p className="text-sm font-black uppercase italic">{selectedShow.rightsClearingSpeed}</p>
-                        </div>
-                     </div>
                   </section>
 
-                  {/* 01. CREATIVE ENGINE */}
-                  <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">01. CREATIVE ENGINE</h4>
-                    {!fullAccess ? <VerifiedLock what="See who is behind each show: playwright, director, cast and the creative team." onList={listShow} /> : (<>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-4 md:gap-12">
-                      <div className="space-y-6">
-                        <div className="flex gap-4">
-                          <div className="flex-1 border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-brand-pink italic">Playwright</p>
-                             <p className="text-xl font-black italic">{selectedShow.author || '—'}</p>
-                          </div>
-                          <div className="flex-1 border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-brand-cyan italic">Director</p>
-                             <p className="text-xl font-black italic uppercase">{selectedShow.director || 'TBD'}</p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 md:gap-4">
-                          <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-brand-yellow italic">Subgenre</p>
-                             <p className="text-sm font-black italic break-words">{selectedShow.subgenre || 'N/A'}</p>
-                          </div>
-                          <div className="border-l-4 border-white/40 pl-4 py-2 bg-white/5">
-                             <p className="text-[8px] font-black uppercase text-gray-500 italic">Humor Type</p>
-                             <p className="text-sm font-black italic break-words">{selectedShow.humorType}</p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 md:gap-4">
-                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
-                             <span className="text-xs font-black uppercase italic text-brand-yellow">Male Roles</span>
-                             <span className="text-2xl font-black">{selectedShow.maleRoles}</span>
-                          </div>
-                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center">
-                             <span className="text-xs font-black uppercase italic text-brand-pink">Female Roles</span>
-                             <span className="text-2xl font-black">{selectedShow.femaleRoles}</span>
-                          </div>
-                          <div className="bg-black/40 p-4 border border-white/10 flex justify-between items-center col-span-2">
-                             <span className="text-xs font-black uppercase italic text-brand-cyan">Intermission</span>
-                             <span className="text-sm font-black">{selectedShow.hasIntermission ? 'YES' : 'NO'}</span>
-                          </div>
-                        </div>
-                        {selectedShow.translationsAvailable && <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                           <p className="text-[8px] font-black uppercase text-brand-cyan italic">Translations Available</p>
-                           <p className="text-sm font-black italic break-words">{selectedShow.translationsAvailable}</p>
-                        </div>}
-                        {(selectedShow as any).translationRightsIncluded === true || (selectedShow as any).translation_rights_included === true ? (
-                          <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                            <p className="text-[8px] font-black uppercase text-brand-cyan italic">Translation Rights</p>
-                            <p className="text-sm font-black italic">Included in license</p>
-                          </div>
-                        ) : null}
-                        {selectedShow.internationalSuccessNotes && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                           <p className="text-[8px] font-black uppercase text-brand-yellow italic">International Success</p>
-                           <p className="text-sm italic text-gray-300 break-words">{selectedShow.internationalSuccessNotes}</p>
-                        </div>}
-                      </div>
-                      <div className="bg-brand-surface border-2 border-white p-4 md:p-8 space-y-4 md:space-y-6 ">
-                         <div className="border-b-2 border-white/10 pb-4">
-                            <p className="text-[10px] font-black uppercase text-brand-pink italic mb-2">Director's Vision Notes</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.directorNotes || 'Standard staging permitted.'}</p>
-                         </div>
-                         <div>
-                            <p className="text-[10px] font-black uppercase text-brand-cyan italic mb-2">Original Staging Solutions</p>
-                            <p className="text-sm italic leading-relaxed text-gray-300 break-words">{selectedShow.originalProductionSolutions || 'No exclusive technical hardware required.'}</p>
-                         </div>
-                      </div>
-                    </div>
-                                      </>)}
-                  </section>
-
-                  {/* 02. FULL PUNCH */}
-                  <section className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">02. FULL PUNCH</h4>
-
-                    {(selectedShow as any).has_full_punch_package ? (
-                      <div className="border-2 border-brand-pink/40 bg-brand-pink/5 p-5 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <p className="font-black uppercase italic text-brand-pink text-sm">🥊 Full Punch Available</p>
-                          <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5">
-                            {(selectedShow as any).full_punch_royalty_pct || '15'}% royalty
-                          </span>
-                        </div>
-                        <p className="text-white/40 text-xs italic">Complete know-how package. Everything you need to produce this show.</p>
-
-                        {/* Contents */}
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                          {[
-                            { key: 'fpTheScript',           label: '📄 The Script',          always: true },
-                            { key: 'fpThePlaybook',         label: '📋 The Playbook' },
-                            { key: 'fpTheSoundtrack',       label: '🎵 The Soundtrack' },
-                            { key: 'fpTheVisuals',          label: '🎬 The Visuals' },
-                            { key: 'fpTheWardrobe',         label: '👗 The Wardrobe' },
-                            { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
-                            { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
-                            { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
-                            { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
-                          ].map(({ key, label, always }) => {
-                            const included = always || (selectedShow as any)[key];
-                            return (
-                              <div key={key} className={"flex items-center gap-2 " + (included ? '' : 'opacity-25')}>
-                                <span className={"text-[10px] font-black " + (included ? 'text-brand-pink' : 'text-white/20')}>{included ? '✓' : '✗'}</span>
-                                <span className={"text-[10px] font-bold uppercase italic " + (included ? 'text-white/80' : 'text-white/30')}>{label}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Badges */}
-                        <div className="flex gap-2 flex-wrap border-t border-white/10 pt-3">
-                          {(selectedShow as any).fpPunchLanguage && (
-                            <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
-                              Lang: {(selectedShow as any).fpPunchLanguage}
-                            </span>
-                          )}
-                          {(selectedShow as any).fpPunchSupport && (
-                            <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">
-                              🤝 Punch Support Included
-                            </span>
-                          )}
-                          {(selectedShow as any).full_punch_advance_fee > 0 && (
-                            <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
-                              + €{(selectedShow as any).full_punch_advance_fee} advance
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="border-2 border-white/10 p-4">
-                        <p className="text-white/20 text-xs italic font-black uppercase">Full Punch not offered — Script only</p>
-                      </div>
-                    )}
-
-                    {/* Production Assets Info */}
-                    {fullAccess && (<>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-                      <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
-                        {(selectedShow as any).music_author ? (
-                          <>
-                            <p className="text-sm font-black italic">{(selectedShow as any).music_author}</p>
-                            <p className="text-[8px] text-brand-yellow/60 italic mt-1">
-                              {(selectedShow as any).has_original_music ? 'Original composition' : 'Licensed / existing music'}
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">Not specified</p>
-                        )}
-                      </div>
-                      <div className="border-l-4 border-brand-cyan pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-brand-cyan italic">📽 Video / AV</p>
-                        {(selectedShow as any).has_video_projections ? (
-                          <>
-                            {(selectedShow as any).video_author && <p className="text-sm font-black italic">{(selectedShow as any).video_author}</p>}
-                            {(selectedShow as any).video_description && <p className="text-[8px] text-brand-cyan/60 italic mt-1">{(selectedShow as any).video_description}</p>}
-                            {!(selectedShow as any).video_author && <p className="text-sm font-black italic">Original video content available</p>}
-                          </>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">No video projections</p>
-                        )}
-                      </div>
-                      {((selectedShow as any).scenographer || (selectedShow as any).set_available !== 'false') && (
-                        <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-white/50 italic">🏗️ Scenography</p>
-                          {(selectedShow as any).scenographer && <p className="text-sm font-black italic">{(selectedShow as any).scenographer}</p>}
-                          {(selectedShow as any).set_available && (selectedShow as any).set_available !== 'false' && (
-                            <p className="text-[8px] text-white/40 italic mt-1">
-                              Set: {(selectedShow as any).set_available === 'rent' ? 'Available for rent' : (selectedShow as any).set_available === 'purchase' ? 'Available for purchase' : 'Plans/blueprints available'}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      {((selectedShow as any).lighting_designer || (selectedShow as any).lighting_design_available !== 'false') && (
-                        <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-white/50 italic">💡 Lighting Design</p>
-                          {(selectedShow as any).lighting_designer && <p className="text-sm font-black italic">{(selectedShow as any).lighting_designer}</p>}
-                          {(selectedShow as any).lighting_design_available && (selectedShow as any).lighting_design_available !== 'false' && (
-                            <p className="text-[8px] text-white/40 italic mt-1">
-                              {(selectedShow as any).lighting_design_available === 'full' ? 'Full design + cue sheet available' : 'Cue sheet available'}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      {((selectedShow as any).costume_designer || (selectedShow as any).costume_design_available !== 'false') && (
-                        <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
-                          <p className="text-[8px] font-black uppercase text-white/50 italic">👗 Costume Design</p>
-                          {(selectedShow as any).costume_designer && <p className="text-sm font-black italic">{(selectedShow as any).costume_designer}</p>}
-                          {(selectedShow as any).costume_design_available && (selectedShow as any).costume_design_available !== 'false' && (
-                            <p className="text-[8px] text-white/40 italic mt-1">
-                              {(selectedShow as any).costume_design_available === 'rent' ? 'Available for rent' : (selectedShow as any).costume_design_available === 'purchase' ? 'Available for purchase' : 'Patterns/specs available'}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      <div className="border-l-4 border-brand-pink pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-brand-pink italic">📄 Script in English</p>
-                        {(selectedShow as any).script_in_english === 'true' || (selectedShow as any).scriptInEnglish === 'true' ? (
-                          <p className="text-sm font-black italic">Full script available</p>
-                        ) : (selectedShow as any).script_in_english === 'partial' ? (
-                          <p className="text-sm font-black italic">Synopsis only</p>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">Not specified</p>
-                        )}
-                      </div>
-                      <div className="border-l-4 border-white/20 pl-4 py-2 bg-white/5">
-                        <p className="text-[8px] font-black uppercase text-white/40 italic">🌍 Translations</p>
-                        {(selectedShow as any).translations_available || selectedShow.translationsAvailable ? (
-                          <p className="text-sm font-black italic">{(selectedShow as any).translations_available || selectedShow.translationsAvailable}</p>
-                        ) : (
-                          <p className="text-sm font-black italic text-white/30">Not specified</p>
-                        )}
-                      </div>
-                    </div>
-                    </>)}
-                  </section>
-
-                  {/* 03. TECHNICAL STACK */}
-                  <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">03. TECHNICAL STACK & PRODUCTION SCALE</h4>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                       <div className="bg-brand-surface border border-white/20 p-2 md:p-4 text-center min-w-0 ">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Lighting</p>
-                          <p className="text-lg md:text-2xl font-black text-brand-cyan">{selectedShow.techStaffLighting}</p>
-                       </div>
-                       <div className="bg-brand-surface border border-white/20 p-2 md:p-4 text-center min-w-0 ">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Sound</p>
-                          <p className="text-lg md:text-2xl font-black text-brand-pink">{selectedShow.techStaffSound}</p>
-                       </div>
-                       <div className="bg-brand-surface border border-white/20 p-2 md:p-4 text-center min-w-0 ">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Stagehands</p>
-                          <p className="text-lg md:text-2xl font-black text-brand-yellow">{selectedShow.techStaffStagehands}</p>
-                       </div>
-                       <div className="bg-brand-surface border border-white/20 p-2 md:p-4 text-center min-w-0">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Prompter</p>
-                          <p className="text-lg md:text-2xl font-black text-white">{selectedShow.techStaffPrompter}</p>
-                       </div>
-                       <div className="bg-brand-surface border border-white/20 p-2 md:p-4 text-center min-w-0 ">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Scale</p>
-                          <p className="text-xs md:text-base font-black uppercase italic break-words text-brand-cyan">{selectedShow.productionScale}</p>
-                       </div>
-                       <div className="bg-brand-surface border border-white/20 p-2 md:p-4 text-center min-w-0 ">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic">Touring</p>
-                          <p className="text-xs md:text-base font-black uppercase italic break-words text-brand-pink">{selectedShow.isTouringFriendly ? 'YES' : 'NO'}</p>
-                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-                       {[
-                         { label: 'Technical', value: selectedShow.technicalComplexity },
-                         { label: 'Costume', value: selectedShow.costumeComplexity },
-                         { label: 'Adaptation', value: selectedShow.adaptationFlexibility },
-                       ].map((item, i) => (
-                         <div key={i} className="bg-black/30 border border-white/10 p-4 text-center overflow-hidden">
-                           <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">{item.label}</p>
-                           <p className={`font-black uppercase text-[10px] leading-tight break-words ${item.value === 'High' ? 'text-brand-pink' : item.value === 'Low' ? 'text-brand-cyan' : 'text-white'}`}>{item.value}</p>
-                         </div>
-                       ))}
-                    </div>
-                    {selectedShow.techStaffOther && <p className="text-xs text-gray-400 italic">Additional: {selectedShow.techStaffOther}</p>}
-                  </section>
-
-                  {/* 03. MARKET PERFORMANCE */}
-                  <section className="space-y-8">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">04. MARKET PERFORMANCE</h4>
-                    {!fullAccess ? <VerifiedLock what="See where this show has already played: premiere, performances, audience and awards." onList={listShow} /> : (<>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
-                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
-                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-sm md:text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'Not specified'}</p></div>
-                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-brand-yellow">calendar_today</span>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
-                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Performances</p>{selectedShow.performancesCount > 0 ? <p className="text-sm md:text-base font-black text-brand-cyan">{selectedShow.performancesCount.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
-                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-brand-cyan">theater_comedy</span>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
-                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Total Audience</p>{selectedShow.totalAudience > 0 ? <p className="text-sm md:text-base font-black text-brand-pink">{selectedShow.totalAudience.toLocaleString()}</p> : <p className="text-sm font-bold italic text-white/30">Not specified</p>}</div>
-                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-brand-pink">groups</span>
-                        </div>
-                        <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
-                           <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Box Office</p><p className="text-sm md:text-base font-black">{selectedShow.boxOfficeIndicator}</p></div>
-                           <span className="material-symbols-outlined flex-shrink-0 !text-xl md:!text-2xl text-white/40">trending_up</span>
-                        </div>
-
-
-
-
-                    </div>
-                    {selectedShow.awards && <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
-                       <p className="text-[8px] font-black uppercase text-brand-yellow italic">Awards</p>
-                       <p className="text-sm font-black italic break-words">{selectedShow.awards}</p>
-                    </div>}
-                    {selectedShow.locationsPlayed && <div className="border-l-4 border-white/30 pl-4 py-2 bg-white/5">
-                       <p className="text-[8px] font-black uppercase text-gray-500 italic">Locations Played</p>
-                       <p className="text-sm italic text-gray-300 break-words">{selectedShow.locationsPlayed}</p>
-                    </div>}
-                    </>)}
-                  </section>
-
-                  {/* 04. RIGHTS */}
-                  <section className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">05. RIGHTS & LICENSING</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      <div className="bg-brand-surface border-2 border-white p-4">
-                        <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">License Type</p>
-                        <p className="text-sm font-black uppercase italic">{selectedShow.licenseType}</p>
-                      </div>
-                      <div className="bg-brand-surface border-2 border-white p-4">
-                        <p className="text-[8px] font-black text-brand-pink uppercase italic mb-1">Exclusivity</p>
-                        <p className="text-sm font-black uppercase italic">{selectedShow.exclusivityLevel}</p>
-                      </div>
-                      {selectedShow.territoriesAvailable && (
-                        <div className="bg-brand-surface border-2 border-white/20 p-4">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Territories</p>
-                          <p className="text-sm font-black uppercase">{selectedShow.territoriesAvailable}</p>
-                        </div>
-                      )}
-                      {(selectedShow as any).translations_available && (
-                        <div className="bg-brand-surface border-2 border-white/20 p-4">
-                          <p className="text-[8px] font-black text-gray-500 uppercase italic mb-1">Translations</p>
-                          <p className="text-sm font-black uppercase">{(selectedShow as any).translations_available}</p>
-                        </div>
-                      )}
-                    </div>
-                  </section>
-
-                  {/* SCRIPT SCENARIO */}
-                  {selectedShow.scriptScenario && (
-                    <section className="space-y-4">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">Script Scenario — 3 Pages in English</h4>
-                      {!fullAccess ? <VerifiedLock what="Read the script excerpt of every show in the catalog." onList={listShow} /> : (
-                      <div className="bg-black border-2 border-brand-yellow p-4 md:p-8 overflow-hidden">
-                        <pre className="text-white font-mono text-xs md:text-sm leading-relaxed whitespace-pre-wrap break-words overflow-x-hidden">{selectedShow.scriptScenario}</pre>
-                      </div>
-                      )}
-                    </section>
-                  )}
+                  {/* 01 to 06: same sections, labels and order as Showload and My Hub (src/lib/showFields.ts) */}
+                  <ShowDossierSections show={selectedShow} fullAccess={fullAccess} onList={listShow}
+                    onAskExcerpt={isOwnShow ? undefined : () => {
+                      setInquiryShowId(selectedShowId);
+                      setSelectedShowId(null);
+                      setSelectedPackage((selectedShow as any).has_script_package !== false ? 'script' : 'full_punch');
+                      setInquiryName(user?.name || '');
+                      setInquiryEmail(user?.email || '');
+                      setInquiryMessage(`Hello, we are interested in "${selectedShow.title}". Could you send us a script excerpt (one scene is enough) so we can read it with our team? Thank you.`);
+                      setInquirySuccess(false);
+                      setIsInquiryOpen(true);
+                    }} />
 
                   {/* SIMILAR SHOWS */}
                   {(() => {
@@ -684,7 +333,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   <div className="bg-brand-surface border-2 md:border-2 border-brand-cyan p-4 md:p-10 space-y-4 md:space-y-6 ">
                     <div className="text-center">
                       <h4 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter">Select Package &amp; Tickle</h4>
-                      <p className="text-white/30 text-xs italic mt-1">Choose your licensing package. Royalty is calculated per performance.</p>
+                      <p className="text-white/40 text-xs italic mt-1 max-w-xl mx-auto">{PACKAGE_INFO.script.name}: {PACKAGE_INFO.script.tagline.toLowerCase()} {PACKAGE_INFO.fullPunch.name}: {PACKAGE_INFO.fullPunch.tagline.toLowerCase()} Royalty is a {PACKAGE_INFO.royaltyHelp}.</p>
                     </div>
 
                     {/* PACKAGES */}
@@ -694,14 +343,14 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <div className={"border-2 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-brand-yellow/60')}
                           onClick={() => setSelectedPackage('script')}>
                           <div className="flex items-center justify-between">
-                            <p className="font-black uppercase italic text-white text-lg">🎭 SCRIPT</p>
+                            <p className="font-black uppercase italic text-white text-lg">{PACKAGE_INFO.script.icon} {PACKAGE_INFO.script.name}</p>
                             {selectedPackage === 'script' && <span className="text-[8px] font-black uppercase bg-brand-yellow text-black px-2 py-0.5">✓ SELECTED</span>}
                           </div>
-                          <p className="text-white/40 text-xs italic">Script only — your production, your vision.</p>
+                          <p className="text-brand-yellow text-xs font-black uppercase italic">{PACKAGE_INFO.script.tagline}</p>
+                          <p className="text-white/40 text-xs italic leading-relaxed">{PACKAGE_INFO.script.buyerText}</p>
                           <div className="border-t border-white/10 pt-3 space-y-1">
                             <p className="text-brand-yellow font-black text-2xl">
-                              {(selectedShow as any).script_royalty_pct || '10'}%
-                              <span className="text-white/30 text-xs font-bold ml-1">of gross box office</span>
+                              {(selectedShow as any).script_royalty_pct ? <>{(selectedShow as any).script_royalty_pct}%<span className="text-white/30 text-xs font-bold ml-1">of gross box office</span></> : <span className="text-base">Royalty on request</span>}
                             </p>
                             {(selectedShow as any).script_advance_fee > 0 && (
                               <p className="text-white/40 text-xs">+ €{(selectedShow as any).script_advance_fee} advance</p>
@@ -720,7 +369,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                                 setIsInquiryOpen(true);
                               }}
                               className="w-full bg-white text-black py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
-                              Tickle It — Script →
+                              Tickle It: The Script →
                             </button>
                           )}
                         </div>
@@ -731,24 +380,15 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         <div className={"border-2 p-5 cursor-pointer transition-all space-y-3 " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-brand-pink/60')}
                           onClick={() => setSelectedPackage('full_punch')}>
                           <div className="flex items-center justify-between">
-                            <p className="font-black uppercase italic text-white text-lg">🥊 FULL PUNCH</p>
+                            <p className="font-black uppercase italic text-white text-lg">{PACKAGE_INFO.fullPunch.icon} {PACKAGE_INFO.fullPunch.name}</p>
                             {selectedPackage === 'full_punch' && <span className="text-[8px] font-black uppercase bg-brand-pink text-white px-2 py-0.5">✓ SELECTED</span>}
                           </div>
-                          <p className="text-white/40 text-xs italic">Complete know-how package. Everything you need to produce this show.</p>
+                          <p className="text-brand-pink text-xs font-black uppercase italic">{PACKAGE_INFO.fullPunch.tagline}</p>
+                          <p className="text-white/40 text-xs italic leading-relaxed">{PACKAGE_INFO.fullPunch.buyerText}</p>
 
                           {/* What's included */}
                           <div className="grid grid-cols-2 gap-1">
-                            {[
-                              { key: 'fpTheScript',           label: '📄 The Script',          always: true },
-                              { key: 'fpThePlaybook',         label: '📋 The Playbook' },
-                              { key: 'fpTheSoundtrack',       label: '🎵 The Soundtrack' },
-                              { key: 'fpTheVisuals',          label: '🎬 The Visuals' },
-                              { key: 'fpTheWardrobe',         label: '👗 The Wardrobe' },
-                              { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
-                              { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
-                              { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
-                              { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
-                            ].filter(({ key, always }) => always || (selectedShow as any)[key]).map(({ label }) => (
+                            {FP_ITEMS.map(it => ({ key: it.key, label: it.icon + ' ' + it.label, always: it.always })).filter(({ key, always }) => always || (selectedShow as any)[key]).map(({ label }) => (
                               <div key={label} className="flex items-center gap-1.5">
                                 <span className="text-brand-pink text-[10px]">✓</span>
                                 <span className="text-white/70 text-[10px] font-bold uppercase italic">{label}</span>
@@ -760,20 +400,19 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                           <div className="flex gap-2 flex-wrap">
                             {(selectedShow as any).fpPunchLanguage && (
                               <span className="text-[8px] font-black uppercase bg-white/10 text-white/50 px-2 py-0.5">
-                                Lang: {(selectedShow as any).fpPunchLanguage}
+                                Materials in: {(selectedShow as any).fpPunchLanguage}
                               </span>
                             )}
                             {(selectedShow as any).fpPunchSupport && (
                               <span className="text-[8px] font-black uppercase bg-brand-cyan/20 text-brand-cyan px-2 py-0.5">
-                                🤝 Punch Support Included
+                                🤝 Punch Support: team helps in rehearsals
                               </span>
                             )}
                           </div>
 
                           <div className="border-t border-white/10 pt-3 space-y-1">
                             <p className="text-brand-pink font-black text-2xl">
-                              {(selectedShow as any).full_punch_royalty_pct || '15'}%
-                              <span className="text-white/30 text-xs font-bold ml-1">of gross box office</span>
+                              {(selectedShow as any).full_punch_royalty_pct ? <>{(selectedShow as any).full_punch_royalty_pct}%<span className="text-white/30 text-xs font-bold ml-1">of gross box office</span></> : <span className="text-base">Royalty on request</span>}
                             </p>
                             {(selectedShow as any).full_punch_advance_fee > 0 && (
                               <p className="text-white/40 text-xs">+ €{(selectedShow as any).full_punch_advance_fee} advance</p>
@@ -793,7 +432,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                                 setIsInquiryOpen(true);
                               }}
                               className="w-full bg-brand-pink text-white py-3 font-black uppercase italic text-sm border-2 border-black hover:bg-white hover:text-black transition-all">
-                              Tickle It — Full Punch →
+                              Tickle It: Full Punch →
                             </button>
                           )}
                         </div>
@@ -821,7 +460,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                     {/* DOSSIER BUTTON */}
                     <div className="border-t border-white/10 pt-4 flex justify-center">
-                      <button onClick={() => downloadDossier(selectedShow)}
+                      <button onClick={() => downloadDossier(selectedShow, fullAccess)}
                         className="bg-transparent text-white px-8 py-3 font-black uppercase border-2 border-white hover:border-brand-cyan hover:text-brand-cyan transition-all italic text-sm flex items-center gap-3">
                         <span className="material-symbols-outlined text-xl">download</span>
                         The Dossier
@@ -903,12 +542,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       className={"w-full text-left border-2 p-4 transition-all " + (selectedPackage === 'script' ? 'border-brand-yellow bg-brand-yellow/10' : 'border-white/20 hover:border-white/40')}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <p className="font-black uppercase italic text-white text-sm">🎭 SCRIPT</p>
-                          <p className="text-white/40 text-xs italic mt-1">Script only — you produce independently with your own creative team.</p>
+                          <p className="font-black uppercase italic text-white text-sm">{PACKAGE_INFO.script.icon} {PACKAGE_INFO.script.name}</p>
+                          <p className="text-white/40 text-xs italic mt-1">{PACKAGE_INFO.script.buyerText}</p>
                         </div>
                         <div className="text-right flex-shrink-0">
                           {(inquiryShow as any)?.script_royalty_pct && (
-                            <p className="text-brand-yellow font-black text-sm">{(inquiryShow as any).script_royalty_pct}% royalty</p>
+                            <p className="text-brand-yellow font-black text-sm">{(inquiryShow as any).script_royalty_pct}% of box office</p>
                           )}
                           {(inquiryShow as any)?.script_advance_fee && (
                             <p className="text-white/40 text-xs">+ €{(inquiryShow as any).script_advance_fee} advance</p>
@@ -927,21 +566,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       className={"w-full text-left border-2 p-4 transition-all " + (selectedPackage === 'full_punch' ? 'border-brand-pink bg-brand-pink/10' : 'border-white/20 hover:border-white/40')}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <p className="font-black uppercase italic text-white text-sm">🥊 FULL PUNCH</p>
-                          <p className="text-white/40 text-xs italic mt-1">Complete know-how package. Everything you need to produce this show.</p>
+                          <p className="font-black uppercase italic text-white text-sm">{PACKAGE_INFO.fullPunch.icon} {PACKAGE_INFO.fullPunch.name}</p>
+                          <p className="text-white/40 text-xs italic mt-1">{PACKAGE_INFO.fullPunch.buyerText}</p>
                           {/* Contents grid */}
                           <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2">
-                            {[
-                              { key: 'fpTheScript',           label: '📄 The Script',          always: true },
-                              { key: 'fpThePlaybook',         label: '📋 The Playbook' },
-                              { key: 'fpTheSoundtrack',       label: '🎵 The Soundtrack' },
-                              { key: 'fpTheVisuals',          label: '🎬 The Visuals' },
-                              { key: 'fpTheWardrobe',         label: '👗 The Wardrobe' },
-                              { key: 'fpTheSetBlueprint',    label: '🏗️ The Set Blueprint' },
-                              { key: 'fpTheTechRider',       label: '🔧 The Tech Rider' },
-                              { key: 'fpThePromoKit',        label: '📸 The Promo Kit' },
-                              { key: 'fpTheHandoverSession', label: '🤝 The Handover Session' },
-                            ].filter(({ key, always }) => always || (inquiryShow as any)?.[key]).map(({ label }) => (
+                            {FP_ITEMS.map(it => ({ key: it.key, label: it.icon + ' ' + it.label, always: it.always })).filter(({ key, always }) => always || (inquiryShow as any)?.[key]).map(({ label }) => (
                               <div key={label} className="flex items-center gap-1">
                                 <span className="text-brand-pink text-[9px]">✓</span>
                                 <span className="text-white/60 text-[9px] font-bold uppercase italic">{label}</span>
@@ -949,12 +578,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                             ))}
                           </div>
                           {(inquiryShow as any)?.fpPunchSupport && (
-                            <p className="text-brand-cyan text-[9px] font-black uppercase italic mt-1.5">🤝 Punch Support Included</p>
+                            <p className="text-brand-cyan text-[9px] font-black uppercase italic mt-1.5">🤝 Punch Support: team helps in rehearsals</p>
                           )}
                         </div>
                         <div className="text-right flex-shrink-0">
                           {(inquiryShow as any)?.full_punch_royalty_pct && (
-                            <p className="text-brand-pink font-black text-sm">{(inquiryShow as any).full_punch_royalty_pct}% royalty</p>
+                            <p className="text-brand-pink font-black text-sm">{(inquiryShow as any).full_punch_royalty_pct}% of box office</p>
                           )}
                           {(inquiryShow as any)?.full_punch_advance_fee && (
                             <p className="text-white/40 text-xs">+ €{(inquiryShow as any).full_punch_advance_fee} advance</p>
@@ -1141,7 +770,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   };
 
 
-  const downloadDossier = async (show: Show | null) => {
+  const downloadDossier = async (show: Show | null, fullAccess = false) => {
     if (!show) return;
 
     // Dynamically import to avoid SSR issues
@@ -1236,12 +865,12 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     if ((show as any).has_script_package !== false) {
       fillYellow(); doc.rect(margin, y, 28, 8, 'F');
       black(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
-      doc.text(`SCRIPT ${(show as any).scriptRoyaltyPct || ''}%`, margin + 2, y + 5.5);
+      doc.text(`SCRIPT${(show as any).scriptRoyaltyPct ? ' ' + (show as any).scriptRoyaltyPct + '%' : ''}`, margin + 2, y + 5.5);
     }
     if ((show as any).hasFullPunchPackage || (show as any).has_full_punch_package) {
       fillPink(); doc.rect(margin + 32, y, 40, 8, 'F');
       white(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
-      doc.text(`FULL PUNCH ${(show as any).fullPunchRoyaltyPct || (show as any).full_punch_royalty_pct || ''}%`, margin + 34, y + 5.5);
+      doc.text(`FULL PUNCH${(show as any).full_punch_royalty_pct ? ' ' + (show as any).full_punch_royalty_pct + '%' : ''}`, margin + 34, y + 5.5);
     }
 
     // Footer strip
@@ -1250,202 +879,91 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     doc.text('HAHAHUB · THE COMEDY RIGHTS MARKETPLACE · HAHAHUB.ART', margin, H - 4);
     doc.text('TICKLE. SET UP. PUNCH.', W - margin - 38, H - 4);
 
-    // ─── PAGE 2 ───────────────────────────────────────────────────────────────
-    addPage();
-    fillBlack(); doc.rect(0, 0, W, H, 'F');
-    y = margin;
+    // ─── PAGE 2+: same sections as Showload, My Hub and the dossier (src/lib/showFields.ts) ───
+    const pdfSafe = (t: any) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[đĐ]/g, m => (m === 'đ' ? 'd' : 'D')).replace(/[^\x20-\x7E\n -ÿ]/g, '').trim();
+    const lightBox = () => doc.setFillColor(242, 242, 242);
+    const dark = () => doc.setTextColor(20, 20, 20);
+    const newPage = () => { doc.addPage(); y = margin; };
+    const need = (h: number) => { if (y + h > H - 18) newPage(); };
+    const head = (num: string, text: string) => {
+      need(18);
+      fillYellow(); doc.rect(margin, y, 2, 8, 'F');
+      dark(); doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.text(num, margin + 5, y + 5.5);
+      doc.setFontSize(13); doc.text(pdfSafe(text).toUpperCase(), margin + 14, y + 5.5);
+      y += 12;
+    };
+    const para = (text: string, size = 9, font: 'helvetica' | 'courier' = 'helvetica') => {
+      dark(); doc.setFont(font, 'normal'); doc.setFontSize(size);
+      doc.splitTextToSize(pdfSafe(text), col).forEach((line: string) => { need(5); doc.text(line, margin, y); y += size * 0.5; });
+      y += 3;
+    };
+    const lockedNote = () => {
+      need(14); lightBox(); doc.rect(margin, y, col, 11, 'F');
+      gray(); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+      doc.text('VERIFIED PRODUCERS ONLY. LIST YOUR FIRST SHOW ON HAHAHUB.ART TO UNLOCK THIS.', margin + 4, y + 7);
+      y += 15;
+    };
+    const boxRow = (items: { l: string; v: string }[], cols = 3) => {
+      const w = (col - (cols - 1) * 4) / cols;
+      for (let i = 0; i < items.length; i += cols) {
+        const row = items.slice(i, i + cols).map(it => ({ ...it, lines: doc.setFontSize(9) && doc.splitTextToSize(pdfSafe(it.v), w - 6).slice(0, 3) }));
+        const h = 9 + Math.max(...row.map(r => r.lines.length)) * 4.5;
+        need(h + 4);
+        row.forEach((r, j) => {
+          const x = margin + j * (w + 4);
+          lightBox(); doc.rect(x, y, w, h, 'F');
+          label(pdfSafe(r.l), x + 3, y + 5);
+          dark(); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+          r.lines.forEach((ln: string, k: number) => doc.text(ln, x + 3, y + 10 + k * 4.5));
+        });
+        y += h + 4;
+      }
+    };
 
-    // Synopsis
-    sectionTitle('Synopsis', '00');
-    const synText = (show as any).synopsis_en || 'No synopsis provided.';
-    white(); doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    const synLines = doc.splitTextToSize(synText, col);
-    synLines.forEach((line: string) => { checkY(6); doc.text(line, margin, y); y += 5; });
-    y += 6; divider();
+    newPage();
+    head('', 'Synopsis');
+    para((show as any).synopsis_en || 'No synopsis provided.', 10);
 
-    // Rights & Identity
-    sectionTitle('Rights & Identity', '01');
-    const col2 = (col - 4) / 2;
-    statBox('Copyright Holder', show.rightsHolder || show.producerName, margin, y, col2);
-    statBox('Rights Status', show.rightsStatus, margin + col2 + 4, y, col2);
-    y += 18;
-    statBox('License Type', show.licenseType, margin, y, col2);
-    statBox('Exclusivity', show.exclusivityLevel, margin + col2 + 4, y, col2);
-    y += 18;
-    statBox('Territories Available', (show as any).territoriesAvailable || 'Global', margin, y, col);
-    y += 18;
-    if ((show as any).licensedCountries) {
-      statBox('Licensed Countries', (show as any).licensedCountries, margin, y, col);
-      y += 18;
-    }
-    y += 4; divider();
-
-    // Production
-    sectionTitle('Production', '02');
-    const col3 = (col - 8) / 3;
-    statBox('Country of Origin', show.location || '—', margin, y, col3);
-    statBox('Duration', `${show.duration} min`, margin + col3 + 4, y, col3);
-    statBox('Male Roles', String(show.maleRoles), margin + (col3 + 4) * 2, y, col3);
-    y += 18;
-    statBox('Female Roles', String(show.femaleRoles), margin, y, col3);
-    statBox('Production Scale', show.productionScale, margin + col3 + 4, y, col3);
-    statBox('Stage Type', (show as any).stageType || '—', margin + (col3 + 4) * 2, y, col3);
-    y += 18;
-    statBox('Touring Friendly', show.isTouringFriendly ? 'YES' : 'NO', margin, y, col3);
-    y += 18;
-    statBox('Tech Complexity', show.technicalComplexity, margin, y, col3);
-    statBox('Lighting Staff', String(show.techStaffLighting), margin + col3 + 4, y, col3);
-    statBox('Sound Staff', String(show.techStaffSound), margin + (col3 + 4) * 2, y, col3);
-    y += 18;
-    statBox('Costume Complexity', (show as any).costumeComplexity || '—', margin, y, col3);
-    y += 18;
-    if (show.directorNotes) {
-      checkY(20);
-      fillSurface(); doc.rect(margin, y, col, 16, 'F');
-      fillCyan(); doc.rect(margin, y, 2, 16, 'F');
-      label("Director's Vision Notes", margin + 5, y + 5, cyan);
-      white(); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-      const dnLines = doc.splitTextToSize(show.directorNotes, col - 10);
-      dnLines.slice(0, 2).forEach((line: string, i: number) => doc.text(line, margin + 5, y + 10 + i * 4));
-      y += 20;
-    }
-    y += 4; divider();
-
-    // Market Performance
-    sectionTitle('Market Performance', '03');
-    statBox('Premiere Date', show.premiereDate || '—', margin, y, col3);
-    statBox('Premiere Location', show.premiereLocation || '—', margin + col3 + 4, y, col3);
-    statBox('Box Office', show.boxOfficeIndicator, margin + (col3 + 4) * 2, y, col3);
-    y += 18;
-    statBox('Total Performances', (show.performancesCount > 0 ? String(show.performancesCount) : 'Not specified'), margin, y, col3);
-    statBox('Total Audience', (show.totalAudience > 0 ? String(show.totalAudience) : 'Not specified'), margin + col3 + 4, y, col3);
-    statBox('Production Year', String(show.productionYear), margin + (col3 + 4) * 2, y, col3);
-    y += 18;
-    if ((show as any).locationsPlayed) {
-      statBox('Locations Played', (show as any).locationsPlayed, margin, y, col);
-      y += 18;
-    }
-    if (show.awards) {
-      checkY(16); statBox('Awards', show.awards, margin, y, col); y += 18;
-    }
-    y += 4; divider();
-
-    // ─── PAGE 3 — FULL PUNCH ─────────────────────────────────────────────────
-    addPage();
-    fillBlack(); doc.rect(0, 0, W, H, 'F');
-    y = margin;
-
-    sectionTitle('Full Punch Package', '04');
-
-    const hasFP = (show as any).hasFullPunchPackage || (show as any).has_full_punch_package;
-    if (hasFP) {
-      // FP header box
-      fillPink(); doc.rect(margin, y, col, 16, 'F');
-      black(); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-      doc.text('🥊 FULL PUNCH AVAILABLE', margin + 4, y + 7);
-      doc.setFontSize(9);
-      const fpPct = (show as any).fullPunchRoyaltyPct || (show as any).full_punch_royalty_pct || '';
-      doc.text(`${fpPct}% royalty of gross box office`, margin + 4, y + 13);
-      y += 20;
-
-      // Contents checklist
-      white(); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-      doc.text('WHAT\'S IN THE PACKAGE:', margin, y); y += 7;
-
-      const fpItems = [
-        { key: 'fpTheScript',          db: 'fp_the_script',           label: 'The Script',           always: true },
-        { key: 'fpThePlaybook',        db: 'fp_the_playbook',         label: 'The Playbook' },
-        { key: 'fpTheSoundtrack',      db: 'fp_the_soundtrack',       label: 'The Soundtrack' },
-        { key: 'fpTheVisuals',         db: 'fp_the_visuals',          label: 'The Visuals' },
-        { key: 'fpTheWardrobe',        db: 'fp_the_wardrobe',         label: 'The Wardrobe' },
-        { key: 'fpTheSetBlueprint',    db: 'fp_the_set_blueprint',    label: 'The Set Blueprint' },
-        { key: 'fpTheTechRider',       db: 'fp_the_tech_rider',       label: 'The Tech Rider' },
-        { key: 'fpThePromoKit',        db: 'fp_the_promo_kit',        label: 'The Promo Kit' },
-        { key: 'fpTheHandoverSession', db: 'fp_the_handover_session', label: 'The Handover Session' },
-      ];
-
-      // 2 columns
-      const half = Math.ceil(fpItems.length / 2);
-      fpItems.forEach((item, i) => {
-        const included = item.always || (show as any)[item.key] || (show as any)[item.db];
-        const col2x = i < half ? margin : margin + col / 2 + 4;
-        const iy = y + (i < half ? i : i - half) * 8;
-        if (included) { fillCyan(); } else { doc.setFillColor(40, 40, 40); }
-        doc.rect(col2x, iy, 4, 4, 'F');
-        if (included) { cyan(); } else { doc.setTextColor(60, 60, 60); }
-        doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-        doc.text(item.label.toUpperCase(), col2x + 7, iy + 3.5);
+    SHOW_SECTIONS.forEach(sec => {
+      const fields = sec.fields.filter(d => !d.hideInDossier && displayValue(d, rawValue(show, d.key)) !== '' && (!d.dependsOn || !!String(rawValue(show, d.dependsOn) ?? '').trim()));
+      if (!fields.length) return;
+      head(sec.num, sec.title);
+      if (sec.lock && !fullAccess) { lockedNote(); return; }
+      boxRow(fields.filter(d => !d.wide).map(d => ({ l: d.label, v: d.locked && !fullAccess ? 'Verified Producers only' : displayValue(d, rawValue(show, d.key)) })));
+      fields.filter(d => d.wide).forEach(d => {
+        need(12); label(pdfSafe(d.label), margin, y); y += 4;
+        if (d.locked && !fullAccess) { lockedNote(); return; }
+        para(displayValue(d, rawValue(show, d.key)), d.key === 'script_scenario' ? 8 : 9, d.key === 'script_scenario' ? 'courier' : 'helvetica');
       });
-      y += half * 8 + 8;
+      y += 2;
+    });
 
-      // Language + Support
-      const fpLang = (show as any).fpPunchLanguage || (show as any).fp_punch_language || 'EN';
-      const fpSupport = (show as any).fpPunchSupport || (show as any).fp_punch_support;
-      statBox('Punch Language', fpLang, margin, y, col3);
-      statBox('Punch Support', fpSupport ? 'YES — Team Available' : 'No', margin + col3 + 4, y, col3 * 2 + 4);
-      y += 18;
-
-      if ((show as any).full_punch_advance_fee > 0) {
-        statBox('Advance Fee', `€${(show as any).full_punch_advance_fee}`, margin, y, col);
-        y += 18;
-      }
-    } else {
-      fillSurface(); doc.rect(margin, y, col, 12, 'F');
-      gray(); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
-      doc.text('Full Punch not offered — Script only license available', margin + 4, y + 8);
-      y += 16;
-    }
-
-    y += 4; divider();
-
-    // Script Package
-    sectionTitle('Script Package', '05');
-    if ((show as any).has_script_package !== false) {
-      fillYellow(); doc.rect(margin, y, col, 16, 'F');
-      black(); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-      doc.text('📄 SCRIPT LICENSE AVAILABLE', margin + 4, y + 7);
-      const sPct = (show as any).scriptRoyaltyPct || (show as any).script_royalty_pct || '';
-      doc.setFontSize(9);
-      doc.text(`${sPct}% royalty of gross box office · Script only — your production, your vision`, margin + 4, y + 13);
-      y += 20;
-      if ((show as any).scriptAdvanceFee > 0 || (show as any).script_advance_fee > 0) {
-        statBox('Advance Fee', `€${(show as any).scriptAdvanceFee || (show as any).script_advance_fee}`, margin, y, col);
-        y += 18;
-      }
-    }
-
-    y += 4; divider();
-
-    // Creative Assets
-    sectionTitle('Creative Assets', '06');
-    if ((show as any).music_author || (show as any).musicAuthor) {
-      statBox('Music Author', (show as any).music_author || (show as any).musicAuthor, margin, y, col2);
-      statBox('Original Music', ((show as any).has_original_music || (show as any).hasOriginalMusic) ? 'YES' : 'NO', margin + col2 + 4, y, col2);
-      y += 18;
-    }
-    if ((show as any).has_video_projections || (show as any).hasVideoProjections) {
-      statBox('Video / AV', (show as any).video_author || (show as any).videoAuthor || 'Original content', margin, y, col2);
-      if ((show as any).video_description || (show as any).videoDescription) {
-        statBox('Video Description', (show as any).video_description || (show as any).videoDescription, margin + col2 + 4, y, col2);
-      }
-      y += 18;
-    }
-    statBox('Script in English', (show as any).script_in_english === 'true' ? 'Full Script' : (show as any).script_in_english === 'partial' ? 'Synopsis Only' : 'No', margin, y, col2);
-    if ((show as any).translations_available || show.translationsAvailable) {
-      statBox('Translations Available', (show as any).translations_available || show.translationsAvailable, margin + col2 + 4, y, col2);
-    }
-    y += 18;
-
-    if (show.scriptScenario) {
-      checkY(30);
-      fillSurface(); doc.rect(margin, y, col, 28, 'F');
-      fillYellow(); doc.rect(margin, y, 2, 28, 'F');
-      label('Script Excerpt / Scenario', margin + 5, y + 5, yellow);
-      white(); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-      const scLines = doc.splitTextToSize(show.scriptScenario, col - 10);
-      scLines.slice(0, 5).forEach((line: string, i: number) => doc.text(line, margin + 5, y + 11 + i * 4.5));
-      y += 32;
-    }
+    head(PACKAGES_SECTION.num, PACKAGES_SECTION.title);
+    para('Royalty is a percentage of gross box office, paid per performance.', 8);
+    const pkg = (on: boolean, info: { name: string; tagline: string; buyerText: string }, pct: any, adv: any, extra?: () => void) => {
+      if (!on) return;
+      need(30);
+      dark(); doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+      doc.text(pdfSafe(`${info.name}${pct ? '  ·  ' + pct + '% of box office' : '  ·  royalty on request'}${Number(adv) > 0 ? '  ·  EUR ' + adv + ' advance' : ''}`).toUpperCase(), margin, y); y += 6;
+      gray(); doc.setFontSize(8); doc.text(pdfSafe(info.tagline).toUpperCase(), margin, y); y += 5;
+      para(info.buyerText, 9);
+      extra?.();
+      y += 3;
+    };
+    pkg(rawValue(show, 'has_script_package') !== false, PACKAGE_INFO.script, rawValue(show, 'script_royalty_pct'), rawValue(show, 'script_advance_fee'));
+    pkg(!!rawValue(show, 'has_full_punch_package'), PACKAGE_INFO.fullPunch, rawValue(show, 'full_punch_royalty_pct'), rawValue(show, 'full_punch_advance_fee'), () => {
+      FP_ITEMS.filter(it => it.always || rawValue(show, it.key)).forEach(it => {
+        need(6); dark(); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+        doc.text('+ ' + pdfSafe(it.label), margin + 2, y);
+        gray(); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+        doc.text(pdfSafe(it.desc), margin + 50, y); y += 5;
+      });
+      y += 2;
+      boxRow([
+        { l: 'Language of the materials', v: rawValue(show, 'fp_punch_language') || 'EN' },
+        { l: 'Punch Support', v: rawValue(show, 'fp_punch_support') ? 'Yes, the team helps in rehearsals' : 'No' },
+      ], 2);
+    });
 
     // Footer on every page
     const pageCount = (doc as any).internal.getNumberOfPages();
@@ -1454,7 +972,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       fillYellow(); doc.rect(0, H - 10, W, 10, 'F');
       black(); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
       doc.text('HAHAHUB · THE COMEDY RIGHTS MARKETPLACE · HAHAHUB.ART', margin, H - 4);
-      doc.text(`${i} / ${pageCount}`, W - margin - 8, H - 4);
+      if (i > 1) doc.text(`${i} / ${pageCount}`, W - margin - 8, H - 4);
     }
 
     doc.save(`${(show.title).replace(/\s+/g, '_')}_Dossier_HahaHub.pdf`);
@@ -1646,6 +1164,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       const days = (show as any).created_at ? Math.floor((Date.now() - new Date((show as any).created_at).getTime()) / 86400000) : 999;
                       return days <= 10 ? <span className="text-[7px] font-black uppercase bg-white text-black px-2 py-0.5 italic border border-black">NEW</span> : null;
                     })()}
+                    {!!String((show as any).script_scenario ?? '').trim() && (
+                      <span className="text-[7px] font-black uppercase bg-brand-yellow text-black px-2 py-0.5 italic border border-black">SCRIPT EXCERPT</span>
+                    )}
                   </div>
 
                   {/* SHORTLIST BUTTON */}
