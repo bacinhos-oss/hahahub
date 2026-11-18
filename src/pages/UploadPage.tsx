@@ -31,9 +31,6 @@ const compressImage = (file: File, maxWidth: number, quality: number): Promise<F
   });
 
 const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onUpload, userShowCount = 0 }) => {
-  const plan = (user as any)?.plan || 'gigl';
-  const uploadLimit = user?.isAdmin ? 9999 : plan === 'roar' ? 9999 : plan === 'laff' ? 5 : 1;
-  const isAtLimit = userShowCount >= uploadLimit;
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -177,17 +174,6 @@ const UploadPage: React.FC<UploadPageProps> = ({ onNavigate, onLogout, user, onU
     <div className="flex flex-col min-h-screen bg-brand-black text-white">
       <Navigation onNavigate={onNavigate} onLogout={onLogout} activePage="upload" user={user} />
 
-      {isAtLimit && (
-        <div className="fixed inset-0 z-50 bg-brand-black flex flex-col items-center justify-center gap-6 px-4">
-          <h1 className="text-4xl font-black uppercase italic text-white text-center">Upload limit reached.</h1>
-          <p className="text-white/40 font-bold italic text-center max-w-md">
-            {plan === 'gigl' ? 'Upgrade to LAFF for up to 5 shows.' : 'Upgrade to ROAR for unlimited uploads.'}
-          </p>
-          <button onClick={() => onNavigate('login')} className="bg-white text-black px-10 py-4 font-black uppercase italic border-2 border-black hover:bg-brand-pink hover:text-white transition-all">
-            Upgrade →
-          </button>
-        </div>
-      )}
 
       <main className="pt-32 pb-24 px-4 md:px-8">
         <div className="max-w-5xl mx-auto space-y-8">

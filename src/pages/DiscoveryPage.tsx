@@ -31,7 +31,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [inquiryName, setInquiryName] = useState('');
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryMessage, setInquiryMessage] = useState('');
-  const [inquiryRateLimit, setInquiryRateLimit] = useState<number | null>(null); // koliko inquiries je poslal ta mesec (GIGL)
   const [inquiryFile, setInquiryFile] = useState<File | null>(null);
   const [inquirySending, setInquirySending] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<'script' | 'full_punch' | ''>('');
@@ -113,11 +112,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     });
 
     return result.sort((a, b) => {
-      // ROAR/FEATURED vedno prvi
-      const aFeatured = (a as any).producer_plan === 'roar' ? 1 : 0;
-      const bFeatured = (b as any).producer_plan === 'roar' ? 1 : 0;
-      if (bFeatured !== aFeatured) return bFeatured - aFeatured;
-      // Potem normalni sort
       if (sortBy === 'Newest') return (b.productionYear || 0) - (a.productionYear || 0);
       if (sortBy === 'Popular') return (b.likesCount || 0) - (a.likesCount || 0);
       if (sortBy === 'Trending') return (b.viewsCount || 0) - (a.viewsCount || 0);
@@ -639,30 +633,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 </div>
               </div>
 
-              {/* GIGL rate limit opozorilo */}
-              {user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 5 && (
-                <div className="bg-brand-yellow text-black p-4 border-2 border-black font-black uppercase text-sm italic mb-2">
-                  ⚡ GIGL plan: 5 inquiries per month used. Upgrade to LAFF for unlimited.
-                  <button onClick={() => onNavigate('login')} className="ml-2 underline">Upgrade →</button>
-                </div>
-              )}
-
               <button
-                disabled={!!(user && user.plan === 'gigl' && inquiryRateLimit !== null && inquiryRateLimit >= 5) || inquirySending}
+                disabled={inquirySending}
                 onClick={async () => {
-                  // Rate limit check za GIGL — max 5 inquiries na mesec
-                  if (user && user.plan === 'gigl') {
-                    const now = new Date();
-                    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-                    const { count } = await supabase
-                      .from('inquiries')
-                      .select('*', { count: 'exact', head: true })
-                      .eq('producer_id', user.id)
-                      .gte('created_at', firstOfMonth);
-                    const monthCount = count || 0;
-                    setInquiryRateLimit(monthCount);
-                    if (monthCount >= 5) return;
-                  }
 
                   setInquirySending(true);
                   let attachmentUrl = '';
@@ -725,8 +698,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       setInquirySending(false);
                       return;
                     }
-                    // Posodobimo lokalni rate limit counter
-                    if (user?.plan === 'gigl') setInquiryRateLimit(prev => (prev || 0) + 1);
                   } catch(e) {
                     console.error('Inquiry save error:', e);
                     alert('❌ Something went wrong saving your inquiry. It may not reach the producer. Please try again, or email info@hahahub.art for help.');
@@ -1157,9 +1128,6 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
                   {/* TOP BADGES */}
                   <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
-                    {(show as any).producer_plan === 'roar' && (
-                      <span className="text-[7px] font-black uppercase bg-brand-pink text-white px-2 py-0.5 italic border border-black">FEATURED</span>
-                    )}
                     {(() => {
                       const days = (show as any).created_at ? Math.floor((Date.now() - new Date((show as any).created_at).getTime()) / 86400000) : 999;
                       return days <= 10 ? <span className="text-[7px] font-black uppercase bg-white text-black px-2 py-0.5 italic border border-black">NEW</span> : null;

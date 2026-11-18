@@ -202,7 +202,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
       {!hideHeader && (
       <div>
         <h2 className="text-4xl font-black uppercase italic">Producer <span className="text-brand-pink">Studio</span></h2>
-        <p className="text-white/40 font-bold italic text-sm mt-1">ROAR exclusive · Your production command center</p>
+        <p className="text-white/40 font-bold italic text-sm mt-1">Verified Producers · Your production command center</p>
         <p className="text-brand-yellow/60 text-[9px] font-black uppercase italic tracking-widest mt-2">Studio data is saved on this device only. Use the same browser to access your data.</p>
       </div>
       )}
@@ -994,7 +994,6 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-black uppercase italic text-white">{c.name}</p>
-                        {c.plan && <span className={"text-[7px] font-black uppercase px-1.5 py-0.5 " + (c.plan === 'roar' ? 'bg-brand-pink/20 text-brand-pink' : c.plan === 'laff' ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-white/10 text-white/30')}>{c.plan?.toUpperCase()}</span>}
                         {c.source && c.source !== 'manual' && <span className="text-[7px] font-black uppercase bg-brand-yellow/10 text-brand-yellow/60 px-1.5 py-0.5">{c.source}</span>}
                       </div>
                       {c.notes && <p className="text-white/30 text-xs mt-0.5">{c.notes}</p>}
