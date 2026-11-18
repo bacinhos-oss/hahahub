@@ -20,6 +20,7 @@ import ProducerPage from './pages/ProducerPage'
 import Smile from './components/Smile'
 import { Analytics } from "@vercel/analytics/react"
 import { logError } from './lib/errorLogger'
+import { getTier } from './components/Mascot'
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','terms','upload','faq','producer','wire']
@@ -367,6 +368,15 @@ const App: React.FC = () => {
     // Simplest correct fix: just refresh from DB so the new row is mapped
     // through the same camelCase pipeline as everything else.
     await loadShows()
+    // First show listed: the member becomes a Verified Producer.
+    if (currentUser && !currentUser.isAdmin && getTier(currentUser) === 'member') {
+      const { data: promoted } = await supabase.rpc('claim_verified')
+      if (promoted === true) {
+        setCurrentUser({ ...currentUser, is_verified: true, member_tier: 'verified' } as any)
+        const n: any = newShow
+        sendEmail('became_verified', currentUser.email, { name: currentUser.name, showTitle: n?.english_title || n?.title || newShow?.title || '' })
+      }
+    }
   }
 
   const sendEmail = async (type: string, to: string, data: any) => {

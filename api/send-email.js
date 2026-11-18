@@ -83,37 +83,69 @@ const templates = {
 </html>`
   };},
 
-  welcome: ({ name, email }) => ({
-    subject: `You're Set Up. Break a Laffing Leg. 🦵 — HahaHub`,
-    html: `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"></head>
-<body style="margin:0;padding:0;background:#050505;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#050505" style="background:#050505;">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
-  <tr><td style="padding-bottom:28px;"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%;"></td></tr>
-  <tr><td style="font-size:40px;line-height:1.05;font-weight:900;font-style:italic;text-transform:uppercase;color:#ffffff;padding-bottom:16px;">Welcome,<br>${name}.</td></tr>
-  <tr><td style="font-size:16px;font-style:italic;color:#bbbbbb;padding-bottom:24px;line-height:1.5;">You're set up. Time to hunt. Or deploy. Or both.</td></tr>
-  <tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;"><tr>
-    <td width="56" style="padding:16px;font-size:30px;font-weight:900;font-style:italic;color:#555555;" valign="top">01</td>
-    <td style="padding:16px 16px 16px 0;"><div style="font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;color:#FFC80E;">Tickle</div><div style="font-size:13px;color:#aaaaaa;line-height:1.5;padding-top:4px;">Browse international comedy productions. Tickle List what excites you.</div></td>
-  </tr></table></td></tr>
-  <tr><td style="padding-bottom:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;"><tr>
-    <td width="56" style="padding:16px;font-size:30px;font-weight:900;font-style:italic;color:#555555;" valign="top">02</td>
-    <td style="padding:16px 16px 16px 0;"><div style="font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;color:#EF4986;">Set Up</div><div style="font-size:13px;color:#aaaaaa;line-height:1.5;padding-top:4px;">Drop your show or contact rights holders directly. No agents.</div></td>
-  </tr></table></td></tr>
-  <tr><td style="padding-bottom:28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#111111" style="background:#111111;border:1px solid #2a2a2a;"><tr>
-    <td width="56" style="padding:16px;font-size:30px;font-weight:900;font-style:italic;color:#555555;" valign="top">03</td>
-    <td style="padding:16px 16px 16px 0;"><div style="font-size:16px;font-weight:900;font-style:italic;text-transform:uppercase;color:#19A596;">Punch</div><div style="font-size:13px;color:#aaaaaa;line-height:1.5;padding-top:4px;">Curtain up. Lights on. Your punchline lands.</div></td>
-  </tr></table></td></tr>
-  <tr><td style="padding-bottom:32px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#FFC80E" style="background:#FFC80E;border:3px solid #000000;"><a href="https://hahahub.art" style="display:inline-block;padding:16px 32px;font-size:14px;font-weight:900;font-style:italic;text-transform:uppercase;color:#000000;text-decoration:none;">Enter the Vault &rarr;</a></td></tr></table></td></tr>
-  <tr><td style="border-top:1px solid #2a2a2a;padding-top:20px;font-size:11px;color:#777777;line-height:1.6;">HahaHub &mdash; The Laff Exchange · International Comedy Theatre Producers Platform | info@hahahub.art<br>Break a Laffing Leg. 🦵</td></tr>
+  welcome: ({ name }) => ({
+    subject: `Welcome to HahaHub.art. You're a member.`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #FFC80E;padding:32px 40px;">
+  <p style="margin:0"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:6px 0 0;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#FFC80E;font-style:italic">Welcome</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <h1 style="color:#fff;font-size:26px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 24px;letter-spacing:-1px">Hi ${name || 'there'},</h1>
+  <p style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.7;margin:0 0 16px">You're in. You are now a member of HahaHub.art, the international network for theatre comedy producers. We call it the Laff Exchange.</p>
+  <p style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.7;margin:0 0 16px">As a member you can:</p>
+  <table cellpadding="0" cellspacing="0" style="margin:0 0 20px"><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px">Browse the catalog and follow LaffWire</td></tr><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px">Tickle shows from producers in other countries</td></tr><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px">Follow your tickles in Pipeline</td></tr><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px">List your own show</td></tr></table>
+  <p style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.7;margin:0 0 16px">List your first show and you become a Verified Producer automatically. Verified Producers unlock scripts, creators, performance history and the full Studio in My Hub.</p>
+  <a href="https://www.hahahub.art/#upload" style="background:#FFC80E;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">List your show →</a>
+  <p style="color:rgba(255,255,255,0.45);font-size:13px;line-height:1.7;margin:28px 0 0">Questions or ideas? Just reply. I read every email myself.</p>
+  <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:24px 0 2px">Dejan Batoćanin</p>
+  <p style="color:#FFC80E;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin:0">Founder, HahaHub.art</p>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:700;margin:0 0 4px">Break a Laffing Leg. 🦵</p>
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · The Laff Exchange · <a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
 </table>
 </td></tr>
 </table>
-</body>
-</html>`
+</body></html>`
+  }),
+
+  became_verified: ({ name, showTitle }) => ({
+    subject: `You're a Verified Producer on HahaHub.art`,
+    html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+<tr><td style="background:#050505;border-bottom:4px solid #6EC6A0;padding:32px 40px;">
+  <p style="margin:0"><img src="https://hahahub.art/logo-email.png" width="297" alt="HahaHub" style="display:block;border:0;height:auto;max-width:100%"></p>
+  <p style="margin:6px 0 0;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#6EC6A0;font-style:italic">Verified Producer</p>
+</td></tr>
+<tr><td style="background:#0a0a0a;padding:40px;">
+  <h1 style="color:#fff;font-size:26px;font-weight:900;text-transform:uppercase;font-style:italic;margin:0 0 24px;letter-spacing:-1px">Hi ${name || 'there'},</h1>
+  <p style="display:inline-block;border:2px solid #6EC6A0;color:#6EC6A0;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:2px;font-style:italic;padding:6px 12px;margin:0 0 24px">Verified Producer</p>
+  <p style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.7;margin:0 0 16px">Your show ${showTitle ? '&ldquo;' + showTitle + '&rdquo; ' : ''}is live on HahaHub.art. That makes you a Verified Producer.</p>
+  <p style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.7;margin:0 0 16px">What opens up for you now:</p>
+  <table cellpadding="0" cellspacing="0" style="margin:0 0 20px"><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px"><b style="color:#fff">Scripts:</b> read script excerpts across the catalog</td></tr><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px"><b style="color:#fff">Creators:</b> see who is behind each show</td></tr><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px"><b style="color:#fff">Performance history:</b> see where each show has already played</td></tr><tr><td style="color:#FFC80E;font-size:14px;padding:0 10px 8px 0;vertical-align:top">●</td><td style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.6;padding:0 0 8px"><b style="color:#fff">Your full Studio in My Hub:</b> Analytics, Documents, Calculator and HahaFriends</td></tr></table>
+  <p style="color:rgba(255,255,255,0.75);font-size:14px;line-height:1.7;margin:0 0 16px">Your listing carries the Verified smile, so producers abroad know they are dealing with a real theatre producer, and can find your show and tickle you.</p>
+  <a href="https://www.hahahub.art/#subscription" style="background:#FFC80E;color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:12px;border:3px solid #000;font-style:italic">Open My Hub →</a>
+  <p style="color:rgba(255,255,255,0.45);font-size:13px;line-height:1.7;margin:28px 0 0">Questions or ideas? Just reply. I read every email myself.</p>
+  <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin:24px 0 2px">Dejan Batoćanin</p>
+  <p style="color:#FFC80E;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin:0">Founder, HahaHub.art</p>
+</td></tr>
+<tr><td style="background:#050505;border-top:2px solid rgba(255,255,255,0.05);padding:24px 40px;">
+  <p style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:700;margin:0 0 4px">Break a Laffing Leg. 🦵</p>
+  <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0">HahaHub · The Laff Exchange · <a href="https://www.hahahub.art" style="color:rgba(255,255,255,0.2)">hahahub.art</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
   }),
 
 
@@ -630,7 +662,7 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL |
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuaWxndWtteWZ1a2F6d2R1dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTQ2MDksImV4cCI6MjA5MTE5MDYwOX0.KbwZf30tJMdEb_3Zie3UoGA-zJO4Z7zIf9sKYOggSyU';
 const ADMIN_EMAIL = 'bacinhos@gmail.com';
 const ADMIN_ONLY = ['founding_followup', 'founding_invite', 'show_removed', 'membership_on_hold', 'membership_reactivated', 'title_upgrade', 'site_live'];
-const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry_confirmation', 'deal_signed_producer'];
+const SELF_ONLY = ['welcome', 'founding_welcome', 'inquiry_confirmation', 'deal_signed_producer', 'became_verified'];
 const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
 
 // Best-effort per-instance rate limit (per user, per hour)

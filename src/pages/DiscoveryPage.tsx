@@ -6,7 +6,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Page, Show, User } from '../types';
 import Smile from '../components/Smile';
-import { Mascot, TierPill, getTier, isShownTier, isSampleShow, SampleRibbon } from '../components/Mascot';
+import { Mascot, TierPill, getTier, isShownTier, isSampleShow, SampleRibbon, canSeeVerified, VerifiedLock } from '../components/Mascot';
 
 
 interface DiscoveryPageProps {
@@ -132,6 +132,9 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
     if (!selectedShow) return null;
     const isFavorited = user?.favorites.includes(selectedShow.id);
     const isGuest = !user || user.name === "Guest User";
+    // Scripts, creators and performance history: Verified Producers, the show's own producer, and all samples.
+    const fullAccess = canSeeVerified(user) || (!!user && (selectedShow as any)?.user_id === user.id) || isSampleShow(selectedShow);
+    const listShow = () => { setSelectedShowId(null); onNavigate('upload'); };
 
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
@@ -315,6 +318,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 01. CREATIVE ENGINE */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink italic">01. CREATIVE ENGINE</h4>
+                    {!fullAccess ? <VerifiedLock what="See who is behind each show: playwright, director, cast and the creative team." onList={listShow} /> : (<>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-4 md:gap-12">
                       <div className="space-y-6">
                         <div className="flex gap-4">
@@ -377,6 +381,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                          </div>
                       </div>
                     </div>
+                                      </>)}
                   </section>
 
                   {/* 02. FULL PUNCH */}
@@ -442,6 +447,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     )}
 
                     {/* Production Assets Info */}
+                    {fullAccess && (<>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       <div className="border-l-4 border-brand-yellow pl-4 py-2 bg-white/5">
                         <p className="text-[8px] font-black uppercase text-brand-yellow italic">🎵 Music</p>
@@ -520,6 +526,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                         )}
                       </div>
                     </div>
+                    </>)}
                   </section>
 
                   {/* 03. TECHNICAL STACK */}
@@ -569,6 +576,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {/* 03. MARKET PERFORMANCE */}
                   <section className="space-y-8">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">04. MARKET PERFORMANCE</h4>
+                    {!fullAccess ? <VerifiedLock what="See where this show has already played: premiere, performances, audience and awards." onList={listShow} /> : (<>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
                         <div className="bg-brand-surface border-2 border-white/10 p-3 md:p-6 flex items-center justify-between gap-2">
                            <div className="min-w-0"><p className="text-[8px] font-black text-gray-500 uppercase italic">Premiere</p><p className="text-sm md:text-base font-black text-brand-yellow">{selectedShow.premiereDate || 'Not specified'}</p></div>
@@ -599,6 +607,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                        <p className="text-[8px] font-black uppercase text-gray-500 italic">Locations Played</p>
                        <p className="text-sm italic text-gray-300 break-words">{selectedShow.locationsPlayed}</p>
                     </div>}
+                    </>)}
                   </section>
 
                   {/* 04. RIGHTS */}
@@ -632,9 +641,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                   {selectedShow.scriptScenario && (
                     <section className="space-y-4">
                       <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-yellow italic">Script Scenario — 3 Pages in English</h4>
+                      {!fullAccess ? <VerifiedLock what="Read the script excerpt of every show in the catalog." onList={listShow} /> : (
                       <div className="bg-black border-2 border-brand-yellow p-4 md:p-8 overflow-hidden">
                         <pre className="text-white font-mono text-xs md:text-sm leading-relaxed whitespace-pre-wrap break-words overflow-x-hidden">{selectedShow.scriptScenario}</pre>
                       </div>
+                      )}
                     </section>
                   )}
 

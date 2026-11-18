@@ -57,6 +57,25 @@ export const SampleRibbon: React.FC<{ big?: boolean }> = ({ big }) => (
   </div>
 );
 
+// Verified-only content (scripts, creators, performance history, Studio tools).
+export const canSeeVerified = (user: any) =>
+  !!user && (user.isAdmin || user.email === 'bacinhos@gmail.com' || getTier(user) !== 'member');
+
+export const VerifiedLock: React.FC<{ what: string; onList?: () => void }> = ({ what, onList }) => (
+  <div className="border-2 border-dashed border-white/20 bg-white/[0.02] p-6 md:p-8 flex flex-col sm:flex-row sm:items-center gap-5">
+    <Mascot tier="verified" height={52} />
+    <div className="flex-1">
+      <p className="text-[10px] font-black uppercase italic tracking-[0.3em] mb-1" style={{ color: TIERS.verified.text }}>Verified Producers only</p>
+      <p className="text-white/70 font-bold italic leading-relaxed">{what} List your first show and you unlock it automatically.</p>
+    </div>
+    {onList && (
+      <button onClick={onList} className="bg-white text-black px-6 py-3 font-black uppercase italic text-xs tracking-widest hover:bg-brand-pink hover:text-white transition-colors whitespace-nowrap">
+        List your show →
+      </button>
+    )}
+  </div>
+);
+
 // Small pill: mascot + title.
 export const TierPill: React.FC<{ tier: Tier; size?: 'sm' | 'md' }> = ({ tier, size = 'sm' }) => (
   <span

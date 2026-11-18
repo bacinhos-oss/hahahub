@@ -7,6 +7,7 @@ import { Badge, getProfileBadges } from '../components/Badge';
 import DealsPipelinePage from './DealsPipelinePage';
 import Smile from '../components/Smile';
 import { Page, User, Show } from '../types';
+import { canSeeVerified, VerifiedLock } from '../components/Mascot';
 
 interface SubscriptionPageProps {
   onNavigate: (page: Page) => void;
@@ -1284,6 +1285,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
                 ] as {key: string; label: string; badge: number}[]).map(t => (
                   <button key={t.key} onClick={() => setStudioTab(t.key as any)}
                     className={"px-3 py-3 font-black uppercase italic text-xs tracking-widest transition-all whitespace-nowrap flex items-center gap-1.5 border-b-4 -mb-1 " + (studioTab === t.key ? 'border-brand-yellow text-brand-yellow' : 'border-transparent text-white/50 hover:text-white')}>
+                    {t.key !== 'pipeline' && !canSeeVerified(user) && <span className="material-symbols-outlined text-sm">lock</span>}
                     {t.label}
                     {t.badge > 0 && <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full bg-brand-pink text-white">{t.badge}</span>}
                   </button>
@@ -1291,10 +1293,14 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               </div>
               <div style={{ minHeight: '600px' }}>
                 {studioTab === 'pipeline' && <DealsPipelinePage user={user} onNavigate={onNavigate} />}
+                {studioTab !== 'pipeline' && !canSeeVerified(user) ? (
+                  <VerifiedLock what="Analytics, Documents, HahaFriends and the Calculator are part of the full Studio." onList={() => onNavigate('upload')} />
+                ) : (<>
                 {studioTab === 'analytics' && <ProducerStudio user={user} shows={shows} initialTab='dashboard' hideHeader hideTabs />}
                 {studioTab === 'contracts' && <ProducerStudio user={user} shows={shows} initialTab='contracts' hideHeader hideTabs />}
                 {studioTab === 'contacts' && <ProducerStudio user={user} shows={shows} initialTab='contacts' hideHeader hideTabs />}
                 {studioTab === 'calculator' && <ProducerStudio user={user} shows={shows} initialTab='calculator' hideHeader hideTabs />}
+                </>)}
               </div>
             </section>
             )}
