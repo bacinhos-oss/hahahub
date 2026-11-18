@@ -17,6 +17,20 @@ interface Invitation {
   created_at?: string;
 }
 
+const timeSince = (iso?: string | null) => {
+  if (!iso) return 'never';
+  const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (m < 60) return m <= 1 ? 'just now' : m + ' min ago';
+  const h = Math.floor(m / 60); if (h < 24) return h + ' h ago';
+  const d = Math.floor(h / 24); if (d < 30) return d === 1 ? 'yesterday' : d + ' days ago';
+  const mo = Math.floor(d / 30); return mo < 12 ? mo + ' mo ago' : Math.floor(mo / 12) + ' y ago';
+};
+const activeColor = (iso?: string | null) => {
+  if (!iso) return 'text-brand-pink font-black';
+  const d = (Date.now() - new Date(iso).getTime()) / 86400000;
+  return d < 7 ? 'text-brand-cyan font-black' : d < 30 ? 'text-brand-yellow font-black' : 'text-white/40';
+};
+
 type InvitationDuration = '7 Days' | '1 Month' | '1 Year' | 'Lifetime';
 
 interface AdminPageProps {
@@ -85,7 +99,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
   const loadUsers = async () => {
     setLoadingUsers(true);
     const { data } = await supabase.from('profiles').select('id, name, email, is_paid, is_verified, is_founding, suspended, member_tier, uploaded_show_ids, subscription_expiry, user_type').order('created_at', { ascending: false });
-    setUsers(data || []);
+    const seen: Record<string, { last: string | null; joined: string | null }> = {};
+    let seenOk = false;
+    try {
+      const { data: ls, error: lsErr } = await supabase.rpc('admin_last_seen');
+      seenOk = !lsErr;
+      (ls || []).forEach((r: any) => { seen[r.id] = { last: r.last_sign_in_at, joined: r.created_at }; });
+    } catch (e) { console.error(e); }
+    setUsers((data || []).map((u: any) => ({ ...u, last_seen: seenOk ? (seen[u.id]?.last || null) : undefined, joined_at: seen[u.id]?.joined || null })));
     setLoadingUsers(false);
   };
 
@@ -359,6 +380,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
                       <p className="text-white/30 text-xs italic truncate">{u.email}</p>
                       <div className="flex gap-3 mt-1 flex-wrap">
                         <span className="text-white/20 text-[9px]">{u.uploaded_show_ids?.length || 0} shows</span>
+                        {u.last_seen !== undefined && <span className="text-white/30 text-[9px] italic" title={u.last_seen ? new Date(u.last_seen).toLocaleString('sl-SI') : ''}>Last active: <span className={activeColor(u.last_seen)}>{timeSince(u.last_seen)}</span></span>}
+                        {u.joined_at && <span className="text-white/20 text-[9px] italic">Joined {new Date(u.joined_at).toLocaleDateString('sl-SI')}</span>}
                       </div>
                     </div>
                     <span className="flex-shrink-0"><TierPill tier={getTier(u)} size="md" /></span>
