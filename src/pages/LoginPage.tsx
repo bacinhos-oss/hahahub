@@ -309,7 +309,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess, onBack, setCurrentUser, adminMo
           )}
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Email Address</label>
-            <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="COMEDY@PRODUCER.COM" />
+            <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-100 border-4 border-black px-4 py-4 font-bold outline-none focus:border-brand-cyan transition-all" placeholder="you@theatre.com" />
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 text-gray-500 italic">Password</label>

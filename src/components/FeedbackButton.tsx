@@ -45,7 +45,7 @@ const FeedbackButton: React.FC = () => {
       <button
         onClick={() => setOpen(true)}
         className="hidden md:flex fixed bottom-6 right-6 z-40 bg-brand-surface border-2 border-white/20 hover:border-brand-yellow text-white/40 hover:text-brand-yellow transition-all px-3 py-2 font-black uppercase italic text-[10px] tracking-widest items-center gap-1.5 shadow-lg"
-        style={{ display: open ? 'none' : 'flex' }}
+        style={open ? { display: 'none' } : undefined}
       >
         <span className="material-symbols-outlined text-sm">bug_report</span>
         Feedback

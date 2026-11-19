@@ -95,7 +95,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
               </button>
             </div>
           ) : (
-            <button onClick={() => onNavigate('login')} className="bg-white text-black font-black px-6 py-2 text-xs md:text-sm uppercase tracking-widest italic hover:bg-brand-pink hover:text-white transition-colors">
+            <button onClick={() => onNavigate('login')} className="bg-white text-black font-black px-4 md:px-6 py-2 text-xs md:text-sm uppercase tracking-widest italic whitespace-nowrap hover:bg-brand-pink hover:text-white transition-colors">
               Sign in
             </button>
           )}

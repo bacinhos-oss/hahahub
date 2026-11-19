@@ -957,7 +957,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
       {renderInquiryModal()}
       <Navigation activePage="discovery" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       
-      <main className="pt-32 pb-20 px-6 md:px-12 flex-1">
+      <main className="pt-32 pb-20 px-4 md:px-12 flex-1">
         <div className="max-w-7xl mx-auto space-y-16">
           <section className="space-y-8 text-white">
 
@@ -982,7 +982,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search genre, country, cast, keywords..."
-                    className="flex-1 bg-transparent border-none text-white text-xs outline-none placeholder:text-white/20 py-2.5 pr-2"
+                    className="flex-1 min-w-0 bg-transparent border-none text-white text-xs outline-none placeholder:text-white/20 py-2.5 pr-2"
                   />
                   {searchQuery ? (
                     <button onClick={() => setSearchQuery('')} className="flex-shrink-0 text-white/40 hover:text-brand-pink transition-colors pr-2">
@@ -1065,7 +1065,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               <div className="space-y-1">
                 <label className="hidden md:block text-[8px] font-black uppercase text-white/30 italic">Sort</label>
                 <div className="flex items-center gap-2 bg-brand-surface border-2 border-white/20 p-2">
-                  <span className="material-symbols-outlined text-brand-cyan text-sm">sort</span>
+                  <span className="hidden md:inline material-symbols-outlined text-brand-cyan text-sm">sort</span>
                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent border-none text-white font-black uppercase italic text-xs focus:ring-0 p-0 cursor-pointer">
                     <option value="Newest" className="bg-brand-black">Newest</option>
                     <option value="Popular" className="bg-brand-black">Most Liked</option>
@@ -1077,10 +1077,10 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               {/* Tickle List */}
               <div className="space-y-1">
                 <label className="hidden md:block text-[8px] font-black uppercase text-white/30 italic">&nbsp;</label>
-                <button onClick={() => setShowShortlistOnly(v => !v)}
+                <button onClick={() => setShowShortlistOnly(v => !v)} title="Tickle List" aria-label="Tickle List"
                   className={`flex items-center gap-2 px-3 py-2 border-2 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}>
                   <span className="material-symbols-outlined text-sm" style={{fontVariationSettings:"'FILL' 1"}}>touch_app</span>
-                  Tickle List {shortlist.length > 0 && <span>({shortlist.length})</span>}
+                  <span className="hidden sm:inline">Tickle List</span>{shortlist.length > 0 && <span>({shortlist.length})</span>}
                 </button>
               </div>
             </div>
