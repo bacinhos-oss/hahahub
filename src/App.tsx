@@ -239,6 +239,11 @@ const App: React.FC = () => {
 
   const handleUpdateStats = async (showId: string, type: 'view' | 'inquiry') => {
     if (!showId) return
+    // A producer looking at their own show, or the admin browsing, is not a real view.
+    if (type === 'view') {
+      const sh: any = shows.find(s => s.id === showId)
+      if (currentUser?.isAdmin || currentUser?.email === 'bacinhos@gmail.com' || (sh && currentUser?.id && sh.user_id === currentUser.id)) return
+    }
     // Optimistic update UI
     setShows(prev => prev.map(s => {
       if (s.id !== showId) return s

@@ -225,10 +225,12 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
         const totalInq = analyticsInquiries.length > 0
           ? analyticsInquiries.length
           : myShows.reduce((s: number, sh: any) => s + (sh.inquiriesCount || 0), 0);
-        const conversion = totalViews > 0 ? Math.round((totalInq / totalViews) * 100) : 0;
+        const pct = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a / b) * 100)) : 0);
+        const conversion = pct(totalInq, totalViews);
+        const isSigned = (i: any) => ['signed', 'royalties', 'completed'].includes(i.deal_status || '');
         const activeDeals = analyticsInquiries.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
-        const signedDeals = analyticsInquiries.filter((i: any) => ['signed','royalties','completed'].includes(i.deal_status || '')).length;
-        const totalRoyaltiesEarned = sellerReports.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0);
+        const signedDeals = analyticsInquiries.filter(isSigned).length;
+        const advancesAgreed = analyticsInquiries.filter(isSigned).reduce((s: number, i: any) => s + Number(i.advance_amount || 0), 0);
 
         // ── WEEKLY VIEWS CHART (last 8 weeks) ──
         const now = new Date();
@@ -261,7 +263,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
         // ── TOP TERRITORIES ──
         const terrCount: Record<string, number> = {};
-        analyticsInquiries.forEach((i: any) => { if (i.territory) terrCount[i.territory] = (terrCount[i.territory] || 0) + 1; });
+        analyticsInquiries.filter(isSigned).forEach((i: any) => { if (i.territory) terrCount[i.territory] = (terrCount[i.territory] || 0) + 1; });
         const topTerritories = Object.entries(terrCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
         const maxTerrCount = topTerritories[0]?.[1] || 1;
 
@@ -276,18 +278,18 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
             {/* TOP KPI CARDS */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Total Views', value: totalViews.toLocaleString(), color: 'text-brand-yellow', sub: 'all time', icon: 'visibility' },
-                { label: 'Tickles', value: totalInq.toString(), color: 'text-brand-pink', sub: 'inquiries received', icon: 'touch_app' },
-                { label: 'Conversion', value: conversion + '%', color: 'text-brand-cyan', sub: 'views → inquiries', icon: 'trending_up' },
-                { label: 'Royalties', value: '€' + totalRoyaltiesEarned.toLocaleString(), color: 'text-green-400', sub: 'earned to date', icon: 'payments' },
+                { label: 'Views', value: totalViews.toLocaleString(), color: 'text-brand-yellow', sub: 'by other members and guests', icon: 'visibility' },
+                { label: 'Tickles', value: totalInq.toString(), color: 'text-brand-pink', sub: `received · ${conversion}% of views`, icon: 'touch_app' },
+                { label: 'Signed deals', value: signedDeals.toString(), color: 'text-green-400', sub: activeDeals > 0 ? `${activeDeals} more in progress` : 'from your Pipeline', icon: 'handshake' },
+                { label: 'Advances', value: '€' + advancesAgreed.toLocaleString(), color: 'text-brand-cyan', sub: 'agreed in signed deals', icon: 'payments' },
               ].map((s, i) => (
                 <div key={i} className="border-2 border-white/10 p-4 hover:border-white/20 transition-all">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-[8px] font-black uppercase italic text-white/30">{s.label}</p>
+                    <p className="text-[9px] font-black uppercase italic text-white/50">{s.label}</p>
                     <span className="material-symbols-outlined text-sm text-white/15">{s.icon}</span>
                   </div>
                   <p className={"text-3xl font-black " + s.color}>{s.value}</p>
-                  <p className="text-[8px] text-white/20 mt-1">{s.sub}</p>
+                  <p className="text-[10px] text-white/45 mt-1 leading-snug">{s.sub}</p>
                 </div>
               ))}
             </div>
@@ -298,17 +300,17 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               <div className="flex items-end gap-0">
                 {[
                   { label: 'Views', value: totalViews, color: 'bg-brand-yellow', pct: 100 },
-                  { label: 'Inquiries', value: totalInq, color: 'bg-brand-pink', pct: totalViews > 0 ? Math.round((totalInq / totalViews) * 100) : 0 },
-                  { label: 'Active', value: activeDeals, color: 'bg-brand-cyan', pct: totalInq > 0 ? Math.round((activeDeals / totalInq) * 100) : 0 },
-                  { label: 'Signed', value: signedDeals, color: 'bg-green-500', pct: totalInq > 0 ? Math.round((signedDeals / totalInq) * 100) : 0 },
+                  { label: 'Tickles', value: totalInq, color: 'bg-brand-pink', pct: pct(totalInq, totalViews) },
+                  { label: 'In progress', value: activeDeals, color: 'bg-brand-cyan', pct: pct(activeDeals, totalInq) },
+                  { label: 'Signed', value: signedDeals, color: 'bg-green-500', pct: pct(signedDeals, totalInq) },
                 ].map((f, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-2">
                     <p className="text-sm font-black text-white">{f.value}</p>
                     <div className="w-full flex justify-center">
                       <div className={f.color + " transition-all"} style={{ width: '80%', height: Math.max(f.pct * 0.6, 4) + 'px', minHeight: '4px' }} />
                     </div>
-                    <p className="text-[8px] font-black uppercase italic text-white/30">{f.label}</p>
-                    {i > 0 && <p className="text-[8px] text-white/20">{f.pct}%</p>}
+                    <p className="text-[9px] font-black uppercase italic text-white/50">{f.label}</p>
+                    {i > 0 && <p className="text-[9px] text-white/40">{f.pct}%</p>}
                   </div>
                 ))}
               </div>
@@ -319,7 +321,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
               {/* WEEKLY VIEWS CHART */}
               <div className="border-2 border-white/10 p-5">
                 <p className="text-[9px] font-black uppercase tracking-widest text-brand-yellow italic mb-4">
-                  Weekly Views — Last 8 Weeks
+                  Weekly views, last 8 weeks
                   {showViews.length === 0 && <span className="text-white/20 normal-case font-normal ml-2">(tracking starts now)</span>}
                 </p>
                 <div className="flex items-end gap-1.5 h-24">
@@ -338,7 +340,7 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
               {/* MONTHLY INQUIRIES */}
               <div className="border-2 border-white/10 p-5">
-                <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Monthly Inquiries — Last 6 Months</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Tickles per month, last 6 months</p>
                 <div className="flex items-end gap-1.5 h-24">
                   {months.map((m, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-1">
@@ -355,9 +357,9 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
               {/* TOP TERRITORIES */}
               <div className="border-2 border-white/10 p-5">
-                <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan italic mb-4">Top Territories</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-cyan italic mb-4">Where your deals are</p>
                 {topTerritories.length === 0 ? (
-                  <p className="text-white/20 text-xs italic">No territory data yet.</p>
+                  <p className="text-white/30 text-xs italic leading-relaxed">Countries appear here when you mark a deal as Signed in Pipeline and enter its territory.</p>
                 ) : (
                   <div className="space-y-2">
                     {topTerritories.map(([territory, count]) => (
@@ -377,9 +379,9 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
 
               {/* PACKAGE SPLIT */}
               <div className="border-2 border-white/10 p-5">
-                <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Package Interest</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-pink italic mb-4">Which package they ask for</p>
                 {totalInq === 0 ? (
-                  <p className="text-white/20 text-xs italic">No inquiries yet.</p>
+                  <p className="text-white/30 text-xs italic">No tickles yet.</p>
                 ) : (
                   <div className="space-y-4">
                     <div className="space-y-2">
@@ -393,14 +395,14 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-[9px] font-black uppercase text-brand-yellow">📄 Script Only</span>
+                        <span className="text-[9px] font-black uppercase text-brand-yellow">📄 The Script</span>
                         <span className="text-[9px] font-black text-white">{scriptCount} · {100 - fpPct}%</span>
                       </div>
                       <div className="w-full bg-white/5 h-4">
                         <div className="bg-brand-yellow h-4 transition-all" style={{ width: (100 - fpPct) + '%' }} />
                       </div>
                     </div>
-                    <p className="text-[8px] text-white/20 italic">{totalInq} total inquiries</p>
+                    <p className="text-[8px] text-white/20 italic">{totalInq} tickles in total</p>
                   </div>
                 )}
               </div>
@@ -416,15 +418,12 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                 </div>
               ) : myShows.map((show: any) => {
                 const showInq = analyticsInquiries.filter((i: any) => i.show_id === show.id);
-                const showRep = sellerReports.filter((r: any) => r.show_id === show.id);
-                const showViewsData = showViews.filter((v: any) => v.show_id === show.id);
-                const royaltiesShow = showRep.reduce((s: number, r: any) => s + Number(r.royalty_amount || 0), 0);
-                const audienceShow = showRep.reduce((s: number, r: any) => s + Number(r.tickets || 0), 0);
                 const viewsShow = show.viewsCount || 0;
-                const convShow = viewsShow > 0 ? Math.round((showInq.length / viewsShow) * 100) : 0;
-                const signed = showInq.filter((i: any) => ['signed','royalties','completed'].includes(i.deal_status || '')).length;
+                const convShow = pct(showInq.length, viewsShow);
+                const signed = showInq.filter(isSigned).length;
+                const advancesShow = showInq.filter(isSigned).reduce((s: number, i: any) => s + Number(i.advance_amount || 0), 0);
                 const active = showInq.filter((i: any) => ['contacted','negotiating','contract_sent'].includes(i.deal_status || '')).length;
-                const territories = [...new Set(showInq.map((i: any) => i.territory).filter(Boolean))] as string[];
+                const territories = [...new Set(showInq.filter(isSigned).map((i: any) => i.territory).filter(Boolean))] as string[];
                 return (
                   <div key={show.id} className="border-2 border-white/10 hover:border-white/20 transition-all mb-3">
                     <div className="flex items-center justify-between gap-4 px-5 py-3 border-b border-white/10">
@@ -443,21 +442,21 @@ const ProducerStudio: React.FC<ProducerStudioProps> = ({ user, shows, initialTab
                     <div className="grid grid-cols-3 md:grid-cols-6 divide-x divide-white/10">
                       {[
                         { label: 'Views', value: viewsShow.toLocaleString(), color: 'text-brand-yellow' },
-                        { label: 'Inquiries', value: showInq.length, color: 'text-brand-pink' },
-                        { label: 'Conv.', value: convShow + '%', color: 'text-brand-cyan' },
-                        { label: 'Perfs.', value: showRep.length, color: 'text-white' },
-                        { label: 'Audience', value: audienceShow.toLocaleString(), color: 'text-white' },
-                        { label: 'Royalties', value: '€' + royaltiesShow.toLocaleString(), color: 'text-brand-yellow' },
+                        { label: 'Tickles', value: showInq.length, color: 'text-brand-pink' },
+                        { label: 'Of views', value: convShow + '%', color: 'text-brand-cyan' },
+                        { label: 'In progress', value: active, color: 'text-white' },
+                        { label: 'Signed', value: signed, color: 'text-green-400' },
+                        { label: 'Advances', value: '€' + advancesShow.toLocaleString(), color: 'text-brand-yellow' },
                       ].map((s, i) => (
                         <div key={i} className="p-3 text-center">
-                          <p className="text-[7px] font-black uppercase italic text-white/25 mb-1">{s.label}</p>
+                          <p className="text-[8px] font-black uppercase italic text-white/45 mb-1">{s.label}</p>
                           <p className={"text-lg font-black " + s.color}>{s.value}</p>
                         </div>
                       ))}
                     </div>
                     {territories.length > 0 && (
                       <div className="px-5 py-2 border-t border-white/10 flex items-center gap-2 flex-wrap">
-                        <p className="text-[8px] font-black uppercase italic text-white/20">From:</p>
+                        <p className="text-[8px] font-black uppercase italic text-white/20">Signed in:</p>
                         {territories.map((t: string) => <span key={t} className="text-[8px] font-black uppercase border border-white/15 text-white/40 px-1.5 py-0.5">{t}</span>)}
                       </div>
                     )}
