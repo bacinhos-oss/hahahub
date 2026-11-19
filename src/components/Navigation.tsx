@@ -61,9 +61,10 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
         {/* LOGO */}
         <button
           onClick={() => go(user ? 'discovery' : 'landing')}
-          className="flex flex-col items-start hover:scale-105 transition-transform"
+          className="flex flex-col items-start hover:scale-105 transition-transform min-w-0 mr-3"
         >
-          <Logo height={34} className="md:hidden" />
+          <Logo height={28} className="min-[360px]:hidden" />
+          <Logo height={34} className="hidden min-[360px]:block md:hidden" />
           <Logo height={50} className="hidden md:block" />
         </button>
 
@@ -101,21 +102,18 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           )}
         </div>
 
-        {/* MOBILE: user indicator + hamburger */}
-        <div className="flex lg:hidden items-center gap-3">
+        {/* MOBILE: photo + title mascot + hamburger (name and title are inside the menu) */}
+        <div className="flex lg:hidden items-center gap-3 flex-shrink-0">
           {user && (
-            <div className="flex items-center gap-2">
+            <button onClick={() => go('subscription')} className="flex items-center gap-2" title={`${user.name} · ${TIERS[tier].label}`}>
               <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={tier} size={30} />
-              <div className="text-left hidden min-[380px]:block">
-                <p className="text-[10px] font-black text-white italic">{user.name}</p>
-                <p className="text-[8px] font-black uppercase" style={{ color: TIERS[tier].text }}>{TIERS[tier].label}</p>
-              </div>
               <Mascot tier={tier} height={26} />
-            </div>
+            </button>
           )}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="w-10 h-10 flex flex-col items-center justify-center gap-1.5 border-2 border-white"
+            className="w-10 h-10 flex-shrink-0 flex flex-col items-center justify-center gap-1.5 border-2 border-white"
+            aria-label="Menu"
           >
             <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
             <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? 'opacity-0' : ''}`}></span>
@@ -127,6 +125,16 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
       {/* MOBILE MENU */}
       {menuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-brand-black px-6 py-8 space-y-6 animate-in slide-in-from-top-2">
+          {user && (
+            <button onClick={() => go('subscription')} className="w-full flex items-center gap-4 pb-6 border-b-2 border-white/10 text-left">
+              <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={tier} size={48} />
+              <span className="min-w-0 flex-1">
+                <span className="block text-base font-black italic text-white truncate">{user.name}</span>
+                <span className="block text-[10px] font-black uppercase tracking-widest" style={{ color: TIERS[tier].text }}>{TIERS[tier].label}</span>
+              </span>
+              <Mascot tier={tier} height={34} />
+            </button>
+          )}
           <div className="flex flex-col gap-6">
             {mobileBtn('discovery', 'CATALOG', 'yellow')}
             {user && mobileBtn('wire', 'LAFFWIRE', 'pink')}
