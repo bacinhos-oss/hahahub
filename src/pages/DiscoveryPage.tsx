@@ -68,6 +68,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
   const [filterCountry, setFilterCountry] = useState('All');
   const [filterCast, setFilterCast] = useState('All');
   const [filterLanguage, setFilterLanguage] = useState('All');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Newest');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -85,6 +86,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
   const allLanguages = useMemo(() => ['All', ...new Set(shows.map(s => (s.language || '').trim()).filter(Boolean))].sort(), [shows]);
   const filtersActive = filterGenre !== 'All' || filterCountry !== 'All' || filterCast !== 'All' || filterLanguage !== 'All' || !!searchQuery;
+  const activeFilterCount = [filterGenre, filterCountry, filterCast, filterLanguage].filter(v => v !== 'All').length;
   const clearFilters = () => { setFilterGenre('All'); setFilterCountry('All'); setFilterCast('All'); setFilterLanguage('All'); setSearchQuery(''); };
   const allCountries = useMemo(() => ['All', ...new Set(shows.map(s => s.location))].sort(), [shows]);
 
@@ -970,7 +972,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
             {/* SEARCH + FILTERS — ONE ROW */}
             <div className="flex flex-wrap items-end gap-3">
               {/* Stefunny Search */}
-              <div className="relative flex-1 min-w-[200px] max-w-[480px]">
+              <div className="relative w-full md:w-auto md:flex-1 md:min-w-[200px] md:max-w-[480px]">
                 <div className="flex items-center gap-2 bg-brand-surface border-2 border-white/20 hover:border-brand-cyan/60 focus-within:border-brand-cyan transition-all">
                   <div className="flex-shrink-0 px-3 py-2.5 bg-brand-cyan/10 border-r border-white/10 flex items-center justify-center">
                     <span className="font-black text-brand-cyan text-[8px] uppercase italic whitespace-nowrap tracking-widest">Miss Stefunny</span>
@@ -997,10 +999,18 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 )}
               </div>
 
+              {/* Phones: filters fold away behind one button */}
+              <button onClick={() => setFiltersOpen(v => !v)}
+                className={`md:hidden self-end flex items-center gap-2 px-3 py-2 border-2 font-black uppercase text-xs italic transition-all ${filtersOpen || activeFilterCount ? 'border-white text-white' : 'border-white/20 text-white/60'}`}>
+                <span className="material-symbols-outlined text-sm">tune</span>
+                Filters{activeFilterCount > 0 && <span className="text-brand-yellow">({activeFilterCount})</span>}
+              </button>
+
+              <div className={`${filtersOpen ? 'grid' : 'hidden'} order-last w-full grid-cols-2 gap-3 md:order-none md:contents`}>
               {/* Comedy Type */}
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-white/30 italic block">Comedy Type</label>
-                <select value={filterGenre} onChange={(e) => setFilterGenre(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-pink italic">
+                <select value={filterGenre} onChange={(e) => setFilterGenre(e.target.value)} className="w-full md:w-auto bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-pink italic">
                   <option value="All">All Types</option>
                   <option value="Comedy">Comedy (All)</option>
                   <optgroup label="── Subgenres ──">
@@ -1022,7 +1032,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               {/* Origin Market */}
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-white/30 italic block">Origin Market</label>
-                <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-cyan italic">
+                <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="w-full md:w-auto bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-cyan italic">
                   {allCountries.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
@@ -1030,7 +1040,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               {/* Language */}
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-white/30 italic block">Language</label>
-                <select value={filterLanguage} onChange={(e) => setFilterLanguage(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-yellow italic">
+                <select value={filterLanguage} onChange={(e) => setFilterLanguage(e.target.value)} className="w-full md:w-auto bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-yellow italic">
                   {allLanguages.map(l => <option key={l} value={l}>{l === 'All' ? 'All Languages' : l}</option>)}
                 </select>
               </div>
@@ -1038,7 +1048,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               {/* Cast Size */}
               <div className="space-y-1">
                 <label className="text-[8px] font-black uppercase text-white/30 italic block">Cast Size</label>
-                <select value={filterCast} onChange={(e) => setFilterCast(e.target.value)} className="bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-yellow italic">
+                <select value={filterCast} onChange={(e) => setFilterCast(e.target.value)} className="w-full md:w-auto bg-brand-black border-2 border-white/20 text-white font-black text-xs uppercase p-2 focus:border-brand-yellow italic">
                   <option value="All">All Sizes</option>
                   <option value="Solo/Duo">Solo / Duo (1-2)</option>
                   <option value="Small (3-5)">Small (3-5)</option>
@@ -1049,10 +1059,11 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
               {filtersActive && (
                 <button onClick={clearFilters} className="self-end text-[10px] font-black uppercase italic text-brand-pink border-2 border-brand-pink/40 px-3 py-2 hover:bg-brand-pink hover:text-white transition-all">✕ Clear filters</button>
               )}
+              </div>
 
               {/* Sort */}
               <div className="space-y-1">
-                <label className="text-[8px] font-black uppercase text-white/30 italic block">Sort</label>
+                <label className="hidden md:block text-[8px] font-black uppercase text-white/30 italic">Sort</label>
                 <div className="flex items-center gap-2 bg-brand-surface border-2 border-white/20 p-2">
                   <span className="material-symbols-outlined text-brand-cyan text-sm">sort</span>
                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-transparent border-none text-white font-black uppercase italic text-xs focus:ring-0 p-0 cursor-pointer">
@@ -1065,7 +1076,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
 
               {/* Tickle List */}
               <div className="space-y-1">
-                <label className="text-[8px] font-black uppercase text-white/30 italic block">&nbsp;</label>
+                <label className="hidden md:block text-[8px] font-black uppercase text-white/30 italic">&nbsp;</label>
                 <button onClick={() => setShowShortlistOnly(v => !v)}
                   className={`flex items-center gap-2 px-3 py-2 border-2 font-black uppercase text-xs italic transition-all ${showShortlistOnly ? 'bg-brand-yellow text-black border-black' : 'bg-transparent text-white/50 border-white/20 hover:border-white hover:text-white'}`}>
                   <span className="material-symbols-outlined text-sm" style={{fontVariationSettings:"'FILL' 1"}}>touch_app</span>

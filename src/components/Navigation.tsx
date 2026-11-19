@@ -102,12 +102,11 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           )}
         </div>
 
-        {/* MOBILE: photo + title mascot + hamburger (name and title are inside the menu) */}
-        <div className="flex lg:hidden items-center gap-3 flex-shrink-0">
+        {/* MOBILE: photo (ring = title colour) + hamburger. Name, title and mascot are inside the menu. */}
+        <div className="flex lg:hidden items-center gap-4 flex-shrink-0">
           {user && (
-            <button onClick={() => go('subscription')} className="flex items-center gap-2" title={`${user.name} · ${TIERS[tier].label}`}>
-              <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={tier} size={30} />
-              <Mascot tier={tier} height={26} />
+            <button onClick={() => go('subscription')} className="flex" title={`${user.name} · ${TIERS[tier].label}`}>
+              <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={tier} size={34} />
             </button>
           )}
           <button
