@@ -15,10 +15,21 @@ const FAQ_CATEGORIES = [
     icon: 'rocket_launch',
     color: 'brand-yellow',
     items: [
-      { q: 'Who is HahaHub for?', a: 'Theater producers, venue programmers, festival directors, and co-production houses. Whether you want to license a show from another country or sell your own production internationally — HahaHub is your direct route.' },
-      { q: 'What is The Laff Exchange?', a: 'The Laff Exchange is our name for the HahaHub catalog — a producer-to-producer marketplace where comedy theatre rights are bought and sold directly, without agents or middlemen.' },
-      { q: 'Do I need to register to browse?', a: 'You can see the catalog in preview mode as a guest, but full dossiers, contact info and uploads need a free account.' },
-      { q: 'Is HahaHub free?', a: 'Yes. Joining is free and needs no credit card. If paid tools are introduced later, we will tell you in advance. The first founding producers keep free access for life.' },
+      { q: 'Who is HahaHub for?', a: 'Independent and private theatres, production companies, producers, venue programmers and festival directors who work with comedy. Whether you want to license a show from another country or bring your own production abroad, HahaHub is your direct route.' },
+      { q: 'What is The Laff Exchange?', a: 'The Laff Exchange is our name for how HahaHub works: producers showcase their comedies, discover new titles and license rights to each other directly, without agents or middlemen.' },
+      { q: 'Do I need to register to browse?', a: 'You can see the catalog as a guest. To open full dossiers, send a tickle, post on LaffWire or list a show, you need a free membership.' },
+      { q: 'Is HahaHub free?', a: 'Yes. Membership is free and needs no credit card. HahaHub takes no commission on your deals. If paid tools are introduced later, we will tell you in advance. Founding members keep free access for life.' },
+    ]
+  },
+  {
+    category: 'Membership',
+    icon: 'workspace_premium',
+    color: 'brand-cyan',
+    items: [
+      { q: 'What is a Verified Producer?', a: 'A member who has listed at least one show. It happens automatically when you publish your first show, and you get an email. Verified Producers can read script excerpts, see creative teams and where shows have played, and use the full Studio in My Hub.' },
+      { q: 'What do the titles and colours mean?', a: 'Every member has a title, shown as a coloured smile and a ring around the profile photo. Grey is Member, green is Verified Producer, pink is Special Member (very important to the HahaHub community) and gold is Founding (built HahaHub with us from day one).' },
+      { q: 'What is the difference between The Script and Full Punch?', a: 'With The Script you get the script and the right to perform it, and you make your own production: your own director, set, music and costumes. With Full Punch you also get the know-how of the original production, such as the director\'s book, music, set plans and costumes, so you can restage the show the way it plays at home.' },
+      { q: 'Can I edit or delete my LaffWire posts?', a: 'Yes. Under your own post you will find Edit and Delete.' },
     ]
   },
   {
@@ -26,9 +37,9 @@ const FAQ_CATEGORIES = [
     icon: 'gavel',
     color: 'brand-pink',
     items: [
-      { q: 'How does licensing work?', a: 'You find a show, click "Tickle It", and contact the rights holder directly. HahaHub provides the discovery tools and contract templates — the deal is between you and the producer. No commission.' },
-      { q: 'Is HahaHub a rights agency?', a: 'No. We are a producer-to-producer The Laff Exchange. We do not represent any shows, take commissions, or act as an intermediary in licensing deals.' },
-      { q: 'What rights are available?', a: 'Each show specifies its own rights package — exclusive or non-exclusive, territory-by-territory, royalty-based or flat fee. All terms are set by the originating producer.' },
+      { q: 'How does licensing work?', a: 'You find a show, choose a package and click "Tickle It". The rights holder gets your message and replies to you directly. HahaHub gives you the tools: the catalog, Pipeline and contract templates in Documents. The licence is signed between you and the producer, with no commission.' },
+      { q: 'Is HahaHub a rights agency?', a: 'No. HahaHub is a producer-to-producer network. We do not represent any shows, take commissions or act as an intermediary in licensing deals.' },
+      { q: 'What rights are available?', a: 'Each show sets its own terms: deal type (licence, option or co-production), exclusivity, territories, royalty and advance. All terms are set by the producer who owns the rights.' },
       { q: 'Are contract templates included?', a: 'Yes. Members get access to a library of contract templates covering performance rights, touring rights, translation rights, and co-production agreements. These are provided for reference and do not constitute legal advice.' },
     ]
   },
@@ -37,9 +48,9 @@ const FAQ_CATEGORIES = [
     icon: 'upload',
     color: 'brand-yellow',
     items: [
-      { q: 'Can I list my own show?', a: 'Yes. Every member can upload shows with full commercial data — cast size, royalty terms, territories, script scenario in English. Your show is visible to producers worldwide.' },
+      { q: 'Can I list my own show?', a: 'Yes. Every member can list shows. Your first show makes you a Verified Producer automatically, and the show is visible to producers worldwide.' },
       { q: 'What do I need to upload a show?', a: 'To publish you need only the essentials: English title, playwright, original language, country, genre, synopsis in English, cast size, running time, copyright holder, a licensing package and a poster. About 5 minutes. Everything else (creative team, script excerpt, staging, track record) is optional and can be added later in My Hub, but it helps producers abroad decide faster.' },
-      { q: 'What languages are supported?', a: 'The Laff Exchange is in English. Shows can be in any language — we require a 3-page script scenario in English for every listing.' },
+      { q: 'What languages are supported?', a: 'HahaHub is in English, so the title and synopsis need to be in English. The show itself can be in any language. A script excerpt is optional and can be in any language, though English works best. Shows with an excerpt get a badge in the catalog.' },
       { q: 'Can I upload a show that is not yet produced?', a: 'Currently HahaHub focuses on shows that have been produced and have performance history. We may expand to pre-production in the future.' },
     ]
   },
@@ -48,9 +59,9 @@ const FAQ_CATEGORIES = [
     icon: 'settings',
     color: 'brand-pink',
     items: [
-      { q: 'What is STEFUNNY?', a: 'STEFUNNY — Tickle Finder is our smart search. Type anything — genre, country, cast size, humor type, keywords — and STEFUNNY finds matching shows across the full catalog.' },
-      { q: 'What is The Dossier?', a: 'The Dossier is a downloadable press kit for each show — a branded HTML/PDF document with full production specs, rights terms, transparency score, and contact info. Available to members.' },
-      { q: 'Is my data safe?', a: 'Yes. HahaHub is built on Supabase with row-level security. Your uploaded show data and contact information are never shared with third parties.' },
+      { q: 'What is STEFUNNY?', a: 'STEFUNNY, the Tickle Finder, is our smart search. Type anything (genre, country, cast size, type of humour, keywords) and STEFUNNY finds matching shows across the whole catalog.' },
+      { q: 'What is The Dossier?', a: 'The Dossier is a downloadable PDF for each show with the synopsis, staging, rights and licensing packages. Verified Producers also see the creative team, script excerpt and track record.' },
+      { q: 'Is my data safe?', a: 'Yes. Your data is stored in the EU with row-level security, and is never sold or shared with third parties. Scripts, creative teams and track records are visible only to Verified Producers.' },
       { q: 'How do I contact support?', a: 'Email us at info@hahahub.art. We usually reply within 1 business day.' },
     ]
   },
