@@ -63,8 +63,7 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           onClick={() => go(user ? 'discovery' : 'landing')}
           className="flex flex-col items-start hover:scale-105 transition-transform min-w-0 mr-3"
         >
-          <Logo height={28} className="min-[360px]:hidden" />
-          <Logo height={34} className="hidden min-[360px]:block md:hidden" />
+          <Logo height={34} className="md:hidden" />
           <Logo height={50} className="hidden md:block" />
         </button>
 
@@ -102,13 +101,8 @@ const Navigation: React.FC<NavigationProps> = ({ activePage, onNavigate, onLogou
           )}
         </div>
 
-        {/* MOBILE: photo (ring = title colour) + hamburger. Name, title and mascot are inside the menu. */}
+        {/* MOBILE: only the hamburger. Photo, name, title and mascot are at the top of the menu. */}
         <div className="flex lg:hidden items-center gap-4 flex-shrink-0">
-          {user && (
-            <button onClick={() => go('subscription')} className="flex" title={`${user.name} · ${TIERS[tier].label}`}>
-              <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={tier} size={34} />
-            </button>
-          )}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="w-10 h-10 flex-shrink-0 flex flex-col items-center justify-center gap-1.5 border-2 border-white"
