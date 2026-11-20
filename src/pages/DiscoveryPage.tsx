@@ -163,7 +163,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                       <div className="space-y-2">
                         {selectedShow.productionPhotos.filter(Boolean).slice(0, 3).map((url: string, i: number) => (
                           <div key={i} className="w-full border-2 border-white/20 overflow-hidden bg-white/5" style={{aspectRatio:"16/9"}}>
-                            <img src={url} loading="lazy" decoding="async" alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                            <img src={url} alt={"Production photo " + (i + 1)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                           </div>
                         ))}
                       </div>
@@ -311,7 +311,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                               className="group cursor-pointer border-2 border-white/20 hover:border-brand-yellow transition-all overflow-hidden"
                             >
                               <div className="aspect-[2/3] relative overflow-hidden">
-                                <img src={s.imageUrl} loading="lazy" decoding="async" alt={s.title} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105" />
+                                <img src={s.imageUrl} alt={s.title} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                                 <div className="absolute bottom-0 left-0 p-2 w-full">
                                   <p className="text-[8px] font-black uppercase text-brand-cyan italic">{s.genre}</p>
@@ -1128,7 +1128,7 @@ const DiscoveryPage: React.FC<DiscoveryPageProps> = ({ onNavigate, onLogout, use
                 <div className="relative overflow-hidden" style={{aspectRatio:'2/3'}}>
                   {isSampleShow(show) && <SampleRibbon />}
                   {show.imageUrl ? (
-                    <img src={show.imageUrl} alt={show.title} loading="lazy" decoding="async"
+                    <img src={show.imageUrl} alt={show.title}
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105" />
                   ) : (
                     <div className="w-full h-full bg-brand-black flex items-center justify-center">

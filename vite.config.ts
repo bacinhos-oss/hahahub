@@ -5,15 +5,4 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
-  build: {
-    rollupOptions: {
-      output: {
-        // Libraries change rarely: keep them in their own files so returning visitors load them from cache.
-        manualChunks: {
-          react: ['react', 'react-dom'],
-          supabase: ['@supabase/supabase-js'],
-        },
-      },
-    },
-  },
 })

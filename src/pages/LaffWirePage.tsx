@@ -298,7 +298,7 @@ const LaffWirePage: React.FC<LaffWirePageProps> = ({ onNavigate, onLogout, user,
                                   className="mt-3 w-full flex gap-4 items-center text-left border-2 border-white/15 hover:border-brand-yellow bg-brand-surface p-3 transition-colors group">
                                   <span className="w-14 aspect-[2/3] flex-shrink-0 bg-black overflow-hidden flex items-center justify-center">
                                     {sh.imageUrl || sh.image_url
-                                      ? <img src={sh.imageUrl || sh.image_url} loading="lazy" decoding="async" alt={sh.title} className="w-full h-full object-cover" />
+                                      ? <img src={sh.imageUrl || sh.image_url} alt={sh.title} className="w-full h-full object-cover" />
                                       : <span className="font-black italic text-white/20 text-2xl">{(sh.title || '?')[0]}</span>}
                                   </span>
                                   <span className="min-w-0 flex-1">
