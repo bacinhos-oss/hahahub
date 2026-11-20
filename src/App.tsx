@@ -1,5 +1,5 @@
 import { mapShow } from './lib/mapShow';
-import React, { useState, useEffect, lazy as lazyReact, Suspense, startTransition } from 'react'
+import React, { useState, useEffect, lazy as lazyReact, Suspense } from 'react'
 import { supabase } from './lib/supabase'
 import { Page, User, Show } from './types'
 import LandingPage from './pages/LandingPage'
@@ -13,14 +13,11 @@ import { logError } from './lib/errorLogger'
 import { getTier, isSampleShow } from './components/Mascot'
 // Pages most visitors never open load only when needed, so the first screen appears faster on phones.
 // If a new version was deployed while the tab was open, the old page files are gone: reload once to get the new ones.
-const pageLoaders: Array<() => Promise<unknown>> = []
-const lazy = (load: () => Promise<{ default: React.ComponentType<any> }>) => {
-  pageLoaders.push(load)
-  return lazyReact(() => load().catch((err) => {
+const lazy = (load: () => Promise<{ default: React.ComponentType<any> }>) =>
+  lazyReact(() => load().catch((err) => {
     if (!sessionStorage.getItem('hh-reloaded')) { sessionStorage.setItem('hh-reloaded', '1'); window.location.reload() }
     throw err
   }))
-}
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
@@ -40,7 +37,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPageRaw] = useState<Page>('landing')
   const setCurrentPage = (page: Page) => {
     window.scrollTo(0, 0)
-    startTransition(() => setCurrentPageRaw(page))
+    setCurrentPageRaw(page)
     // Pushes a real browser history entry, so the back button moves between
     // in-app pages instead of leaving the app, and a refresh lands back on
     // the same page instead of resetting to Landing.
@@ -56,13 +53,6 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
   const [suspendedNotice, setSuspendedNotice] = useState(false)
-
-  // Right after the first screen is up, quietly download the other pages so every click opens at once.
-  useEffect(() => {
-    if (loading) return
-    const t = window.setTimeout(() => { pageLoaders.forEach(load => load().catch(() => {})) }, 600)
-    return () => window.clearTimeout(t)
-  }, [loading])
 
   // My Hub tells us when the member changes their profile photo, so the navigation updates at once.
   useEffect(() => {
@@ -90,7 +80,7 @@ const App: React.FC = () => {
     } else {
       const hashPage = hash.substring(1)
       if (VALID_PAGES.includes(hashPage)) {
-        startTransition(() => setCurrentPageRaw(hashPage as Page))
+        setCurrentPageRaw(hashPage as Page)
       } else if (hashPage && !hashPage.includes('=')) {
         setCurrentPageRaw('notfound' as any) // unknown #page -> 404
       }
@@ -101,7 +91,7 @@ const App: React.FC = () => {
       const h = window.location.hash.substring(1)
       if (h === 'signup') return // signup is a LoginPage-only sub-state, not a real page
       if (VALID_PAGES.includes(h)) {
-        startTransition(() => setCurrentPageRaw(h as Page))
+        setCurrentPageRaw(h as Page)
         window.scrollTo(0, 0)
       } else if (h === '') {
         setCurrentPageRaw('landing')
