@@ -262,10 +262,10 @@ const ProducerPage: React.FC<ProducerPageProps> = ({ onNavigate, onLogout, user,
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {producerShows.map(show => (
                   <div key={show.id} onClick={() => { onUpdateStats(show.id, 'view'); if (onViewShow) onViewShow(show.id); else onNavigate('discovery'); }}
-                    className="group cursor-pointer border-2 border-white/20 hover:border-brand-yellow transition-all overflow-hidden bg-brand-surface">
+                    className="group cursor-pointer border-2 border-white/20 hover:border-brand-pink transition-all overflow-hidden bg-brand-surface">
                     <div className="h-40 md:h-52 relative overflow-hidden">
                       {show.imageUrl ? (
-                        <img src={show.imageUrl} alt={show.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                        <img src={show.imageUrl} loading="lazy" decoding="async" alt={show.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                       ) : (
                         <div className="w-full h-full bg-brand-black flex items-center justify-center">
                           <span className="text-5xl font-black uppercase italic text-white/10">{show.title[0]}</span>

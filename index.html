@@ -10,7 +10,7 @@
     <meta name="keywords" content="comedy rights, theatre licensing, comedy marketplace, producer platform, international theatre, comedy licensing">
     <meta name="author" content="HahaHub">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.hahahub.art">
+    <link rel="canonical" href="https://hahahub.art/">
 
     <!-- Theme color — mobile browser bar -->
     <meta name="theme-color" content="#050505">
@@ -20,6 +20,10 @@
     <link rel="manifest" href="/site.webmanifest">
 
     <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hahahub.art/">
+    <meta property="og:title" content="HahaHub - The Laff Exchange">
+    <meta property="og:image" content="https://hahahub.art/og-image.png">
     <meta property="og:description" content="HahaHub is the international professional network for theatre comedy producers. Showcase productions, discover new titles, connect directly with fellow producers, and create new licensing opportunities. Tickle. Set Up. Punch.">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -27,14 +31,15 @@
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="HahaHub - The Laff Exchange">
+    <meta name="twitter:image" content="https://hahahub.art/og-image.png">
     <meta name="twitter:description" content="HahaHub is the international professional network for theatre comedy producers. Showcase productions, discover new titles, connect directly with fellow producers, and create new licensing opportunities. Tickle. Set Up. Punch.">
 
-    <!-- FONT PRELOAD — prevents FOUT on all devices -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <!-- Fonts: one request each (the old preloads asked for different weights and downloaded twice) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@400;600;700&display=block">
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=block">
-    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@400;500;600;700&display=block" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
 
 
@@ -56,16 +61,8 @@
       "@type": "WebSite",
       "name": "HahaHub",
       "alternateName": "The Laff Exchange",
-      "url": "https://hahahub.art",
-      "description": "The first producer-to-producer theatre comedy rights marketplace.",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://hahahub.art/discovery?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-      }
+      "url": "https://hahahub.art/",
+      "description": "The international professional network for theatre comedy producers."
     }
     </script>
     <script type="application/ld+json">
@@ -87,13 +84,7 @@
     <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://hahahub.art" />
-    <meta property="og:title" content="HahaHub - The Laff Exchange" />
-    <meta property="og:image" content="https://hahahub.art/og-image.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://hahahub.art/og-image.png" />
-  </head>
+
     <!-- Google Analytics — always on, no IP collection -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SEPT0657QY"></script>
     <script>
@@ -106,6 +97,7 @@
         allow_ad_personalization_signals: false
       });
     </script>
+  </head>
 <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

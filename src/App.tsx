@@ -1,27 +1,34 @@
 import { mapShow } from './lib/mapShow';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy as lazyReact, Suspense } from 'react'
 import { supabase } from './lib/supabase'
 import { Page, User, Show } from './types'
 import LandingPage from './pages/LandingPage'
 import DiscoveryPage from './pages/DiscoveryPage'
-import AdminPage from './pages/AdminPage'
-import SubscriptionPage from './pages/SubscriptionPage'
-import AboutPage from './pages/AboutPage'
-import LoginPage from './pages/LoginPage'
-import PrivacyPage from './pages/PrivacyPage'
-import TermsPage from './pages/TermsPage'
-import UploadPage from './pages/UploadPage'
 import CookieBanner from './components/CookieBanner'
 import FeedbackButton from './components/FeedbackButton'
 import OnboardingWizard from './components/OnboardingWizard'
-import NotFoundPage from './pages/NotFoundPage'
-import FAQPage from './pages/FAQPage'
-import LaffWirePage from './pages/LaffWirePage'
-import ProducerPage from './pages/ProducerPage'
 import Smile from './components/Smile'
 import { Analytics } from "@vercel/analytics/react"
 import { logError } from './lib/errorLogger'
 import { getTier, isSampleShow } from './components/Mascot'
+// Pages most visitors never open load only when needed, so the first screen appears faster on phones.
+// If a new version was deployed while the tab was open, the old page files are gone: reload once to get the new ones.
+const lazy = (load: () => Promise<{ default: React.ComponentType<any> }>) =>
+  lazyReact(() => load().catch((err) => {
+    if (!sessionStorage.getItem('hh-reloaded')) { sessionStorage.setItem('hh-reloaded', '1'); window.location.reload() }
+    throw err
+  }))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
+const TermsPage = lazy(() => import('./pages/TermsPage'))
+const UploadPage = lazy(() => import('./pages/UploadPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const FAQPage = lazy(() => import('./pages/FAQPage'))
+const LaffWirePage = lazy(() => import('./pages/LaffWirePage'))
+const ProducerPage = lazy(() => import('./pages/ProducerPage'))
 
 const ADMIN_EMAIL = 'bacinhos@gmail.com'
 const VALID_PAGES: string[] = ['landing','discovery','admin','login','subscription','about','privacy','terms','upload','faq','producer','wire']
@@ -347,7 +354,9 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      {renderPage()}
+      <Suspense fallback={<div className="min-h-screen bg-brand-black flex items-center justify-center"><Smile height={96} className="animate-pulse" /></div>}>
+        {renderPage()}
+      </Suspense>
       {suspendedNotice && (
         <div className="fixed inset-0 z-[100] bg-brand-black/95 flex items-center justify-center px-4">
           <div className="max-w-md w-full border-2 border-brand-pink bg-brand-black p-8 text-center">
