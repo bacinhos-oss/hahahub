@@ -1,3 +1,4 @@
+import { OPERATOR, OPERATOR_ADDRESS } from '../lib/operator';
 import React from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -16,13 +17,13 @@ const TermsPage: React.FC<Props> = ({ onNavigate, onLogout, user }) => {
         <div>
           <p className="text-brand-cyan text-xs font-black uppercase tracking-widest italic mb-2">Legal</p>
           <h1 className="text-5xl font-black uppercase italic text-white tracking-tighter">Terms <span className="text-spectrumLight-purple">of Service</span></h1>
-          <p className="text-white/40 text-sm mt-3">Last updated: November 2026</p>
+          <p className="text-white/40 text-sm mt-3">Last updated: 21 November 2026</p>
         </div>
 
         {[
           {
             title: '1. About HahaHub',
-            content: `HahaHub ("Platform", "we", "us") is an online marketplace operated by HahaHub, based in Ljubljana, Slovenia, that enables comedy theatre producers ("Users") to list, discover, and negotiate rights to comedy theatre productions internationally. HahaHub facilitates connections between rights holders and licensees but is not a party to any agreement concluded between Users.`
+            content: `HahaHub (hahahub.art, "Platform", "we", "us") is an international professional network for comedy theatre producers, operated by ${OPERATOR.name}, ${OPERATOR_ADDRESS}, European Union. It enables producers ("Users") to list, discover and license comedy theatre productions internationally. HahaHub connects rights holders and licensees but is not a party to any agreement concluded between Users.`
           },
           {
             title: '2. Acceptance of Terms',
@@ -50,15 +51,15 @@ const TermsPage: React.FC<Props> = ({ onNavigate, onLogout, user }) => {
           },
           {
             title: '8. Founding Members',
-            content: `Founding Members are users personally invited by HahaHub during the private beta period who receive free access for life, including to any paid features introduced in the future. Founding Member status and its associated benefits are non-transferable. HahaHub reserves the right to modify Founding Member benefits with reasonable notice, but lifetime access will not be revoked except in cases of material breach of these Terms.`
+            content: `Founding Members are members to whom HahaHub gives the Founding title. They receive free access for life, including to any paid features introduced in the future. Founding Member status and its benefits are non-transferable. HahaHub may modify Founding Member benefits with reasonable notice, but lifetime access will not be revoked except in cases of material breach of these Terms.`
           },
           {
             title: '9. Prohibited Conduct',
-            content: `You must not: (a) list productions for which you do not hold rights; (b) use the Platform for any unlawful purpose; (c) transmit spam, unsolicited messages, or harmful content; (d) attempt to circumvent the Platform by conducting transactions off-platform after initial contact through HahaHub; (e) impersonate any person or entity; (f) scrape, copy, or reproduce Platform content without permission.`
+            content: `You must not: (a) list productions for which you do not hold rights; (b) use the Platform for any unlawful purpose; (c) transmit spam, unsolicited messages, or harmful content; (d) impersonate any person or entity; (e) scrape, copy, or reproduce Platform content without permission.`
           },
           {
             title: '10. Intellectual Property',
-            content: `All content on the Platform — including the HahaHub brand, The Laff Exchange name, design, software, and text — is owned by HahaHub and protected by applicable intellectual property laws. You retain ownership of the content you upload but grant HahaHub a non-exclusive license to display it on the Platform.`
+            content: `All content on the Platform, including the HahaHub brand, The Laff Exchange name, design, software and text, is owned by HahaHub and protected by applicable intellectual property laws. You retain ownership of the content you upload but grant HahaHub a non-exclusive license to display it on the Platform.`
           },
           {
             title: '11. Disclaimer of Warranties',
@@ -70,7 +71,7 @@ const TermsPage: React.FC<Props> = ({ onNavigate, onLogout, user }) => {
           },
           {
             title: '13. Termination',
-            content: `You may terminate your account at any time by contacting info@hahahub.art. HahaHub may terminate or suspend your account immediately for breach of these Terms. Upon termination, your right to use the Platform ceases immediately. Provisions that by their nature should survive termination will do so.`
+            content: `You may delete your account at any time in My Hub (Profile, Delete account) or by writing to info@hahahub.art. HahaHub may put a membership on hold while it is reviewed, and may suspend or terminate an account for breach of these Terms. Upon termination, your right to use the Platform ceases immediately. Provisions that by their nature should survive termination will do so.`
           },
           {
             title: '14. Governing Law',
@@ -78,7 +79,7 @@ const TermsPage: React.FC<Props> = ({ onNavigate, onLogout, user }) => {
           },
           {
             title: '15. Contact',
-            content: `For any questions regarding these Terms, please contact us at: info@hahahub.art · HahaHub · Ljubljana, Slovenia`
+            content: `For any questions regarding these Terms, write to info@hahahub.art. HahaHub is operated by ${OPERATOR.name}, ${OPERATOR_ADDRESS}, European Union.`
           },
         ].map((section, i) => (
           <div key={i} className="border-l-2 border-white/10 pl-6 space-y-3">

@@ -1,4 +1,5 @@
 import AdminOutreach from './AdminOutreach';
+import { Logo } from '../components/Logo';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { normalizeEmail } from '../lib/normalizeEmail';
@@ -313,10 +314,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate, onLogout, shows, onDe
       <div className="border-b-4 border-white bg-brand-black sticky top-0 z-50">
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
-            <div className="logo-text text-2xl flex leading-none">
-              <span className="text-brand-yellow">HAHA</span><span className="text-brand-cyan">HUB</span>
-            </div>
-            <p className="text-brand-pink text-[8px] font-black tracking-[0.2em] uppercase italic">Control Center</p>
+            <Logo height={28} />
+            <p className="text-brand-pink text-[8px] font-black tracking-[0.2em] uppercase italic mt-1">Control Center</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => onNavigate('discovery')} className="text-white/40 hover:text-white transition-colors text-xs font-black uppercase italic">← Catalog</button>

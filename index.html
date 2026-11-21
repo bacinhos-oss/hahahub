@@ -10,7 +10,7 @@
     <meta name="keywords" content="comedy rights, theatre licensing, comedy marketplace, producer platform, international theatre, comedy licensing">
     <meta name="author" content="HahaHub">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.hahahub.art">
+    <link rel="canonical" href="https://hahahub.art/">
 
     <!-- Theme color — mobile browser bar -->
     <meta name="theme-color" content="#050505">
@@ -102,11 +102,17 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://hahahub.art/og-image.png" />
   </head>
-    <!-- Google Analytics — always on, no IP collection -->
+    <!-- Google Analytics with Consent Mode: cookies only after consent, no IP collection, no ads -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SEPT0657QY"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // Consent Mode: no analytics cookies until the visitor clicks "Accept all" in the cookie banner.
+      var hhConsent = null; try { hhConsent = localStorage.getItem('hahahub_cookies'); } catch (e) {}
+      gtag('consent', 'default', {
+        analytics_storage: hhConsent === 'accepted' ? 'granted' : 'denied',
+        ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'
+      });
       gtag('js', new Date());
       gtag('config', 'G-SEPT0657QY', {
         anonymize_ip: true,

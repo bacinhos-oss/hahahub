@@ -2,6 +2,9 @@ import React from 'react';
 import { Page } from '../types';
 import { Logo } from './Logo';
 import { SpectrumBar } from './SpectrumBar';
+import { FlagSI, FlagEU } from './Flags';
+import { openCookieSettings } from './CookieBanner';
+import { OPERATOR, OPERATOR_ADDRESS } from '../lib/operator';
 
 interface FooterProps {
   onNavigate: (page: Page) => void;
@@ -45,7 +48,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="flex flex-col gap-3">
                 <button onClick={() => onNavigate('privacy')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-orange transition-colors">Privacy Policy</button>
                 <button onClick={() => onNavigate('terms')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-orange transition-colors">Terms of Service</button>
-                <button onClick={() => onNavigate('privacy')} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-orange transition-colors">Cookie Policy</button>
+                <button onClick={openCookieSettings} className="text-left text-xs font-bold italic text-white/60 hover:text-spectrumLight-orange transition-colors">Cookie settings</button>
               </div>
             </div>
 
@@ -59,14 +62,17 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 <a href="mailto:info@hahahub.art" className="text-xs font-bold italic text-brand-cyan hover:text-white transition-colors">info@hahahub.art</a>
                 <a href="mailto:legal@hahahub.art" className="text-xs font-bold italic text-white/60 hover:text-spectrumLight-teal transition-colors">legal@hahahub.art</a>
                 <a href="https://www.instagram.com/hahahub.art/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold italic text-white/60 hover:text-spectrumLight-pink transition-colors">Instagram @hahahub.art</a>
-                <p className="text-[10px] font-bold italic text-white/30">Ljubljana, Slovenia</p>
+                <p className="flex items-center gap-2 text-[10px] font-bold italic text-white/40"><FlagSI height={12} /><FlagEU height={12} /> Ljubljana, Slovenia, EU</p>
               </div>
             </div>
           </div>
 
-          <div className="border-t-2 border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">© 2026 HAHAHUB. All laughs reserved.</p>
-            <p className="text-[10px] font-bold italic text-white/20">Built for theater comedy producers worldwide.</p>
+          <div className="border-t-2 border-white/10 pt-8 md:pr-44 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">© {new Date().getFullYear()} HAHAHUB. All laughs reserved.</p>
+            <p className="flex flex-wrap items-center justify-center gap-2 text-[10px] font-bold italic text-white/35">
+              <span className="flex items-center gap-1.5"><FlagSI height={12} /><FlagEU height={12} /></span>
+              <span>Operated by {OPERATOR.name} · {OPERATOR_ADDRESS}, EU</span>
+            </p>
           </div>
         </div>
       </div>

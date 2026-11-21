@@ -5,11 +5,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 module.exports = async function handler(req, res) {
   let shows = [];
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/shows?select=id,created_at&order=created_at.desc&limit=1000`, {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/shows?select=id,created_at,rights_holder,producer_name&order=created_at.desc&limit=1000`, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
     const rows = await r.json();
-    if (Array.isArray(rows)) shows = rows;
+    // Sample shows (by "Demo Productions") are examples, not real listings: keep them out of Google.
+    const isSample = (v) => String(v || '').trim().toLowerCase() === 'demo productions';
+    if (Array.isArray(rows)) shows = rows.filter(s => !isSample(s.rights_holder) && !isSample(s.producer_name));
   } catch (e) { /* home page only */ }
 
   const urls = [

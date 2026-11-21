@@ -36,9 +36,9 @@ function mail({ badge, badgeColor = '#FFC80E', badgeText = '#000000', title, int
 const templates = {
   inquiry: ({ producerName, buyerName, buyerEmail, showTitle, message, packageType }) => {
     const pkg = packageType ? String(packageType).replace(/_/g, ' ') : '';
-    const mailto = `mailto:${buyerEmail || ''}?subject=${encodeURIComponent('Re: ' + (showTitle || 'your inquiry') + ' — HahaHub')}`;
+    const mailto = `mailto:${buyerEmail || ''}?subject=${encodeURIComponent('Re: ' + (showTitle || 'your inquiry') + ' · HahaHub')}`;
     return {
-    subject: `You've been tickled — a producer wants "${showTitle}"`,
+    subject: `You've been tickled: a producer wants "${showTitle}"`,
     html: `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"></head>
@@ -150,7 +150,7 @@ const templates = {
 
 
   inquiry_reply: ({ producerName, buyerName, showTitle, message }) => ({
-    subject: `Reply from ${producerName} — ${showTitle}`,
+    subject: `Reply from ${producerName}: ${showTitle}`,
     html: mail({
       badge: 'Reply received', badgeColor: '#19A596',
       title: `${buyerName ? buyerName + ',<br>' : ''}you got a reply.`,
@@ -164,7 +164,7 @@ const templates = {
     const kind = feedbackType === 'bug' ? 'Bug report' : feedbackType === 'idea' ? 'Idea' : feedbackType === 'verify' ? 'Verification request' : 'Feedback';
     const color = feedbackType === 'bug' ? '#EF4986' : feedbackType === 'idea' ? '#FFC80E' : '#19A596';
     return {
-      subject: `[HahaHub] ${String(feedbackType || 'feedback').toUpperCase()} — ${new Date(ts).toLocaleDateString('en-GB')}`,
+      subject: `[HahaHub] ${String(feedbackType || 'feedback').toUpperCase()} · ${new Date(ts).toLocaleDateString('en-GB')}`,
       html: mail({
         badge: kind, badgeColor: color, badgeText: feedbackType === 'bug' ? '#ffffff' : '#000000',
         title: kind + '.',
@@ -175,7 +175,7 @@ const templates = {
   },
 
   inquiry_confirmation: ({ buyerName, showTitle, producerName, message, hasAttachment }) => ({
-    subject: `Your tickle has been sent — ${showTitle}`,
+    subject: `Your tickle has been sent: ${showTitle}`,
     html: mail({
       badge: 'Inquiry sent',
       title: `Tickle sent${buyerName ? ', ' + buyerName : ''}.`,
@@ -190,7 +190,7 @@ const templates = {
   }),
 
   deal_closed: ({ showTitle, royalty, years, territory, performances, isseller }) => ({
-    subject: `Deal closed — ${showTitle} · ${territory || 'All territories'}`,
+    subject: `Deal closed: ${showTitle} · ${territory || 'All territories'}`,
     html: mail({
       badge: 'Deal closed', badgeColor: '#16A34A', badgeText: '#ffffff',
       title: isseller ? 'Your show<br>is going on.' : 'Curtain up.<br>Deal closed.',
@@ -206,7 +206,7 @@ const templates = {
   }),
 
   deal_signed_producer: ({ show_title, buyer, territory, signed_date }) => ({
-    subject: `Deal signed — ${show_title}${territory ? ' · ' + territory : ''}`,
+    subject: `Deal signed: ${show_title}${territory ? ' · ' + territory : ''}`,
     html: mail({
       badge: 'Deal signed', badgeColor: '#16A34A', badgeText: '#ffffff',
       title: 'Punchline<br>landed.',
@@ -217,7 +217,7 @@ const templates = {
   }),
 
   deal_signed_buyer: ({ show_title, producer, territory, signed_date }) => ({
-    subject: `Contract confirmed — ${show_title}${territory ? ' · ' + territory : ''}`,
+    subject: `Contract confirmed: ${show_title}${territory ? ' · ' + territory : ''}`,
     html: mail({
       badge: 'Contract confirmed', badgeColor: '#16A34A', badgeText: '#ffffff',
       title: "You're in.<br>Curtain up.",
@@ -465,7 +465,7 @@ const templates = {
 </body></html>`
   }),
   founding_welcome: ({ name, spotNumber }) => ({
-    subject: `You're HahaHub Crew #${spotNumber} — Welcome 🥊`,
+    subject: `You're HahaHub Crew #${spotNumber}. Welcome 🥊`,
     html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 0">
@@ -478,12 +478,12 @@ const templates = {
 <tr><td style="background:#0a0a0a;padding:40px;">
   <div style="background:#FFC80E;color:#000;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;padding:6px 14px;display:inline-block;margin-bottom:24px;">⭐ HAHAHUB CREW #${spotNumber}</div>
   <h1 style="color:#fff;font-size:32px;font-weight:900;text-transform:uppercase;margin:0 0 16px;letter-spacing:-1px">${name}.<br/>You're in the history books. 🥊</h1>
-  <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin:0 0 24px">You're one of the first 20 producers to join HahaHub. That means your <strong style="color:#FFC80E">CREW</strong> badge is permanent — it will be on your profile forever, long after we're running thousands of shows worldwide.</p>
+  <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;margin:0 0 24px">You're one of the first 20 producers to join HahaHub. That means your <strong style="color:#FFC80E">CREW</strong> badge is permanent: it will be on your profile forever, long after we're running thousands of shows worldwide.</p>
   <div style="background:#050505;border-left:4px solid #FFC80E;padding:20px 24px;margin:24px 0;">
     <p style="color:#FFC80E;font-size:10px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">What to do now</p>
-    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">1. <strong>Upload your show</strong> — SHOWLOAD → fill all sections → publish</p>
-    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">2. <strong>Browse the catalog</strong> — find shows you want to license</p>
-    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">3. <strong>Send feedback</strong> — hit the Feedback button, we read everything</p>
+    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">1. <strong>Upload your show:</strong> SHOWLOAD → fill all sections → publish</p>
+    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">2. <strong>Browse the catalog:</strong> find shows you want to license</p>
+    <p style="margin:6px 0;color:rgba(255,255,255,0.8);font-size:13px;">3. <strong>Send feedback:</strong> hit the Feedback button, we read everything</p>
   </div>
   <div style="margin:32px 0 20px">
     <a href="https://www.hahahub.art" style="background:#FFC80E;color:#000;padding:16px 32px;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:2px;display:inline-block;font-size:13px;border:3px solid #000">Enter HahaHub →</a>

@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase';
 import ProducerStudio from './ProducerStudio';
 import { Badge, getProfileBadges } from '../components/Badge';
+import { Mascot, ProfilePhoto, TIERS, getTier } from '../components/Mascot';
 import DealsPipelinePage from './DealsPipelinePage';
 import Smile from '../components/Smile';
 import { Page, User, Show } from '../types';
@@ -742,30 +743,19 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
             <section className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-10">
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">My <span className="text-spectrumLight-green">Hub</span></h1>
               <div className="flex items-center gap-6">
-                <div className="bg-brand-surface border-2 border-white p-6 ">
-                  <p className="text-xl font-black uppercase italic">{user.name}</p>
-                  <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {getProfileBadges(user).map(b => (
-                        <Badge key={b} type={b} size="md" showLabel />
-                      ))}
-                      {user.isAdmin && <Badge type="roar" size="md" showLabel />}
-                    </div>
-                    {!user.isAdmin && !(user as any).is_verified && (
-                      verifyRequested ? (
-                        <span className="text-[10px] font-black uppercase italic tracking-widest text-brand-cyan">Verification requested ✓</span>
-                      ) : (
-                        <button
-                          onClick={requestVerification}
-                          disabled={verifySending || userUploads.length === 0}
-                          title={userUploads.length === 0 ? 'List a show first' : 'Ask HahaHub to verify your profile'}
-                          className="text-[10px] font-black uppercase italic tracking-widest text-brand-cyan border border-brand-cyan/40 px-3 py-1 hover:bg-brand-cyan hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                        >
-                          {verifySending ? 'Sending…' : 'Request verification'}
-                        </button>
-                      )
+                <div className="bg-brand-surface border-2 border-white p-5 flex items-center gap-4 max-w-full">
+                  <ProfilePhoto name={user.name} url={(user as any).avatar_url} tier={getTier(user as any)} size={56} />
+                  <div className="min-w-0">
+                    <p className="text-xl font-black uppercase italic truncate">{user.name}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest mt-1" style={{ color: TIERS[getTier(user as any)].text }}>{TIERS[getTier(user as any)].label}</p>
+                    {getTier(user as any) === 'member' && !user.isAdmin && (
+                      <button onClick={() => onNavigate('upload')}
+                        className="mt-2 text-[10px] font-black uppercase italic tracking-widest text-brand-cyan hover:text-white transition-colors text-left">
+                        List your first show to become Verified →
+                      </button>
                     )}
                   </div>
+                  <Mascot tier={getTier(user as any)} height={44} />
                 </div>
               </div>
             </section>
@@ -817,7 +807,7 @@ const SubscriptionPage: React.FC<SubscriptionPageProps> = ({ onNavigate, onLogou
               {[
                 { label: 'VIEWS', value: myStats.views, icon: 'visibility', color: 'text-brand-cyan', border: 'border-brand-cyan/30' },
                 { label: 'LIKES', value: myStats.likes, icon: 'favorite', color: 'text-brand-pink', border: 'border-brand-pink/30' },
-                { label: 'INQUIRIES', value: inquiries.length, icon: 'mail', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
+                { label: 'TICKLES', value: inquiries.length, icon: 'mail', color: 'text-brand-yellow', border: 'border-brand-yellow/30' },
                 { label: 'MY SHOWS', value: userUploads.length, icon: 'theater_comedy', color: 'text-white', border: 'border-white/20' },
               ].map((s, i) => (
                 <div key={i} className={`border-2 ${s.border} p-4 flex items-center gap-3`}>
