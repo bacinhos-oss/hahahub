@@ -32,21 +32,29 @@
     <!-- FONT PRELOAD — prevents FOUT on all devices -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@400;600;700&display=block">
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=block">
-    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=block" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
-
-
+    <!-- Text fonts, and an icon font that holds only the 64 icons the site uses (the full set is several MB).
+         When you use a new icon in the code, add its name to icon_names below, in alphabetical order. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@400;500;600;700&display=block">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400..700,0..1&icon_names=add,add_photo_alternate,bolt,bug_report,calculate,campaign,check,check_circle,close,contacts,content_copy,dashboard,delete,description,download,edit,favorite,forum,forward_to_inbox,gavel,group,handshake,history,inbox,info,insights,language,link,location_on,lock,lock_person,lock_reset,logout,mail,mark_email_read,music_note,open_in_new,pause,payments,photo_camera,play_arrow,power_settings_new,receipt_long,refresh,rocket_launch,savings,search,send,settings,share,sort,star,theater_comedy,timer,touch_app,tour,translate,travel_explore,trending_up,tune,upload,verified_user,visibility,workspace_premium&display=block">
+    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Bungee&family=Space+Grotesk:wght@400;500;600;700&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400..700,0..1&icon_names=add,add_photo_alternate,bolt,bug_report,calculate,campaign,check,check_circle,close,contacts,content_copy,dashboard,delete,description,download,edit,favorite,forum,forward_to_inbox,gavel,group,handshake,history,inbox,info,insights,language,link,location_on,lock,lock_person,lock_reset,logout,mail,mark_email_read,music_note,open_in_new,pause,payments,photo_camera,play_arrow,power_settings_new,receipt_long,refresh,rocket_launch,savings,search,send,settings,share,sort,star,theater_comedy,timer,touch_app,tour,translate,travel_explore,trending_up,tune,upload,verified_user,visibility,workspace_premium&display=block" rel="stylesheet">
 
     <script>
-        if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(() => {
-                document.documentElement.classList.add('fonts-loaded');
-            });
-        } else {
-            setTimeout(() => document.documentElement.classList.add('fonts-loaded'), 300);
-        }
+        // Show the page as soon as the text fonts are ready (never wait more than 1.5 s, never wait for icons).
+        (function () {
+            var shown = false;
+            function show() { if (!shown) { shown = true; document.documentElement.classList.add('fonts-loaded'); } }
+            setTimeout(show, 1500);
+            if (document.fonts && document.fonts.load) {
+                Promise.all([
+                    document.fonts.load("400 1em 'Space Grotesk'"),
+                    document.fonts.load("1em 'Bowlby One SC'"),
+                    document.fonts.load("1em 'Bungee'")
+                ]).then(show, show);
+            } else {
+                setTimeout(show, 300);
+            }
+        })();
     </script>
 
     <!-- Structured Data — Google Rich Results -->
